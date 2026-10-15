@@ -39,17 +39,17 @@ select{background:var(--panel);border:1px solid var(--line);border-radius:6px;pa
 .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
 .bar .vsx{font:700 14px var(--display);color:var(--mute)}
 .hint{font-size:12px;color:var(--mute);text-align:center}
-.arena{display:flex;gap:14px;align-items:stretch;justify-content:center;margin:16px 0}
+.arena{display:flex;gap:10px;align-items:stretch;justify-content:center;margin:12px 0}
 .vs{align-self:center;font:700 22px var(--display);color:var(--mute);flex:none}
-.card{--c:var(--line);position:relative;flex:1 1 0;min-width:0;max-width:300px;background:var(--panel);border:2px solid var(--line);border-top:6px solid var(--c);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:transform .12s, box-shadow .12s, border-color .12s}
+.card{--c:var(--line);position:relative;flex:1 1 0;min-width:0;max-width:400px;background:var(--panel);border:2px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:6px 6px 10px;cursor:pointer;text-align:center;transition:transform .12s, box-shadow .12s, border-color .12s}
 .card[data-fr=pokemon]{--c:var(--pokemon)} .card[data-fr=digimon]{--c:var(--digimon)} .card[data-fr=smt]{--c:var(--smt)}
 .card:hover,.card:focus-visible{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 20px -10px var(--c);outline:none}
-.card .img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:13px;border-radius:8px;background:radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--c) 16%, transparent), transparent 70%)}
-.card img{max-width:92%;max-height:92%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
-.card .name{display:block;margin-top:8px;font:700 18px/1.2 var(--display);overflow-wrap:anywhere}
+.card .img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:13px;border-radius:6px;background:radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--c) 14%, transparent), transparent 75%)}
+.card img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.card .name{display:block;margin-top:4px;font:700 18px/1.2 var(--display);overflow-wrap:anywhere}
 .card .fr{display:inline-block;margin-top:4px;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--c)}
-.card .key{position:absolute;top:8px;left:10px;font:600 11px var(--display);color:var(--mute)}
-.crown{position:absolute;top:6px;right:8px;font:700 12px var(--display);color:var(--gold);letter-spacing:.4px}
+.card .top{display:flex;justify-content:space-between;align-items:center;min-height:20px;padding:0 4px 2px;font:600 12px var(--display);color:var(--mute)}
+.crown{color:var(--gold);font-weight:700;letter-spacing:.4px}
 .card.static{cursor:default}.card.static:hover{transform:none;box-shadow:none}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .stack{display:grid;gap:12px}
@@ -63,8 +63,8 @@ ol,ul{padding-left:20px;margin:0}
 .records{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
 @media (max-width:560px){
   .arena.two{gap:8px}.arena.two .vs{font-size:14px}
-  .card{padding:8px}.card .name{font-size:15px}
-  .arena.three{flex-direction:column;align-items:center}.arena.three .card{width:100%;max-width:280px}.arena.three .vs{display:none}
+  .card{padding:4px 4px 8px}.card .name{font-size:15px}
+  .arena.three{flex-direction:column;align-items:center}.arena.three .card{width:100%;max-width:340px}.arena.three .vs{display:none}
   .meter{grid-template-columns:80px 1fr 80px}
 }
 @media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
@@ -93,9 +93,9 @@ ol,ul{padding-left:20px;margin:0}
 </section>
 
 <section id="trio" hidden>
-  <div class="bar"><button class="btn" id="trioSkip">Sortear outro trio</button></div>
+  <div class="bar"><button class="btn" id="trioSkip">Trocar os três</button></div>
   <div class="arena three" id="trioRow"></div>
-  <p class="hint">Teclas 1, 2 e 3 escolhem. Espaço sorteia outro trio.</p>
+  <p class="hint">Quem você escolhe fica; as outras duas franquias mandam novos desafiantes. Teclas 1, 2 e 3 escolhem.</p>
 </section>
 
 <section id="cup" hidden>
@@ -106,6 +106,7 @@ ol,ul{padding-left:20px;margin:0}
     </select></label>
     <div class="bar" id="cupFr"></div>
     <label><input type="checkbox" id="cupEven" checked> Dividir as vagas igualmente entre as franquias</label>
+    <label><input type="checkbox" id="cupMix" checked> Evitar confronto entre a mesma franquia (os pares são refeitos a cada rodada)</label>
     <div><button class="btn main" id="cupStart">Começar</button></div>
   </div>
   <div id="cupPlay" hidden>
@@ -206,7 +207,7 @@ let current = [], onChoose = null;
 function card(it, i, extra=''){
   const b = document.createElement('button');
   b.className = 'card'; b.dataset.fr = it.fr;
-  b.innerHTML = `<span class="key">${i+1}</span>${extra}<div class="img">carregando…</div><span class="name">${esc(it.name)}</span><span class="fr">${SRC[it.fr].label}</span>`;
+  b.innerHTML = `<div class="top"><span class="key">${i+1}</span>${extra}</div><div class="img">carregando…</div><span class="name">${esc(it.name)}</span><span class="fr">${SRC[it.fr].label}</span>`;
   resolve(it).then(x => {
     const box = b.querySelector('.img');
     if(!x.img){ box.textContent = 'sem imagem'; return; }
@@ -259,19 +260,44 @@ $('duelB').onchange = () => { duel.slots[1]=null; duel.queue[1]=null; renderDuel
 $('duelSkip').onclick = resetDuel;
 
 // ---------- trio ----------
-let trioNext = null;
-function makeTrio(){ return KEYS.every(ready) ? shuffle(KEYS.map(k => pick(k))) : null; }
-function nextTrio(){
-  const t = trioNext || makeTrio(); trioNext = null;
-  if(!t){ current=[]; $('trioRow').innerHTML = '<p class="mute">Esperando as listas carregarem…</p>'; return; }
-  show($('trioRow'), t, w => { record(w, t); nextTrio(); });
-  trioNext = makeTrio(); if(trioNext) preload(trioNext);
+// Quem vence fica no lugar; as outras duas franquias mandam novos desafiantes.
+let trio = {slots:null, streak:[0,0,0], queue:{}};
+function trioChallenger(k){
+  const q = trio.queue[k]; trio.queue[k] = null;
+  return q || pick(k, trio.slots ? trio.slots.filter(Boolean) : []);
 }
-$('trioSkip').onclick = nextTrio;
+function nextTrio(){
+  if(!KEYS.every(ready)){ current=[]; $('trioRow').innerHTML = '<p class="mute">Esperando as listas carregarem…</p>'; return; }
+  if(!trio.slots){ trio.slots = shuffle(KEYS.map(k => pick(k))); trio.streak = [0,0,0]; }
+  const extras = trio.streak.map(s => s>0 ? `<span class="crown">♛ ${s} ${s===1?'vitória':'vitórias'}</span>` : '');
+  show($('trioRow'), trio.slots, w => {
+    const wi = trio.slots.indexOf(w);
+    record(w, trio.slots);
+    trio.slots = trio.slots.map((x, i) => i===wi ? x : trioChallenger(x.fr));
+    trio.streak = trio.streak.map((s, i) => i===wi ? s+1 : 0);
+    nextTrio();
+    trio.slots.forEach((x, i) => { if(i!==wi){ trio.queue[x.fr] = pick(x.fr, trio.slots); preload([trio.queue[x.fr]]); } });
+  }, extras);
+}
+function resetTrio(){ trio = {slots:null, streak:[0,0,0], queue:{}}; nextTrio(); }
+$('trioSkip').onclick = resetTrio;
 
 // ---------- campeonato ----------
 $('cupFr').innerHTML = KEYS.map(k => `<label><input type="checkbox" id="cup_${k}" checked> ${SRC[k].label}</label>`).join('');
-let cup = null;
+let cup = null, cupMix = true;
+// Monta os pares sempre juntando a franquia com mais gente sobrando com a segunda maior,
+// o que deixa o mínimo possível de confrontos da mesma franquia.
+function pairUp(list){
+  const g = {}; shuffle([...list]).forEach(x => (g[x.fr] = g[x.fr] || []).push(x));
+  const pairs = [];
+  for(;;){
+    const ks = Object.keys(g).filter(k => g[k].length).sort((a,b) => g[b].length - g[a].length);
+    if(!ks.length) break;
+    const a = g[ks[0]].pop(), b = g[ks.length > 1 ? ks[1] : ks[0]].pop();
+    pairs.push([a, b]);
+  }
+  return shuffle(pairs).flat();
+}
 const roundName = n => ({2:'Final',4:'Semifinal',8:'Quartas de final'})[n] || `Rodada de ${n}`;
 $('cupStart').onclick = () => {
   const frs = KEYS.filter(k => $('cup_'+k).checked && ready(k));
@@ -285,6 +311,8 @@ $('cupStart').onclick = () => {
   let entrants = [];
   frs.forEach(k => entrants.push(...shuffle([...SRC[k].list]).slice(0, counts[k]).map(p => ({...p, fr:k}))));
   entrants = shuffle(entrants).slice(0, size);
+  cupMix = $('cupMix').checked;
+  if(cupMix) entrants = pairUp(entrants);
   preload(entrants);
   cup = {round: entrants, next: [], i: 0, log: [], games: [], losers: {}};
   $('cupSetup').hidden = true; $('cupEnd').hidden = true; $('cupPlay').hidden = false; $('cupLog').hidden = false;
@@ -294,7 +322,7 @@ function cupStep(){
   if(cup.i >= cup.round.length){
     cup.log.push({name: roundName(cup.round.length), games: cup.games}); cup.games = [];
     if(cup.next.length === 1) return cupFinish(cup.next[0]);
-    cup.round = cup.next; cup.next = []; cup.i = 0;
+    cup.round = cupMix ? pairUp(cup.next) : cup.next; cup.next = []; cup.i = 0;
   }
   const a = cup.round[cup.i], b = cup.round[cup.i+1];
   $('cupRound').textContent = roundName(cup.round.length);
@@ -345,7 +373,7 @@ document.addEventListener('keydown', e => {
   if(['SELECT','INPUT'].includes(e.target.tagName)) return;
   const n = +e.key;
   if(n>=1 && n<=current.length && onChoose) onChoose(current[n-1]);
-  if(e.key===' ' && mode==='trio'){ e.preventDefault(); nextTrio(); }
+  
 });
 
 // ---------- início ----------
@@ -355,7 +383,7 @@ status();
 [['pokemon', loadPokemon], ['digimon', loadDigimon]].forEach(([k, fn]) => {
   fn().then(list => { SRC[k].list = list; st[k] = list.length; })
       .catch(() => { st[k] = 'falhou'; })
-      .finally(() => { status(); if(mode==='duel' && !current.length) resetDuel(); if(mode==='trio' && !current.length) nextTrio(); });
+      .finally(() => { status(); if(mode==='duel' && !current.length) resetDuel(); if(mode==='trio' && !current.length) resetTrio(); });
 });
 renderDuel();
 </script>
