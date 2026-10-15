@@ -369,7 +369,7 @@ function cupFinish(champ){
 }
 function toMatches(list){ const m = []; for(let i=0;i<list.length;i+=2) m.push({a:list[i], b:list[i+1], w:null}); return m; }
 function slot(it, m){
-  if(!it) return `<div class="slot empty"><span class="th"></span><span class="nm">a definir</span></div>`;
+  if(!it) return `<div class="slot empty"><span class="th"></span><span class="nm">???</span></div>`;
   const st = !m || !m.w ? '' : (m.w===it ? ' win' : ' lose');
   return `<div class="slot${st}" data-fr="${it.fr}"><span class="th">${it.img?`<img src="${esc(it.img)}" alt="" loading="lazy">`:''}</span><span class="nm">${esc(it.name)}</span></div>`;
 }
@@ -386,7 +386,7 @@ function renderLog(){
   const H = Math.max(cup.rounds[0].length * 64, 160);
   $('cupLogBody').innerHTML = `<div class="bk-inner" style="height:${H+28}px">` + cols.map((c, ci) =>
       `<div class="bk-col"><div class="bk-title">${c.title}</div><div class="bk-ms" style="height:${H}px">${
-        c.matches.map((m, mi) => `<div class="match" data-r="${ci}" data-m="${mi}">${slot(m.a, m)}${slot(m.b, m)}</div>`).join('')
+        c.matches.map((m, mi) => { const hide = !cup.champ && ci === cup.rounds.length-1 && mi > cup.i/2; return `<div class="match" data-r="${ci}" data-m="${mi}">${hide ? slot(null)+slot(null) : slot(m.a, m)+slot(m.b, m)}</div>`; }).join('')
       }</div></div>`).join('') +
     `<div class="bk-col"><div class="bk-title">Campeão</div><div class="bk-ms" style="height:${H}px"><div class="match champ" data-r="${cols.length}" data-m="0">${slot(cup.champ)}</div></div></div>` +
     `<svg class="bk-lines" aria-hidden="true"></svg></div>`;
