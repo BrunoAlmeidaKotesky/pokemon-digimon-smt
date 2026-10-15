@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pokémon x Digimon x SMT</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--fg:#111;--mute:#666;--line:#ccc;--hi:#2b6cb0}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--fg:#eee;--mute:#999;--line:#444;--hi:#7aa7e6}}
+*{box-sizing:border-box}
+body{font:15px/1.4 system-ui,sans-serif;background:var(--bg);color:var(--fg);margin:0 auto;max-width:960px;padding:16px}
+h1{font-size:20px;margin:0 0 8px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+nav button.on{font-weight:bold;border-color:var(--hi)}
+button,select{font:inherit;padding:4px 10px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.card{flex:1 1 200px;max-width:290px;border:1px solid var(--line);background:none;color:inherit;padding:10px;cursor:pointer;font:inherit;text-align:center}
+.card:hover,.card:focus-visible{border-color:var(--hi);outline:none}
+.card .img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--mute)}
+.card img{max-width:100%;max-height:100%;object-fit:contain}
+.card b{display:block;margin-top:6px}
+.card small{color:var(--mute)}
+.mute{color:var(--mute)}
+.vs{align-self:center;color:var(--mute)}
+ol,ul{padding-left:20px}
+#status{font-size:13px}
+</style>
+</head>
+<body>
+<h1>Quem você prefere?</h1>
+<div id="status" class="mute">Carregando listas…</div>
+<nav>
+  <button data-mode="duel" class="on">Duelo (1 x 1)</button>
+  <button data-mode="trio">Trio (1 de cada)</button>
+  <button data-mode="cup">Campeonato</button>
+  <button data-mode="stats">Placar</button>
+</nav>
+
+<section id="duel">
+  <div class="bar">
+    <select id="duelA"></select> <span>x</span> <select id="duelB"></select>
+    <button id="duelSkip">Pular</button>
+  </div>
+  <div class="row" id="duelRow"></div>
+  <p class="mute">Atalho: teclas 1, 2 e 3 escolhem; espaço pula.</p>
+</section>
+
+<section id="trio" hidden>
+  <div class="bar"><button id="trioSkip">Pular</button></div>
+  <div class="row" id="trioRow"></div>
+</section>
+
+<section id="cup" hidden>
+  <div id="cupSetup">
+    <div class="bar">
+      <label>Participantes <select id="cupSize">
+        <option>8</option><option selected>16</option><option>32</option><option>64</option><option>128</option>
+      </select></label>
+    </div>
+    <div class="bar" id="cupFr"></div>
+    <div class="bar"><label><input type="checkbox" id="cupEven" checked> Dividir igualmente entre as franquias</label></div>
+    <button id="cupStart">Começar campeonato</button>
+  </div>
+  <div id="cupPlay" hidden>
+    <div class="bar"><strong id="cupRound"></strong> <span class="mute" id="cupCount"></span> <button id="cupQuit">Abandonar</button></div>
+    <div class="row" id="cupRow"></div>
+  </div>
+  <div id="cupEnd" hidden></div>
+  <details id="cupLog" hidden><summary>Chaveamento</summary><div id="cupLogBody"></div></details>
+</section>
+
+<section id="stats" hidden>
+  <p class="mute">Vitórias por franquia nos modos Duelo e Trio (salvo neste navegador).</p>
+  <ul id="statsList"></ul>
+  <h3>Últimas escolhas</h3>
+  <ol id="histList"></ol>
+  <button id="statsReset">Zerar placar</button>
+</section>
+
+<script>
+const SMT_DATA = [["Abaddon","abaddon"],["Abdiel","abdiel"],["Abdiel -Fallen-","abdielfallen"],["Adramelech","adramelech"],["Aeros","aeros"],["Agathion","agathion"],["Agnes","agnes"],["Aitvaras","aitvaras"],["Al Azif","alazif"],["Alice","alice"],["Alilat","alilat"],["Alraune","alraune"],["Amanozako","amanozako"],["Amaterasu","amaterasu"],["Ame-no-Uzume","amenouzume"],["Amon","amon"],["Anahita","anahita"],["Ananta","ananta"],["Anat","anat"],["Andras","andras"],["Angel","angel"],["Anubis","anubis"],["Anzu","anzu"],["Apsaras","apsaras"],["Aquans","aquans"],["Arahabaki","arahabaki"],["Ara Mitama","aramitama"],["Archangel","archangel"],["Ardha","ardha"],["Ares","ares"],["Ariadne","ariadne"],["Ariadne Picaro","ariadnepicaro"],["Arioch","arioch"],["Arsène","arsene"],["Artemis","artemis"],["Artemisia","artemisia"],["Astarte","astarte"],["Asterius","asterius"],["Asterius Picaro","asteriuspicaro"],["Asura","asura"],["Atavaka","atavaka"],["Athena","athena"],["Athena Picaro","athenapicaro"],["Atropos","atropos"],["Attis","attis"],["Azumi","azumi"],["Baal","baal"],["Baal Zebul","baalzebul"],["Baphomet","baphomet"],["Barong","barong"],["Basilisk","basilisk"],["Beelzebub","beelzebub"],["Belial","belial"],["Belphegor","belphegor"],["Berith","berith"],["Bicorn","bicorn"],["Bishamonten","bishamonten"],["Black Frost","blackfrost"],["Black Ooze","blackooze"],["Black Rider","blackrider"],["Bugs","bugs"],["Byakhee","byakhee"],["Byakko","byakko"],["Caesar","caesar"],["Cait Sith","caitsith"],["Camael","camael"],["Captain Kidd","captainkidd"],["Carmen","carmen"],["Castor","castor"],["Célestine","celestine"],["Cendrillon","cendrillon"],["Cerberus","cerberus"],["Cerberus - P3","cerberusp3"],["Chernobog","chernobog"],["Chimera","chimera"],["Chi You","chiyou"],["Choronzon","choronzon"],["Cironnup","cironnup"],["Cleopatra","cleopatra"],["Clotho","clotho"],["Crystal Skull","crystalskull"],["Cu Chulainn","cuchulainn"],["Cu Sith","cusith"],["Cybele","cybele"],["Daemon","daemon"],["Daisoujou","daisoujou"],["Dakini","dakini"],["Danu","danu"],["Decarabia","decarabia"],["Demeter","demeter"],["Diego","diego"],["Dionysus","dionysus"],["Dis","dis"],["Dominion","dominion"],["Eligor","eligor"],["Ella","ella"],["Emperor's Amulet","emperorsamulet"],["Erthys","erthys"],["Fafnir","fafnir"],["Feng Huang","fenghuang"],["Fionn mac Cumhaill","fionnmaccumhaill"],["Flaemis","flaemis"],["Flauros","flauros"],["Forneus","forneus"],["Fortuna","fortuna"],["Futsunushi","futsunushi"],["Fuu-Ki","fuuki"],["Gabriel","gabriel"],["Ganesha","ganesha"],["Ganga","ganga"],["Garuda","garuda"],["Gdon","gdon"],["Genbu","genbu"],["Ghoul","ghoul"],["Girimehkala","girimehkala"],["Goemon","goemon"],["Gorgon","gorgon"],["Gorokichi","gorokichi"],["Gurr","gurr"],["Hachiman","hachiman"],["Hanuman","hanuman"],["Haraedo-no-Okami","haraedonookami"],["Hariti","hariti"],["Hastur","hastur"],["Hayataro","hayataro"],["Hecate","hecate"],["Hecatoncheires","hecatoncheires"],["Helel","helel"],["Hell Biker","hellbiker"],["Hereward","hereward"],["Hermes","hermes"],["High Pixie","highpixie"],["Himiko","himiko"],["Hitokotonusi","hitokotonusi"],["Hokuto Seikun","hokutoseikun"],["Hope Diamond","hopediamond"],["Horus","horus"],["Hua Po","huapo"],["Hydra","hydra"],["Idun","idun"],["Ikusa","ikusa"],["Inanna","inanna"],["Incubus","incubus"],["Inugami","inugami"],["Io","io"],["Ippon-Datara","ippondatara"],["Ishtar","ishtar"],["Isis","isis"],["Isis - P3","isisp3"],["Izanagi","izanagi"],["Izanagi-no-Okami","izanaginookami"],["Izanagi-no-Okami Picaro","izanaginookamipicaro"],["Izanagi Picaro","izanagipicaro"],["Jack Frost","jackfrost"],["Jack-o'-Lantern","jackolantern"],["Jatayu","jatayu"],["Jikokuten","jikokuten"],["Jinn","jinn"],["Jiraiya","jiraiya"],["Johanna","johanna"],["Juno","juno"],["Kaguya","kaguya"],["Kaguya Picaro","kaguyapicaro"],["Kaiwan","kaiwan"],["Kala-Nemi","kalanemi"],["Kali","kali"],["Kamui","kamui"],["Kamui-Moshiri","kamuimoshiri"],["Kamu Susano-o","kamususanoo"],["Kanzeon","kanzeon"],["Kartikeya","kartikeya"],["Kaya-no-Hime","kayanohime"],["Kelpie","kelpie"],["Khonsu","khonsu"],["Khonsu Ra","khonsura"],["Kikuri-Hime","kikurihime"],["King Frost","kingfrost"],["Kingu","kingu"],["Kin-Ki","kinki"],["Kintoki-Douji","kintokidouji"],["Kodama","kodama"],["Koh-i-Noor","kohinoor"],["Kohryu","kohryu"],["Konohana Sakuya","konohanasakuya"],["Koppa Tengu","koppatengu"],["Koropokguru","koropokguru"],["Koumokuten","koumokuten"],["Kouzeon","kouzeon"],["Kumbhanda","kumbhanda"],["Kurama Tengu","kuramatengu"],["Kushi Mitama","kushimitama"],["Kushinada","kushinada"],["Lachesis","lachesis"],["Lahmu","lahmu"],["Lakshmi","lakshmi"],["Lamia","lamia"],["Leanan Sidhe","leanansidhe"],["Legion","legion"],["Lilim","lilim"],["Lilith","lilith"],["Loa","loa"],["Loki","loki"],["Loki - P5","lokip5"],["Loup-garou","loupgarou"],["Lucia","lucia"],["Lucifer","lucifer"],["Lucy","lucy"],["Macabre","macabre"],["Mada","mada"],["Magatsu-Izanagi","magatsuizanagi"],["Magatsu-Izanagi Picaro","magatsuizanagipicaro"],["Mahakala","mahakala"],["Makami","makami"],["Manananggal","manananggal"],["Mandrake","mandrake"],["Mara","mara"],["Maria","maria"],["Masakado","masakado"],["Matador","matador"],["Melchizedek","melchizedek"],["Mephisto","mephisto"],["Mercurius","mercurius"],["Mermaid","mermaid"],["Messiah","messiah"],["Messiah Picaro","messiahpicaro"],["Metatron","metatron"],["Michael","michael"],["Milady","milady"],["Mishaguji","mishaguji"],["Mithras","mithras"],["Mitra","mitra"],["Mokoi","mokoi"],["Moloch","moloch"],["Mot","mot"],["Mother Harlot","motherharlot"],["Mothman","mothman"],["Muu Shuwuu","muushuwuu"],["Naga","naga"],["Narasimha","narasimha"],["Narcissus","narcissus"],["Nata Taishi","natataishi"],["Nebiros","nebiros"],["Necronomicon","necronomicon"],["Nekomata","nekomata"],["Neko Shogun","nekoshogun"],["Nemesis","nemesis"],["Niddhoggr","niddhoggr"],["Nigi Mitama","nigimitama"],["Norn","norn"],["Nozuchi","nozuchi"],["Nue","nue"],["Nuwa","nuwa"],["Nuwa -Snake-","nuwasnake"],["Obariyon","obariyon"],["Oberon","oberon"],["Odin","odin"],["Okuninushi","okuninushi"],["Omoikane","omoikane"],["Ongyo-Ki","ongyoki"],["Oni","oni"],["Onmoraki","onmoraki"],["Orichalcum","orichalcum"],["Orlov","orlov"],["Orobas","orobas"],["Orpheus","orpheus"],["Orpheus F","orpheusf"],["Orpheus F Picaro","orpheusfpicaro"],["Orpheus Picaro","orpheuspicaro"],["Orpheus Telos","orpheustelos"],["Orthrus","orthrus"],["Ose","ose"],["Oyamatsumi","oyamatsumi"],["Pabilsag","pabilsag"],["Pale Rider","palerider"],["Palladion","palladion"],["Pandora","pandora"],["Parvati","parvati"],["Pazuzu","pazuzu"],["Penthesilea","penthesilea"],["Pisaca","pisaca"],["Pithos","pithos"],["Pixie","pixie"],["Poltergeist","poltergeist"],["Polydeuces","polydeuces"],["Power","power"],["Preta","preta"],["Principality","principality"],["Prometheus","prometheus"],["Psyche","psyche"],["Queen Mab","queenmab"],["Queen's Necklace","queensnecklace"],["Quetzalcoatl","quetzalcoatl"],["Raja Naga","rajanaga"],["Rakshasa","rakshasa"],["Rangda","rangda"],["Raoul","raoul"],["Raphael","raphael"],["Red Rider","redrider"],["Regent","regent"],["Robin Hood","robinhood"],["Rokuten Maoh","rokutenmaoh"],["Saki Mitama","sakimitama"],["Samael","samael"],["Sandalphon","sandalphon"],["Sandman","sandman"],["Sarasvati","sarasvati"],["Satan","satan"],["Satanael","satanael"],["Sati","sati"],["Saturnus","saturnus"],["Scathach","scathach"],["Seiryu","seiryu"],["Seiten Taisei","seitentaisei"],["Seiten Taisei - P5","seitentaiseip5"],["Senri","senri"],["Setanta","setanta"],["Seth","seth"],["Shiisaa","shiisaa"],["Shiki-Ouji","shikiouji"],["Shiva","shiva"],["Siegfried","siegfried"],["Silky","silky"],["Skadi","skadi"],["Slime","slime"],["Sraosha","sraosha"],["Stone of Scone","stoneofscone"],["Succubus","succubus"],["Sudama","sudama"],["Sui-Ki","suiki"],["Sukuna-Hikona","sukunahikona"],["Sukuna-Hikona - P4","sukunahikonap4"],["Sumeo-Okami","sumeookami"],["Suparna","suparna"],["Surt","surt"],["Susano-o","susanoo"],["Suzaku","suzaku"],["Suzuka Gongen","suzukagongen"],["Sylph","sylph"],["Takehaya Susano-o","takehayasusanoo"],["Takeji Zaiten","takejizaiten"],["Take-Mikazuchi","takemikazuchi"],["Take-Minakata","takeminakata"],["Tam Lin","tamlin"],["Tao","tao"],["Taotie","taotie"],["Taowu","taowu"],["Thanatos","thanatos"],["Thanatos Picaro","thanatospicaro"],["Thor","thor"],["Thoth","thoth"],["Throne","throne"],["Thunderbird","thunderbird"],["Titan","titan"],["Titania","titania"],["Tomoe","tomoe"],["Triglav","triglav"],["Trismegistus","trismegistus"],["Trumpeter","trumpeter"],["Tsuchigumo","tsuchigumo"],["Tsukiyomi","tsukiyomi"],["Tsukiyomi Picaro","tsukiyomipicaro"],["Turdak","turdak"],["Tzitzimitl","tzitzimitl"],["Ukobach","ukobach"],["Undine","undine"],["Unicorn","unicorn"],["Uriel","uriel"],["Valjean","valjean"],["Valkyrie","valkyrie"],["Vanadis","vanadis"],["Vasuki","vasuki"],["Vetala","vetala"],["Virtue","virtue"],["Vishnu","vishnu"],["Vohu Manah","vohumanah"],["White Rider","whiterider"],["William","william"],["Xiezhai","xiezhai"],["Yaksini","yaksini"],["Yamata-no-Orochi","yamatanoorochi"],["Yamato Sumeragi","yamatosumeragi"],["Yamato-Takeru","yamatotakeru"],["Yatagarasu","yatagarasu"],["Yatsufusa","yatsufusa"],["Yomotsu-Shikome","yomotsushikome"],["Yoshitsune","yoshitsune"],["Yurlungur","yurlungur"],["Zaou-Gongen","zaougongen"],["Zeus","zeus"],["Zhen","zhen"],["Zorro","zorro"],["Zouchouten","zouchouten"]];
+const SMT_IMG = 'https://cdn.jsdelivr.net/npm/megaten@2.3.1/images/demons/';
+
+const SRC = {
+  pokemon: {label:'Pokémon', list:null},
+  digimon: {label:'Digimon', list:null},
+  smt:     {label:'SMT/Persona', list:SMT_DATA.map(([n,f]) => ({name:n, img:SMT_IMG+f+'.png'}))}
+};
+const KEYS = Object.keys(SRC);
+const $ = id => document.getElementById(id);
+const rnd = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const nice = s => s.split('-').map(w => w[0].toUpperCase()+w.slice(1)).join(' ');
+
+async function loadPokemon(){
+  const j = await (await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=2000')).json();
+  return j.results.map(x => {
+    const id = x.url.split('/').filter(Boolean).pop();
+    return {name:nice(x.name), img:`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`};
+  });
+}
+async function loadDigimon(){
+  const base = 'https://digi-api.com/api/v1/digimon';
+  const first = await (await fetch(base+'?pageSize=100&page=0')).json();
+  const pages = first.pageable?.totalPages || 1;
+  const rest = await Promise.all(Array.from({length:pages-1}, (_,i) =>
+    fetch(`${base}?pageSize=100&page=${i+1}`).then(r=>r.json()).then(j=>j.content||[]).catch(()=>[])));
+  return first.content.concat(...rest).map(d => ({name:d.name, img:d.image, href:d.href}));
+}
+async function resolve(item){
+  if(!item.img && item.href){
+    try{ const d = await (await fetch(item.href)).json(); item.img = d.images?.[0]?.href || ''; }catch(e){}
+  }
+  return item;
+}
+
+function ready(k){ return SRC[k].list && SRC[k].list.length; }
+function pick(k, avoid){ let it; do{ it = {...rnd(SRC[k].list), fr:k}; }while(avoid && it.name===avoid.name && SRC[k].list.length>1); return it; }
+function preload(items){ items.forEach(i => resolve(i).then(x => { if(x.img){ const im=new Image(); im.src=x.img; } })); }
+
+let stats;
+try{ stats = JSON.parse(localStorage.getItem('pdx-stats')) || null; }catch(e){}
+if(!stats) stats = {w:{}, n:{}, hist:[]};
+function save(){ try{ localStorage.setItem('pdx-stats', JSON.stringify(stats)); }catch(e){} }
+function record(winner, all){
+  stats.w[winner.fr] = (stats.w[winner.fr]||0)+1;
+  all.forEach(x => stats.n[x.fr] = (stats.n[x.fr]||0)+1);
+  const losers = all.filter(x => x!==winner).map(x => `${x.name} (${SRC[x.fr].label})`).join(', ');
+  stats.hist.unshift(`${winner.name} (${SRC[winner.fr].label}) venceu ${losers}`);
+  stats.hist = stats.hist.slice(0,30);
+  save();
+}
+function renderStats(){
+  $('statsList').innerHTML = KEYS.map(k => {
+    const w = stats.w[k]||0, n = stats.n[k]||0;
+    return `<li>${SRC[k].label}: ${w} vitórias em ${n} confrontos${n?` (${Math.round(w/n*100)}%)`:''}</li>`;
+  }).join('');
+  $('histList').innerHTML = stats.hist.map(h => `<li>${esc(h)}</li>`).join('') || '<li class="mute">Nada ainda.</li>';
+}
+$('statsReset').onclick = () => { stats = {w:{}, n:{}, hist:[]}; save(); renderStats(); };
+function esc(s){ return String(s).replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+let current = [], onChoose = null;
+async function show(row, items, choose){
+  current = items; onChoose = choose;
+  row.innerHTML = '';
+  items.forEach((it, i) => {
+    if(i>0){ const v=document.createElement('span'); v.className='vs'; v.textContent='vs'; row.appendChild(v); }
+    const b = document.createElement('button');
+    b.className = 'card';
+    b.innerHTML = `<div class="img">carregando…</div><b>${esc(it.name)}</b><small>${SRC[it.fr].label} · tecla ${i+1}</small>`;
+    b.onclick = () => choose(it);
+    row.appendChild(b);
+    resolve(it).then(x => {
+      const box = b.querySelector('.img');
+      if(!x.img){ box.textContent = 'sem imagem'; return; }
+      const im = new Image(); im.alt = x.name; im.src = x.img;
+      im.onload = () => { box.textContent=''; box.appendChild(im); };
+      im.onerror = () => { box.textContent = 'imagem não carregou'; };
+    });
+  });
+}
+
+let duelNext = null;
+function fillSelect(sel, def){ sel.innerHTML = KEYS.map(k => `<option value="${k}"${k===def?' selected':''}>${SRC[k].label}</option>`).join(''); }
+fillSelect($('duelA'), 'pokemon'); fillSelect($('duelB'), 'digimon');
+function makeDuel(){
+  const a = $('duelA').value, b = $('duelB').value;
+  if(!ready(a) || !ready(b)) return null;
+  const x = pick(a), y = pick(b, x);
+  return [x, y];
+}
+function nextDuel(){
+  const pair = duelNext || makeDuel();
+  duelNext = null;
+  if(!pair){ $('duelRow').innerHTML = '<p class="mute">Esperando as listas carregarem…</p>'; return; }
+  show($('duelRow'), pair, w => { record(w, pair); nextDuel(); });
+  duelNext = makeDuel(); if(duelNext) preload(duelNext);
+}
+$('duelA').onchange = $('duelB').onchange = () => { duelNext = null; nextDuel(); };
+$('duelSkip').onclick = nextDuel;
+
+let trioNext = null;
+function makeTrio(){ return KEYS.every(ready) ? shuffle(KEYS.map(k => pick(k))) : null; }
+function nextTrio(){
+  const t = trioNext || makeTrio(); trioNext = null;
+  if(!t){ $('trioRow').innerHTML = '<p class="mute">Esperando as listas carregarem…</p>'; return; }
+  show($('trioRow'), t, w => { record(w, t); nextTrio(); });
+  trioNext = makeTrio(); if(trioNext) preload(trioNext);
+}
+$('trioSkip').onclick = nextTrio;
+
+$('cupFr').innerHTML = KEYS.map(k => `<label><input type="checkbox" id="cup_${k}" value="${k}" checked> ${SRC[k].label}</label>`).join('');
+let cup = null;
+const roundName = n => ({2:'Final',4:'Semifinal',8:'Quartas de final'})[n] || `Rodada de ${n}`;
+
+$('cupStart').onclick = () => {
+  const frs = KEYS.filter(k => $('cup_'+k).checked && ready(k));
+  if(!frs.length){ alert('Escolha pelo menos uma franquia carregada.'); return; }
+  const size = +$('cupSize').value;
+  const counts = {}; frs.forEach(k => counts[k]=0);
+  if($('cupEven').checked){
+    frs.forEach(k => counts[k] = Math.floor(size/frs.length));
+    shuffle([...frs]).slice(0, size % frs.length).forEach(k => counts[k]++);
+  } else {
+    for(let i=0;i<size;i++) counts[rnd(frs)]++;
+  }
+  let entrants = [];
+  frs.forEach(k => {
+    const pool = shuffle([...SRC[k].list]).slice(0, counts[k]);
+    entrants.push(...pool.map(p => ({...p, fr:k})));
+  });
+  entrants = shuffle(entrants).slice(0, size);
+  preload(entrants);
+  cup = {round: entrants, next: [], i: 0, log: [], losers: {}};
+  $('cupSetup').hidden = true; $('cupEnd').hidden = true; $('cupPlay').hidden = false;
+  $('cupLog').hidden = false;
+  cupStep();
+};
+function cupStep(){
+  const r = cup.round;
+  if(cup.i >= r.length){
+    cup.log.push({name: roundName(r.length), games: cup.games || []});
+    cup.games = [];
+    if(cup.next.length === 1){ return cupFinish(cup.next[0]); }
+    cup.round = cup.next; cup.next = []; cup.i = 0;
+  }
+  const a = cup.round[cup.i], b = cup.round[cup.i+1];
+  $('cupRound').textContent = roundName(cup.round.length);
+  $('cupCount').textContent = `confronto ${cup.i/2+1} de ${cup.round.length/2}`;
+  show($('cupRow'), [a, b], w => {
+    const l = w===a ? b : a;
+    cup.next.push(w);
+    (cup.games = cup.games || []).push(`${w.name} venceu ${l.name}`);
+    cup.losers[cup.round.length] = (cup.losers[cup.round.length]||[]).concat(l);
+    cup.i += 2; cupStep();
+  });
+  renderLog();
+}
+function cupFinish(champ){
+  current = []; onChoose = null;
+  $('cupPlay').hidden = true;
+  const vice = cup.losers[2]?.[0], semis = cup.losers[4] || [];
+  const line = it => it ? `${esc(it.name)} <span class="mute">(${SRC[it.fr].label})</span>` : '';
+  $('cupEnd').hidden = false;
+  $('cupEnd').innerHTML = `
+    <h2>Campeão: ${line(champ)}</h2>
+    <div class="row"><div class="card" style="cursor:default"><div class="img"><img src="${esc(champ.img||'')}" alt=""></div><b>${esc(champ.name)}</b></div></div>
+    <p>2º lugar: ${line(vice)}</p>
+    <p>Semifinalistas: ${semis.map(line).join(', ')}</p>
+    <button id="cupAgain">Novo campeonato</button>`;
+  $('cupAgain').onclick = () => { $('cupEnd').hidden = true; $('cupSetup').hidden = false; $('cupLog').hidden = true; cup = null; };
+  renderLog();
+}
+function renderLog(){
+  const rounds = cup.log.concat(cup.games?.length ? [{name: roundName(cup.round.length)+' (em andamento)', games: cup.games}] : []);
+  $('cupLogBody').innerHTML = rounds.map(r => `<h4>${r.name}</h4><ol>${r.games.map(g => `<li>${esc(g)}</li>`).join('')}</ol>`).join('');
+}
+$('cupQuit').onclick = () => { cup = null; current = []; onChoose = null; $('cupPlay').hidden = true; $('cupLog').hidden = true; $('cupSetup').hidden = false; };
+
+let mode = 'duel';
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  mode = b.dataset.mode;
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x===b));
+  ['duel','trio','cup','stats'].forEach(m => $(m).hidden = m!==mode);
+  if(mode==='duel') nextDuel();
+  if(mode==='trio') nextTrio();
+  if(mode==='stats') renderStats();
+});
+document.addEventListener('keydown', e => {
+  if(e.target.tagName==='SELECT') return;
+  const n = +e.key;
+  if(n>=1 && n<=current.length && onChoose && !$(mode).hidden && mode!=='stats') onChoose(current[n-1]);
+  if(e.key===' ' && (mode==='duel' || mode==='trio')){ e.preventDefault(); mode==='duel' ? nextDuel() : nextTrio(); }
+});
+
+const st = {pokemon:'carregando', digimon:'carregando', smt: SRC.smt.list.length+' demônios'};
+function status(){ $('status').textContent = KEYS.map(k => `${SRC[k].label}: ${st[k]}`).join(' · '); }
+status();
+[['pokemon', loadPokemon], ['digimon', loadDigimon]].forEach(([k, fn]) => {
+  fn().then(list => { SRC[k].list = list; st[k] = list.length+' carregados'; })
+      .catch(() => { st[k] = 'falhou (API fora do ar?)'; })
+      .finally(() => { status(); if(mode==='duel' && !current.length) nextDuel(); if(mode==='trio' && !current.length) nextTrio(); });
+});
+nextDuel();
+</script>
+</body>
+</html>
