@@ -57,6 +57,23 @@ select{background:var(--panel);border:1px solid var(--line);border-radius:6px;pa
 .meter .track{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
 .meter .fill{height:100%;border-radius:5px}
 .meter .n{font-variant-numeric:tabular-nums;color:var(--mute);text-align:right}
+.bracket{overflow-x:auto;margin-top:10px;padding-bottom:6px}
+.bk-inner{position:relative;display:flex;gap:28px;width:max-content}
+.bk-col{width:170px;flex:none;position:relative;z-index:1}
+.bk-title{font:700 12px var(--display);text-transform:uppercase;letter-spacing:.6px;color:var(--mute);height:28px}
+.bk-ms{display:flex;flex-direction:column;justify-content:space-around}
+.match{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.match.now{border-color:var(--fg);box-shadow:0 0 0 2px color-mix(in srgb, var(--fg) 20%, transparent)}
+.match.champ{border-color:var(--gold)}
+.slot{--c:var(--line);display:flex;align-items:center;gap:6px;height:26px;padding-right:6px;border-left:4px solid var(--c);font-size:12px}
+.slot+.slot{border-top:1px solid var(--line)}
+.slot[data-fr=pokemon]{--c:var(--pokemon)}.slot[data-fr=digimon]{--c:var(--digimon)}.slot[data-fr=smt]{--c:var(--smt)}
+.slot .th{width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center}
+.slot .th img{width:24px;height:24px;object-fit:contain}
+.slot .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.slot.win{font-weight:700}.slot.lose{opacity:.4}.slot.empty .nm{color:var(--mute);font-style:italic}
+.match.champ .slot{height:40px;font-size:13px}.match.champ .th,.match.champ .th img{width:36px;height:36px}
+.bk-lines{position:absolute;inset:0;z-index:0;color:var(--line);pointer-events:none}
 h2,h3{font-family:var(--display);margin:0 0 6px}
 ol,ul{padding-left:20px;margin:0}
 .mute{color:var(--mute)}
@@ -114,7 +131,7 @@ ol,ul{padding-left:20px;margin:0}
     <div class="arena two" id="cupRow"></div>
   </div>
   <div id="cupEnd" hidden></div>
-  <details id="cupLog" class="panel" hidden style="margin-top:12px"><summary>Chaveamento</summary><div id="cupLogBody"></div></details>
+  <details id="cupLog" class="panel" hidden open style="margin-top:12px"><summary><b>Chaveamento</b></summary><div class="bracket" id="cupLogBody"></div></details>
 </section>
 
 <section id="stats" hidden>
@@ -314,15 +331,15 @@ $('cupStart').onclick = () => {
   cupMix = $('cupMix').checked;
   if(cupMix) entrants = pairUp(entrants);
   preload(entrants);
-  cup = {round: entrants, next: [], i: 0, log: [], games: [], losers: {}};
+  cup = {round: entrants, next: [], i: 0, rounds: [toMatches(entrants)], losers: {}, champ: null};
   $('cupSetup').hidden = true; $('cupEnd').hidden = true; $('cupPlay').hidden = false; $('cupLog').hidden = false;
   cupStep();
 };
 function cupStep(){
   if(cup.i >= cup.round.length){
-    cup.log.push({name: roundName(cup.round.length), games: cup.games}); cup.games = [];
     if(cup.next.length === 1) return cupFinish(cup.next[0]);
     cup.round = cupMix ? pairUp(cup.next) : cup.next; cup.next = []; cup.i = 0;
+    cup.rounds.push(toMatches(cup.round));
   }
   const a = cup.round[cup.i], b = cup.round[cup.i+1];
   $('cupRound').textContent = roundName(cup.round.length);
@@ -330,14 +347,14 @@ function cupStep(){
   show($('cupRow'), [a, b], w => {
     const l = w===a ? b : a;
     cup.next.push(w);
-    cup.games.push(`${w.name} venceu ${l.name}`);
+    cup.rounds[cup.rounds.length-1][cup.i/2].w = w;
     (cup.losers[cup.round.length] = cup.losers[cup.round.length] || []).push(l);
     cup.i += 2; cupStep();
   });
   renderLog();
 }
 function cupFinish(champ){
-  current = []; onChoose = null;
+  current = []; onChoose = null; cup.champ = champ;
   $('cupPlay').hidden = true;
   const vice = cup.losers[2]?.[0], semis = cup.losers[4] || [];
   const line = it => it ? `${esc(it.name)} <span class="mute">(${SRC[it.fr].label})</span>` : '';
@@ -350,10 +367,58 @@ function cupFinish(champ){
   $('cupAgain').onclick = () => { $('cupEnd').hidden = true; $('cupSetup').hidden = false; $('cupLog').hidden = true; cup = null; };
   renderLog();
 }
+function toMatches(list){ const m = []; for(let i=0;i<list.length;i+=2) m.push({a:list[i], b:list[i+1], w:null}); return m; }
+function slot(it, m){
+  if(!it) return `<div class="slot empty"><span class="th"></span><span class="nm">a definir</span></div>`;
+  const st = !m || !m.w ? '' : (m.w===it ? ' win' : ' lose');
+  return `<div class="slot${st}" data-fr="${it.fr}"><span class="th">${it.img?`<img src="${esc(it.img)}" alt="" loading="lazy">`:''}</span><span class="nm">${esc(it.name)}</span></div>`;
+}
 function renderLog(){
   if(!cup) return;
-  const rounds = cup.log.concat(cup.games.length ? [{name: roundName(cup.round.length)+' (em andamento)', games: cup.games}] : []);
-  $('cupLogBody').innerHTML = rounds.map(r => `<h4>${r.name}</h4><ol>${r.games.map(g => `<li>${esc(g)}</li>`).join('')}</ol>`).join('');
+  const cols = cup.rounds.map(r => ({title: roundName(r.length*2), matches: r}));
+  // rodadas futuras: na chave fixa a próxima já mostra quem passou; no modo misto os pares só se formam depois
+  let n = cup.rounds[cup.rounds.length-1].length / 2;
+  if(!cup.champ) while(n >= 1){
+    const ms = Array.from({length:n}, () => ({a:null, b:null, w:null}));
+    if(n === cup.rounds[cup.rounds.length-1].length/2 && !cupMix) cup.next.forEach((w,i) => ms[i>>1][i%2?'b':'a'] = w);
+    cols.push({title: roundName(n*2), matches: ms}); n /= 2;
+  }
+  const H = Math.max(cup.rounds[0].length * 64, 160);
+  $('cupLogBody').innerHTML = `<div class="bk-inner" style="height:${H+28}px">` + cols.map((c, ci) =>
+      `<div class="bk-col"><div class="bk-title">${c.title}</div><div class="bk-ms" style="height:${H}px">${
+        c.matches.map((m, mi) => `<div class="match" data-r="${ci}" data-m="${mi}">${slot(m.a, m)}${slot(m.b, m)}</div>`).join('')
+      }</div></div>`).join('') +
+    `<div class="bk-col"><div class="bk-title">Campeão</div><div class="bk-ms" style="height:${H}px"><div class="match champ" data-r="${cols.length}" data-m="0">${slot(cup.champ)}</div></div></div>` +
+    `<svg class="bk-lines" aria-hidden="true"></svg></div>`;
+  // Digimon sem imagem: completa a miniatura quando a busca terminar
+  cup.rounds.flat().forEach(m => [m.a, m.b].forEach(it => { if(it && !it.img && it.href && !it._r){ it._r = 1; resolve(it).then(() => setTimeout(renderLog, 0)); } }));
+  requestAnimationFrame(drawLines);
+  if(!cup.champ){ const cur = $('cupLogBody').querySelector(`.match[data-r="${cup.rounds.length-1}"][data-m="${cup.i/2}"]`); cur && cur.classList.add('now'); }
+}
+// Liga cada confronto decidido ao confronto da rodada seguinte em que o vencedor aparece.
+$('cupLog').addEventListener('toggle', () => requestAnimationFrame(drawLines));
+window.addEventListener('resize', () => requestAnimationFrame(drawLines));
+function drawLines(){
+  if(!cup) return;
+  const box = $('cupLogBody').querySelector('.bk-inner'); if(!box) return;
+  const svg = box.querySelector('.bk-lines'), o = box.getBoundingClientRect();
+  svg.setAttribute('width', box.scrollWidth); svg.setAttribute('height', box.scrollHeight);
+  const at = (r, m) => box.querySelector(`.match[data-r="${r}"][data-m="${m}"]`);
+  let d = '';
+  cup.rounds.forEach((round, r) => round.forEach((m, mi) => {
+    if(!m.w) return;
+    let tr, tm;
+    const nr = cup.rounds[r+1];
+    if(nr){ tm = nr.findIndex(x => x.a===m.w || x.b===m.w); tr = r+1; }
+    else if(cup.champ === m.w){ tr = r+1; tm = 0; }
+    else if(!cupMix){ tr = r+1; tm = mi>>1; }
+    if(tm == null || tm < 0) return;
+    const A = at(r, mi), B = at(tr, tm); if(!A || !B) return;
+    const a = A.getBoundingClientRect(), b = B.getBoundingClientRect();
+    const x1 = a.right - o.left, y1 = a.top + a.height/2 - o.top, x2 = b.left - o.left, y2 = b.top + b.height/2 - o.top, xm = (x1+x2)/2;
+    d += `M${x1} ${y1}H${xm}V${y2}H${x2}`;
+  }));
+  svg.innerHTML = `<path d="${d}" fill="none" stroke="currentColor" stroke-width="1.5"/>`;
 }
 $('cupQuit').onclick = () => { cup = null; current = []; onChoose = null; $('cupPlay').hidden = true; $('cupLog').hidden = true; $('cupSetup').hidden = false; };
 
@@ -367,6 +432,7 @@ document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
   if(mode==='duel') renderDuel();
   if(mode==='trio') nextTrio();
   if(mode==='cup' && cup && !$('cupPlay').hidden) cupStep();
+  if(mode==='cup' && cup) requestAnimationFrame(drawLines);
   if(mode==='stats') renderStats();
 });
 document.addEventListener('keydown', e => {
