@@ -4,95 +4,148 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pokémon x Digimon x SMT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&display=swap">
 <style>
-:root{color-scheme:light dark;--bg:#fff;--fg:#111;--mute:#666;--line:#ccc;--hi:#2b6cb0}
-@media (prefers-color-scheme:dark){:root{--bg:#141414;--fg:#eee;--mute:#999;--line:#444;--hi:#7aa7e6}}
+/* Layout: uma coluna central; cartas lado a lado com "VS" no meio; cada franquia tem sua cor. */
+:root{
+  color-scheme:light;
+  --bg:#eef0f4; --panel:#ffffff; --fg:#15171c; --mute:#626875; --line:#d5d9e1;
+  --pokemon:#d6302a; --digimon:#1f6fd1; --smt:#7a1fa8; --gold:#c58a00;
+  --display:"Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark;
+  --bg:#101216; --panel:#1a1d23; --fg:#eceef2; --mute:#9aa1ad; --line:#2c313a;
+  --pokemon:#ff5a4f; --digimon:#4f9bff; --smt:#b866e8; --gold:#ffc23d;
+}}
 *{box-sizing:border-box}
-body{font:15px/1.4 system-ui,sans-serif;background:var(--bg);color:var(--fg);margin:0 auto;max-width:960px;padding:16px}
-h1{font-size:20px;margin:0 0 8px}
-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-nav button.on{font-weight:bold;border-color:var(--hi)}
-button,select{font:inherit;padding:4px 10px}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 var(--body)}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:14px}
+h1{font:700 26px/1.1 var(--display);margin:0;letter-spacing:.5px;text-transform:uppercase}
+h1 .p{color:var(--pokemon)} h1 .d{color:var(--digimon)} h1 .s{color:var(--smt)}
+#status{font-size:12px;color:var(--mute)}
+nav{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:16px}
+nav button{font:600 14px var(--display);text-transform:uppercase;letter-spacing:.6px;background:none;border:0;color:var(--mute);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+nav button.on{color:var(--fg);border-bottom-color:var(--fg)}
+button,select{font:inherit;color:inherit}
+.btn{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+.btn:hover{border-color:var(--fg)}
+.btn.main{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600}
+select{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
 .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
-.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:12px 0}
-.card{flex:1 1 200px;max-width:290px;border:1px solid var(--line);background:none;color:inherit;padding:10px;cursor:pointer;font:inherit;text-align:center}
-.card:hover,.card:focus-visible{border-color:var(--hi);outline:none}
-.card .img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--mute)}
-.card img{max-width:100%;max-height:100%;object-fit:contain}
-.card b{display:block;margin-top:6px}
-.card small{color:var(--mute)}
+.bar .vsx{font:700 14px var(--display);color:var(--mute)}
+.hint{font-size:12px;color:var(--mute);text-align:center}
+.arena{display:flex;gap:14px;align-items:stretch;justify-content:center;margin:16px 0}
+.vs{align-self:center;font:700 22px var(--display);color:var(--mute);flex:none}
+.card{--c:var(--line);position:relative;flex:1 1 0;min-width:0;max-width:300px;background:var(--panel);border:2px solid var(--line);border-top:6px solid var(--c);border-radius:10px;padding:12px;cursor:pointer;text-align:center;transition:transform .12s, box-shadow .12s, border-color .12s}
+.card[data-fr=pokemon]{--c:var(--pokemon)} .card[data-fr=digimon]{--c:var(--digimon)} .card[data-fr=smt]{--c:var(--smt)}
+.card:hover,.card:focus-visible{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 20px -10px var(--c);outline:none}
+.card .img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:13px;border-radius:8px;background:radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--c) 16%, transparent), transparent 70%)}
+.card img{max-width:92%;max-height:92%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.card .name{display:block;margin-top:8px;font:700 18px/1.2 var(--display);overflow-wrap:anywhere}
+.card .fr{display:inline-block;margin-top:4px;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--c)}
+.card .key{position:absolute;top:8px;left:10px;font:600 11px var(--display);color:var(--mute)}
+.crown{position:absolute;top:6px;right:8px;font:700 12px var(--display);color:var(--gold);letter-spacing:.4px}
+.card.static{cursor:default}.card.static:hover{transform:none;box-shadow:none}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stack{display:grid;gap:12px}
+.meter{display:grid;grid-template-columns:110px 1fr 110px;gap:10px;align-items:center;font-size:14px}
+.meter .track{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.meter .fill{height:100%;border-radius:5px}
+.meter .n{font-variant-numeric:tabular-nums;color:var(--mute);text-align:right}
+h2,h3{font-family:var(--display);margin:0 0 6px}
+ol,ul{padding-left:20px;margin:0}
 .mute{color:var(--mute)}
-.vs{align-self:center;color:var(--mute)}
-ol,ul{padding-left:20px}
-#status{font-size:13px}
+.records{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+@media (max-width:560px){
+  .arena.two{gap:8px}.arena.two .vs{font-size:14px}
+  .card{padding:8px}.card .name{font-size:15px}
+  .arena.three{flex-direction:column;align-items:center}.arena.three .card{width:100%;max-width:280px}.arena.three .vs{display:none}
+  .meter{grid-template-columns:80px 1fr 80px}
+}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
 </style>
 </head>
 <body>
-<h1>Quem você prefere?</h1>
-<div id="status" class="mute">Carregando listas…</div>
+<div class="wrap">
+<header>
+  <h1><span class="p">Pokémon</span> x <span class="d">Digimon</span> x <span class="s">SMT</span></h1>
+  <div id="status">Carregando listas…</div>
+</header>
 <nav>
-  <button data-mode="duel" class="on">Duelo (1 x 1)</button>
-  <button data-mode="trio">Trio (1 de cada)</button>
+  <button data-mode="duel" class="on">Duelo</button>
+  <button data-mode="trio">Trio</button>
   <button data-mode="cup">Campeonato</button>
   <button data-mode="stats">Placar</button>
 </nav>
 
 <section id="duel">
   <div class="bar">
-    <select id="duelA"></select> <span>x</span> <select id="duelB"></select>
-    <button id="duelSkip">Pular</button>
+    <select id="duelA" aria-label="Franquia da esquerda"></select> <span class="vsx">VS</span> <select id="duelB" aria-label="Franquia da direita"></select>
+    <button class="btn" id="duelSkip">Trocar os dois</button>
   </div>
-  <div class="row" id="duelRow"></div>
-  <p class="mute">Atalho: teclas 1, 2 e 3 escolhem; espaço pula.</p>
+  <div class="arena two" id="duelRow"></div>
+  <p class="hint">Quem você escolhe fica na arena; o outro lado manda um novo desafiante. Teclas 1 e 2 escolhem.</p>
 </section>
 
 <section id="trio" hidden>
-  <div class="bar"><button id="trioSkip">Pular</button></div>
-  <div class="row" id="trioRow"></div>
+  <div class="bar"><button class="btn" id="trioSkip">Sortear outro trio</button></div>
+  <div class="arena three" id="trioRow"></div>
+  <p class="hint">Teclas 1, 2 e 3 escolhem. Espaço sorteia outro trio.</p>
 </section>
 
 <section id="cup" hidden>
-  <div id="cupSetup">
-    <div class="bar">
-      <label>Participantes <select id="cupSize">
-        <option>8</option><option selected>16</option><option>32</option><option>64</option><option>128</option>
-      </select></label>
-    </div>
+  <div id="cupSetup" class="panel stack">
+    <h2>Novo campeonato</h2>
+    <label>Participantes <select id="cupSize">
+      <option>8</option><option selected>16</option><option>32</option><option>64</option><option>128</option>
+    </select></label>
     <div class="bar" id="cupFr"></div>
-    <div class="bar"><label><input type="checkbox" id="cupEven" checked> Dividir igualmente entre as franquias</label></div>
-    <button id="cupStart">Começar campeonato</button>
+    <label><input type="checkbox" id="cupEven" checked> Dividir as vagas igualmente entre as franquias</label>
+    <div><button class="btn main" id="cupStart">Começar</button></div>
   </div>
   <div id="cupPlay" hidden>
-    <div class="bar"><strong id="cupRound"></strong> <span class="mute" id="cupCount"></span> <button id="cupQuit">Abandonar</button></div>
-    <div class="row" id="cupRow"></div>
+    <div class="bar"><h2 id="cupRound" style="margin:0"></h2> <span class="mute" id="cupCount"></span> <button class="btn" id="cupQuit">Abandonar</button></div>
+    <div class="arena two" id="cupRow"></div>
   </div>
   <div id="cupEnd" hidden></div>
-  <details id="cupLog" hidden><summary>Chaveamento</summary><div id="cupLogBody"></div></details>
+  <details id="cupLog" class="panel" hidden style="margin-top:12px"><summary>Chaveamento</summary><div id="cupLogBody"></div></details>
 </section>
 
 <section id="stats" hidden>
-  <p class="mute">Vitórias por franquia nos modos Duelo e Trio (salvo neste navegador).</p>
-  <ul id="statsList"></ul>
-  <h3>Últimas escolhas</h3>
-  <ol id="histList"></ol>
-  <button id="statsReset">Zerar placar</button>
+  <div class="stack">
+    <div class="panel stack">
+      <h3>Taxa de vitória por franquia</h3>
+      <p class="mute" style="margin:0;font-size:13px">Duelo e Trio. Salvo neste navegador.</p>
+      <div id="statsList" class="stack"></div>
+    </div>
+    <div class="panel"><h3>Maior sequência no Duelo</h3><div id="bestStreak" class="records"></div></div>
+    <div class="panel"><h3>Últimas escolhas</h3><ol id="histList"></ol></div>
+    <div><button class="btn" id="statsReset">Zerar placar</button></div>
+  </div>
 </section>
+</div>
 
 <script>
 const SMT_DATA = [["Abaddon","abaddon"],["Abdiel","abdiel"],["Abdiel -Fallen-","abdielfallen"],["Adramelech","adramelech"],["Aeros","aeros"],["Agathion","agathion"],["Agnes","agnes"],["Aitvaras","aitvaras"],["Al Azif","alazif"],["Alice","alice"],["Alilat","alilat"],["Alraune","alraune"],["Amanozako","amanozako"],["Amaterasu","amaterasu"],["Ame-no-Uzume","amenouzume"],["Amon","amon"],["Anahita","anahita"],["Ananta","ananta"],["Anat","anat"],["Andras","andras"],["Angel","angel"],["Anubis","anubis"],["Anzu","anzu"],["Apsaras","apsaras"],["Aquans","aquans"],["Arahabaki","arahabaki"],["Ara Mitama","aramitama"],["Archangel","archangel"],["Ardha","ardha"],["Ares","ares"],["Ariadne","ariadne"],["Ariadne Picaro","ariadnepicaro"],["Arioch","arioch"],["Arsène","arsene"],["Artemis","artemis"],["Artemisia","artemisia"],["Astarte","astarte"],["Asterius","asterius"],["Asterius Picaro","asteriuspicaro"],["Asura","asura"],["Atavaka","atavaka"],["Athena","athena"],["Athena Picaro","athenapicaro"],["Atropos","atropos"],["Attis","attis"],["Azumi","azumi"],["Baal","baal"],["Baal Zebul","baalzebul"],["Baphomet","baphomet"],["Barong","barong"],["Basilisk","basilisk"],["Beelzebub","beelzebub"],["Belial","belial"],["Belphegor","belphegor"],["Berith","berith"],["Bicorn","bicorn"],["Bishamonten","bishamonten"],["Black Frost","blackfrost"],["Black Ooze","blackooze"],["Black Rider","blackrider"],["Bugs","bugs"],["Byakhee","byakhee"],["Byakko","byakko"],["Caesar","caesar"],["Cait Sith","caitsith"],["Camael","camael"],["Captain Kidd","captainkidd"],["Carmen","carmen"],["Castor","castor"],["Célestine","celestine"],["Cendrillon","cendrillon"],["Cerberus","cerberus"],["Cerberus - P3","cerberusp3"],["Chernobog","chernobog"],["Chimera","chimera"],["Chi You","chiyou"],["Choronzon","choronzon"],["Cironnup","cironnup"],["Cleopatra","cleopatra"],["Clotho","clotho"],["Crystal Skull","crystalskull"],["Cu Chulainn","cuchulainn"],["Cu Sith","cusith"],["Cybele","cybele"],["Daemon","daemon"],["Daisoujou","daisoujou"],["Dakini","dakini"],["Danu","danu"],["Decarabia","decarabia"],["Demeter","demeter"],["Diego","diego"],["Dionysus","dionysus"],["Dis","dis"],["Dominion","dominion"],["Eligor","eligor"],["Ella","ella"],["Emperor's Amulet","emperorsamulet"],["Erthys","erthys"],["Fafnir","fafnir"],["Feng Huang","fenghuang"],["Fionn mac Cumhaill","fionnmaccumhaill"],["Flaemis","flaemis"],["Flauros","flauros"],["Forneus","forneus"],["Fortuna","fortuna"],["Futsunushi","futsunushi"],["Fuu-Ki","fuuki"],["Gabriel","gabriel"],["Ganesha","ganesha"],["Ganga","ganga"],["Garuda","garuda"],["Gdon","gdon"],["Genbu","genbu"],["Ghoul","ghoul"],["Girimehkala","girimehkala"],["Goemon","goemon"],["Gorgon","gorgon"],["Gorokichi","gorokichi"],["Gurr","gurr"],["Hachiman","hachiman"],["Hanuman","hanuman"],["Haraedo-no-Okami","haraedonookami"],["Hariti","hariti"],["Hastur","hastur"],["Hayataro","hayataro"],["Hecate","hecate"],["Hecatoncheires","hecatoncheires"],["Helel","helel"],["Hell Biker","hellbiker"],["Hereward","hereward"],["Hermes","hermes"],["High Pixie","highpixie"],["Himiko","himiko"],["Hitokotonusi","hitokotonusi"],["Hokuto Seikun","hokutoseikun"],["Hope Diamond","hopediamond"],["Horus","horus"],["Hua Po","huapo"],["Hydra","hydra"],["Idun","idun"],["Ikusa","ikusa"],["Inanna","inanna"],["Incubus","incubus"],["Inugami","inugami"],["Io","io"],["Ippon-Datara","ippondatara"],["Ishtar","ishtar"],["Isis","isis"],["Isis - P3","isisp3"],["Izanagi","izanagi"],["Izanagi-no-Okami","izanaginookami"],["Izanagi-no-Okami Picaro","izanaginookamipicaro"],["Izanagi Picaro","izanagipicaro"],["Jack Frost","jackfrost"],["Jack-o'-Lantern","jackolantern"],["Jatayu","jatayu"],["Jikokuten","jikokuten"],["Jinn","jinn"],["Jiraiya","jiraiya"],["Johanna","johanna"],["Juno","juno"],["Kaguya","kaguya"],["Kaguya Picaro","kaguyapicaro"],["Kaiwan","kaiwan"],["Kala-Nemi","kalanemi"],["Kali","kali"],["Kamui","kamui"],["Kamui-Moshiri","kamuimoshiri"],["Kamu Susano-o","kamususanoo"],["Kanzeon","kanzeon"],["Kartikeya","kartikeya"],["Kaya-no-Hime","kayanohime"],["Kelpie","kelpie"],["Khonsu","khonsu"],["Khonsu Ra","khonsura"],["Kikuri-Hime","kikurihime"],["King Frost","kingfrost"],["Kingu","kingu"],["Kin-Ki","kinki"],["Kintoki-Douji","kintokidouji"],["Kodama","kodama"],["Koh-i-Noor","kohinoor"],["Kohryu","kohryu"],["Konohana Sakuya","konohanasakuya"],["Koppa Tengu","koppatengu"],["Koropokguru","koropokguru"],["Koumokuten","koumokuten"],["Kouzeon","kouzeon"],["Kumbhanda","kumbhanda"],["Kurama Tengu","kuramatengu"],["Kushi Mitama","kushimitama"],["Kushinada","kushinada"],["Lachesis","lachesis"],["Lahmu","lahmu"],["Lakshmi","lakshmi"],["Lamia","lamia"],["Leanan Sidhe","leanansidhe"],["Legion","legion"],["Lilim","lilim"],["Lilith","lilith"],["Loa","loa"],["Loki","loki"],["Loki - P5","lokip5"],["Loup-garou","loupgarou"],["Lucia","lucia"],["Lucifer","lucifer"],["Lucy","lucy"],["Macabre","macabre"],["Mada","mada"],["Magatsu-Izanagi","magatsuizanagi"],["Magatsu-Izanagi Picaro","magatsuizanagipicaro"],["Mahakala","mahakala"],["Makami","makami"],["Manananggal","manananggal"],["Mandrake","mandrake"],["Mara","mara"],["Maria","maria"],["Masakado","masakado"],["Matador","matador"],["Melchizedek","melchizedek"],["Mephisto","mephisto"],["Mercurius","mercurius"],["Mermaid","mermaid"],["Messiah","messiah"],["Messiah Picaro","messiahpicaro"],["Metatron","metatron"],["Michael","michael"],["Milady","milady"],["Mishaguji","mishaguji"],["Mithras","mithras"],["Mitra","mitra"],["Mokoi","mokoi"],["Moloch","moloch"],["Mot","mot"],["Mother Harlot","motherharlot"],["Mothman","mothman"],["Muu Shuwuu","muushuwuu"],["Naga","naga"],["Narasimha","narasimha"],["Narcissus","narcissus"],["Nata Taishi","natataishi"],["Nebiros","nebiros"],["Necronomicon","necronomicon"],["Nekomata","nekomata"],["Neko Shogun","nekoshogun"],["Nemesis","nemesis"],["Niddhoggr","niddhoggr"],["Nigi Mitama","nigimitama"],["Norn","norn"],["Nozuchi","nozuchi"],["Nue","nue"],["Nuwa","nuwa"],["Nuwa -Snake-","nuwasnake"],["Obariyon","obariyon"],["Oberon","oberon"],["Odin","odin"],["Okuninushi","okuninushi"],["Omoikane","omoikane"],["Ongyo-Ki","ongyoki"],["Oni","oni"],["Onmoraki","onmoraki"],["Orichalcum","orichalcum"],["Orlov","orlov"],["Orobas","orobas"],["Orpheus","orpheus"],["Orpheus F","orpheusf"],["Orpheus F Picaro","orpheusfpicaro"],["Orpheus Picaro","orpheuspicaro"],["Orpheus Telos","orpheustelos"],["Orthrus","orthrus"],["Ose","ose"],["Oyamatsumi","oyamatsumi"],["Pabilsag","pabilsag"],["Pale Rider","palerider"],["Palladion","palladion"],["Pandora","pandora"],["Parvati","parvati"],["Pazuzu","pazuzu"],["Penthesilea","penthesilea"],["Pisaca","pisaca"],["Pithos","pithos"],["Pixie","pixie"],["Poltergeist","poltergeist"],["Polydeuces","polydeuces"],["Power","power"],["Preta","preta"],["Principality","principality"],["Prometheus","prometheus"],["Psyche","psyche"],["Queen Mab","queenmab"],["Queen's Necklace","queensnecklace"],["Quetzalcoatl","quetzalcoatl"],["Raja Naga","rajanaga"],["Rakshasa","rakshasa"],["Rangda","rangda"],["Raoul","raoul"],["Raphael","raphael"],["Red Rider","redrider"],["Regent","regent"],["Robin Hood","robinhood"],["Rokuten Maoh","rokutenmaoh"],["Saki Mitama","sakimitama"],["Samael","samael"],["Sandalphon","sandalphon"],["Sandman","sandman"],["Sarasvati","sarasvati"],["Satan","satan"],["Satanael","satanael"],["Sati","sati"],["Saturnus","saturnus"],["Scathach","scathach"],["Seiryu","seiryu"],["Seiten Taisei","seitentaisei"],["Seiten Taisei - P5","seitentaiseip5"],["Senri","senri"],["Setanta","setanta"],["Seth","seth"],["Shiisaa","shiisaa"],["Shiki-Ouji","shikiouji"],["Shiva","shiva"],["Siegfried","siegfried"],["Silky","silky"],["Skadi","skadi"],["Slime","slime"],["Sraosha","sraosha"],["Stone of Scone","stoneofscone"],["Succubus","succubus"],["Sudama","sudama"],["Sui-Ki","suiki"],["Sukuna-Hikona","sukunahikona"],["Sukuna-Hikona - P4","sukunahikonap4"],["Sumeo-Okami","sumeookami"],["Suparna","suparna"],["Surt","surt"],["Susano-o","susanoo"],["Suzaku","suzaku"],["Suzuka Gongen","suzukagongen"],["Sylph","sylph"],["Takehaya Susano-o","takehayasusanoo"],["Takeji Zaiten","takejizaiten"],["Take-Mikazuchi","takemikazuchi"],["Take-Minakata","takeminakata"],["Tam Lin","tamlin"],["Tao","tao"],["Taotie","taotie"],["Taowu","taowu"],["Thanatos","thanatos"],["Thanatos Picaro","thanatospicaro"],["Thor","thor"],["Thoth","thoth"],["Throne","throne"],["Thunderbird","thunderbird"],["Titan","titan"],["Titania","titania"],["Tomoe","tomoe"],["Triglav","triglav"],["Trismegistus","trismegistus"],["Trumpeter","trumpeter"],["Tsuchigumo","tsuchigumo"],["Tsukiyomi","tsukiyomi"],["Tsukiyomi Picaro","tsukiyomipicaro"],["Turdak","turdak"],["Tzitzimitl","tzitzimitl"],["Ukobach","ukobach"],["Undine","undine"],["Unicorn","unicorn"],["Uriel","uriel"],["Valjean","valjean"],["Valkyrie","valkyrie"],["Vanadis","vanadis"],["Vasuki","vasuki"],["Vetala","vetala"],["Virtue","virtue"],["Vishnu","vishnu"],["Vohu Manah","vohumanah"],["White Rider","whiterider"],["William","william"],["Xiezhai","xiezhai"],["Yaksini","yaksini"],["Yamata-no-Orochi","yamatanoorochi"],["Yamato Sumeragi","yamatosumeragi"],["Yamato-Takeru","yamatotakeru"],["Yatagarasu","yatagarasu"],["Yatsufusa","yatsufusa"],["Yomotsu-Shikome","yomotsushikome"],["Yoshitsune","yoshitsune"],["Yurlungur","yurlungur"],["Zaou-Gongen","zaougongen"],["Zeus","zeus"],["Zhen","zhen"],["Zorro","zorro"],["Zouchouten","zouchouten"]];
-const SMT_IMG = 'https://cdn.jsdelivr.net/npm/megaten@2.3.1/images/demons/';
 
 const SRC = {
   pokemon: {label:'Pokémon', list:null},
   digimon: {label:'Digimon', list:null},
-  smt:     {label:'SMT/Persona', list:SMT_DATA.map(([n,f]) => ({name:n, img:SMT_IMG+f+'.png'}))}
+  smt:     {label:'SMT/Persona', list:SMT_DATA.map(([n,f]) => ({name:n, img:'smt/'+f+'.webp'}))}
 };
 const KEYS = Object.keys(SRC);
 const $ = id => document.getElementById(id);
 const rnd = a => a[Math.floor(Math.random()*a.length)];
 const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
 const nice = s => s.split('-').map(w => w[0].toUpperCase()+w.slice(1)).join(' ');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+// ---------- carregamento ----------
 async function loadPokemon(){
   const j = await (await fetch('https://pokeapi.co/api/v2/pokemon-species?limit=2000')).json();
   return j.results.map(x => {
@@ -114,14 +167,19 @@ async function resolve(item){
   }
   return item;
 }
-
-function ready(k){ return SRC[k].list && SRC[k].list.length; }
-function pick(k, avoid){ let it; do{ it = {...rnd(SRC[k].list), fr:k}; }while(avoid && it.name===avoid.name && SRC[k].list.length>1); return it; }
+const ready = k => SRC[k].list && SRC[k].list.length;
+function pick(k, avoid=[]){
+  const names = new Set(avoid.map(a => a.name)); let it, tries = 0;
+  do{ it = {...rnd(SRC[k].list), fr:k}; }while(names.has(it.name) && ++tries < 20);
+  return it;
+}
 function preload(items){ items.forEach(i => resolve(i).then(x => { if(x.img){ const im=new Image(); im.src=x.img; } })); }
 
+// ---------- placar ----------
 let stats;
 try{ stats = JSON.parse(localStorage.getItem('pdx-stats')) || null; }catch(e){}
 if(!stats) stats = {w:{}, n:{}, hist:[]};
+stats.best = stats.best || null;
 function save(){ try{ localStorage.setItem('pdx-stats', JSON.stringify(stats)); }catch(e){} }
 function record(winner, all){
   stats.w[winner.fr] = (stats.w[winner.fr]||0)+1;
@@ -133,97 +191,109 @@ function record(winner, all){
 }
 function renderStats(){
   $('statsList').innerHTML = KEYS.map(k => {
-    const w = stats.w[k]||0, n = stats.n[k]||0;
-    return `<li>${SRC[k].label}: ${w} vitórias em ${n} confrontos${n?` (${Math.round(w/n*100)}%)`:''}</li>`;
+    const w = stats.w[k]||0, n = stats.n[k]||0, pct = n ? Math.round(w/n*100) : 0;
+    return `<div class="meter"><b>${SRC[k].label}</b><div class="track"><div class="fill" style="width:${pct}%;background:var(--${k})"></div></div><span class="n">${pct}% · ${w}/${n}</span></div>`;
   }).join('');
+  $('bestStreak').innerHTML = stats.best
+    ? `<span><b>${esc(stats.best.name)}</b> <span class="mute">(${SRC[stats.best.fr]?.label||''})</span>: ${stats.best.streak} vitórias seguidas</span>`
+    : '<span class="mute">Nenhuma sequência ainda.</span>';
   $('histList').innerHTML = stats.hist.map(h => `<li>${esc(h)}</li>`).join('') || '<li class="mute">Nada ainda.</li>';
 }
-$('statsReset').onclick = () => { stats = {w:{}, n:{}, hist:[]}; save(); renderStats(); };
-function esc(s){ return String(s).replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+$('statsReset').onclick = () => { stats = {w:{}, n:{}, hist:[], best:null}; save(); renderStats(); };
 
+// ---------- cartas ----------
 let current = [], onChoose = null;
-async function show(row, items, choose){
+function card(it, i, extra=''){
+  const b = document.createElement('button');
+  b.className = 'card'; b.dataset.fr = it.fr;
+  b.innerHTML = `<span class="key">${i+1}</span>${extra}<div class="img">carregando…</div><span class="name">${esc(it.name)}</span><span class="fr">${SRC[it.fr].label}</span>`;
+  resolve(it).then(x => {
+    const box = b.querySelector('.img');
+    if(!x.img){ box.textContent = 'sem imagem'; return; }
+    const im = new Image(); im.alt = x.name; im.src = x.img;
+    im.onload = () => { box.textContent=''; box.appendChild(im); };
+    im.onerror = () => { box.textContent = 'imagem não carregou'; };
+  });
+  return b;
+}
+function show(row, items, choose, extras=[]){
   current = items; onChoose = choose;
   row.innerHTML = '';
   items.forEach((it, i) => {
-    if(i>0){ const v=document.createElement('span'); v.className='vs'; v.textContent='vs'; row.appendChild(v); }
-    const b = document.createElement('button');
-    b.className = 'card';
-    b.innerHTML = `<div class="img">carregando…</div><b>${esc(it.name)}</b><small>${SRC[it.fr].label} · tecla ${i+1}</small>`;
+    if(i>0){ const v=document.createElement('span'); v.className='vs'; v.textContent='VS'; row.appendChild(v); }
+    const b = card(it, i, extras[i]||'');
     b.onclick = () => choose(it);
     row.appendChild(b);
-    resolve(it).then(x => {
-      const box = b.querySelector('.img');
-      if(!x.img){ box.textContent = 'sem imagem'; return; }
-      const im = new Image(); im.alt = x.name; im.src = x.img;
-      im.onload = () => { box.textContent=''; box.appendChild(im); };
-      im.onerror = () => { box.textContent = 'imagem não carregou'; };
-    });
   });
 }
 
-let duelNext = null;
+// ---------- duelo (rei do morro) ----------
+// Quem é escolhido fica no seu lado; o lado perdedor recebe um novo desafiante da mesma franquia.
+let duel = {slots:[null,null], streak:[0,0], queue:[null,null]};
 function fillSelect(sel, def){ sel.innerHTML = KEYS.map(k => `<option value="${k}"${k===def?' selected':''}>${SRC[k].label}</option>`).join(''); }
 fillSelect($('duelA'), 'pokemon'); fillSelect($('duelB'), 'digimon');
-function makeDuel(){
-  const a = $('duelA').value, b = $('duelB').value;
-  if(!ready(a) || !ready(b)) return null;
-  const x = pick(a), y = pick(b, x);
-  return [x, y];
+const sideFr = i => (i===0 ? $('duelA') : $('duelB')).value;
+function challenger(i){
+  const q = duel.queue[i]; duel.queue[i] = null;
+  if(q && q.fr === sideFr(i)) return q;
+  return pick(sideFr(i), duel.slots.filter(Boolean));
 }
-function nextDuel(){
-  const pair = duelNext || makeDuel();
-  duelNext = null;
-  if(!pair){ $('duelRow').innerHTML = '<p class="mute">Esperando as listas carregarem…</p>'; return; }
-  show($('duelRow'), pair, w => { record(w, pair); nextDuel(); });
-  duelNext = makeDuel(); if(duelNext) preload(duelNext);
+function queueNext(i){ if(ready(sideFr(i))){ duel.queue[i] = pick(sideFr(i), duel.slots.filter(Boolean)); preload([duel.queue[i]]); } }
+function renderDuel(){
+  if(!ready(sideFr(0)) || !ready(sideFr(1))){ current=[]; $('duelRow').innerHTML = '<p class="mute">Esperando as listas carregarem…</p>'; return; }
+  for(const i of [0,1]) if(!duel.slots[i]){ duel.slots[i] = challenger(i); duel.streak[i] = 0; }
+  const extras = duel.streak.map(s => s>0 ? `<span class="crown">♛ ${s} ${s===1?'vitória':'vitórias'}</span>` : '');
+  show($('duelRow'), duel.slots, w => {
+    const wi = duel.slots.indexOf(w), li = 1-wi;
+    record(w, duel.slots);
+    duel.streak[wi]++;
+    if(!stats.best || duel.streak[wi] > stats.best.streak){ stats.best = {name:w.name, fr:w.fr, streak:duel.streak[wi]}; save(); }
+    duel.slots[li] = null;
+    renderDuel();
+    queueNext(li);
+  }, extras);
 }
-$('duelA').onchange = $('duelB').onchange = () => { duelNext = null; nextDuel(); };
-$('duelSkip').onclick = nextDuel;
+function resetDuel(){ duel = {slots:[null,null], streak:[0,0], queue:[null,null]}; renderDuel(); queueNext(0); queueNext(1); }
+$('duelA').onchange = () => { duel.slots[0]=null; duel.queue[0]=null; renderDuel(); queueNext(0); };
+$('duelB').onchange = () => { duel.slots[1]=null; duel.queue[1]=null; renderDuel(); queueNext(1); };
+$('duelSkip').onclick = resetDuel;
 
+// ---------- trio ----------
 let trioNext = null;
 function makeTrio(){ return KEYS.every(ready) ? shuffle(KEYS.map(k => pick(k))) : null; }
 function nextTrio(){
   const t = trioNext || makeTrio(); trioNext = null;
-  if(!t){ $('trioRow').innerHTML = '<p class="mute">Esperando as listas carregarem…</p>'; return; }
+  if(!t){ current=[]; $('trioRow').innerHTML = '<p class="mute">Esperando as listas carregarem…</p>'; return; }
   show($('trioRow'), t, w => { record(w, t); nextTrio(); });
   trioNext = makeTrio(); if(trioNext) preload(trioNext);
 }
 $('trioSkip').onclick = nextTrio;
 
-$('cupFr').innerHTML = KEYS.map(k => `<label><input type="checkbox" id="cup_${k}" value="${k}" checked> ${SRC[k].label}</label>`).join('');
+// ---------- campeonato ----------
+$('cupFr').innerHTML = KEYS.map(k => `<label><input type="checkbox" id="cup_${k}" checked> ${SRC[k].label}</label>`).join('');
 let cup = null;
 const roundName = n => ({2:'Final',4:'Semifinal',8:'Quartas de final'})[n] || `Rodada de ${n}`;
-
 $('cupStart').onclick = () => {
   const frs = KEYS.filter(k => $('cup_'+k).checked && ready(k));
-  if(!frs.length){ alert('Escolha pelo menos uma franquia carregada.'); return; }
+  if(!frs.length){ $('cupStart').textContent = 'Marque uma franquia já carregada'; setTimeout(() => $('cupStart').textContent = 'Começar', 2000); return; }
   const size = +$('cupSize').value;
   const counts = {}; frs.forEach(k => counts[k]=0);
   if($('cupEven').checked){
     frs.forEach(k => counts[k] = Math.floor(size/frs.length));
     shuffle([...frs]).slice(0, size % frs.length).forEach(k => counts[k]++);
-  } else {
-    for(let i=0;i<size;i++) counts[rnd(frs)]++;
-  }
+  } else for(let i=0;i<size;i++) counts[rnd(frs)]++;
   let entrants = [];
-  frs.forEach(k => {
-    const pool = shuffle([...SRC[k].list]).slice(0, counts[k]);
-    entrants.push(...pool.map(p => ({...p, fr:k})));
-  });
+  frs.forEach(k => entrants.push(...shuffle([...SRC[k].list]).slice(0, counts[k]).map(p => ({...p, fr:k}))));
   entrants = shuffle(entrants).slice(0, size);
   preload(entrants);
-  cup = {round: entrants, next: [], i: 0, log: [], losers: {}};
-  $('cupSetup').hidden = true; $('cupEnd').hidden = true; $('cupPlay').hidden = false;
-  $('cupLog').hidden = false;
+  cup = {round: entrants, next: [], i: 0, log: [], games: [], losers: {}};
+  $('cupSetup').hidden = true; $('cupEnd').hidden = true; $('cupPlay').hidden = false; $('cupLog').hidden = false;
   cupStep();
 };
 function cupStep(){
-  const r = cup.round;
-  if(cup.i >= r.length){
-    cup.log.push({name: roundName(r.length), games: cup.games || []});
-    cup.games = [];
-    if(cup.next.length === 1){ return cupFinish(cup.next[0]); }
+  if(cup.i >= cup.round.length){
+    cup.log.push({name: roundName(cup.round.length), games: cup.games}); cup.games = [];
+    if(cup.next.length === 1) return cupFinish(cup.next[0]);
     cup.round = cup.next; cup.next = []; cup.i = 0;
   }
   const a = cup.round[cup.i], b = cup.round[cup.i+1];
@@ -232,8 +302,8 @@ function cupStep(){
   show($('cupRow'), [a, b], w => {
     const l = w===a ? b : a;
     cup.next.push(w);
-    (cup.games = cup.games || []).push(`${w.name} venceu ${l.name}`);
-    cup.losers[cup.round.length] = (cup.losers[cup.round.length]||[]).concat(l);
+    cup.games.push(`${w.name} venceu ${l.name}`);
+    (cup.losers[cup.round.length] = cup.losers[cup.round.length] || []).push(l);
     cup.i += 2; cupStep();
   });
   renderLog();
@@ -244,46 +314,50 @@ function cupFinish(champ){
   const vice = cup.losers[2]?.[0], semis = cup.losers[4] || [];
   const line = it => it ? `${esc(it.name)} <span class="mute">(${SRC[it.fr].label})</span>` : '';
   $('cupEnd').hidden = false;
-  $('cupEnd').innerHTML = `
-    <h2>Campeão: ${line(champ)}</h2>
-    <div class="row"><div class="card" style="cursor:default"><div class="img"><img src="${esc(champ.img||'')}" alt=""></div><b>${esc(champ.name)}</b></div></div>
-    <p>2º lugar: ${line(vice)}</p>
-    <p>Semifinalistas: ${semis.map(line).join(', ')}</p>
-    <button id="cupAgain">Novo campeonato</button>`;
+  $('cupEnd').innerHTML = `<div class="panel stack"><h2>Campeão</h2><div class="arena two" id="champRow"></div>
+    <p style="margin:0">2º lugar: ${line(vice)}</p><p style="margin:0">Semifinalistas: ${semis.map(line).join(', ')}</p>
+    <div><button class="btn main" id="cupAgain">Novo campeonato</button></div></div>`;
+  const c = card(champ, 0, '<span class="crown">♛ campeão</span>'); c.classList.add('static'); c.querySelector('.key').remove();
+  $('champRow').appendChild(c);
   $('cupAgain').onclick = () => { $('cupEnd').hidden = true; $('cupSetup').hidden = false; $('cupLog').hidden = true; cup = null; };
   renderLog();
 }
 function renderLog(){
-  const rounds = cup.log.concat(cup.games?.length ? [{name: roundName(cup.round.length)+' (em andamento)', games: cup.games}] : []);
+  if(!cup) return;
+  const rounds = cup.log.concat(cup.games.length ? [{name: roundName(cup.round.length)+' (em andamento)', games: cup.games}] : []);
   $('cupLogBody').innerHTML = rounds.map(r => `<h4>${r.name}</h4><ol>${r.games.map(g => `<li>${esc(g)}</li>`).join('')}</ol>`).join('');
 }
 $('cupQuit').onclick = () => { cup = null; current = []; onChoose = null; $('cupPlay').hidden = true; $('cupLog').hidden = true; $('cupSetup').hidden = false; };
 
+// ---------- navegação ----------
 let mode = 'duel';
 document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
   mode = b.dataset.mode;
   document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x===b));
   ['duel','trio','cup','stats'].forEach(m => $(m).hidden = m!==mode);
-  if(mode==='duel') nextDuel();
+  current = []; onChoose = null;
+  if(mode==='duel') renderDuel();
   if(mode==='trio') nextTrio();
+  if(mode==='cup' && cup && !$('cupPlay').hidden) cupStep();
   if(mode==='stats') renderStats();
 });
 document.addEventListener('keydown', e => {
-  if(e.target.tagName==='SELECT') return;
+  if(['SELECT','INPUT'].includes(e.target.tagName)) return;
   const n = +e.key;
-  if(n>=1 && n<=current.length && onChoose && !$(mode).hidden && mode!=='stats') onChoose(current[n-1]);
-  if(e.key===' ' && (mode==='duel' || mode==='trio')){ e.preventDefault(); mode==='duel' ? nextDuel() : nextTrio(); }
+  if(n>=1 && n<=current.length && onChoose) onChoose(current[n-1]);
+  if(e.key===' ' && mode==='trio'){ e.preventDefault(); nextTrio(); }
 });
 
-const st = {pokemon:'carregando', digimon:'carregando', smt: SRC.smt.list.length+' demônios'};
+// ---------- início ----------
+const st = {pokemon:'carregando', digimon:'carregando', smt: SRC.smt.list.length};
 function status(){ $('status').textContent = KEYS.map(k => `${SRC[k].label}: ${st[k]}`).join(' · '); }
 status();
 [['pokemon', loadPokemon], ['digimon', loadDigimon]].forEach(([k, fn]) => {
-  fn().then(list => { SRC[k].list = list; st[k] = list.length+' carregados'; })
-      .catch(() => { st[k] = 'falhou (API fora do ar?)'; })
-      .finally(() => { status(); if(mode==='duel' && !current.length) nextDuel(); if(mode==='trio' && !current.length) nextTrio(); });
+  fn().then(list => { SRC[k].list = list; st[k] = list.length; })
+      .catch(() => { st[k] = 'falhou'; })
+      .finally(() => { status(); if(mode==='duel' && !current.length) resetDuel(); if(mode==='trio' && !current.length) nextTrio(); });
 });
-nextDuel();
+renderDuel();
 </script>
 </body>
 </html>
