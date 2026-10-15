@@ -1,13 +1,19 @@
 # Pokémon x Digimon x SMT
 
-Este projeto é uma página web simples para comparar personagens de Pokémon, Digimon e SMT/Persona em duelos, trio e campeonato.
+This project is a simple web page for comparing Pokémon, Digimon, and SMT/Persona characters in duels, trios, and tournament mode.
 
-## Publicar no GitHub Pages
+## Run locally
 
-O site pode ser visualizado diretamente pelo GitHub Pages após a publicação do repositório.
+Open `index.html` directly in your browser.
 
-## Como usar
+## GitHub Pages
 
-- Abra `index.html` localmente no navegador, ou
-- Use a URL do GitHub Pages após a publicação.
+Once the repository is published with GitHub Pages, the site can be accessed through the Pages URL.
 
+## Features
+
+- 1v1 duel mode
+- Trio mode
+- Tournament mode
+- Local win tracking using browser storage
+- Keyboard shortcuts for quick voting
