@@ -6,6 +6,7 @@ import { resolveImg } from '../../customs/store';
 import { Card } from '../../components/Card';
 import { Bracket } from '../../components/Bracket';
 import { VoteBox } from './Play';
+import { Segmented } from '../../components/Controls';
 
 const X_OPTS = [2, 3, 4, 5, 6];
 const ROUND_OPTS = [1, 2, 3, 4, 5];
@@ -24,7 +25,7 @@ export function DraftConfig({ c, isHost, set, frs }: { c: OnlineConfig; isHost: 
       <ol className="draft-frs" id="onDraftFrs">
         {d.frs.map((k, i) => (
           <li key={k} data-fr={k} style={{ borderLeftColor: frColor(k) }}>
-            <span className="nm">{label(k) || k}</span>
+            <span className="ord">{i + 1}</span><span className="nm">{label(k) || k}</span>
             {isHost && <span className="acts">
               <button className="btn mini" aria-label={`Subir ${label(k)}`} disabled={i === 0} onClick={() => mover(i, -1)}>↑</button>
               <button className="btn mini" aria-label={`Descer ${label(k)}`} disabled={i === d.frs.length - 1} onClick={() => mover(i, 1)}>↓</button>
@@ -35,17 +36,16 @@ export function DraftConfig({ c, isHost, set, frs }: { c: OnlineConfig; isHost: 
       </ol>
       {isHost && fora.length > 0 && (
         <div className="bar" id="onDraftAdd">
-          {fora.map(k => <button key={k} className="btn mini" data-add={k} onClick={() => mudar({ frs: [...d.frs, k] })}>+ {label(k)}</button>)}
+          {fora.map(k => <button key={k} className="fr-add" data-add={k} style={{ ['--c' as string]: frColor(k) }} onClick={() => mudar({ frs: [...d.frs, k] })}>+ {label(k)}</button>)}
         </div>
       )}
-      <div className="bar">
-        <label>Opções por franquia <select id="onDraftX" value={d.x} disabled={!isHost} onChange={e => mudar({ x: +e.target.value })}>
-          {X_OPTS.map(n => <option key={n} value={n}>{n}</option>)}
-        </select></label>
-        <label>Rodadas <select id="onDraftRounds" value={d.rounds} disabled={!isHost} onChange={e => mudar({ rounds: +e.target.value })}>
-          {ROUND_OPTS.map(n => <option key={n} value={n}>{n}</option>)}
-        </select></label>
+      <div className="row-label"><span>Opções por franquia</span>
+        <Segmented id="onDraftX" ariaLabel="Opções por franquia" value={d.x} disabled={!isHost} options={X_OPTS.map(n => ({ value: n, label: n }))} onChange={n => mudar({ x: n })} />
       </div>
+      <div className="row-label"><span>Rodadas</span>
+        <Segmented id="onDraftRounds" ariaLabel="Rodadas" value={d.rounds} disabled={!isHost} options={ROUND_OPTS.map(n => ({ value: n, label: n }))} onChange={n => mudar({ rounds: n })} />
+      </div>
+      <p className="mute" style={{ margin: 0, fontSize: 13 }}>Cada rodada: {d.frs.length} {d.frs.length === 1 ? 'escolha' : 'escolhas'} por jogador, revelação e votação por franquia. No fim, a final entre os {d.rounds * d.frs.length} classificados.</p>
     </div>
   );
 }

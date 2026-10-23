@@ -1,22 +1,26 @@
-// Sujimon (Like a Dragon: Infinite Wealth) a partir dos screenshots do Sujidex da GamerGuides.
+// Sujimon (Like a Dragon: Infinite Wealth) a partir de screenshots da Sujidex.
 // Recorta o painel do meio do screenshot (onde fica só o personagem) e gera public/sujimon/ pro site.
 // Enquanto public/sujimon/list.json não existir, o site usa a Yakuza Wiki.
 //
-// Uso (na pasta do repositório, Node 18 ou mais novo):
-//   npm install            (sharp e cheerio já estão nas devDependencies do projeto)
+// Passo a passo (na pasta do repositório, Node 18 ou mais novo):
+//   1. npm install   (sharp e cheerio já estão nas devDependencies do projeto)
+//   2. No jogo, abra a Sujidex e tire um screenshot da tela de cada Sujimon (com o personagem no painel do meio).
+//      Também serve salvar as imagens à mão pelo navegador.
+//   3. Coloque os arquivos em sujimon/_orig/ com o número e o nome do Sujimon:
+//        001 Burnout Bully.png   ou   001 - Burnout Bully.png
+//      Extensão png, jpg, jpeg, webp ou img; o número pode ter de 1 a 3 dígitos (5 vira 005) e "_" no nome vira
+//      espaço. Se existir sujimon/_orig/nomes.json ({ "001": "Burnout Bully", ... }), o nome de lá tem prioridade, e
+//      aí o arquivo pode ser só o número (001.png, 001.img). Número repetido: vale o primeiro arquivo em ordem
+//      alfabética. Arquivo fora do padrão fica de fora. O script avisa nos dois casos.
+//   4. node sujimon.mjs recortar --teste  -> recorta só alguns (os 3 primeiros e 050, 100, 150...) e salva em
+//                                            public/sujimon/_teste/NNN-conferir.jpg o screenshot inteiro com o
+//                                            retângulo do recorte desenhado; ajuste RECORTE até ficar bom
+//   5. node sujimon.mjs recortar          -> recorta todos e gera public/sujimon/NNN.webp e public/sujimon/list.json
+//   6. git add public/sujimon/*.webp public/sujimon/list.json (a pasta sujimon/_orig/ fica fora do git).
 //
-//   node sujimon.mjs baixar            -> lê o Sujidex da GamerGuides e salva cada screenshot original em
-//                                         sujimon/_orig/NNN.img e os nomes em sujimon/_orig/nomes.json
-//                                         (pula o que já baixou: dá pra parar e continuar)
-//   node sujimon.mjs baixar --teste    -> só os 3 primeiros
-//
-//   node sujimon.mjs recortar --teste  -> recorta só alguns (001, 050, 150, 300...) e salva em
-//                                         public/sujimon/_teste/NNN-conferir.jpg o screenshot inteiro com o
-//                                         retângulo do recorte desenhado, pra ajustar RECORTE
-//   node sujimon.mjs recortar          -> recorta todos e gera public/sujimon/NNN.webp e public/sujimon/list.json
-//
-// Depois: git add public/sujimon/*.webp public/sujimon/list.json (a pasta sujimon/_orig/ fica fora do git).
-// O "baixar" acessa a gamerguides.com: rode você mesmo, com calma (há uma pausa entre os pedidos).
+// node sujimon.mjs baixar [--teste]: lê o Sujidex da gamerguides.com e salva em sujimon/_orig/NNN.img + nomes.json
+// (--teste: só os 3 primeiros). O site responde 403 pra acesso automatizado: no primeiro 401, 403 ou 429 o script
+// para na hora e explica as alternativas. Ele não tenta contornar o bloqueio (não imita navegador nem tenta de novo).
 
 import fs from 'node:fs/promises';
 
@@ -60,16 +64,41 @@ async function lerJSON(arquivo, padrao) {
 }
 
 // ---------- baixar (GamerGuides) ----------
+// Respostas que querem dizer "acesso automatizado não": o script para na hora, sem tentar de novo.
+const BLOQUEIO = { 401: 'não autorizado', 403: 'acesso negado', 429: 'pedidos demais' };
+
+class Bloqueado extends Error {
+  constructor(status, url) {
+    super(`${status} (${BLOQUEIO[status]}) em ${url}`);
+    this.status = status;
+  }
+}
+
+function explicarBloqueio(status) {
+  console.error([
+    '',
+    `A gamerguides.com respondeu ${status} (${BLOQUEIO[status]}): o site bloqueia acesso automatizado.`,
+    'Este script não tenta contornar o bloqueio (não imita navegador e não tenta de novo). Alternativas:',
+    '  (a) tire seus próprios screenshots da Sujidex no jogo, ou',
+    '  (b) salve as imagens à mão pelo navegador;',
+    `      nos dois casos, coloque os arquivos em ${ORIG}/ com o número de 3 dígitos + espaço + nome,`,
+    '      ex.: "001 Burnout Bully.png", e depois rode: node sujimon.mjs recortar --teste',
+    '  (c) enquanto isso, o site continua usando a Yakuza Wiki.',
+  ].join('\n'));
+}
+
 async function baixar() {
   const cheerio = await pacote('cheerio');
-  const HEADERS = { 'User-Agent': 'Mozilla/5.0 (script pessoal de uso único)', 'Accept-Language': 'en' };
+  // O script se identifica como script: não finge ser navegador.
+  const HEADERS = { 'User-Agent': 'sujimon.mjs (script pessoal de uso único)', 'Accept-Language': 'en' };
   const abs = u => (u.startsWith('//') ? 'https:' + u : u.startsWith('/') ? BASE + u : u);
   async function get(url, tipo = 'text') {
     for (let tentativa = 1; tentativa <= 3; tentativa++) {
       const r = await fetch(url, { headers: HEADERS });
       if (r.ok) return tipo === 'text' ? r.text() : Buffer.from(await r.arrayBuffer());
+      if (r.status in BLOQUEIO) throw new Bloqueado(r.status, url); // bloqueio: nada de nova tentativa
       console.log(`  ${r.status} em ${url} (tentativa ${tentativa})`);
-      await sleep(PAUSA_MS * tentativa * 2);
+      if (tentativa < 3) await sleep(PAUSA_MS * tentativa * 2);
     }
     throw new Error('não consegui baixar ' + url);
   }
@@ -92,9 +121,16 @@ async function baixar() {
     return maior ? { url: maior.src, como: 'maior imagem da página (confira no recortar --teste)' } : null;
   }
 
-  await fs.mkdir(ORIG, { recursive: true });
   console.log('Lendo a lista do Sujidex…');
-  const $lista = cheerio.load(await get(LIST_URL));
+  let htmlLista;
+  try {
+    htmlLista = await get(LIST_URL);
+  } catch (e) {
+    if (!(e instanceof Bloqueado)) throw e;
+    explicarBloqueio(e.status);
+    process.exit(1);
+  }
+  const $lista = cheerio.load(htmlLista);
   const vistos = new Set(), itens = [];
   $lista('a[href*="/database/sujidex/sujimon/"]').each((_, a) => {
     const href = $lista(a).attr('href');
@@ -107,9 +143,11 @@ async function baixar() {
   itens.sort((a, b) => a.numero.localeCompare(b.numero));
   console.log(`${itens.length} Sujimon na lista.`);
 
+  await fs.mkdir(ORIG, { recursive: true });
   const nomes = await lerJSON(`${ORIG}/nomes.json`, {});
   const alvo = TESTE ? itens.slice(0, 3) : itens;
   const falhas = [];
+  let bloqueio = null;
   for (const [i, it] of alvo.entries()) {
     const arquivo = `${ORIG}/${it.numero}.img`;
     if (await existe(arquivo) && nomes[it.numero]) continue;
@@ -126,16 +164,61 @@ async function baixar() {
       nomes[it.numero] = nome;
       await fs.writeFile(`${ORIG}/nomes.json`, JSON.stringify(nomes, null, 1));
     } catch (e) {
+      if (e instanceof Bloqueado) { console.log(`PAREI: ${e.message}`); bloqueio = e; break; }
       console.log(`FALHOU: ${e.message}`);
       falhas.push(`${it.numero} ${it.url}`);
     }
   }
-  console.log(`\nPronto: ${Object.keys(nomes).length} screenshots em ${ORIG}/.`);
+  console.log(`\n${bloqueio ? 'Parei' : 'Pronto'}: ${Object.keys(nomes).length} screenshots em ${ORIG}/.`);
   if (falhas.length) console.log('Falharam (rode de novo pra tentar só esses):\n' + falhas.join('\n'));
+  if (bloqueio) { explicarBloqueio(bloqueio.status); process.exit(1); }
   console.log('Agora: node sujimon.mjs recortar --teste');
 }
 
 // ---------- recortar (só arquivos locais) ----------
+// "001 Burnout Bully.png", "001 - Burnout Bully.png" ou só "001.img" (com o nome no nomes.json). "_" já virou espaço.
+const PADRAO_ARQUIVO = /^(\d{1,3})(?:(?:\s*-\s*|\s+)(.*\S.*))?\.(?:png|jpe?g|webp|img)$/i;
+
+/** Junta os screenshots de ORIG por número (arquivo + nome) e os avisos do que ficou de fora. */
+async function lerOriginais() {
+  const nomesJson = {};
+  for (const [num, nome] of Object.entries(await lerJSON(`${ORIG}/nomes.json`, {}))) {
+    nomesJson[num.padStart(3, '0')] = String(nome).replace(/\s+/g, ' ').trim();
+  }
+  let arquivos = [];
+  try {
+    arquivos = (await fs.readdir(ORIG, { withFileTypes: true })).filter(d => d.isFile()).map(d => d.name);
+  } catch { /* sem a pasta: fica vazio e o recortar explica o que fazer */ }
+  arquivos.sort((a, b) => a.localeCompare(b));
+
+  const porNumero = new Map(), ignorados = [], repetidos = [];
+  for (const arquivo of arquivos) {
+    if (arquivo === 'nomes.json') continue;
+    const m = arquivo.replace(/_/g, ' ').match(PADRAO_ARQUIVO);
+    if (!m) { ignorados.push(arquivo); continue; }
+    const num = m[1].padStart(3, '0');
+    const primeiro = porNumero.get(num);
+    if (primeiro) { repetidos.push(`${num}: usei "${primeiro.arquivo}" e ignorei "${arquivo}"`); continue; }
+    porNumero.set(num, { arquivo, nome: (m[2] ?? '').replace(/\s+/g, ' ').trim() });
+  }
+
+  const itens = [], semArquivo = [], semNome = [];
+  for (const num of [...new Set([...porNumero.keys(), ...Object.keys(nomesJson)])].sort()) {
+    const achado = porNumero.get(num);
+    if (!achado) { semArquivo.push(num); continue; }
+    const nome = nomesJson[num] || achado.nome; // o nomes.json tem prioridade
+    if (!nome) { semNome.push(achado.arquivo); continue; }
+    itens.push({ num, arquivo: achado.arquivo, nome });
+  }
+  const avisos = [
+    ignorados.length && `ignorei (o nome não segue o padrão "001 Nome.png"): ${ignorados.join(', ')}`,
+    ...repetidos.map(r => `número repetido, vale o primeiro em ordem alfabética: ${r}`),
+    semNome.length && `sem nome (nem no arquivo nem no nomes.json): ${semNome.join(', ')}`,
+    semArquivo.length && `no nomes.json, mas sem screenshot: ${semArquivo.join(', ')}`,
+  ].filter(Boolean);
+  return { itens, avisos };
+}
+
 function retangulo(meta, r) {
   const left = Math.round(meta.width * r.esquerda), top = Math.round(meta.height * r.topo);
   const width = Math.round(meta.width * (r.direita - r.esquerda)), height = Math.round(meta.height * (r.baixo - r.topo));
@@ -144,33 +227,35 @@ function retangulo(meta, r) {
 
 async function recortar() {
   const sharp = (await pacote('sharp')).default;
-  const nomes = await lerJSON(`${ORIG}/nomes.json`, null);
-  if (!nomes) throw new Error(`não achei ${ORIG}/nomes.json (rode "node sujimon.mjs baixar" antes)`);
-  const numeros = Object.keys(nomes).sort();
-  const alvo = TESTE ? numeros.filter((n, i) => i < 3 || AMOSTRA.includes(n)) : numeros;
+  const { itens, avisos } = await lerOriginais();
+  const mostrarAvisos = () => avisos.forEach(a => console.log('Aviso: ' + a));
+  if (!itens.length) {
+    mostrarAvisos();
+    throw new Error(`não achei nenhum screenshot em ${ORIG}/. Coloque os arquivos lá com o número e o nome, ` +
+      'ex.: "001 Burnout Bully.png" (passo a passo no topo do sujimon.mjs).');
+  }
+  const alvo = TESTE ? itens.filter((it, i) => i < 3 || AMOSTRA.includes(it.num)) : itens;
   await fs.mkdir(TESTE ? `${OUT}/_teste` : OUT, { recursive: true });
 
-  const lista = [], foraDeProposito = [], semArquivo = [], falhas = [];
-  for (const num of alvo) {
+  const lista = [], foraDeProposito = [], falhas = [];
+  for (const { num, arquivo, nome } of alvo) {
     const r = num in EXCECOES ? EXCECOES[num] : RECORTE;
     if (r === null) { foraDeProposito.push(num); continue; }
-    const arquivo = `${ORIG}/${num}.img`;
-    if (!await existe(arquivo)) { semArquivo.push(num); continue; }
     try {
-      const buf = await fs.readFile(arquivo);
+      const buf = await fs.readFile(`${ORIG}/${arquivo}`);
       const meta = await sharp(buf).metadata();
       const box = retangulo(meta, r);
       if (TESTE) {
         const svg = `<svg width="${meta.width}" height="${meta.height}"><rect x="${box.left}" y="${box.top}" width="${box.width}" height="${box.height}" fill="none" stroke="#ff0040" stroke-width="${Math.max(3, Math.round(meta.width / 300))}"/></svg>`;
         await sharp(buf).composite([{ input: Buffer.from(svg) }]).jpeg({ quality: 85 }).toFile(`${OUT}/_teste/${num}-conferir.jpg`);
         await sharp(buf).extract(box).resize({ height: ALTURA_FINAL, withoutEnlargement: true }).webp({ quality: 80 }).toFile(`${OUT}/_teste/${num}.webp`);
-        console.log(`${num} ${nomes[num]}: ${meta.width}x${meta.height}, recorte x=${box.left} y=${box.top} ${box.width}x${box.height}`);
+        console.log(`${num} ${nome} (${arquivo}): ${meta.width}x${meta.height}, recorte x=${box.left} y=${box.top} ${box.width}x${box.height}`);
       } else {
         await sharp(buf).extract(box).resize({ height: ALTURA_FINAL, withoutEnlargement: true }).webp({ quality: 80 }).toFile(`${OUT}/${num}.webp`);
-        lista.push([nomes[num], num]);
+        lista.push([nome, num]);
       }
     } catch (e) {
-      falhas.push(`${num} (${e.message})`);
+      falhas.push(`${num} ${arquivo} (${e.message})`);
     }
   }
   if (TESTE) {
@@ -181,8 +266,8 @@ async function recortar() {
     console.log(`\nPronto: ${lista.length} Sujimon em ${OUT}/ (list.json + .webp).`);
   }
   if (foraDeProposito.length) console.log('Fora de propósito (EXCECOES = null): ' + foraDeProposito.join(', '));
-  if (semArquivo.length) console.log('Sem screenshot baixado: ' + semArquivo.join(', '));
   if (falhas.length) console.log('Falharam: ' + falhas.join(', '));
+  mostrarAvisos();
 }
 
 const comandos = { baixar, recortar };

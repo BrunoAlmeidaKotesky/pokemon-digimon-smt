@@ -41,17 +41,17 @@ test('Draft de 2 rodadas e 3 franquias, do começo ao fim, com repetido refeito 
   await expect(ana.locator('#onPlayers .chip')).toHaveCount(3);
 
   // configuração: JoJo, SMT e Sujimon, nessa ordem; 3 opções; 2 rodadas
-  await ana.locator('#onLobby .seg button[data-modo="draft"]').click();
+  await ana.locator('#onLobby [data-modo="draft"]').click();
   await ana.getByRole('button', { name: 'Tirar Pokémon' }).click();
   await ana.getByRole('button', { name: 'Tirar Digimon' }).click();
   await ana.locator('#onDraftAdd button[data-add="sujimon"]').click();
   await ana.getByRole('button', { name: 'Descer JoJo' }).click();
   await ana.getByRole('button', { name: 'Subir JoJo' }).click();
-  await ana.locator('#onDraftRounds').selectOption('2');
-  await ana.locator('#onDraftX').selectOption('3');
+  await ana.locator('#onDraftRounds button[data-n="2"]').click();
+  await ana.locator('#onDraftX button[data-n="3"]').click();
   for (const p of todos) {
     await expect(p.locator('#onDraftFrs li .nm')).toHaveText(FRS);
-    await expect(p.locator('#onDraftRounds')).toHaveValue('2');
+    await expect(p.locator('#onDraftRounds button[data-n="2"]')).toHaveClass(/on/);
   }
   await ana.locator('#onStart').click();
 

@@ -44,7 +44,7 @@ async function votar(p: Page, i: number) {
   await expect(p.locator('#onArena .card').nth(i)).toHaveClass(/mine/);
 }
 async function nomesDasCartas(p: Page) { return (await p.locator('#onArena .card .name').allTextContents()).map(s => s.trim()); }
-async function modo(host: Page, m: 'duel' | 'trio' | 'quartet' | 'cup') { await host.locator(`#onLobby .seg button[data-modo="${m}"]`).click(); }
+async function modo(host: Page, m: 'duel' | 'trio' | 'quartet' | 'cup') { await host.locator(`#onLobby [data-modo="${m}"]`).click(); }
 const caixas = (p: Page, sel: string) => p.locator(sel).evaluateAll(els => els.map(e => {
   const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height };
 }));
@@ -77,7 +77,7 @@ test.describe('modo online (3 participantes, transporte local)', () => {
     await modo(s.host, 'trio');
     await s.host.locator('#onSecret').check();
     for (const p of s.outros) {
-      await expect(p.locator('#onLobby .seg button[data-modo="trio"]')).toHaveClass(/on/);
+      await expect(p.locator('#onLobby [data-modo="trio"]')).toHaveClass(/on/);
       await expect(p.locator('#onSecret')).toBeChecked();
       await expect(p.locator('#onWaiting')).toBeVisible();
     }
@@ -154,8 +154,8 @@ test.describe('modo online (3 participantes, transporte local)', () => {
       await modo(s.host, 'quartet');
       const PADRAO = ['pokemon', 'digimon', 'smt', 'jojo'];
       for (const p of todos(s)) {
-        await expect(p.locator('#onLobby .seg button[data-modo="quartet"]')).toHaveClass(/on/);
-        await expect(p.locator('#onLobby .seg button[data-modo="quartet"]')).toHaveText('Quarteto');
+        await expect(p.locator('#onLobby [data-modo="quartet"]')).toHaveClass(/on/);
+        await expect(p.locator('#onLobby [data-modo="quartet"] b')).toHaveText('Quarteto');
         for (const [i, fr] of PADRAO.entries()) {
           await expect(p.locator(`#onQuartet${i}`)).toHaveValue(fr);
           await expect(p.locator(`#onQuartet${i}`)).toHaveAttribute('aria-label', `Franquia ${i + 1}`);
@@ -334,7 +334,7 @@ test.describe('modo online (3 participantes, transporte local)', () => {
     test.setTimeout(120_000);
     const s = await criarSala(context);
     await modo(s.host, 'cup');
-    await s.host.locator('#onCupSize').selectOption('8');
+    await s.host.locator('#onCupSize button[data-n="8"]').click();
     await s.host.locator('#onStart').click();
     for (const p of todos(s)) {
       await expect(p.locator('#onTitle')).toHaveText('Quartas de final');

@@ -62,9 +62,12 @@ entre dois navegadores e vota. A `main` e a `react` têm o mesmo código; a `mai
 - **Entraram 154 Sujimon. Ficaram de fora 163**, que não têm nenhuma imagem na wiki. A lista completa (número e
   nome) está em [`relatorio/sujimon-fora.md`](relatorio/sujimon-fora.md). Quase todos são os Sujimon novos de
   Infinite Wealth (133 a 281) e alguns personagens.
-- `sujimon.mjs`: `baixar` (você roda) e `recortar` (só local, grava em `public/sujimon/`). Testei o `recortar` com
-  screenshots sintéticos. O `baixar` não foi testado, porque eu não acesso a gamerguides. Com a lista local, o site
-  passa a usá-la no lugar da wiki.
+- `sujimon.mjs`: `recortar` (só local) lê os screenshots de `sujimon/_orig/` com o número e o nome no nome do
+  arquivo (`001 Burnout Bully.png` ou `001 - Burnout Bully.png`; também `NNN.img` + `nomes.json`) e grava em
+  `public/sujimon/`. Testei com screenshots sintéticos. O `baixar` lê a gamerguides, mas o site responde 403 pra
+  acesso automatizado: no primeiro 401, 403 ou 429 o script para, explica as alternativas (screenshots próprios ou
+  imagens salvas à mão) e não tenta contornar. Testei isso só com um servidor local, porque eu não acesso a
+  gamerguides. Com a lista local, o site passa a usá-la no lugar da wiki.
 - Teste: com `list.json`, o Sujimon aparece nos seletores, no campeonato e no título; sem ele, vem da wiki; sem os
   dois, some de tudo.
 
@@ -112,6 +115,13 @@ entre dois navegadores e vota. A `main` e a `react` têm o mesmo código; a `mai
   rotular, usar no Duelo, nada no localStorage, some ao recarregar, apagar grupo) e sala online (host cria, convidado
   vê, com permissão adiciona e renomeia, Duelo com a franquia personalizada). Quarteto: solo e online.
 - Na nav do celular as 7 abas ocupam 3 linhas (antes eram 2).
+- **Interface da sala, refeita depois do seu pedido:**
+  - tela de entrada com dois cartões ("Criar uma sala" e "Entrar numa sala") e o código em letras grandes;
+  - o código da sala aparece em destaque;
+  - lobby em passos numerados: (1) modo, em cartões com desenho e descrição; (2) franquias, com um seletor por
+    lado na cor da franquia, tamanho do campeonato e opções do Draft em botões, e franquias do campeonato em chips
+    coloridos; (3) regras, com interruptores e explicação; (4) franquias personalizadas;
+  - uma barra fixa embaixo com o resumo ("Duelo · Pokémon × Digimon · 3 jogadores") e o botão Começar.
 
 ### Etapa 7
 - `npm run check` inteiro passando, revisão independente por um subagente (resultado abaixo) e este relatório.
@@ -122,10 +132,11 @@ Nada é obrigatório: o site está no ar e funcionando. Opcionais:
 
 1. **Testar com os amigos** (passo a passo abaixo).
 2. **Sujimon completos:** na pasta do repositório, rode `npm install` (o `sharp` e o `cheerio` já estão nas
-   devDependencies), depois `node sujimon.mjs baixar` (demora: tem uma pausa entre
-   os pedidos), `node sujimon.mjs recortar --teste`, confira as imagens em `public/sujimon/_teste/`, ajuste
-   `RECORTE` no topo do script se precisar, rode `node sujimon.mjs recortar` e faça commit de
-   `public/sujimon/*.webp` e `public/sujimon/list.json`.
+   devDependencies). Tire screenshots da Sujidex no jogo (ou salve as imagens à mão pelo navegador) e coloque em
+   `sujimon/_orig/` como `001 Burnout Bully.png` (número de 3 dígitos + espaço + nome). Rode
+   `node sujimon.mjs recortar --teste`, confira as imagens em `public/sujimon/_teste/`, ajuste `RECORTE` no topo do
+   script se precisar, rode `node sujimon.mjs recortar` e faça commit de `public/sujimon/*.webp` e
+   `public/sujimon/list.json`. (O `node sujimon.mjs baixar` não adianta: a gamerguides responde 403 e o script para.)
 3. O `PROMPT-claude-code.md` ficou na raiz sem commit. Apague ou comite, como preferir.
 
 ## Como testar com amigos
