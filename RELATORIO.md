@@ -121,8 +121,8 @@ entre dois navegadores e vota. A `main` e a `react` têm o mesmo código; a `mai
 Nada é obrigatório: o site está no ar e funcionando. Opcionais:
 
 1. **Testar com os amigos** (passo a passo abaixo).
-2. **Sujimon completos:** na pasta do repositório, rode
-   `npm install --no-save sharp@0.33.5 cheerio@1.0.0`, depois `node sujimon.mjs baixar` (demora: tem uma pausa entre
+2. **Sujimon completos:** na pasta do repositório, rode `npm install` (o `sharp` e o `cheerio` já estão nas
+   devDependencies), depois `node sujimon.mjs baixar` (demora: tem uma pausa entre
    os pedidos), `node sujimon.mjs recortar --teste`, confira as imagens em `public/sujimon/_teste/`, ajuste
    `RECORTE` no topo do script se precisar, rode `node sujimon.mjs recortar` e faça commit de
    `public/sujimon/*.webp` e `public/sujimon/list.json`.
