@@ -132,7 +132,8 @@ Nada é obrigatório: o site está no ar e funcionando. Opcionais:
 
 1. **Testar com os amigos** (passo a passo abaixo).
 2. **Sujimon completos:** na pasta do repositório, rode `npm install` (o `sharp` e o `cheerio` já estão nas
-   devDependencies). Tire screenshots da Sujidex no jogo (ou salve as imagens à mão pelo navegador) e coloque em
+   devDependencies). Tire screenshots da Sujidex no jogo (ou salve as imagens pelo navegador: rode `node sujimon-salvar.js`, cole a linha
+   `javascript:...` como endereço de um favorito, abra cada Sujimon e clique no favorito) e coloque em
    `sujimon/_orig/` como `001 Burnout Bully.png` (número de 3 dígitos + espaço + nome). Rode
    `node sujimon.mjs recortar --teste`, confira as imagens em `public/sujimon/_teste/`, ajuste `RECORTE` no topo do
    script se precisar, rode `node sujimon.mjs recortar` e faça commit de `public/sujimon/*.webp` e
