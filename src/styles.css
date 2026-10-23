@@ -1,0 +1,88 @@
+/* Layout: uma coluna central; cartas lado a lado com "VS" no meio; cada franquia tem sua cor. */
+:root{
+  color-scheme:light;
+  --bg:#eef0f4; --panel:#ffffff; --fg:#15171c; --mute:#626875; --line:#d5d9e1;
+  --pokemon:#d6302a; --digimon:#1f6fd1; --smt:#7a1fa8; --jojo:#0c8a5a; --ygo:#c2410c; --bakugan:#0e8fa8; --sujimon:#c0267a; --gold:#c58a00;
+  --display:"Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark;
+  --bg:#101216; --panel:#1a1d23; --fg:#eceef2; --mute:#9aa1ad; --line:#2c313a;
+  --pokemon:#ff5a4f; --digimon:#4f9bff; --smt:#b866e8; --jojo:#3fd39a; --ygo:#ff8a4c; --bakugan:#3cc8e6; --sujimon:#ff6fb5; --gold:#ffc23d;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 var(--body)}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:14px}
+h1{font:700 26px/1.1 var(--display);margin:0;letter-spacing:.5px;text-transform:uppercase}
+h1 .p{color:var(--pokemon)} h1 .d{color:var(--digimon)} h1 .s{color:var(--smt)} h1 .j{color:var(--jojo)} h1 .y{color:var(--ygo)} h1 .b{color:var(--bakugan)} h1 .sj{color:var(--sujimon)}
+#status{font-size:12px;color:var(--mute)}
+nav{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:16px}
+nav button{font:600 14px var(--display);text-transform:uppercase;letter-spacing:.6px;background:none;border:0;color:var(--mute);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+nav button.on{color:var(--fg);border-bottom-color:var(--fg)}
+button,select{font:inherit;color:inherit}
+.btn{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 14px;cursor:pointer}
+.btn:hover{border-color:var(--fg)}
+.btn.main{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:600}
+select{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.bar .vsx{font:700 14px var(--display);color:var(--mute)}
+.hint{font-size:12px;color:var(--mute);text-align:center}
+.spinbar{display:flex;justify-content:center;margin:2px 0 6px}
+.spin{display:inline-flex;align-items:center;gap:10px;background:var(--panel);border:2px solid var(--line);border-radius:999px;padding:6px 18px 6px 6px;font:700 15px var(--display);text-transform:uppercase;letter-spacing:.6px;cursor:pointer}
+.spin:hover,.spin:focus-visible{border-color:var(--gold);outline:none}
+.spin svg{width:38px;height:38px;flex:none}
+.spin:disabled{cursor:default;opacity:.85}
+body.spinning .spin svg .wheel{animation:rot .5s linear infinite;transform-origin:20px 20px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.card.lit{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold);transform:translateY(-3px)}
+.card.picked{animation:pick .3s ease-in-out 3}
+@keyframes pick{50%{box-shadow:0 0 0 7px var(--gold)}}
+body.spinning .card{cursor:default}
+.arena{display:flex;gap:10px;align-items:stretch;justify-content:center;margin:12px 0}
+.vs{align-self:center;font:700 22px var(--display);color:var(--mute);flex:none}
+.card{--c:var(--line);position:relative;flex:1 1 0;min-width:0;max-width:400px;background:var(--panel);border:2px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:6px 6px 10px;cursor:pointer;text-align:center;transition:transform .12s, box-shadow .12s, border-color .12s}
+.card[data-fr=pokemon]{--c:var(--pokemon)} .card[data-fr=digimon]{--c:var(--digimon)} .card[data-fr=smt]{--c:var(--smt)} .card[data-fr=jojo]{--c:var(--jojo)} .card[data-fr=ygo]{--c:var(--ygo)} .card[data-fr=bakugan]{--c:var(--bakugan)} .card[data-fr=sujimon]{--c:var(--sujimon)}
+.card:hover,.card:focus-visible{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 20px -10px var(--c);outline:none}
+.card .img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:13px;border-radius:6px;background:radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--c) 14%, transparent), transparent 75%)}
+.card img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.card .name{display:block;margin-top:4px;font:700 18px/1.2 var(--display);overflow-wrap:anywhere}
+.card .fr{display:inline-block;margin-top:4px;font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--c)}
+.card .top{display:flex;justify-content:space-between;align-items:center;min-height:20px;padding:0 4px 2px;font:600 12px var(--display);color:var(--mute)}
+.crown{color:var(--gold);font-weight:700;letter-spacing:.4px}
+.card.static{cursor:default}.card.static:hover{transform:none;box-shadow:none}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stack{display:grid;gap:12px}
+.meter{display:grid;grid-template-columns:110px 1fr 110px;gap:10px;align-items:center;font-size:14px}
+.meter .track{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.meter .fill{height:100%;border-radius:5px}
+.meter .n{font-variant-numeric:tabular-nums;color:var(--mute);text-align:right}
+.bracket{overflow-x:auto;margin-top:10px;padding-bottom:6px}
+.bk-inner{position:relative;display:flex;gap:28px;width:max-content}
+.bk-col{width:170px;flex:none;position:relative;z-index:1}
+.bk-title{font:700 12px var(--display);text-transform:uppercase;letter-spacing:.6px;color:var(--mute);height:28px}
+.bk-ms{display:flex;flex-direction:column;justify-content:space-around}
+.match{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.match.now{border-color:var(--fg);box-shadow:0 0 0 2px color-mix(in srgb, var(--fg) 20%, transparent)}
+.match.champ{border-color:var(--gold)}
+.slot{--c:var(--line);display:flex;align-items:center;gap:6px;height:26px;padding-right:6px;border-left:4px solid var(--c);font-size:12px}
+.slot+.slot{border-top:1px solid var(--line)}
+.slot[data-fr=pokemon]{--c:var(--pokemon)}.slot[data-fr=digimon]{--c:var(--digimon)}.slot[data-fr=smt]{--c:var(--smt)}.slot[data-fr=jojo]{--c:var(--jojo)}.slot[data-fr=ygo]{--c:var(--ygo)}.slot[data-fr=bakugan]{--c:var(--bakugan)}.slot[data-fr=sujimon]{--c:var(--sujimon)}
+.slot .th{width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center}
+.slot .th img{width:24px;height:24px;object-fit:contain}
+.slot .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.slot.win{font-weight:700}.slot.lose{opacity:.4}.slot.empty .nm{color:var(--mute);font-style:italic}
+.match.champ .slot{height:40px;font-size:13px}.match.champ .th,.match.champ .th img{width:36px;height:36px}
+.bk-lines{position:absolute;inset:0;z-index:0;color:var(--line);pointer-events:none}
+h2,h3{font-family:var(--display);margin:0 0 6px}
+ol,ul{padding-left:20px;margin:0}
+.mute{color:var(--mute)}
+.records{display:flex;gap:16px;flex-wrap:wrap;font-size:14px}
+@media (max-width:560px){
+  .arena.two{gap:8px}.arena.two .vs{font-size:14px}
+  .card{padding:4px 4px 8px}.card .name{font-size:15px}
+  .arena.three{flex-direction:column;align-items:center}.arena.three .card{width:100%;max-width:340px}.arena.three .vs{display:none}
+  .meter{grid-template-columns:80px 1fr 80px}
+}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}body.spinning .spin svg .wheel,.card.picked{animation:none}}

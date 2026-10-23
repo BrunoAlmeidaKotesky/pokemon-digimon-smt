@@ -23,7 +23,7 @@ export default defineConfig({
     { name: 'computador', use: { viewport: { width: 1280, height: 800 } } },
   ],
   webServer: {
-    command: antigo ? `node tests/serve.mjs . ${PORT}` : `npx vite preview --port ${PORT} --strictPort`,
+    command: antigo ? `node tests/serve.mjs . ${PORT}` : `node node_modules/vite/bin/vite.js preview --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

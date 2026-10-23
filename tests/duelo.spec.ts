@@ -109,7 +109,7 @@ test.describe('duelo (rei do morro)', () => {
     // os próximos desafiantes da direita já vêm da franquia nova
     await carta(page, 0).click();
     await expect(coroa(page, 0)).toHaveText(vitorias(2));
-    [esq, dir] = await ler(page);
+    [, dir] = await ler(page);
     expect(dir).toMatchObject({ fr: 'smt', coroa: null });
     expect(dir!.nome).not.toBe(smt1);
     const smt2 = dir!.nome;
