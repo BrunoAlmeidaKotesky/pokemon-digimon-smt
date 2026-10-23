@@ -8,6 +8,7 @@ import { SpinButton } from '../../components/SpinButton';
 import { Bracket } from '../../components/Bracket';
 import { keyOf } from '../../components/Arena';
 import { useSpinAnim } from './useSpinAnim';
+import { DraftPlay } from './Draft';
 
 const MODE_TITLE = { duel: 'Duelo', trio: 'Trio', cup: 'Campeonato', draft: 'Draft' } as const;
 const votos = (n: number) => `${n} ${n === 1 ? 'voto' : 'votos'}`;
@@ -26,7 +27,7 @@ export function Play({ v }: { v: RoomView }) {
         <span className="grow" />
         {isHost && <button className="btn" id="onLobbyBtn" onClick={host.lobby}>Voltar ao lobby</button>}
       </div>
-      {v.vote && <VoteBox v={v} vote={v.vote} />}
+      {g?.mode === 'draft' ? <DraftPlay v={v} /> : v.vote && <VoteBox v={v} vote={v.vote} />}
       {champ && g?.mode === 'cup' && <CupEnd v={v} />}
       {g?.mode === 'cup' && (
         <details className="panel" open id="onBracket">
@@ -38,7 +39,7 @@ export function Play({ v }: { v: RoomView }) {
   );
 }
 
-function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
+export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
   const isHost = v.me === v.hostId;
   const res = vote.result;
   const anim = useSpinAnim(res?.spin ?? null);

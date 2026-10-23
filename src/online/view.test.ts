@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { makeList, mulberry32 } from '../core/test-helpers';
 import type { Item } from '../types';
 import { createRoom, DEFAULT_CONFIG, reduce } from './room';
-import type { Action, Ctx, CupGame, KingGame, OnlineConfig, RoomState, Vote } from './types';
+import type { Action, Ctx, CupGame, DraftGame, DraftView, KingGame, OnlineConfig, RoomState, Vote } from './types';
 import { viewFor } from './view';
 
 const LISTS: Record<string, Item[] | null> = {
@@ -50,8 +50,8 @@ describe('viewFor', () => {
   });
 
   it('aviso vai pra todos', () => {
-    const s = R(room([], { mode: 'draft' }), { type: 'start' });
-    expect(viewFor(s, 'h', 0).notice).toBe('O Draft ainda não está disponível.');
+    const s = R(room([], { mode: 'draft', draft: { frs: ['ygo'], x: 3, rounds: 1 } }), { type: 'start' });
+    expect(viewFor(s, 'h', 0).notice).toBe('Lista de Yu-Gi-Oh! ainda não carregou.');
   });
 
   it('voted (votação aberta) e mine (o meu voto)', () => {
@@ -144,6 +144,41 @@ describe('viewFor', () => {
     const end = viewFor(s, 'ana', 0);
     expect(end.vote).toBeNull();
     expect(end.game).toMatchObject({ mode: 'cup', title: 'Campeão', count: '' });
+  });
+
+  it('Draft: o jogador vê só o próprio time; dos outros, só o progresso; quem entrou no meio fica sem time', () => {
+    let s = started(['Ana'], { mode: 'draft', draft: { frs: ['jojo', 'pokemon'], x: 2, rounds: 2 } });
+    const first = (s.game as DraftGame).teams.ana!;
+    s = R(s, { type: 'pick', id: 'ana', round: 1, att: 0, idx: 1 });
+    const t = (s.game as DraftGame).teams.ana!;
+    expect(viewFor(s, 'ana', 0).game).toEqual({
+      mode: 'draft',
+      frs: ['jojo', 'pokemon'],
+      x: 2,
+      rounds: 2,
+      round: 1,
+      step: 'pick',
+      me: { fi: 1, opts: t.opts[1], picks: [first.opts[0]![1], null], att: 0, skipped: false },
+      progress: [
+        { id: 'h', name: 'Host', state: 'escolhendo' },
+        { id: 'ana', name: 'Ana', state: 'escolhendo' },
+      ],
+      redo: null,
+      reveal: 0,
+      qualified: [],
+      final: null,
+      title: '',
+      count: '',
+      champion: null,
+      history: null,
+    });
+    const forHost = JSON.stringify(viewFor(s, 'h', 0));
+    expect(forHost).not.toContain('bags');
+    expect((viewFor(s, 'h', 0).game as DraftView).me!.picks).toEqual([null, null]);
+    s = R(s, { type: 'join', id: 'bia', name: 'Bia' });
+    const bia = viewFor(s, 'bia', 0).game as DraftView;
+    expect(bia.me).toBeNull();
+    expect(bia.progress.map(p => p.id)).toEqual(['h', 'ana']);
   });
 
   it('nunca expõe o saco de sorteio', () => {

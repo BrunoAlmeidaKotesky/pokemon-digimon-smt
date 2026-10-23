@@ -5,6 +5,7 @@ import { buildEntrants, cupChoose, cupPair, startCup } from '../core/cup';
 import { shuffle } from '../core/random';
 import { planSpin } from '../core/spin';
 import type { Entry, FranchiseKey, Item } from '../types';
+import { draftDrop, type DraftIO, draftNext, draftPick, draftSkip, startDraft } from './draft';
 import type { Action, Ctx, JoinCheck, KingGame, OnlineConfig, Player, RoomState, SpinPlan, Vote } from './types';
 
 /** Máximo de jogadores na sala (host incluído). */
@@ -44,6 +45,9 @@ export function crown(streak: number): string {
 }
 
 const missing = (k: FranchiseKey) => `Lista de ${frLabel(k)} ainda não carregou.`;
+
+/** O que o Draft (draft.ts) usa daqui: a mesma votação e os mesmos rótulos. */
+const DRAFT_IO: DraftIO = { openVote: (s, items, extras) => openVote(s, items, extras), label: frLabel };
 
 export function createRoom(code: string, host: { id: string; name: string }, cfg: OnlineConfig = DEFAULT_CONFIG): RoomState {
   return {
@@ -116,6 +120,10 @@ function apply(s: RoomState, a: Action, ctx: Ctx): boolean {
       return hostSpin(s, ctx);
     case 'next':
       return next(s, ctx);
+    case 'pick':
+      return draftPick(s, a, ctx, DRAFT_IO);
+    case 'skip':
+      return draftSkip(s, ctx, DRAFT_IO);
     default:
       return false;
   }
@@ -144,6 +152,8 @@ function remove(s: RoomState, id: string, ctx: Ctx): boolean {
     delete s.vote.ballots[id];
     if (allVoted(s, s.vote)) tally(s, ctx);
   }
+  // Draft: o time dele some e, se só faltava ele escolher, a rodada anda
+  draftDrop(s, id, ctx, DRAFT_IO);
   return true;
 }
 
@@ -197,7 +207,16 @@ function notice(s: RoomState, msg: string): boolean {
 function start(s: RoomState, ctx: Ctx): boolean {
   if (s.phase !== 'lobby') return false;
   const cfg = s.cfg;
-  if (cfg.mode === 'draft') return notice(s, 'O Draft ainda não está disponível.');
+  if (cfg.mode === 'draft') {
+    const frs: unknown[] = Array.isArray(cfg.draft?.frs) ? cfg.draft.frs : [];
+    if (!frs.length) return notice(s, 'Escolha pelo menos uma franquia.');
+    if (frs.some(k => typeof k !== 'string')) return notice(s, 'Franquia desconhecida no Draft.');
+    if (new Set(frs).size !== frs.length) return notice(s, 'Cada franquia só pode aparecer uma vez no Draft.');
+    const miss = (frs as FranchiseKey[]).find(k => !listOf(ctx, k));
+    if (miss !== undefined) return notice(s, missing(miss));
+    startDraft(s, ctx, DRAFT_IO);
+    return true;
+  }
   if (cfg.mode === 'cup') {
     const frs = cfg.cup.frs.filter(k => listOf(ctx, k));
     if (!frs.length) return notice(s, cfg.cup.frs.length ? missing(cfg.cup.frs[0] as string) : 'Escolha pelo menos uma franquia.');
@@ -232,6 +251,7 @@ function next(s: RoomState, ctx: Ctx): boolean {
   const g = s.game;
   const v = s.vote;
   if (s.phase !== 'play' || !g || !v || !v.result) return false;
+  if (g.mode === 'draft') return draftNext(s, ctx, DRAFT_IO);
   const win = v.result.win;
   if (g.mode === 'cup') {
     const pair = cupPair(g.cup);

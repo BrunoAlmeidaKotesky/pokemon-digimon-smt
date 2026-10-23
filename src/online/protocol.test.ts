@@ -73,6 +73,22 @@ describe('parseClientMsg', () => {
     expect(parseClientMsg({ t: 'vote', idx: 1 })).toBeNull();
   });
 
+  it('pick (Draft): rodada, passada e índice inteiros >= 0; só os campos conhecidos', () => {
+    expect(parseClientMsg({ t: 'pick', round: 1, att: 0, idx: 2 })).toEqual({ t: 'pick', round: 1, att: 0, idx: 2 });
+    expect(parseClientMsg({ t: 'pick', round: 3, att: 7, idx: 0, id: 'outro', extra: 1 })).toEqual({ t: 'pick', round: 3, att: 7, idx: 0 });
+    const bad: unknown[] = [-1, -0.5, 1.5, NaN, Infinity, -Infinity, '1', null, undefined, true, [1], 2 ** 60];
+    for (const b of bad) {
+      expect(parseClientMsg({ t: 'pick', round: b, att: 0, idx: 0 })).toBeNull();
+      expect(parseClientMsg({ t: 'pick', round: 1, att: b, idx: 0 })).toBeNull();
+      expect(parseClientMsg({ t: 'pick', round: 1, att: 0, idx: b })).toBeNull();
+    }
+    expect(parseClientMsg({ t: 'pick', att: 0, idx: 0 })).toBeNull();
+    expect(parseClientMsg({ t: 'pick', round: 1, idx: 0 })).toBeNull();
+    expect(parseClientMsg({ t: 'pick', round: 1, att: 0 })).toBeNull();
+    // o host não aceita "skip" de quem não é host: nem existe como mensagem
+    expect(parseClientMsg({ t: 'skip' })).toBeNull();
+  });
+
   it('nunca lança, nem com getter que explode', () => {
     const evil = {
       get t(): string {
