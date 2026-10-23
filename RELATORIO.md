@@ -14,13 +14,14 @@ Data: 23/10/2026. Branch de trabalho: `react`. Tag do site antigo: `antes-do-rea
 | 5. Salas online (Duelo, Trio, Campeonato) | concluída | `3b04c56` |
 | 6. Draft online | concluída | `4c07045` |
 | 7. Revisão e relatório | concluída | este arquivo |
+| Extra: Quarteto e franquias personalizadas (pedido durante a noite) | concluída | `3b156f5` e o commit seguinte |
 
 **Está tudo no ar.** Cada etapa entrou na `main` com merge (`--no-ff`, dá pra reverter um merge sozinho) só depois
 dos testes passarem no CI. Depois de cada deploy, rodei um teste de fumaça contra o site real, com as APIs de
 verdade: abre, carrega as franquias, faz um duelo e, desde a etapa 5, cria uma sala online com PeerJS de verdade
 entre dois navegadores e vota. A `main` e a `react` têm o mesmo código; a `main` só tem os commits de merge a mais.
 
-`npm run check` (typecheck + lint + Vitest + build + Playwright) passa inteiro: 368 testes Vitest e 172 Playwright
+`npm run check` (typecheck + lint + Vitest + build + Playwright) passa inteiro: 463 testes Vitest e 210 Playwright
 (6 pulados de propósito: os de layout de um projeto só e os de screenshot, que só rodam com `SHOTS=...`).
 
 ## O que foi feito em cada etapa
@@ -88,6 +89,29 @@ entre dois navegadores e vota. A `main` e a `react` têm o mesmo código; a `mai
 - Vitest: repetido duas vezes seguidas, exclusão entre rodadas, bye (3, 5 e 6 classificados), empate, skip, quem
   entra no meio, segredo da visão. Playwright: Draft de 2 rodadas × 3 franquias com 3 participantes, do começo ao fim,
   com um repetido forçado pela semente.
+
+### Extra: Quarteto e franquias personalizadas (o que você pediu no meio da noite)
+- **Quarteto** (solo e online): igual ao Trio, com quatro franquias (padrão Pokémon, Digimon, SMT e JoJo), teclas
+  1 a 4, roleta e Placar. No celular as cartas ficam numa grade 2×2. O Trio e o Quarteto usam o mesmo código de N
+  lados, com as chamadas a Math.random na mesma ordem de antes (os testes e screenshots do Trio não mudaram).
+- **Franquias personalizadas**: aba nova **Personalizar**.
+  - Você cria grupos, arrasta, cola ou escolhe imagens (no celular, pelo botão "Escolher imagens") e dá um nome a
+    cada uma.
+  - As imagens são reduzidas no próprio aparelho (até 512px, WebP).
+  - Cada grupo vira uma franquia nos seletores do Duelo, Trio e Quarteto, no Campeonato e no lobby das salas online,
+    valendo pra Duelo, Trio, Quarteto, Campeonato e Draft.
+  - **Nada é salvo:** some ao fechar ou recarregar a aba. Nem o localStorage guarda nome, imagem ou chave dessas
+    franquias; confronto com franquia personalizada não entra no Placar, e o sorteio delas usa um saco só na memória.
+- **Na sala online:**
+  - o host vê o mesmo editor no lobby (são as mesmas franquias da aba Personalizar);
+  - os jogadores recebem os grupos com as imagens assim que entram e a cada mudança;
+  - com **"Deixar os jogadores adicionarem imagens e mudarem os rótulos"** ligado (começa desligado), eles podem
+    adicionar imagens e renomear; criar ou apagar grupo é só do host;
+  - tudo vale só enquanto a sala existir.
+- Testes: Vitest do modelo, do registro e da validação pela rede. Playwright: aba Personalizar (escolher, arrastar,
+  rotular, usar no Duelo, nada no localStorage, some ao recarregar, apagar grupo) e sala online (host cria, convidado
+  vê, com permissão adiciona e renomeia, Duelo com a franquia personalizada). Quarteto: solo e online.
+- Na nav do celular as 7 abas ocupam 3 linhas (antes eram 2).
 
 ### Etapa 7
 - `npm run check` inteiro passando, revisão independente por um subagente (resultado abaixo) e este relatório.
@@ -177,6 +201,17 @@ Nada é obrigatório: o site está no ar e funcionando. Opcionais:
 - **Testes:** `?jogador=N` só existe com `?transporte=local`, pra várias abas do mesmo navegador serem pessoas
   diferentes.
 
+**Quarteto e franquias personalizadas**
+- O Quarteto conta no Placar como o Trio (o texto virou "Duelo, Trio e Quarteto") e não conta pra "maior sequência",
+  que continua sendo só do Duelo.
+- Nada das franquias personalizadas fica no Placar nem no localStorage, pra cumprir o "nada fica salvo". Um
+  confronto em que uma delas participa simplesmente não é gravado.
+- Limites: 8 grupos, 200 imagens por grupo, rótulos de até 40 caracteres, imagem reduzida pra até 512px. Nomes
+  repetidos dentro de um grupo ganham " (2)", " (3)" no jogo, porque o sorteio usa o nome como chave.
+- Na sala, o host manda a lista completa (com as imagens) quando alguém entra e quando ela muda, juntando mudanças
+  seguidas. Os votos e cartas levam só uma referência (`cst:grupo/imagem`), pra não repetir as imagens a cada voto.
+- Rótulos são enviados ao sair do campo ou apertar Enter, não a cada tecla.
+
 **Draft**
 - **Sorteio e repetidos:**
   - cada jogador tem o próprio saco por franquia (sorteio independente, sem repetir até passar por todos);
@@ -199,8 +234,10 @@ celular e computador, nos temas claro e escuro. O resultado completo está em
 celular), coisa de serrilhado de texto. Não há diferença visível. As imagens ficam em `relatorio/antes/`,
 `relatorio/depois/` e `relatorio/diff/`, nesta máquina (fora do git).
 
-A única mudança visual nas telas antigas é a aba nova **Online** na barra (no celular ela vai pra segunda linha, ao
-lado de Placar).
+As únicas mudanças visuais nas telas antigas são as abas novas **Quarteto**, **Personalizar** e **Online** na
+barra (no celular a barra passou a ocupar 3 linhas) e o texto do Placar, que virou "Duelo, Trio e Quarteto". Com
+elas, 4 telas do celular passam um pouco da tolerância de 0,5% (até 0,6%), e o resto continua igual
+(`relatorio/diferencas.md` tem os números atualizados).
 
 ## Revisão independente
 

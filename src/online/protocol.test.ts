@@ -299,3 +299,23 @@ describe('cleanName', () => {
     expect(cleanName('João  Ção!')).toBe('João Ção!');
   });
 });
+
+describe('franquias personalizadas pela rede', () => {
+  const data = 'data:image/webp;base64,' + 'A'.repeat(40);
+  it('custom: aceita add e label válidos e recusa o resto', () => {
+    expect(parseClientMsg({ t: 'custom', op: { op: 'add', key: 'c-abc123', items: [{ name: 'Ana', data }] } }))
+      .toEqual({ t: 'custom', op: { op: 'add', key: 'c-abc123', items: [{ name: 'Ana', data }] } });
+    expect(parseClientMsg({ t: 'custom', op: { op: 'label', key: 'c-abc123', id: 'x1', name: 'Novo' } }))
+      .toEqual({ t: 'custom', op: { op: 'label', key: 'c-abc123', id: 'x1', name: 'Novo' } });
+    for (const op of [null, {}, { op: 'add', key: 'pokemon', items: [{ name: 'a', data }] }, { op: 'add', key: 'c-abc', items: [] },
+      { op: 'add', key: 'c-abc', items: Array.from({ length: 51 }, () => ({ name: 'a', data })) }, { op: 'remove', key: 'c-abc' },
+      { op: 'label', key: 'c-abc', id: 5, name: 'x' }, { op: 'add', key: 'c-abc', items: [{ name: 'a', data: 'x'.repeat(400_001) }] }])
+      expect(parseClientMsg({ t: 'custom', op }), JSON.stringify(op).slice(0, 80)).toBeNull();
+  });
+  it('customs: lista válida passa; lista torta é ignorada', () => {
+    const list = [{ key: 'c-abc123', label: 'Amigos', color: '#6461e0', items: [{ id: 'a1', name: 'Ana', data }] }];
+    expect(parseHostMsg({ t: 'customs', list })).toEqual({ t: 'customs', list });
+    expect(parseHostMsg({ t: 'customs', list: [{ ...list[0], key: 'pokemon' }] })).toBeNull();
+    expect(parseHostMsg({ t: 'customs', list: 'x' })).toBeNull();
+  });
+});

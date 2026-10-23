@@ -139,3 +139,20 @@ ol,ul{padding-left:20px;margin:0}
 body.spinning-online #online .spin svg .wheel{animation:rot .5s linear infinite;transform-origin:20px 20px}
 body.spinning-online #online .card{cursor:default}
 @media (prefers-reduced-motion:reduce){body.spinning-online #online .spin svg .wheel{animation:none}}
+
+/* ---------- franquias personalizadas ---------- */
+#customs{display:grid;gap:12px}
+#customs[hidden]{display:none}
+#customs input:not([type]),.custom-editor input:not([type]){font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px;min-width:0}
+#customs .stack>*{min-width:0}
+.custom-group{border-left:5px solid var(--line)}
+.custom-group.over{outline:3px dashed var(--gold);outline-offset:2px}
+.custom-group .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.custom-group .group-name{font:700 16px var(--display);flex:1 1 140px}
+.drop{display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:2px dashed var(--line);border-radius:8px;padding:10px;color:var(--mute);font-size:14px}
+.custom-items{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.custom-items li{display:flex;flex-direction:column;align-items:stretch;gap:4px;position:relative;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px}
+.custom-items img{width:100%;aspect-ratio:1;object-fit:contain}
+.custom-items .nm{text-align:center;font-size:13px;overflow-wrap:anywhere}
+.custom-items .x{position:absolute;top:2px;right:4px;border:0;background:var(--panel);border-radius:50%;color:var(--bad);font-weight:700;cursor:pointer;width:22px;height:22px;line-height:1}
+@media (max-width:560px){.custom-items{grid-template-columns:repeat(2,minmax(0,1fr))}}

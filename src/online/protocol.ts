@@ -1,5 +1,8 @@
 // Validação das mensagens que chegam pela rede. Nada aqui lança: o que não tiver o formato esperado vira null.
 import type { ClientMsg, HostMsg, RoomView } from './types';
+import type { CustomOp } from '../customs/types';
+import { CUSTOM_LIMITS } from '../customs/types';
+import { validateCustoms, isCustomKey } from '../customs/model';
 
 /** tamanho máximo do nome de um jogador depois de cleanName */
 export const MAX_NAME = 16;
@@ -36,6 +39,10 @@ export function parseClientMsg(x: unknown): ClientMsg | null {
         return isNat(x.seq) && isNat(x.idx) ? { t: 'vote', seq: x.seq, idx: x.idx } : null;
       case 'pick':
         return isNat(x.round) && isNat(x.att) && isNat(x.idx) ? { t: 'pick', round: x.round, att: x.att, idx: x.idx } : null;
+      case 'custom': {
+        const op = parseCustomOp(x.op);
+        return op ? { t: 'custom', op } : null;
+      }
       case 'leave':
         return { t: 'leave' };
       case 'ping':
@@ -71,7 +78,19 @@ function isCfg(c: unknown): boolean {
   return isRec(c) && isText(c.mode) && isBool(c.secret) && isBool(c.roulette) &&
     isArr(c.duel, isText) && isArr(c.trio, isText) && isArr(c.quartet, isText) &&
     isRec(c.cup) && isArr(c.cup.frs, isText) && isNat(c.cup.size) &&
-    isRec(c.draft) && isArr(c.draft.frs, isText) && isNat(c.draft.x) && isNat(c.draft.rounds);
+    isRec(c.draft) && isArr(c.draft.frs, isText) && isNat(c.draft.x) && isNat(c.draft.rounds) &&
+    (c.customEdit === undefined || isBool(c.customEdit));
+}
+
+/** Pedido de mudança nas franquias customizadas (o host ainda confere tudo de novo ao aplicar). */
+function parseCustomOp(o: unknown): CustomOp | null {
+  if (!isRec(o) || !isCustomKey(o.key)) return null;
+  const txt = (s: unknown): s is string => isStr(s, CUSTOM_LIMITS.label * 4);
+  if (o.op === 'label') return isStr(o.id, 32) && txt(o.name) ? { op: 'label', key: o.key, id: o.id, name: o.name } : null;
+  if (o.op === 'add' && Array.isArray(o.items) && o.items.length > 0 && o.items.length <= 50 &&
+    o.items.every(i => isRec(i) && txt(i.name) && isStr(i.data, CUSTOM_LIMITS.dataChars)))
+    return { op: 'add', key: o.key, items: (o.items as { name: string; data: string }[]).map(i => ({ name: i.name, data: i.data })) };
+  return null;
 }
 
 /** O jogo, conferido pelo modo (o que a tela de cada modo usa direto). */
@@ -149,6 +168,10 @@ export function parseHostMsg(x: unknown): HostMsg | null {
         return { t: 'closed' };
       case 'replaced':
         return { t: 'replaced' };
+      case 'customs': {
+        const list = validateCustoms(x.list);
+        return list ? { t: 'customs', list } : null;
+      }
       case 'ping':
         return { t: 'ping' };
       default:

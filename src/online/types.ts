@@ -1,5 +1,6 @@
 // Contrato do modo online: estado da sala (vive no host), ações, visão de cada jogador, mensagens e transporte.
 import type { Cup, Entry, FranchiseKey, Item } from '../types';
+import type { CustomFranchise, CustomOp } from '../customs/types';
 
 // ---------- configuração ----------
 export type OnlineMode = 'duel' | 'trio' | 'quartet' | 'cup' | 'draft';
@@ -14,6 +15,8 @@ export interface OnlineConfig {
   trio: [FranchiseKey, FranchiseKey, FranchiseKey];
   quartet: [FranchiseKey, FranchiseKey, FranchiseKey, FranchiseKey];
   cup: { size: number; frs: FranchiseKey[]; even: boolean; mix: boolean };
+  /** os jogadores podem adicionar imagens e mudar rótulos das franquias customizadas do host (padrão: desligado) */
+  customEdit: boolean;
   /** Draft (etapa 6): franquias na ordem, opções por franquia e nº de rodadas */
   draft: { frs: FranchiseKey[]; x: number; rounds: number };
 }
@@ -175,6 +178,8 @@ export interface Ctx {
   rand: () => number;
   now: number;
   lists: Record<string, Item[] | null>;
+  /** rótulos das franquias customizadas do host (pros avisos) */
+  labels?: Record<string, string>;
 }
 
 export type JoinCheck = { ok: true; id: string } | { ok: false; reason: string };
@@ -263,6 +268,8 @@ export type ClientMsg =
   | { t: 'hello'; id: string; name: string }
   | { t: 'vote'; seq: number; idx: number }
   | { t: 'pick'; round: number; att: number; idx: number }
+  /** pedido de mudança nas franquias customizadas do host (só vale com cfg.customEdit) */
+  | { t: 'custom'; op: CustomOp }
   | { t: 'leave' }
   | { t: 'ping' };
 
@@ -276,6 +283,8 @@ export type HostMsg =
   | { t: 'closed' }
   /** este jogador entrou de novo por outra aba ou aparelho: esta conexão sai e não tenta voltar */
   | { t: 'replaced' }
+  /** as franquias customizadas do host (imagens incluídas), mandadas ao entrar e a cada mudança */
+  | { t: 'customs'; list: CustomFranchise[] }
   | { t: 'ping' };
 
 // ---------- transporte ----------

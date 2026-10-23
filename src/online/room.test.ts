@@ -90,6 +90,7 @@ describe('createRoom e DEFAULT_CONFIG', () => {
       trio: ['pokemon', 'digimon', 'smt'],
       quartet: ['pokemon', 'digimon', 'smt', 'jojo'],
       cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'sujimon'], even: true, mix: true },
+      customEdit: false,
       draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
     });
   });

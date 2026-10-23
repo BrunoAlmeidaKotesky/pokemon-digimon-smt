@@ -5,12 +5,14 @@ import { useSyncExternalStore } from 'react';
 import type { Cup, Entry, Item, Stats } from '../types';
 import { SOURCES, KEYS, LABELS } from '../sources';
 import { resolve } from '../sources/resolve';
-import { Bags, localBagStore } from '../core/bags';
+import { Bags, localBagStore, memoryBagStore } from '../core/bags';
+import * as customs from '../customs/store';
+import { toItems, isCustomKey } from '../customs/model';
 import { loadStats, saveStats, record, updateBest, emptyStats } from '../core/stats';
 import { buildEntrants, startCup, cupSync, cupPair, cupChoose } from '../core/cup';
 import { planSpin, spinDelay, spinIndex, PICK_MS, PICK_MS_CALM } from '../core/spin';
 
-export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'stats' | 'online';
+export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'stats' | 'customs' | 'online';
 export type Row = 'duel' | 'trio' | 'quartet' | 'cup';
 /** Trio e Quarteto: rei do morro com 3 ou 4 lados. */
 export type Multi = 'trio' | 'quartet';
@@ -37,7 +39,7 @@ export const app = {
   lists: Object.fromEntries(SOURCES.map(s => [s.key, s.initial ?? null])) as Record<string, Item[] | null>,
   /** contagem, 'carregando', 'falhou' ou null (franquia removida) */
   st: Object.fromEntries(SOURCES.map(s => [s.key, s.initial ? s.initial.length : 'carregando'])) as Record<string, string | number | null>,
-  /** franquias que ainda aparecem nos seletores (Sujimon some se faltar a lista) */
+  /** franquias que aparecem nos seletores: as fixas (Sujimon some se faltar a lista) e depois as minhas customizadas */
   avail: [...KEYS],
   sujiVisible: false,
   mode: 'duel' as Mode,
@@ -68,16 +70,25 @@ export const app = {
 };
 
 const bags = new Bags(localBagStore);
+/** franquias customizadas sorteiam com um saco só na memória (nada delas é salvo) */
+const customBags = new Bags(memoryBagStore());
 const ready = (k: string) => !!(app.lists[k] && app.lists[k]!.length);
-const pick = (k: string, avoid: { name: string }[]) => bags.pick(k, app.lists[k]!, avoid);
-export const label = (k: string) => LABELS[k] ?? '';
+const pick = (k: string, avoid: { name: string }[]) => (isCustomKey(k) ? customBags : bags).pick(k, app.lists[k]!, avoid);
+const customOf = (k: string) => customs.getRoom()?.find(f => f.key === k) ?? customs.getMine().find(f => f.key === k);
+export const label = (k: string) => LABELS[k] ?? customOf(k)?.label ?? '';
+/** Cor da franquia pra CSS: as fixas têm variável (--pokemon...), as customizadas têm a cor do grupo. */
+export const frColor = (k: string) => (isCustomKey(k) ? customOf(k)?.color ?? 'var(--line)' : `var(--${k})`);
+/** Estilo com a cor da franquia customizada (as fixas usam o CSS por data-fr). */
+export const frStyle = (k: string) => (isCustomKey(k) ? ({ '--c': frColor(k) } as Record<string, string>) : undefined);
 function preload(items: Entry[]) { items.forEach(i => resolve(i).then(x => { if (x.img) { const im = new Image(); im.src = x.img; } })); }
 
 function show(row: Row, items: Entry[], choose: (e: Entry) => void) {
   app.current = items; app.onChoose = choose; app.currentRow = row;
 }
 export function choose(it: Entry) { if (!app.spinning && app.onChoose) app.onChoose(it); }
-function record2(w: Entry, all: Entry[]) { record(app.stats, w, all, label); saveStats(app.stats); }
+/** Grava no Placar. Confronto com franquia customizada não entra (nada delas fica salvo). */
+const hasCustom = (all: Entry[]) => all.some(x => isCustomKey(x.fr));
+function record2(w: Entry, all: Entry[]) { if (hasCustom(all)) return; record(app.stats, w, all, label); saveStats(app.stats); }
 
 // ---------- duelo (rei do morro) ----------
 // Quem é escolhido fica no seu lado; o lado perdedor recebe um novo desafiante da mesma franquia.
@@ -98,7 +109,7 @@ function renderDuel() {
     const wi = app.duel.slots.indexOf(w), li = 1 - wi;
     record2(w, app.duel.slots as Entry[]);
     app.duel.streak[wi]!++;
-    if (updateBest(app.stats, w, app.duel.streak[wi]!)) saveStats(app.stats);
+    if (!isCustomKey(w.fr) && updateBest(app.stats, w, app.duel.streak[wi]!)) saveStats(app.stats);
     app.duel.slots[li] = null;
     renderDuel();
     queueNext(li);
@@ -199,7 +210,7 @@ export function setCupCfg(patch: Partial<typeof app.cupCfg>) { Object.assign(app
 export function setCupFr(k: string, on: boolean) { app.cupCfg.frs[k] = on; emit(); }
 let startLabelTimer: ReturnType<typeof setTimeout> | null = null;
 export function cupStart() {
-  const frs = KEYS.filter(k => app.avail.includes(k) && app.cupCfg.frs[k] && ready(k));
+  const frs = app.avail.filter(k => app.cupCfg.frs[k] && ready(k));
   if (!frs.length) {
     app.cupStartLabel = 'Marque uma franquia já carregada'; emit();
     if (startLabelTimer) clearTimeout(startLabelTimer);
@@ -265,12 +276,46 @@ export function onKey(e: KeyboardEvent) {
 }
 
 // ---------- início ----------
-function dropFranchise(k: string) {
-  app.avail = app.avail.filter(x => x !== k);
+/** franquias fixas que continuam disponíveis */
+let base = [...KEYS];
+/** Tira a franquia dos seletores; quem estava nela volta pra primeira da lista. */
+function unselect(k: string) {
   const first = app.avail[0]!;
   ([0, 1] as const).forEach(i => { if (app.duelFr[i] === k) setDuelFr(i, first); });
   (['trio', 'quartet'] as const).forEach(m => app[m].fr.forEach((x, i) => { if (x === k) setSideFr(m, i, first); }));
+}
+function dropFranchise(k: string) {
+  base = base.filter(x => x !== k);
+  app.avail = app.avail.filter(x => x !== k);
+  unselect(k);
   app.st[k] = null;
+}
+/** As franquias customizadas viram listas como as outras: minhas (solo e host) e as da sala (quando sou jogador). */
+function syncCustoms() {
+  const all = [...customs.getMine(), ...(customs.getRoom() ?? [])];
+  for (const k of Object.keys(app.lists)) if (isCustomKey(k) && !all.some(f => f.key === k)) delete app.lists[k];
+  for (const f of all) app.lists[f.key] = toItems(f);
+  const mine = customs.getMine().map(f => f.key);
+  const removed = app.avail.filter(k => isCustomKey(k) && !mine.includes(k));
+  app.avail = [...base, ...mine];
+  for (const k of mine) if (!(k in app.cupCfg.frs)) app.cupCfg.frs[k] = true;
+  removed.forEach(unselect);
+  // carta de franquia customizada na arena: pega o rótulo novo, ou sai se a imagem foi apagada
+  const fresh = (e: Entry | null): Entry | null => {
+    if (!e || !isCustomKey(e.fr)) return e;
+    const it = app.lists[e.fr]?.find(x => x.img === e.img);
+    return it ? (it.name === e.name ? e : { ...it, fr: e.fr }) : null;
+  };
+  app.duel.slots = app.duel.slots.map(fresh); app.duel.queue = app.duel.queue.map(fresh);
+  for (const m of ['trio', 'quartet'] as const) {
+    const sd = app[m];
+    if (sd.slots) sd.slots = sd.slots.map(fresh);
+    sd.queue = sd.queue.map(fresh);
+  }
+  // lado que ficou vazio: recebe um desafiante da lista nova
+  if (app.mode === 'duel') renderDuel();
+  if (app.mode === 'trio' || app.mode === 'quartet') nextMulti(app.mode);
+  emit();
 }
 export function statusText() { return KEYS.filter(k => app.st[k] != null).map(k => `${label(k)}: ${app.st[k]}`).join(' · '); }
 
@@ -288,6 +333,7 @@ export function init() {
         emit();
       });
   });
+  customs.subscribe(syncCustoms);
   if (new URLSearchParams(location.search).has('sala')) app.mode = 'online';
   renderDuel();
   document.addEventListener('keydown', e => { onKey(e); emit(); });

@@ -5,8 +5,9 @@ import { Quartet } from './modes/quartet/Quartet';
 import { Cup } from './modes/cup/Cup';
 import { Stats } from './modes/stats/Stats';
 import { Online } from './modes/online/Online';
+import { Customs } from './modes/customs/Customs';
 
-const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['stats', 'Placar'], ['online', 'Online']];
+const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['stats', 'Placar'], ['customs', 'Personalizar'], ['online', 'Online']];
 
 export function App() {
   const app = useApp();
@@ -27,6 +28,7 @@ export function App() {
       <Quartet />
       <Cup />
       <Stats />
+      <Customs />
       <Online />
     </div>
   );

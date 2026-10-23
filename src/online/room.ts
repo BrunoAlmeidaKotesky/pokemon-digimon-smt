@@ -21,6 +21,7 @@ export const DEFAULT_CONFIG: OnlineConfig = {
   trio: ['pokemon', 'digimon', 'smt'],
   quartet: ['pokemon', 'digimon', 'smt', 'jojo'],
   cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'sujimon'], even: true, mix: true },
+  customEdit: false,
   draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
 };
 
@@ -35,8 +36,10 @@ const LABELS: Record<string, string> = {
 };
 
 /** Rótulo da franquia nos avisos (franquia desconhecida: a própria chave). */
+/** rótulos das franquias customizadas da ação em andamento (vêm do ctx) */
+let extraLabels: Record<string, string> = {};
 export function frLabel(k: FranchiseKey): string {
-  return LABELS[k] ?? k;
+  return LABELS[k] ?? extraLabels[k] ?? k;
 }
 
 /** Texto da coroa sobre a carta de quem vem ganhando seguido ('' se ainda não ganhou). */
@@ -83,7 +86,12 @@ export function canJoin(s: RoomState, id: string, name: string): JoinCheck {
 /** Aplica a ação. Não muda `s`: devolve um estado novo, ou o próprio `s` se a ação não vale agora. */
 export function reduce(s: RoomState, a: Action, ctx: Ctx): RoomState {
   const t = structuredClone(s);
-  return apply(t, a, ctx) ? t : s;
+  extraLabels = ctx.labels ?? {};
+  try {
+    return apply(t, a, ctx) ? t : s;
+  } finally {
+    extraLabels = {};
+  }
 }
 
 /** Muda `s` (já clonado); false = ação ignorada. */

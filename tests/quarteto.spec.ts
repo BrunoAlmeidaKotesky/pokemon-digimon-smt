@@ -52,7 +52,7 @@ function conferir(antes: Carta[], depois: Carta[], vencedor: number, n: number) 
 test.describe('quarteto', () => {
   test('aba entre Trio e Campeonato; quatro seletores e quatro cartas (Pokémon, Digimon, SMT e JoJo) com teclas 1 a 4', async ({ page }) => {
     const iniciais = await inicio(page);
-    await expect(page.locator('nav button')).toHaveText(['Duelo', 'Trio', 'Quarteto', 'Campeonato', 'Placar', 'Online']);
+    await expect(page.locator('nav button')).toHaveText(['Duelo', 'Trio', 'Quarteto', 'Campeonato', 'Placar', 'Personalizar', 'Online']);
     await expect(page.locator('nav button[data-mode="quartet"]')).toHaveClass(/\bon\b/);
     await expect(page.locator('section#quartet')).toBeVisible();
     for (const s of ['duel', 'trio', 'cup', 'stats']) await expect(page.locator(`section#${s}`)).toBeHidden();
