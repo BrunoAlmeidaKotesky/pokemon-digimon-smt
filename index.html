@@ -222,9 +222,23 @@ async function resolve(item){
   return item;
 }
 const ready = k => SRC[k].list && SRC[k].list.length;
+// Sorteio "saco de bolinhas": cada franquia passa por todos os personagens antes de repetir algum.
+// O que falta sortear fica salvo no navegador, então recarregar a página não volta a repetir.
+const bags = {};
+try{ Object.assign(bags, JSON.parse(localStorage.getItem('pdx-bags')) || {}); }catch(e){}
+function saveBags(){ try{ localStorage.setItem('pdx-bags', JSON.stringify(bags)); }catch(e){} }
+function draw(k){
+  const list = SRC[k].list;
+  const byName = SRC[k].byName || (SRC[k].byName = new Map(list.map(x => [x.name, x])));
+  let bag = (bags[k] || []).filter(n => byName.has(n));
+  if(!bag.length) bag = shuffle(list.map(x => x.name));
+  const name = bag.pop();
+  bags[k] = bag; saveBags();
+  return byName.get(name);
+}
 function pick(k, avoid=[]){
   const names = new Set(avoid.map(a => a.name)); let it, tries = 0;
-  do{ it = {...rnd(SRC[k].list), fr:k}; }while(names.has(it.name) && ++tries < 20);
+  do{ it = {...draw(k), fr:k}; }while(names.has(it.name) && ++tries < 20);
   return it;
 }
 function preload(items){ items.forEach(i => resolve(i).then(x => { if(x.img){ const im=new Image(); im.src=x.img; } })); }
