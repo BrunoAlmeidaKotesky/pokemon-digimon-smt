@@ -35,13 +35,22 @@ const ALTURA_FINAL = 640;     // altura da imagem salva (a largura acompanha a p
 // Recorte, em fração do screenshot (0 = borda esquerda/topo, 1 = borda direita/baixo).
 // Rode "recortar --teste", abra public/sujimon/_teste/*-conferir.jpg e ajuste até o retângulo pegar só o painel do
 // meio, sem borda das caixas da esquerda e da direita e sem cortar cabeça, pés ou objetos.
-const RECORTE = { esquerda: 0.33, direita: 0.67, topo: 0.03, baixo: 0.97 };
+// Medido nos screenshots do Sujidex (1920x1080 e 3840x2160): o painel da lista termina em ~34% da largura, a barrinha
+// branca de rolagem fica em ~35% e o painel da ficha começa em ~64,5%; os botões "Rotate / Play Animation" ficam a ~88%
+// da altura.
+const RECORTE = { esquerda: 0.36, direita: 0.643, topo: 0.02, baixo: 0.87 };
 
 // Screenshots com layout diferente: recorte próprio, ou null pra deixar de fora. Ex.: { '123': { esquerda: 0.3, ... } }
-const EXCECOES = {};
+const EXCECOES = {
+  // escavadeiras, tubarão e lula: mais largos que o normal; começam logo depois do painel da lista
+  '297': { ...RECORTE, esquerda: 0.345 },
+  '298': { ...RECORTE, esquerda: 0.345 },
+  '299': { ...RECORTE, esquerda: 0.338, direita: 0.65 },
+  '300': { ...RECORTE, esquerda: 0.345 },
+};
 
 // Números conferidos no --teste (além dos 3 primeiros)
-const AMOSTRA = ['001', '050', '100', '150', '200', '250', '300'];
+const AMOSTRA = ['001', '019', '100', '200', '250', '300', '305', '310', '317'];
 // -----------------------------
 
 const [cmd] = process.argv.slice(2);
@@ -199,7 +208,9 @@ async function lerOriginais() {
     const num = m[1].padStart(3, '0');
     const primeiro = porNumero.get(num);
     if (primeiro) { repetidos.push(`${num}: usei "${primeiro.arquivo}" e ignorei "${arquivo}"`); continue; }
-    porNumero.set(num, { arquivo, nome: (m[2] ?? '').replace(/\s+/g, ' ').trim() });
+    // "007-retrato.png" (retrato baixado quando a página não tem screenshot): o nome vem do nomes.json
+    const nome = (m[2] ?? '').replace(/\s+/g, ' ').trim();
+    porNumero.set(num, { arquivo, nome: /^retrato$/i.test(nome) ? '' : nome });
   }
 
   const itens = [], semArquivo = [], semNome = [];
@@ -244,6 +255,14 @@ async function recortar() {
     try {
       const buf = await fs.readFile(`${ORIG}/${arquivo}`);
       const meta = await sharp(buf).metadata();
+      // retrato (rosto com fundo transparente, ~168px): não tem o que cortar; só amplia 2x com suavização
+      if (/-retrato\./i.test(arquivo) || meta.width < 600) {
+        const destino = TESTE ? `${OUT}/_teste/${num}.webp` : `${OUT}/${num}.webp`;
+        await sharp(buf).resize({ width: Math.min(meta.width * 2, 336), kernel: 'lanczos3' }).webp({ quality: 85, alphaQuality: 90 }).toFile(destino);
+        if (TESTE) console.log(`${num} ${nome} (${arquivo}): retrato ${meta.width}x${meta.height}, sem recorte`);
+        else lista.push([nome, num]);
+        continue;
+      }
       const box = retangulo(meta, r);
       if (TESTE) {
         const svg = `<svg width="${meta.width}" height="${meta.height}"><rect x="${box.left}" y="${box.top}" width="${box.width}" height="${box.height}" fill="none" stroke="#ff0040" stroke-width="${Math.max(3, Math.round(meta.width / 300))}"/></svg>`;
