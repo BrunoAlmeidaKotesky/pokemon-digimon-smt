@@ -3,7 +3,7 @@
 // Enquanto public/sujimon/list.json não existir, o site usa a Yakuza Wiki.
 //
 // Uso (na pasta do repositório, Node 18 ou mais novo):
-//   npm install --no-save sharp@0.33.5 cheerio@1.0.0
+//   npm install            (sharp e cheerio já estão nas devDependencies do projeto)
 //
 //   node sujimon.mjs baixar            -> lê o Sujidex da GamerGuides e salva cada screenshot original em
 //                                         sujimon/_orig/NNN.img e os nomes em sujimon/_orig/nomes.json
@@ -45,13 +45,23 @@ const TESTE = process.argv.includes('--teste');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const existe = f => fs.access(f).then(() => true, () => false);
 
+/** Importa um pacote; se faltar, explica o que fazer em vez de mostrar o erro cru do Node. */
+async function pacote(nome) {
+  try {
+    return await import(nome);
+  } catch {
+    console.error(`Falta o pacote "${nome}". Rode "npm install" na pasta do repositório e tente de novo.`);
+    process.exit(1);
+  }
+}
+
 async function lerJSON(arquivo, padrao) {
   try { return JSON.parse(await fs.readFile(arquivo, 'utf8')); } catch { return padrao; }
 }
 
 // ---------- baixar (GamerGuides) ----------
 async function baixar() {
-  const cheerio = await import('cheerio');
+  const cheerio = await pacote('cheerio');
   const HEADERS = { 'User-Agent': 'Mozilla/5.0 (script pessoal de uso único)', 'Accept-Language': 'en' };
   const abs = u => (u.startsWith('//') ? 'https:' + u : u.startsWith('/') ? BASE + u : u);
   async function get(url, tipo = 'text') {
@@ -133,7 +143,7 @@ function retangulo(meta, r) {
 }
 
 async function recortar() {
-  const sharp = (await import('sharp')).default;
+  const sharp = (await pacote('sharp')).default;
   const nomes = await lerJSON(`${ORIG}/nomes.json`, null);
   if (!nomes) throw new Error(`não achei ${ORIG}/nomes.json (rode "node sujimon.mjs baixar" antes)`);
   const numeros = Object.keys(nomes).sort();
