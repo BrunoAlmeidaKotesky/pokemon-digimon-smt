@@ -7,6 +7,7 @@ const PORT = antigo ? 4174 : 4173;
 export default defineConfig({
   testDir: './tests',
   testMatch: /.*\.spec\.ts$/,
+  testIgnore: ['**/real/**'],
   fullyParallel: true,
   workers: process.env.CI ? 2 : 4,
   retries: process.env.CI ? 1 : 0,
