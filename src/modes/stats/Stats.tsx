@@ -2,7 +2,7 @@ import { KEYS } from '../../sources';
 import { app, label, statsReset } from '../../state/app';
 import { meter } from '../../core/stats';
 
-/** Placar: taxa de vitória por franquia, maior sequência e últimas escolhas (Duelo e Trio). */
+/** Placar: taxa de vitória por franquia, maior sequência e últimas escolhas (Duelo, Trio e Quarteto). */
 export function Stats() {
   const s = app.stats;
   return (
@@ -10,7 +10,7 @@ export function Stats() {
       <div className="stack">
         <div className="panel stack">
           <h3>Taxa de vitória por franquia</h3>
-          <p className="mute" style={{ margin: 0, fontSize: 13 }}>Duelo e Trio. Salvo neste navegador.</p>
+          <p className="mute" style={{ margin: 0, fontSize: 13 }}>Duelo, Trio e Quarteto. Salvo neste navegador.</p>
           <div id="statsList" className="stack">
             {KEYS.map(k => {
               const { w, n, pct } = meter(s, k);

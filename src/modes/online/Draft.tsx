@@ -1,7 +1,8 @@
 import type { Entry } from '../../types';
 import type { DraftView, OnlineConfig, Qualified, RoomView } from '../../online/types';
 import { host, player } from '../../online/runtime';
-import { label } from '../../state/app';
+import { label, frColor } from '../../state/app';
+import { resolveImg } from '../../customs/store';
 import { Card } from '../../components/Card';
 import { Bracket } from '../../components/Bracket';
 import { VoteBox } from './Play';
@@ -22,7 +23,7 @@ export function DraftConfig({ c, isHost, set, frs }: { c: OnlineConfig; isHost: 
       <p className="mute" style={{ margin: 0 }}>Franquias, na ordem em que cada um monta o time:</p>
       <ol className="draft-frs" id="onDraftFrs">
         {d.frs.map((k, i) => (
-          <li key={k} data-fr={k} style={{ borderLeftColor: `var(--${k})` }}>
+          <li key={k} data-fr={k} style={{ borderLeftColor: frColor(k) }}>
             <span className="nm">{label(k) || k}</span>
             {isHost && <span className="acts">
               <button className="btn mini" aria-label={`Subir ${label(k)}`} disabled={i === 0} onClick={() => mover(i, -1)}>↑</button>
@@ -102,7 +103,7 @@ function DraftPick({ v, g }: { v: RoomView; g: DraftView }) {
         <div id="onMyTeam">
           <p className="mute" style={{ margin: '0 0 4px' }}>Seu time nesta rodada (só você vê):</p>
           <ul className="team">
-            {me.picks.map((p, fi) => p && <li key={fi} data-fr={p.fr} style={{ borderLeftColor: `var(--${p.fr})` }}><span className="mute">{label(g.frs[fi]!)}:</span> {p.name}</li>)}
+            {me.picks.map((p, fi) => p && <li key={fi} data-fr={p.fr} style={{ borderLeftColor: frColor(p.fr) }}><span className="mute">{label(g.frs[fi]!)}:</span> {p.name}</li>)}
           </ul>
         </div>
       )}
@@ -121,8 +122,8 @@ function Classificados({ g }: { g: DraftView }) {
       <h3 style={{ margin: '0 0 6px' }}>Classificados pra final ({g.qualified.length})</h3>
       <ul className="team">
         {g.qualified.map(q => (
-          <li key={q.k ?? q.name} data-fr={q.fr} style={{ borderLeftColor: `var(--${q.fr})` }}>
-            {q.img && <img src={q.img} alt="" loading="lazy" />} <b>{q.name}</b> <span className="mute">({label(q.fr)}) de {q.byName} · R{q.round}</span>
+          <li key={q.k ?? q.name} data-fr={q.fr} style={{ borderLeftColor: frColor(q.fr) }}>
+            {q.img && <img src={resolveImg(q.img)} alt="" loading="lazy" />} <b>{q.name}</b> <span className="mute">({label(q.fr)}) de {q.byName} · R{q.round}</span>
           </li>
         ))}
       </ul>

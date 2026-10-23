@@ -9,6 +9,9 @@ import { viewFor } from './view';
 import { parseClientMsg, parseHostMsg, cleanName } from './protocol';
 import { pickTransport } from './transport';
 import { app, setOnlineKey } from '../state/app';
+import * as customs from '../customs/store';
+import { applyOp } from '../customs/model';
+import type { CustomOp } from '../customs/types';
 
 // ---------- parâmetros da página ----------
 const params = new URLSearchParams(location.search);
@@ -90,12 +93,12 @@ const tokens = new Map<string, string>();    // senha do aparelho -> id público
 const publicId = () => crypto.randomUUID().slice(0, 12);
 let hostTimer: ReturnType<typeof setInterval> | null = null;
 
-const ctx = () => ({ rand: Math.random, now: Date.now(), lists: app.lists });
+const ctx = () => ({ rand: Math.random, now: Date.now(), lists: app.lists, labels: Object.fromEntries(customs.getMine().map(f => [f.key, f.label])) });
 /** Última configuração do host, mas o voto secreto e a roleta sempre começam desligados. */
 function loadCfg(): OnlineConfig {
   let saved: Partial<OnlineConfig> = {};
   try { saved = (JSON.parse(ls.get(CFG_KEY) ?? 'null') as Partial<OnlineConfig> | null) ?? {}; } catch { /* configuração ilegível */ }
-  return { ...DEFAULT_CONFIG, ...saved, secret: false, roulette: false };
+  return { ...DEFAULT_CONFIG, ...saved, secret: false, roulette: false, customEdit: false };
 }
 function send(link: Link, msg: HostMsg) { try { link.send(msg); } catch { /* conexão já caiu */ } }
 function broadcast() {
@@ -132,18 +135,34 @@ function acceptLink(link: Link) {
       links.set(pid, link);
       lastSeen.set(pid, Date.now());
       send(link, { t: 'welcome', id: pid });
+      send(link, { t: 'customs', list: customs.getMine() });
       dispatch({ type: 'join', id: pid, name });
       return;
     }
     if (!pid) return;
     if (msg.t === 'vote') dispatch({ type: 'vote', id: pid, seq: msg.seq, idx: msg.idx });
     else if (msg.t === 'pick') dispatch({ type: 'pick', id: pid, round: msg.round, att: msg.att, idx: msg.idx });
+    else if (msg.t === 'custom') { if (room.cfg.customEdit) customs.setMine(applyOp(customs.getMine(), msg.op)); }
     else if (msg.t === 'leave') { links.delete(pid); dispatch({ type: 'leave', id: pid }); link.close(); }
   });
   link.onClose(() => {
     if (pid && links.get(pid) === link) { links.delete(pid); dispatch({ type: 'online', id: pid, online: false }); }
   });
 }
+
+// franquias customizadas do host: mudou, manda pra todos (juntando mudanças seguidas) e atualiza a visão
+let customsTimer: ReturnType<typeof setTimeout> | null = null;
+let customsSent = customs.getMine();
+customs.subscribe(() => {
+  if (!room || customs.getMine() === customsSent) return;
+  if (customsTimer) clearTimeout(customsTimer);
+  customsTimer = setTimeout(() => {
+    customsTimer = null;
+    customsSent = customs.getMine();
+    for (const link of links.values()) send(link, { t: 'customs', list: customsSent });
+    broadcast();
+  }, 250);
+});
 
 export async function hostRoom(name: string) {
   const nome = cleanName(name);
@@ -223,6 +242,7 @@ async function connect(code: string): Promise<void> {
     lastHostMsg = Date.now();
     switch (msg.t) {
       case 'welcome': break;
+      case 'customs': customs.setRoom(msg.list); break;
       case 'state': online.view = msg.view; online.stage = 'jogador'; online.banner = ''; emit(); break;
       case 'reject': finish('', msg.reason); break;
       case 'kicked': finish('O host removeu você da sala.'); break;
@@ -244,6 +264,7 @@ function finish(ended: string, error = '') {
   clientTimer = null;
   online.ended = ended; online.error = error; online.banner = '';
   if (!ended) { online.stage = 'fora'; online.view = null; }
+  customs.setRoom(null);
   setUrlRoom(null);
   emit();
 }
@@ -291,6 +312,11 @@ export const player = {
   vote: (seq: number, idx: number) => {
     if (online.stage === 'host' && room) dispatch({ type: 'vote', id: room.hostId, seq, idx });
     else clientSend({ t: 'vote', seq, idx });
+  },
+  /** franquias customizadas do host: pedido de mudança (só vale se o host deixar) */
+  custom: (op: CustomOp) => {
+    if (online.stage === 'host') customs.setMine(applyOp(customs.getMine(), op));
+    else clientSend({ t: 'custom', op });
   },
   /** Draft: escolha secreta */
   pick: (round: number, att: number, idx: number) => {

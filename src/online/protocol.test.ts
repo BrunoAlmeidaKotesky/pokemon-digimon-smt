@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_CONFIG } from './room';
 import { cleanName, MAX_NAME, parseClientMsg, parseHostMsg } from './protocol';
-import type { RoomView } from './types';
+import type { OnlineConfig, RoomView } from './types';
 
 const LONG = (n: number): string => 'x'.repeat(n);
 
@@ -138,6 +138,41 @@ describe('parseHostMsg', () => {
     expect((m as { view: RoomView }).view).toBe(v);
   });
 
+  it('state: Quarteto (configuração com as quatro franquias e jogo com quatro lados)', () => {
+    const entry = (fr: string) => ({ name: fr.toUpperCase(), img: '', fr });
+    const frs = ['pokemon', 'digimon', 'smt', 'jojo'];
+    const v = view({
+      phase: 'play',
+      cfg: { ...structuredClone(DEFAULT_CONFIG), mode: 'quartet', quartet: ['ygo', 'digimon', 'smt', 'jojo'] },
+      game: { mode: 'quartet', frs, streak: [0, 2, 0, 0] },
+      vote: {
+        seq: 4, items: frs.map(entry), extras: ['', '♛ 2 vitórias', '', ''], mine: 3,
+        result: { counts: [1, 0, 1, 1], voters: [['Host'], [], ['Ana'], ['Beto']], win: 3, tie: [0, 2, 3], how: 'empate',
+          spin: { id: 5, among: [0, 2, 3], start: 2, total: 10, at: 9, age: 0 } },
+      },
+    });
+    const m = parseHostMsg({ t: 'state', view: v });
+    expect(m?.t).toBe('state');
+    expect((m as { view: RoomView }).view).toBe(v);
+    // lobby com o Quarteto escolhido
+    expect(parseHostMsg({ t: 'state', view: view({ cfg: { ...structuredClone(DEFAULT_CONFIG), mode: 'quartet' } }) })).not.toBeNull();
+  });
+
+  it('state: recusa Quarteto torto e configuração sem as franquias do Quarteto', () => {
+    // host de uma versão antiga, sem o Quarteto: a visão é recusada como as outras configurações incompletas
+    const semQuarteto: Partial<OnlineConfig> = structuredClone(DEFAULT_CONFIG);
+    delete semQuarteto.quartet;
+    const bad: Record<string, unknown>[] = [
+      { cfg: semQuarteto },
+      { cfg: { ...structuredClone(DEFAULT_CONFIG), quartet: 'pokemon' } },
+      { cfg: { ...structuredClone(DEFAULT_CONFIG), quartet: ['pokemon', 2, 'smt', 'jojo'] } },
+      { phase: 'play', game: { mode: 'quartet', frs: ['pokemon', 'digimon', 'smt', 'jojo'], streak: [0, -1, 0, 0] } },
+      { phase: 'play', game: { mode: 'quartet', frs: 'pokemon', streak: [0, 0, 0, 0] } },
+      { phase: 'play', game: { mode: 'quartet', frs: ['pokemon', 'digimon', 'smt', 'jojo'] } },
+    ];
+    for (const over of bad) expect(parseHostMsg({ t: 'state', view: view(over) }), JSON.stringify(over)).toBeNull();
+  });
+
   it('recusa o que não é objeto', () => {
     for (const j of JUNK) expect(parseHostMsg(j)).toBeNull();
   });
@@ -262,5 +297,25 @@ describe('cleanName', () => {
 
   it('mantém acentos e pontuação', () => {
     expect(cleanName('João  Ção!')).toBe('João Ção!');
+  });
+});
+
+describe('franquias personalizadas pela rede', () => {
+  const data = 'data:image/webp;base64,' + 'A'.repeat(40);
+  it('custom: aceita add e label válidos e recusa o resto', () => {
+    expect(parseClientMsg({ t: 'custom', op: { op: 'add', key: 'c-abc123', items: [{ name: 'Ana', data }] } }))
+      .toEqual({ t: 'custom', op: { op: 'add', key: 'c-abc123', items: [{ name: 'Ana', data }] } });
+    expect(parseClientMsg({ t: 'custom', op: { op: 'label', key: 'c-abc123', id: 'x1', name: 'Novo' } }))
+      .toEqual({ t: 'custom', op: { op: 'label', key: 'c-abc123', id: 'x1', name: 'Novo' } });
+    for (const op of [null, {}, { op: 'add', key: 'pokemon', items: [{ name: 'a', data }] }, { op: 'add', key: 'c-abc', items: [] },
+      { op: 'add', key: 'c-abc', items: Array.from({ length: 51 }, () => ({ name: 'a', data })) }, { op: 'remove', key: 'c-abc' },
+      { op: 'label', key: 'c-abc', id: 5, name: 'x' }, { op: 'add', key: 'c-abc', items: [{ name: 'a', data: 'x'.repeat(400_001) }] }])
+      expect(parseClientMsg({ t: 'custom', op }), JSON.stringify(op).slice(0, 80)).toBeNull();
+  });
+  it('customs: lista válida passa; lista torta é ignorada', () => {
+    const list = [{ key: 'c-abc123', label: 'Amigos', color: '#6461e0', items: [{ id: 'a1', name: 'Ana', data }] }];
+    expect(parseHostMsg({ t: 'customs', list })).toEqual({ t: 'customs', list });
+    expect(parseHostMsg({ t: 'customs', list: [{ ...list[0], key: 'pokemon' }] })).toBeNull();
+    expect(parseHostMsg({ t: 'customs', list: 'x' })).toBeNull();
   });
 });

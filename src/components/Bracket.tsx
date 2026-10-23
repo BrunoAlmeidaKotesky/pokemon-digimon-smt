@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import type { Cup, Entry, Match } from '../types';
 import { bracketColumns, bracketHeight, bracketLinks, same } from '../core/cup';
+import { frStyle } from '../state/app';
+import { resolveImg } from '../customs/store';
 
 /** Participante dentro de um confronto: miniatura, nome e faixa na cor da franquia. "???" quando ainda não se sabe. */
 function Slot({ it, m, title }: { it: Entry | null; m?: Match; title?: (e: Entry) => string | undefined }) {
@@ -8,8 +10,8 @@ function Slot({ it, m, title }: { it: Entry | null; m?: Match; title?: (e: Entry
   if (it.fr === '') return <div className="slot empty"><span className="th"></span><span className="nm">{it.name}</span></div>;
   const st = !m || !m.w ? '' : same(m.w, it) ? ' win' : ' lose';
   return (
-    <div className={'slot' + st} data-fr={it.fr} title={title?.(it)}>
-      <span className="th">{it.img ? <img src={it.img} alt="" loading="lazy" /> : null}</span>
+    <div className={'slot' + st} data-fr={it.fr} style={frStyle(it.fr)} title={title?.(it)}>
+      <span className="th">{it.img ? <img src={resolveImg(it.img)} alt="" loading="lazy" /> : null}</span>
       <span className="nm">{it.name}</span>
     </div>
   );

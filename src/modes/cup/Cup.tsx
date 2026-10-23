@@ -1,5 +1,4 @@
 import type { Entry } from '../../types';
-import { KEYS } from '../../sources';
 import { app, label, emit, setCupCfg, setCupFr, cupStart, cupQuit, cupAgain } from '../../state/app';
 import { roundName } from '../../core/cup';
 import { Arena } from '../../components/Arena';
@@ -23,7 +22,7 @@ export function Cup() {
           {SIZES.map(n => <option key={n} value={n}>{n}</option>)}
         </select></label>
         <div className="bar" id="cupFr">
-          {KEYS.filter(k => app.avail.includes(k)).map(k => (
+          {app.avail.map(k => (
             <label key={k}><input type="checkbox" id={'cup_' + k} checked={!!app.cupCfg.frs[k]} onChange={e => setCupFr(k, e.target.checked)} /> {label(k)}</label>
           ))}
         </div>

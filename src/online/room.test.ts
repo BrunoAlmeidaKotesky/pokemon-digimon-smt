@@ -88,7 +88,9 @@ describe('createRoom e DEFAULT_CONFIG', () => {
       roulette: false,
       duel: ['pokemon', 'digimon'],
       trio: ['pokemon', 'digimon', 'smt'],
+      quartet: ['pokemon', 'digimon', 'smt', 'jojo'],
       cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'sujimon'], even: true, mix: true },
+      customEdit: false,
       draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
     });
   });
@@ -285,7 +287,7 @@ describe('jogadores', () => {
 });
 
 describe('config', () => {
-  it('no lobby: merge raso por chave (cup/draft/duel/trio substituídos inteiros)', () => {
+  it('no lobby: merge raso por chave (cup/draft/duel/trio/quartet substituídos inteiros)', () => {
     let s = room([]);
     s = R(s, { type: 'config', patch: { mode: 'trio', secret: true } });
     expect(s.cfg).toEqual({ ...DEFAULT_CONFIG, mode: 'trio', secret: true });
@@ -293,6 +295,11 @@ describe('config', () => {
     s = R(s, { type: 'config', patch: { cup, duel: ['jojo', 'ygo'] } });
     expect(s.cfg.cup).toEqual(cup);
     expect(s.cfg.duel).toEqual(['jojo', 'ygo']);
+    expect(s.cfg.trio).toEqual(DEFAULT_CONFIG.trio);
+    expect(s.cfg.quartet).toEqual(DEFAULT_CONFIG.quartet);
+    s = R(s, { type: 'config', patch: { mode: 'quartet', quartet: ['ygo', 'digimon', 'smt', 'bakugan'] } });
+    expect(s.cfg.mode).toBe('quartet');
+    expect(s.cfg.quartet).toEqual(['ygo', 'digimon', 'smt', 'bakugan']);
     expect(s.cfg.trio).toEqual(DEFAULT_CONFIG.trio);
     cup.frs.push('jojo'); // cópia: o patch não fica preso no estado
     expect(s.cfg.cup.frs).toEqual(['smt']);
@@ -334,6 +341,23 @@ describe('start', () => {
     expect(V(s).extras).toEqual(['', '', '']);
   });
 
+  it('Quarteto: quatro franquias, um de cada, quatro cartas na votação', () => {
+    const s0 = room(['Ana'], { mode: 'quartet' });
+    const s = R(s0, { type: 'start' });
+    const g = king(s);
+    expect(s.phase).toBe('play');
+    expect(g.mode).toBe('quartet');
+    expect(g.frs).toEqual(['pokemon', 'digimon', 'smt', 'jojo']);
+    expect(g.slots.map(e => e.fr)).toEqual(['pokemon', 'digimon', 'smt', 'jojo']);
+    expect(g.slots.every(e => LISTS[e.fr]!.some(x => x.name === e.name && x.img === e.img))).toBe(true);
+    expect(g.streak).toEqual([0, 0, 0, 0]);
+    expect(s.vote).toEqual({ seq: s0.nextSeq, items: g.slots, extras: ['', '', '', ''], ballots: {}, result: null });
+    // franquias escolhidas pelo host, inclusive repetidas
+    const own = started(['Ana'], { mode: 'quartet', quartet: ['ygo', 'ygo', 'bakugan', 'pokemon'] });
+    expect(king(own).slots.map(e => e.fr)).toEqual(['ygo', 'ygo', 'bakugan', 'pokemon']);
+    expect(king(own).slots[0]!.name).not.toBe(king(own).slots[1]!.name);
+  });
+
   it('mesma franquia dos dois lados: nunca o mesmo personagem', () => {
     for (let seed = 1; seed <= 30; seed++) {
       rand = mulberry32(seed);
@@ -353,6 +377,9 @@ describe('start', () => {
     expect(s.notice).toBe('Lista de Pokémon ainda não carregou.');
     const trio = R(room([], { mode: 'trio' }), { type: 'start' }, ctx({ lists: { ...LISTS, smt: null } }));
     expect(trio.notice).toBe('Lista de SMT/Persona ainda não carregou.');
+    const quartet = R(room([], { mode: 'quartet' }), { type: 'start' }, ctx({ lists: { ...LISTS, jojo: null } }));
+    expect(quartet.phase).toBe('lobby');
+    expect(quartet.notice).toBe('Lista de JoJo ainda não carregou.');
     const odd = R(room([], { duel: ['pokemon', 'xyz'] }), { type: 'start' });
     expect(odd.notice).toBe('Lista de xyz ainda não carregou.');
     // carregou: começa e limpa o aviso
@@ -476,6 +503,46 @@ describe('votação', () => {
     expect(r.win).toBe((plan.start + plan.total) % 3);
   });
 
+  it('empate 1 x 1 x 1 no Quarteto: roleta só entre as três cartas empatadas (a sem voto nunca ganha)', () => {
+    const vals = [0.1, 0.9, 0.5];
+    let s = started(['Ana', 'Bia'], { mode: 'quartet' });
+    s = votes(s, { h: 0, ana: 3 });
+    expect(V(s).result).toBeNull();
+    s = vote(s, 'bia', 1, ctx({ rand: seqRand(vals) }));
+    const plan = planSpin(3, seqRand(vals));
+    const r = V(s).result!;
+    expect(r).toMatchObject({ how: 'empate', tie: [0, 1, 3], counts: [1, 1, 0, 1], voters: [['h'], ['bia'], [], ['ana']] });
+    expect(r.spin).toMatchObject({ among: [0, 1, 3], start: plan.start, total: plan.total });
+    expect(r.win).toBe([0, 1, 3][(plan.start + plan.total) % 3]);
+    // com várias sementes: cada empatada pode ganhar, a carta 2 (sem voto) nunca
+    const wins = new Set<number>();
+    for (let seed = 1; seed <= 40; seed++) {
+      rand = mulberry32(seed);
+      const t = votes(started(['Ana', 'Bia'], { mode: 'quartet' }), { h: 3, ana: 0, bia: 1 });
+      const q = V(t).result!;
+      expect(q.tie).toEqual([0, 1, 3]);
+      expect(q.spin!.among).toEqual([0, 1, 3]);
+      expect(q.win).toBe(q.spin!.among[(q.spin!.start + q.spin!.total) % 3]);
+      wins.add(q.win);
+    }
+    expect([...wins].sort()).toEqual([0, 1, 3]);
+  });
+
+  it('empate 2 x 2 no Quarteto: roleta só entre as duas mais votadas', () => {
+    let s = started(['Ana', 'Bia', 'Carla'], { mode: 'quartet' });
+    s = votes(s, { h: 1, ana: 3, bia: 3, carla: 1 });
+    const r = V(s).result!;
+    expect(r).toMatchObject({ how: 'empate', tie: [1, 3], counts: [0, 2, 0, 2] });
+    expect(r.spin!.among).toEqual([1, 3]);
+    expect([1, 3]).toContain(r.win);
+  });
+
+  it('Quarteto: um mais votado ganha direto, sem roleta', () => {
+    let s = started(['Ana', 'Bia'], { mode: 'quartet' });
+    s = votes(s, { h: 2, ana: 2, bia: 0 });
+    expect(V(s).result).toEqual({ counts: [1, 0, 2, 0], voters: [['bia'], [], ['h', 'ana'], []], win: 2, tie: null, how: 'votos', spin: null });
+  });
+
   it('votos inválidos são ignorados', () => {
     let s = started(['Ana']);
     const seq = V(s).seq;
@@ -520,6 +587,9 @@ describe('close (host encerra)', () => {
     });
     const trio = R(started(['Ana'], { mode: 'trio' }), { type: 'close' });
     expect(V(trio).result!.spin!.among).toEqual([0, 1, 2]);
+    const quartet = R(started(['Ana'], { mode: 'quartet' }), { type: 'close' });
+    expect(V(quartet).result).toMatchObject({ how: 'empate', tie: [0, 1, 2, 3], counts: [0, 0, 0, 0] });
+    expect(V(quartet).result!.spin!.among).toEqual([0, 1, 2, 3]);
   });
 
   it('com os votos que tem', () => {
@@ -557,6 +627,9 @@ describe('roleta do host', () => {
     expect(vote(s, 'bia', 0)).toBe(s);
     const trio = R(started(['Ana'], { mode: 'trio', roulette: true }), { type: 'spin' });
     expect(V(trio).result!.spin!.among).toEqual([0, 1, 2]);
+    const quartet = R(started(['Ana'], { mode: 'quartet', roulette: true }), { type: 'spin' });
+    expect(V(quartet).result).toMatchObject({ how: 'roleta', tie: null });
+    expect(V(quartet).result!.spin!.among).toEqual([0, 1, 2, 3]);
   });
 });
 
@@ -623,6 +696,54 @@ describe('Duelo e Trio (rei do morro)', () => {
       s = decide(s, n % 3);
       expect(new Set(king(s).slots.map(e => e.name)).size).toBe(3);
     }
+  });
+
+  it('Quarteto: o vencedor fica com a coroa, os outros três trocam (cada um na sua franquia)', () => {
+    let s = started(['Ana', 'Bia'], { mode: 'quartet' });
+    const frs = ['pokemon', 'digimon', 'smt', 'jojo'];
+    for (let n = 1; n <= 4; n++) {
+      const before = king(s).slots.map(e => e.name);
+      s = decide(s, 1);
+      const g = king(s);
+      expect(g.streak).toEqual([0, n, 0, 0]);
+      expect(g.slots[1]!.name).toBe(before[1]);
+      expect(g.slots.map(e => e.fr)).toEqual(frs);
+      for (const i of [0, 2, 3]) expect(before).not.toContain(g.slots[i]!.name);
+      expect(V(s).items).toEqual(g.slots);
+      expect(V(s).extras).toEqual(['', crown(n), '', '']);
+    }
+    // outro lado vence: a coroa passa pra ele e o antigo campeão é trocado
+    const champ = king(s).slots[1]!.name;
+    const right = king(s).slots[3]!;
+    s = decide(s, 3);
+    expect(king(s).streak).toEqual([0, 0, 0, 1]);
+    expect(king(s).slots[3]).toEqual(right);
+    expect(king(s).slots[1]!.name).not.toBe(champ);
+    expect(king(s).slots[1]!.fr).toBe('digimon');
+    expect(V(s).extras).toEqual(['', '', '', '♛ 1 vitória']);
+  });
+
+  it('Quarteto com tudo da mesma franquia: os quatro sempre diferentes', () => {
+    let s = started(['Ana'], { mode: 'quartet', quartet: ['jojo', 'jojo', 'jojo', 'jojo'] });
+    expect(new Set(king(s).slots.map(e => e.name)).size).toBe(4);
+    for (let n = 0; n < 20; n++) {
+      s = decide(s, n % 4);
+      expect(king(s).slots.map(e => e.fr)).toEqual(['jojo', 'jojo', 'jojo', 'jojo']);
+      expect(new Set(king(s).slots.map(e => e.name)).size).toBe(4);
+    }
+  });
+
+  it('Quarteto: empate decidido na roleta; quem a roleta escolheu fica', () => {
+    let s = started(['Ana', 'Bia'], { mode: 'quartet' });
+    s = votes(s, { h: 0, ana: 2, bia: 3 });
+    const r = V(s).result!;
+    expect(r.how).toBe('empate');
+    expect([0, 2, 3]).toContain(r.win);
+    const stay = king(s).slots[r.win]!;
+    s = R(s, { type: 'next' });
+    expect(king(s).slots[r.win]).toEqual(stay);
+    expect(king(s).streak.filter(x => x > 0)).toEqual([1]);
+    expect(king(s).streak[r.win]).toBe(1);
   });
 
   it('o resultado da roleta decide quem fica', () => {

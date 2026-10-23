@@ -19,7 +19,9 @@ export const DEFAULT_CONFIG: OnlineConfig = {
   roulette: false,
   duel: ['pokemon', 'digimon'],
   trio: ['pokemon', 'digimon', 'smt'],
+  quartet: ['pokemon', 'digimon', 'smt', 'jojo'],
   cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'sujimon'], even: true, mix: true },
+  customEdit: false,
   draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
 };
 
@@ -34,8 +36,10 @@ const LABELS: Record<string, string> = {
 };
 
 /** Rótulo da franquia nos avisos (franquia desconhecida: a própria chave). */
+/** rótulos das franquias customizadas da ação em andamento (vêm do ctx) */
+let extraLabels: Record<string, string> = {};
 export function frLabel(k: FranchiseKey): string {
-  return LABELS[k] ?? k;
+  return LABELS[k] ?? extraLabels[k] ?? k;
 }
 
 /** Texto da coroa sobre a carta de quem vem ganhando seguido ('' se ainda não ganhou). */
@@ -82,7 +86,12 @@ export function canJoin(s: RoomState, id: string, name: string): JoinCheck {
 /** Aplica a ação. Não muda `s`: devolve um estado novo, ou o próprio `s` se a ação não vale agora. */
 export function reduce(s: RoomState, a: Action, ctx: Ctx): RoomState {
   const t = structuredClone(s);
-  return apply(t, a, ctx) ? t : s;
+  extraLabels = ctx.labels ?? {};
+  try {
+    return apply(t, a, ctx) ? t : s;
+  } finally {
+    extraLabels = {};
+  }
 }
 
 /** Muda `s` (já clonado); false = ação ignorada. */
@@ -233,8 +242,9 @@ function start(s: RoomState, ctx: Ctx): boolean {
     openVote(s, [...(cupPair(cup) as [Entry, Entry])], ['', '']);
     return true;
   }
-  if (cfg.mode !== 'duel' && cfg.mode !== 'trio') return false;
-  const frs = [...(cfg.mode === 'duel' ? cfg.duel : cfg.trio)];
+  // Duelo, Trio e Quarteto: o mesmo rei do morro, com um lado por franquia configurada
+  if (cfg.mode !== 'duel' && cfg.mode !== 'trio' && cfg.mode !== 'quartet') return false;
+  const frs: FranchiseKey[] = [...cfg[cfg.mode]];
   const miss = frs.find(k => !listOf(ctx, k));
   if (miss !== undefined) return notice(s, missing(miss));
   const slots: Entry[] = [];

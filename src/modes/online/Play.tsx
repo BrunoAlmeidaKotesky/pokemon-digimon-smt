@@ -9,7 +9,7 @@ import { Bracket } from '../../components/Bracket';
 import { useSpinAnim } from './useSpinAnim';
 import { DraftPlay } from './Draft';
 
-const MODE_TITLE = { duel: 'Duelo', trio: 'Trio', cup: 'Campeonato', draft: 'Draft' } as const;
+const MODE_TITLE = { duel: 'Duelo', trio: 'Trio', quartet: 'Quarteto', cup: 'Campeonato', draft: 'Draft' } as const;
 const votos = (n: number) => `${n} ${n === 1 ? 'voto' : 'votos'}`;
 const nomeLista = (ns: string[]) => ns.length <= 1 ? ns.join('') : ns.slice(0, -1).join(', ') + ' e ' + ns.at(-1);
 
@@ -44,7 +44,9 @@ export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
   const anim = useSpinAnim(res?.spin ?? null, v.code);
   const show = !!res && anim.done;
   const n = vote.items.length;
-  const cls = n === 2 ? 'arena two' : n === 3 ? 'arena three' : 'arena grid';
+  // Quarteto: quatro cartas em linha com VS (no celular, 2×2); no Draft, 4 ou mais cartas ficam em grade
+  const four = v.game?.mode === 'quartet';
+  const cls = four ? 'arena four' : n === 2 ? 'arena two' : n === 3 ? 'arena three' : 'arena grid';
   const nameOf = (id: string) => v.players.find(p => p.id === id)?.name ?? '?';
   const faltam = v.players.filter(p => !p.voted);
   return (
@@ -52,7 +54,7 @@ export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
       <div className={cls} id="onArena" data-seq={vote.seq}>
         {vote.items.map((it: Entry, i) => (
           <Fragment key={vote.seq + ':' + i}>
-            {i > 0 && n <= 3 && <span className="vs">VS</span>}
+            {i > 0 && (n <= 3 || four) && <span className="vs">VS</span>}
             <Card it={it} index={i} lit={anim.lit === i} picked={anim.picked === i}
               extra={<>{vote.extras[i] && <span className="crown">{vote.extras[i]}</span>}{vote.mine === i && <span className="mine-tag">seu voto</span>}</>}
               cls={[vote.mine === i && 'mine', show && (res!.win === i ? 'win' : 'lose')].filter(Boolean).join(' ')}

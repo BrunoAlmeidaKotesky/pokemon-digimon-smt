@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Entry } from '../types';
 import { resolve } from '../sources/resolve';
-import { label } from '../state/app';
+import { label, frStyle } from '../state/app';
+import { resolveImg } from '../customs/store';
 
 type ImgState = 'carregando' | 'ok' | 'sem' | 'erro';
 
@@ -21,26 +22,29 @@ export function Card({ it, index, extra, lit, picked, isStatic, hideKey, onClick
   children?: ReactNode;
 }) {
   const [img, setImg] = useState<ImgState>('carregando');
+  // imagem de franquia personalizada: a data URL pode chegar depois (lista do host); aí a carta tenta de novo
+  const src = resolveImg(it.img);
   useEffect(() => {
     let vivo = true;
     resolve(it).then(x => {
       if (!vivo) return;
       if (!x.img) { setImg('sem'); return; }
-      const im = new Image(); im.alt = x.name; im.src = x.img;
+      const im = new Image(); im.alt = x.name; im.src = resolveImg(x.img);
+      if (!im.src && x.img.startsWith('cst:')) return;
       im.onload = () => { if (vivo) setImg('ok'); };
       im.onerror = () => { if (vivo) setImg('erro'); };
     });
     return () => { vivo = false; };
     // depende do conteúdo, não do objeto: no modo online cada visão chega como objeto novo
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [it.name, it.img, it.href]);
+  }, [it.name, it.img, it.href, src]);
 
   const cls = ['card', isStatic && 'static', lit && 'lit', picked && 'picked', more].filter(Boolean).join(' ');
   return (
-    <button className={cls} data-fr={it.fr} onClick={onClick}>
+    <button className={cls} data-fr={it.fr} style={frStyle(it.fr)} onClick={onClick}>
       <div className="top">{!hideKey && <span className="key">{index + 1}</span>}{extra}</div>
       <div className="img">
-        {img === 'ok' ? <img alt={it.name} src={it.img} /> : img === 'sem' ? 'sem imagem' : img === 'erro' ? 'imagem não carregou' : 'carregando…'}
+        {img === 'ok' ? <img alt={it.name} src={src} /> : img === 'sem' ? 'sem imagem' : img === 'erro' ? 'imagem não carregou' : 'carregando…'}
       </div>
       <span className="name">{it.name}</span>
       <span className="fr">{label(it.fr)}</span>

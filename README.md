@@ -1,7 +1,7 @@
 # Quem Você Prefere — Pokémon x Digimon x SMT x JoJo x Yu-Gi-Oh! x Bakugan x Sujimon
 
 Site pessoal (em português) pra escolher entre personagens de franquias diferentes: Duelo (rei do morro), Trio,
-Campeonato com chaveamento e Placar. Publicado no GitHub Pages.
+Quarteto, Campeonato com chaveamento e Placar. Publicado no GitHub Pages.
 
 ## Desenvolvimento
 
