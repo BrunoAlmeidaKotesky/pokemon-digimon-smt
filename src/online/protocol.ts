@@ -34,6 +34,8 @@ export function parseClientMsg(x: unknown): ClientMsg | null {
         return isStr(x.id, MAX_ID) && isStr(x.name, MAX_WIRE_NAME) ? { t: 'hello', id: x.id, name: x.name } : null;
       case 'vote':
         return isNat(x.seq) && isNat(x.idx) ? { t: 'vote', seq: x.seq, idx: x.idx } : null;
+      case 'pick':
+        return isNat(x.round) && isNat(x.att) && isNat(x.idx) ? { t: 'pick', round: x.round, att: x.att, idx: x.idx } : null;
       case 'leave':
         return { t: 'leave' };
       case 'ping':

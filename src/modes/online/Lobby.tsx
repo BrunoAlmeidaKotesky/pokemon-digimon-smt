@@ -2,11 +2,12 @@ import type { OnlineConfig, OnlineMode, RoomView } from '../../online/types';
 import { host } from '../../online/runtime';
 import { app, label } from '../../state/app';
 import { KEYS } from '../../sources';
+import { DraftConfig } from './Draft';
 
 const MODES: [OnlineMode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['cup', 'Campeonato'], ['draft', 'Draft']];
 const SIZES = [8, 16, 32, 64, 128];
 /** Modos que já funcionam online. */
-export const READY_MODES: OnlineMode[] = ['duel', 'trio', 'cup'];
+export const READY_MODES: OnlineMode[] = ['duel', 'trio', 'cup', 'draft'];
 
 /** Lobby: o host configura a partida; os outros veem a mesma configuração, sem poder mudar. */
 export function Lobby({ v }: { v: RoomView }) {
@@ -53,6 +54,7 @@ export function Lobby({ v }: { v: RoomView }) {
           <label><input type="checkbox" id="onCupMix" disabled={!isHost} checked={c.cup.mix} onChange={e => set({ cup: { ...c.cup, mix: e.target.checked } })} /> Evitar confronto entre a mesma franquia (os pares são refeitos a cada rodada)</label>
         </div>
       )}
+      {c.mode === 'draft' && <DraftConfig c={c} isHost={isHost} set={set} frs={frs} />}
       <div className="stack opts">
         <label><input type="checkbox" id="onSecret" disabled={!isHost} checked={c.secret} onChange={e => set({ secret: e.target.checked })} /> Voto secreto (o resultado mostra só a contagem, sem quem votou em quem)</label>
         <label><input type="checkbox" id="onRoulette" disabled={!isHost} checked={c.roulette} onChange={e => set({ roulette: e.target.checked })} /> Roleta nas rodadas (o host pode girar a roleta em vez de esperar a votação)</label>

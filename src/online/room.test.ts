@@ -361,11 +361,28 @@ describe('start', () => {
     expect(s.notice).toBe('');
   });
 
-  it('Draft ainda não existe', () => {
-    const s = R(room([], { mode: 'draft' }), { type: 'start' });
-    expect(s.phase).toBe('lobby');
-    expect(s.game).toBeNull();
-    expect(s.notice).toBe('O Draft ainda não está disponível.');
+  it('Draft: franquias vazias, repetidas ou sem lista ficam no lobby com aviso; senão começa a rodada 1', () => {
+    const draft = (frs: unknown[]) => ({ mode: 'draft' as const, draft: { frs: frs as string[], x: 3, rounds: 1 } });
+    const cases: [unknown[], string][] = [
+      [[], 'Escolha pelo menos uma franquia.'],
+      [['pokemon', 'jojo', 'pokemon'], 'Cada franquia só pode aparecer uma vez no Draft.'],
+      [['pokemon', 'xyz'], 'Lista de xyz ainda não carregou.'],
+      [[1], 'Franquia desconhecida no Draft.'],
+    ];
+    for (const [frs, msg] of cases) {
+      const s = R(room(['Ana'], draft(frs)), { type: 'start' });
+      expect(s.phase).toBe('lobby');
+      expect(s.game).toBeNull();
+      expect(s.vote).toBeNull();
+      expect(s.notice).toBe(msg);
+    }
+    const miss = R(room(['Ana'], draft(['jojo', 'smt'])), { type: 'start' }, ctx({ lists: { ...LISTS, smt: null } }));
+    expect(miss.notice).toBe('Lista de SMT/Persona ainda não carregou.');
+    const s = R(room(['Ana'], { mode: 'draft' }), { type: 'start' });
+    expect(s.phase).toBe('play');
+    expect(s.notice).toBe('');
+    expect(s.vote).toBeNull();
+    expect(s.game).toMatchObject({ mode: 'draft', frs: DEFAULT_CONFIG.draft.frs, round: 1, step: 'pick', order: ['h', 'ana'] });
   });
 
   it('start durante a partida é ignorado', () => {
@@ -777,7 +794,8 @@ describe('lobby', () => {
     const again = R(s, { type: 'lobby' });
     expect(again).toBe(s);
     // limpa aviso pendente
-    const warned = R(room([], { mode: 'draft' }), { type: 'start' });
+    const warned = R(room([]), { type: 'start' }, ctx({ lists: { ...LISTS, digimon: null } }));
+    expect(warned.notice).not.toBe('');
     expect(R(warned, { type: 'lobby' }).notice).toBe('');
   });
 });

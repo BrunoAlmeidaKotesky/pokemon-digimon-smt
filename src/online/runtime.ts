@@ -126,6 +126,7 @@ function acceptLink(link: Link) {
     }
     if (!pid) return;
     if (msg.t === 'vote') dispatch({ type: 'vote', id: pid, seq: msg.seq, idx: msg.idx });
+    else if (msg.t === 'pick') dispatch({ type: 'pick', id: pid, round: msg.round, att: msg.att, idx: msg.idx });
     else if (msg.t === 'leave') { links.delete(pid); dispatch({ type: 'leave', id: pid }); link.close(); }
   });
   link.onClose(() => {
@@ -174,6 +175,8 @@ export const host = {
   close: () => dispatch({ type: 'close' }),
   spin: () => dispatch({ type: 'spin' }),
   next: () => dispatch({ type: 'next' }),
+  /** Draft: segue sem quem ainda não terminou de escolher */
+  skip: () => dispatch({ type: 'skip' }),
   kick: (pid: string) => {
     const link = links.get(pid);
     if (link) { send(link, { t: 'kicked' }); links.delete(pid); setTimeout(() => link.close(), 300); }
@@ -271,6 +274,11 @@ export const player = {
     if (online.stage === 'host' && room) dispatch({ type: 'vote', id: room.hostId, seq, idx });
     else clientSend({ t: 'vote', seq, idx });
   },
+  /** Draft: escolha secreta */
+  pick: (round: number, att: number, idx: number) => {
+    if (online.stage === 'host' && room) dispatch({ type: 'pick', id: room.hostId, round, att, idx });
+    else clientSend({ t: 'pick', round, att, idx });
+  },
 };
 
 /** Sair (jogador) ou encerrar a sala (host). */
@@ -301,6 +309,12 @@ export const IS_LOCAL = LOCAL;
 // teclado na aba Online: 1-9 votam; R gira a roleta (host, com a roleta nas rodadas ligada)
 setOnlineKey(e => {
   const v = online.view;
+  const g = v?.game;
+  if (g?.mode === 'draft' && g.step === 'pick') {
+    const n = +e.key;
+    if (g.me && !g.me.skipped && g.me.fi != null && n >= 1 && n <= g.me.opts.length) player.pick(g.round, g.me.att, n - 1);
+    return;
+  }
   if (!v?.vote || v.vote.result) return;
   const n = +e.key;
   if (n >= 1 && n <= v.vote.items.length) player.vote(v.vote.seq, n - 1);

@@ -123,3 +123,13 @@ ol,ul{padding-left:20px;margin:0}
 .host-ctl .spinbar{margin:0}
 @media (max-width:560px){.arena.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
 #online .stack>*{min-width:0}
+.btn.mini{padding:2px 9px;font-size:13px}
+.draft-frs{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.draft-frs li{display:flex;align-items:center;gap:8px;justify-content:space-between;background:var(--bg);border:1px solid var(--line);border-left:5px solid var(--line);border-radius:6px;padding:4px 8px}
+.draft-frs .acts{display:inline-flex;gap:4px}
+.draft-round{margin:0;font-family:var(--display);font-size:16px}
+.team{list-style:none;padding:0;margin:0;display:grid;gap:4px}
+.team li{border-left:4px solid var(--line);padding:2px 8px;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.team li img{width:28px;height:28px;object-fit:contain}
+.chip .tag.dr.pronto{color:var(--ok)}
+.team.hist li{display:block}

@@ -70,7 +70,62 @@ export interface CupGame {
   mode: 'cup';
   cup: Cup;
 }
-export type Game = KingGame | CupGame;
+/** Escolha secreta de um jogador numa rodada do Draft. */
+export interface DraftTeam {
+  /** escolha por franquia (índice = posição em frs); null = ainda não escolheu nesta passada */
+  picks: (Entry | null)[];
+  /** franquias (índices) que ainda faltam escolher nesta passada, na ordem */
+  queue: number[];
+  /** opções sorteadas pra cada franquia da passada atual */
+  opts: Record<number, Entry[]>;
+  /** passada (sobe a cada refação), pra ignorar escolha atrasada */
+  att: number;
+  /** o host seguiu sem este jogador nesta rodada */
+  skipped: boolean;
+}
+
+/** Personagem classificado no Draft: quem escolheu, em qual rodada e franquia. */
+export interface Qualified extends Entry {
+  by: string;
+  byName: string;
+  round: number;
+  fi: number;
+}
+
+export interface DraftGame {
+  mode: 'draft';
+  frs: FranchiseKey[];
+  x: number;
+  rounds: number;
+  /** rodada atual (1..rounds) */
+  round: number;
+  /** pick = escolha secreta; reveal = revelação e votação por franquia; final = mata-mata; end = fim */
+  step: 'pick' | 'reveal' | 'final' | 'end';
+  /** times desta rodada, por id de jogador (quem entrou no meio da rodada fica sem time até a próxima) */
+  teams: Record<string, DraftTeam>;
+  /** ordem dos jogadores nesta rodada */
+  order: string[];
+  /** personagens já escolhidos em rodadas anteriores, por franquia: não aparecem mais */
+  used: Record<FranchiseKey, string[]>;
+  /** nesta rodada: personagens que repetiram, por índice de franquia (ficam fora das novas opções) */
+  banned: Record<number, string[]>;
+  /** quantas vezes cada franquia (índice) foi refeita nesta rodada */
+  redos: Record<number, number>;
+  /** franquias (índices) sendo refeitas agora por causa de repetição, ou null */
+  redo: number[] | null;
+  /** franquia (índice) em revelação */
+  reveal: number;
+  qualified: Qualified[];
+  /** o que cada jogador escolheu em cada rodada (fica fixo quando a rodada sai da escolha) */
+  history: { round: number; teams: { id: string; name: string; picks: Entry[] }[] }[];
+  /** saco de sorteio de cada jogador, por franquia (as opções são independentes pra cada um) */
+  bags: Record<string, Record<FranchiseKey, string[]>>;
+  /** chaveamento da final (com "bye" quando o nº não é potência de 2) */
+  final: Cup | null;
+  champion: Qualified | null;
+}
+
+export type Game = KingGame | CupGame | DraftGame;
 
 export interface RoomState {
   code: string;
@@ -108,7 +163,11 @@ export type Action =
   /** o host gira a roleta (só com cfg.roulette) */
   | { type: 'spin' }
   /** o host avança depois do resultado */
-  | { type: 'next' };
+  | { type: 'next' }
+  /** Draft: escolha secreta (idx nas opções da franquia da vez) */
+  | { type: 'pick'; id: string; round: number; att: number; idx: number }
+  /** Draft: o host segue sem quem ainda não terminou de escolher */
+  | { type: 'skip' };
 
 /** O que o redutor precisa de fora: gerador aleatório, relógio e as listas de personagens do host. */
 export interface Ctx {
@@ -147,9 +206,42 @@ export interface VoteView {
   } | null;
 }
 
+/** O Draft visto por um jogador: as próprias opções e escolhas, nunca as dos outros (até a revelação). */
+export interface DraftView {
+  mode: 'draft';
+  frs: FranchiseKey[];
+  x: number;
+  rounds: number;
+  round: number;
+  step: DraftGame['step'];
+  /** o meu time nesta rodada (null = sem time: entrou no meio da rodada) */
+  me: {
+    /** franquia (índice) da vez, ou null se terminei */
+    fi: number | null;
+    opts: Entry[];
+    picks: (Entry | null)[];
+    att: number;
+    skipped: boolean;
+  } | null;
+  /** quem já terminou de escolher (só isso aparece dos outros) */
+  progress: { id: string; name: string; state: 'escolhendo' | 'pronto' | 'pulado' }[];
+  /** franquias sendo refeitas por repetição (sem dizer qual personagem nem quem) */
+  redo: FranchiseKey[] | null;
+  reveal: number;
+  qualified: Qualified[];
+  final: Cup | null;
+  /** título da rodada da final ('Semifinal', 'Final'...) e "confronto X de Y" */
+  title: string;
+  count: string;
+  champion: Qualified | null;
+  /** só no fim: o que cada jogador escolheu em cada rodada */
+  history: DraftGame['history'] | null;
+}
+
 export type GameView =
   | { mode: 'duel' | 'trio'; frs: FranchiseKey[]; streak: number[] }
-  | { mode: 'cup'; cup: Cup; title: string; count: string };
+  | { mode: 'cup'; cup: Cup; title: string; count: string }
+  | DraftView;
 
 export interface RoomView {
   code: string;
@@ -168,6 +260,7 @@ export interface RoomView {
 export type ClientMsg =
   | { t: 'hello'; id: string; name: string }
   | { t: 'vote'; seq: number; idx: number }
+  | { t: 'pick'; round: number; att: number; idx: number }
   | { t: 'leave' }
   | { t: 'ping' };
 
