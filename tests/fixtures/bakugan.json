@@ -1,0 +1,520 @@
+[
+ {
+  "batchcomplete": "",
+  "continue": {
+   "geicontinue": "0|2237",
+   "continue": "geicontinue||"
+  },
+  "query": {
+   "pages": {
+    "1888": {
+     "pageid": 1888,
+     "ns": 0,
+     "title": "Drago",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/5/58/FusionDragonoid1.jpg/revision/latest/scale-to-width-down/400?cb=20250406235650",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "1891": {
+     "pageid": 1891,
+     "ns": 0,
+     "title": "Hydranoid (Generation 1)",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/b/b4/5f0f7d9d094ff107_bk_hydranoid.png/revision/latest/scale-to-width-down/400?cb=20100716120835",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1892": {
+     "pageid": 1892,
+     "ns": 0,
+     "title": "Gorem",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/c/cf/BK_CD_Gorem.jpg/revision/latest/scale-to-width-down/400?cb=20110630130957",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1894": {
+     "pageid": 1894,
+     "ns": 0,
+     "title": "Wavern",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/3/3b/BK_CD_Wavern.jpg/revision/latest/scale-to-width-down/400?cb=20090715014320",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1896": {
+     "pageid": 1896,
+     "ns": 0,
+     "title": "Naga",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/1/1b/BK_CD_Naga_2.jpg/revision/latest/scale-to-width-down/400?cb=20110630131101",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1897": {
+     "pageid": 1897,
+     "ns": 0,
+     "title": "Tigrerra",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/5/58/BK_CD_Tigrerra.jpg/revision/latest/scale-to-width-down/400?cb=20090918204950",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1898": {
+     "pageid": 1898,
+     "ns": 0,
+     "title": "Skyress",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/c/c4/BK_CD_Skyress.jpg/revision/latest/scale-to-width-down/400?cb=20090918211153",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1900": {
+     "pageid": 1900,
+     "ns": 0,
+     "title": "Dragonoid (Generation 1)",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/2/29/Dragonoid.png/revision/latest?cb=20200623034615",
+      "width": 400,
+      "height": 372
+     }
+    },
+    "1908": {
+     "pageid": 1908,
+     "ns": 0,
+     "title": "Cycloid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/d/d0/Cycloid_Ball.jpg/revision/latest/scale-to-width-down/400?cb=20090923020929",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1909": {
+     "pageid": 1909,
+     "ns": 0,
+     "title": "Harpus",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/7/75/BK_CD_Harpus.jpg/revision/latest/scale-to-width-down/400?cb=20100102010114",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1910": {
+     "pageid": 1910,
+     "ns": 0,
+     "title": "Mock Dragonoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/b/bd/Dueldrago.JPG/revision/latest/scale-to-width-down/400?cb=20090516071447",
+      "width": 400,
+      "height": 299
+     }
+    },
+    "1914": {
+     "pageid": 1914,
+     "ns": 0,
+     "title": "Juggernoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/f/f5/BK_CD_Juggernoid.jpg/revision/latest/scale-to-width-down/400?cb=20091019191023",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1916": {
+     "pageid": 1916,
+     "ns": 0,
+     "title": "Saurus",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/e/ef/BK_CD_Saurus.jpg/revision/latest/scale-to-width-down/400?cb=20091022161239",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1917": {
+     "pageid": 1917,
+     "ns": 0,
+     "title": "Robotallion",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/4/4c/BK_CD_2_Robotallion.jpg/revision/latest/scale-to-width-down/400?cb=20100112011140",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1919": {
+     "pageid": 1919,
+     "ns": 0,
+     "title": "Frosch",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/3/33/BK_CD_Frosch.jpg/revision/latest/scale-to-width-down/400?cb=20091113231246",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1920": {
+     "pageid": 1920,
+     "ns": 0,
+     "title": "Exedra",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/8/80/BK_CD_Exedra.jpg/revision/latest/scale-to-width-down/400?cb=20110503030947",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1921": {
+     "pageid": 1921,
+     "ns": 0,
+     "title": "Lars Lion",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/5/52/BK_CD_LarsLion.jpg/revision/latest/scale-to-width-down/400?cb=20091113230835",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1922": {
+     "pageid": 1922,
+     "ns": 0,
+     "title": "Oberus",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/e/e4/BK_CD_Oberus.jpg/revision/latest/scale-to-width-down/400?cb=20091113230457",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1923": {
+     "pageid": 1923,
+     "ns": 0,
+     "title": "Clayf",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/3/32/BK_CD_Clayf.jpg/revision/latest/scale-to-width-down/400?cb=20090619184643",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1943": {
+     "pageid": 1943,
+     "ns": 0,
+     "title": "Mantris",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/8/83/BK-CD_Mantris.jpg/revision/latest/scale-to-width-down/400?cb=20091101210037",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1948": {
+     "pageid": 1948,
+     "ns": 0,
+     "title": "Stinglash",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/e/ec/BK_CD_Stinglash.jpg/revision/latest/scale-to-width-down/400?cb=20090826180150",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1957": {
+     "pageid": 1957,
+     "ns": 0,
+     "title": "Preyas",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/6/66/BK_CD_Preyas.jpg/revision/latest/scale-to-width-down/400?cb=20090918205858",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1958": {
+     "pageid": 1958,
+     "ns": 0,
+     "title": "Hynoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/d/d9/BK_CD_Hynoid.jpg/revision/latest/scale-to-width-down/400?cb=20091018220216",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1960": {
+     "pageid": 1960,
+     "ns": 0,
+     "title": "Griffon",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/e/ef/Bk_cd_griffon_1.jpg/revision/latest/scale-to-width-down/400?cb=20090920160103",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1969": {
+     "pageid": 1969,
+     "ns": 0,
+     "title": "Apollonir",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/1/17/BK_CD_Apollonir.jpg/revision/latest/scale-to-width-down/400?cb=20110204221049",
+      "width": 400,
+      "height": 263
+     }
+    }
+   }
+  }
+ },
+ {
+  "batchcomplete": "",
+  "query": {
+   "pages": {
+    "1974": {
+     "pageid": 1974,
+     "ns": 0,
+     "title": "Wormquake",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/8/82/BK_CD_Wormquake.jpg/revision/latest/scale-to-width-down/400?cb=20091022152612",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1980": {
+     "pageid": 1980,
+     "ns": 0,
+     "title": "Reaper",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/8/80/BK_CD_Reaper.jpg/revision/latest/scale-to-width-down/400?cb=20090919222833",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1988": {
+     "pageid": 1988,
+     "ns": 0,
+     "title": "Tricloid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/e/e5/Tricloid.jpg/revision/latest/scale-to-width-down/400?cb=20091204005629",
+      "width": 400,
+      "height": 303
+     }
+    },
+    "1989": {
+     "pageid": 1989,
+     "ns": 0,
+     "title": "Laserman",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/d/dc/BK_CD_Laserman.jpg/revision/latest/scale-to-width-down/400?cb=20091102183311",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1992": {
+     "pageid": 1992,
+     "ns": 0,
+     "title": "Siege",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/5/5e/Bk_cd_seige.jpg/revision/latest/scale-to-width-down/400?cb=20090917161434",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "1998": {
+     "pageid": 1998,
+     "ns": 0,
+     "title": "Warius",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/a/a1/Warius.png/revision/latest?cb=20151117194452",
+      "width": 400,
+      "height": 372
+     }
+    },
+    "2006": {
+     "pageid": 2006,
+     "ns": 0,
+     "title": "Monarus",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/f/fd/Monarus.png/revision/latest?cb=20110327053245",
+      "width": 400,
+      "height": 372
+     }
+    },
+    "2014": {
+     "pageid": 2014,
+     "ns": 0,
+     "title": "Ravenoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/a/a3/BK_CD_Ravenoid.jpg/revision/latest/scale-to-width-down/400?cb=20090826173717",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2044": {
+     "pageid": 2044,
+     "ns": 0,
+     "title": "Sirenoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/9/9e/Albumf44049n293698-1-.png/revision/latest/scale-to-width-down/400?cb=20090721182419",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2050": {
+     "pageid": 2050,
+     "ns": 0,
+     "title": "Rabeeder",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/d/d2/Rabeeder.jpg/revision/latest/scale-to-width-down/247?cb=20091204010014",
+      "width": 247,
+      "height": 400
+     }
+    },
+    "2052": {
+     "pageid": 2052,
+     "ns": 0,
+     "title": "Tuskor",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/8/82/Bk_cd_tuskor-1-.jpg/revision/latest/scale-to-width-down/400?cb=20090807155629",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2053": {
+     "pageid": 2053,
+     "ns": 0,
+     "title": "Rattleoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/a/a8/Rattleoid.png/revision/latest?cb=20110407211132",
+      "width": 400,
+      "height": 372
+     }
+    },
+    "2054": {
+     "pageid": 2054,
+     "ns": 0,
+     "title": "Falconeer",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/7/70/BK_CD_Falconeer.jpg/revision/latest/scale-to-width-down/400?cb=20091119232135",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2077": {
+     "pageid": 2077,
+     "ns": 0,
+     "title": "Centipoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/3/30/BK_CD_Centipoid.jpg/revision/latest/scale-to-width-down/400?cb=20090619184351",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2080": {
+     "pageid": 2080,
+     "ns": 0,
+     "title": "Fear Ripper",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/6/67/BK_CD_FearRipper.jpg/revision/latest/scale-to-width-down/400?cb=20091011042154",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2081": {
+     "pageid": 2081,
+     "ns": 0,
+     "title": "Delta Dragonoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/5/52/Delta_dragonoid_%282%29.jpg/revision/latest/scale-to-width-down/400?cb=20111207211019",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2082": {
+     "pageid": 2082,
+     "ns": 0,
+     "title": "Serpenoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/b/bf/Serpenoid.png/revision/latest?cb=20110407211031",
+      "width": 400,
+      "height": 372
+     }
+    },
+    "2083": {
+     "pageid": 2083,
+     "ns": 0,
+     "title": "Tentaclear",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/4/41/Tentaclear.png/revision/latest?cb=20110407211256",
+      "width": 400,
+      "height": 372
+     }
+    },
+    "2084": {
+     "pageid": 2084,
+     "ns": 0,
+     "title": "Terrorclaw",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/9/90/BK_CD_Terrorclaw.jpg/revision/latest/scale-to-width-down/400?cb=20090826183904",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2085": {
+     "pageid": 2085,
+     "ns": 0,
+     "title": "Gargonoid",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/c/c0/Gargonoid.jpg/revision/latest/scale-to-width-down/400?cb=20090922204448",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2110": {
+     "pageid": 2110,
+     "ns": 0,
+     "title": "El Condor",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/f/fa/BK_CD_ElCondor.jpg/revision/latest/scale-to-width-down/400?cb=20091018215457",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2142": {
+     "pageid": 2142,
+     "ns": 0,
+     "title": "Blade Tigrerra",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/e/e1/BK_CD_BladeTigrerra.jpg/revision/latest/scale-to-width-down/400?cb=20090619184158",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2150": {
+     "pageid": 2150,
+     "ns": 0,
+     "title": "Angelo/Diablo Preyas",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/3/3d/Preyas_ii.jpg/revision/latest/scale-to-width-down/400?cb=20180717023240",
+      "width": 400,
+      "height": 400
+     }
+    },
+    "2160": {
+     "pageid": 2160,
+     "ns": 0,
+     "title": "Manion",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/6/6c/BK_CD_Manion.jpg/revision/latest/scale-to-width-down/400?cb=20091012233309",
+      "width": 400,
+      "height": 263
+     }
+    },
+    "2236": {
+     "pageid": 2236,
+     "ns": 0,
+     "title": "Bee Striker",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/bakugan/images/4/4e/BK_CD_BeeStriker.jpg/revision/latest/scale-to-width-down/400?cb=20090516065706",
+      "width": 400,
+      "height": 263
+     }
+    }
+   }
+  }
+ }
+]
