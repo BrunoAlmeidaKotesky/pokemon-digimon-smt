@@ -5,8 +5,7 @@
 // Passo a passo (na pasta do repositório, Node 18 ou mais novo):
 //   1. npm install   (sharp e cheerio já estão nas devDependencies do projeto)
 //   2. No jogo, abra a Sujidex e tire um screenshot da tela de cada Sujimon (com o personagem no painel do meio).
-//      Também serve salvar as imagens à mão pelo navegador; o favorito de sujimon-salvar.js salva a da página
-//      aberta já com o nome certo (uma página por vez, você navegando).
+//      Também serve salvar as imagens à mão pelo navegador.
 //   3. Coloque os arquivos em sujimon/_orig/ com o número e o nome do Sujimon:
 //        001 Burnout Bully.png   ou   001 - Burnout Bully.png
 //      Extensão png, jpg, jpeg, webp ou img; o número pode ter de 1 a 3 dígitos (5 vira 005) e "_" no nome vira
@@ -81,7 +80,7 @@ function explicarBloqueio(status) {
     `A gamerguides.com respondeu ${status} (${BLOQUEIO[status]}): o site bloqueia acesso automatizado.`,
     'Este script não tenta contornar o bloqueio (não imita navegador e não tenta de novo). Alternativas:',
     '  (a) tire seus próprios screenshots da Sujidex no jogo, ou',
-    '  (b) salve as imagens à mão pelo navegador (o favorito de sujimon-salvar.js salva a da página aberta já com o nome certo);',
+    '  (b) salve as imagens à mão pelo navegador;',
     `      nos dois casos, coloque os arquivos em ${ORIG}/ com o número de 3 dígitos + espaço + nome,`,
     '      ex.: "001 Burnout Bully.png", e depois rode: node sujimon.mjs recortar --teste',
     '  (c) enquanto isso, o site continua usando a Yakuza Wiki.',
