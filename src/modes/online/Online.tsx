@@ -24,20 +24,33 @@ function Entry() {
   const [code, setCode] = useState(on.code);
   const busy = on.stage === 'conectando';
   return (
-    <div id="onEntry" className="panel stack">
-      <h2>Jogar online</h2>
-      <p className="mute" style={{ margin: 0 }}>Cada pessoa vota no próprio aparelho. A sala fica no navegador de quem cria: se essa pessoa fechar a página, a sala acaba.</p>
-      <label className="field">Seu apelido <input id="onName" maxLength={16} autoComplete="nickname" value={name} onChange={e => setName(e.target.value)} /></label>
-      <div className="bar">
-        <button className="btn main" id="onCreate" disabled={busy} onClick={() => hostRoom(name)}>Criar sala</button>
-        <span className="mute">ou</span>
-        <label className="field">Código <input id="onCode" maxLength={4} autoCapitalize="characters" value={code}
-          onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))} onKeyDown={e => { if (e.key === 'Enter') joinRoom(code, name); }} /></label>
-        <button className="btn" id="onJoin" disabled={busy} onClick={() => joinRoom(code, name)}>Entrar</button>
+    <div id="onEntry" className="stack">
+      <div className="panel stack">
+        <h2 style={{ margin: 0 }}>Jogar online</h2>
+        <p className="mute" style={{ margin: 0 }}>Cada pessoa vota no próprio celular. A sala fica no navegador de quem cria: se essa pessoa fechar a página, a sala acaba.</p>
+        <label className="name-field"><span>Seu apelido</span>
+          <input id="onName" maxLength={16} autoComplete="nickname" placeholder="como os outros vão te ver" value={name} onChange={e => setName(e.target.value)} />
+        </label>
       </div>
-      {busy && <p className="mute" id="onBusy" style={{ margin: 0 }}>Conectando…</p>}
+      <div className="entry-grid">
+        <div className="panel stack entry-card">
+          <h3 style={{ margin: 0 }}>Criar uma sala</h3>
+          <p className="mute" style={{ margin: 0 }}>Você vira o host: escolhe o modo e as franquias e manda o link pros amigos.</p>
+          <button className="btn main big" id="onCreate" disabled={busy} onClick={() => hostRoom(name)}>Criar sala</button>
+        </div>
+        <div className="panel stack entry-card">
+          <h3 style={{ margin: 0 }}>Entrar numa sala</h3>
+          <p className="mute" style={{ margin: 0 }}>Digite o código de 4 letras que o host mandou (ou só abra o link).</p>
+          <div className="bar">
+            <input id="onCode" className="code-input" maxLength={4} autoCapitalize="characters" autoComplete="off" placeholder="ABCD" aria-label="Código da sala" value={code}
+              onChange={e => setCode(e.target.value.toUpperCase().replace(/[^A-Z]/g, ''))} onKeyDown={e => { if (e.key === 'Enter') joinRoom(code, name); }} />
+            <button className="btn main big" id="onJoin" disabled={busy} onClick={() => joinRoom(code, name)}>Entrar</button>
+          </div>
+        </div>
+      </div>
+      {busy && <p className="note" id="onBusy" style={{ margin: 0 }}>Conectando…</p>}
       {on.error && <p className="note bad" id="onError" role="alert">{on.error}</p>}
-      <Turn />
+      <div className="panel"><Turn /></div>
     </div>
   );
 }
@@ -90,7 +103,7 @@ function Room() {
   return (
     <div id="onRoom" className="stack">
       <div className="bar room-bar">
-        <h2 style={{ margin: 0 }}>Sala <span id="onRoomCode">{on.code}</span></h2>
+        <h2 className="room-title" style={{ margin: 0 }}>Sala <span id="onRoomCode" className="room-code">{on.code}</span></h2>
         <input className="room-link" readOnly value={link} aria-label="Link da sala" onFocus={e => e.target.select()} />
         <button className="btn" id="onCopy" onClick={() => { navigator.clipboard?.writeText(link).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); }, () => {}); }}>{copied ? 'Copiado!' : 'Copiar link'}</button>
         {share && <button className="btn" onClick={() => { navigator.share({ title: 'Quem Você Prefere', text: `Entra na sala ${on.code}!`, url: link }).catch(() => {}); }}>Convidar</button>}

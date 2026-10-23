@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import type { ReactNode } from 'react';
 import type { OnlineConfig, OnlineMode, RoomView } from '../../online/types';
 import { host, player } from '../../online/runtime';
 import { app, label } from '../../state/app';
@@ -6,13 +6,46 @@ import { isCustomKey } from '../../customs/model';
 import { DraftConfig } from './Draft';
 import { useCustoms, mineActions } from '../customs/Customs';
 import { CustomEditor, type CustomActions } from '../customs/CustomEditor';
+import { Segmented, Switch, FranchiseToggle, SideSelect } from '../../components/Controls';
 
-const MODES: [OnlineMode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['draft', 'Draft']];
+/** Mini desenho de cada modo: cartas lado a lado, chave ou time. */
+function ModeIcon({ m }: { m: OnlineMode }) {
+  const card = (x: number, y: number, w = 9, h = 12) => <rect key={`${x}-${y}`} x={x} y={y} width={w} height={h} rx="1.5" />;
+  const body: Record<OnlineMode, ReactNode> = {
+    duel: [card(6, 6), card(21, 6)],
+    trio: [card(2, 6, 8), card(14, 6, 8), card(26, 6, 8)],
+    quartet: [card(8, 2, 9, 7), card(19, 2, 9, 7), card(8, 13, 9, 7), card(19, 13, 9, 7)],
+    cup: <path d="M3 4h7v5H3zM3 15h7v5H3zM10 6.5h4v11h-4M14 12h5M19 9.5h7v5h-7" fill="none" strokeWidth="1.6" />,
+    draft: [card(4, 9, 8, 11), card(11, 5, 8, 11), card(18, 2, 8, 11), <path key="c" d="M28 15l2.5 2.5L35 12" fill="none" strokeWidth="2" />],
+  };
+  return <svg className="mode-icon" viewBox="0 0 38 24" aria-hidden="true">{body[m]}</svg>;
+}
+
+const MODES: { m: OnlineMode; t: string; d: string }[] = [
+  { m: 'duel', t: 'Duelo', d: '2 cartas, quem vence fica' },
+  { m: 'trio', t: 'Trio', d: '3 cartas, quem vence fica' },
+  { m: 'quartet', t: 'Quarteto', d: '4 cartas, quem vence fica' },
+  { m: 'cup', t: 'Campeonato', d: 'mata-mata de 8 a 128' },
+  { m: 'draft', t: 'Draft', d: 'cada um monta um time em segredo' },
+];
 const SIZES = [8, 16, 32, 64, 128];
 /** Modos que já funcionam online. */
 export const READY_MODES: OnlineMode[] = ['duel', 'trio', 'quartet', 'cup', 'draft'];
+const SIDE_IDS = { duel: ['onDuelA', 'onDuelB'], trio: ['onTrio0', 'onTrio1', 'onTrio2'], quartet: ['onQuartet0', 'onQuartet1', 'onQuartet2', 'onQuartet3'] } as const;
 
-/** Lobby: o host configura a partida; os outros veem a mesma configuração, sem poder mudar. */
+/** Resumo de uma linha da configuração (barra do "Começar"). */
+function resumo(c: OnlineConfig): string {
+  const vs = (ks: readonly string[]) => ks.map(label).join(' × ');
+  switch (c.mode) {
+    case 'duel': return `Duelo · ${vs(c.duel)}`;
+    case 'trio': return `Trio · ${vs(c.trio)}`;
+    case 'quartet': return `Quarteto · ${vs(c.quartet)}`;
+    case 'cup': return `Campeonato de ${c.cup.size} · ${c.cup.frs.length} ${c.cup.frs.length === 1 ? 'franquia' : 'franquias'}`;
+    case 'draft': return `Draft · ${c.draft.rounds} ${c.draft.rounds === 1 ? 'rodada' : 'rodadas'} · ${c.draft.frs.map(label).join(', ')}`;
+  }
+}
+
+/** Lobby: o host configura a partida em 3 passos (modo, franquias, regras); os outros veem a mesma coisa sem mudar. */
 export function Lobby({ v }: { v: RoomView }) {
   const isHost = v.me === v.hostId;
   const c = v.cfg;
@@ -20,64 +53,76 @@ export function Lobby({ v }: { v: RoomView }) {
   const cs = useCustoms();
   // franquias que dá pra escolher: as fixas e as customizadas do host (o host usa as dele; o jogador recebe as do host)
   const frs = isHost ? app.avail : [...app.avail.filter(k => !isCustomKey(k)), ...(cs.getRoom() ?? []).map(f => f.key)];
-  const sel = (id: string, value: string, onChange: (k: string) => void, aria: string) => (
-    <select id={id} aria-label={aria} value={value} disabled={!isHost} onChange={e => onChange(e.target.value)}>
-      {frs.map(k => <option key={k} value={k}>{label(k)}</option>)}
-    </select>
-  );
+  const sides = c.mode === 'duel' || c.mode === 'trio' || c.mode === 'quartet' ? c[c.mode] : null;
+  const setSide = (i: number, k: string) => {
+    if (c.mode === 'duel') set({ duel: c.duel.map((x, j) => (j === i ? k : x)) as OnlineConfig['duel'] });
+    if (c.mode === 'trio') set({ trio: c.trio.map((x, j) => (j === i ? k : x)) as OnlineConfig['trio'] });
+    if (c.mode === 'quartet') set({ quartet: c.quartet.map((x, j) => (j === i ? k : x)) as OnlineConfig['quartet'] });
+  };
   return (
-    <div className="panel stack" id="onLobby">
-      <h3 style={{ margin: 0 }}>{isHost ? 'Configure a partida' : 'Configuração da partida'}</h3>
-      <div className="seg" role="group" aria-label="Modo">
-        {MODES.map(([m, t]) => (
-          <button key={m} data-modo={m} className={c.mode === m ? 'on' : ''} disabled={!isHost || !READY_MODES.includes(m)}
-            title={READY_MODES.includes(m) ? undefined : 'Em breve'} onClick={() => set({ mode: m })}>{t}</button>
-        ))}
-      </div>
-      {c.mode === 'duel' && (
-        <div className="bar">{sel('onDuelA', c.duel[0], k => set({ duel: [k, c.duel[1]] }), 'Franquia da esquerda')} <span className="vsx">VS</span> {sel('onDuelB', c.duel[1], k => set({ duel: [c.duel[0], k] }), 'Franquia da direita')}</div>
-      )}
-      {c.mode === 'trio' && (
-        <div className="bar">
-          {sel('onTrio0', c.trio[0], k => set({ trio: [k, c.trio[1], c.trio[2]] }), 'Franquia 1')} <span className="vsx">VS</span>{' '}
-          {sel('onTrio1', c.trio[1], k => set({ trio: [c.trio[0], k, c.trio[2]] }), 'Franquia 2')} <span className="vsx">VS</span>{' '}
-          {sel('onTrio2', c.trio[2], k => set({ trio: [c.trio[0], c.trio[1], k] }), 'Franquia 3')}
-        </div>
-      )}
-      {c.mode === 'quartet' && (
-        <div className="bar">
-          {c.quartet.map((fr, i) => (
-            <Fragment key={i}>
-              {i > 0 && <>{' '}<span className="vsx">VS</span>{' '}</>}
-              {sel('onQuartet' + i, fr, k => set({ quartet: c.quartet.map((x, j) => (j === i ? k : x)) as OnlineConfig['quartet'] }), 'Franquia ' + (i + 1))}
-            </Fragment>
+    <div className="lobby stack" id="onLobby">
+      {!isHost && <p className="note" id="onWaiting" style={{ margin: 0 }}>Esperando o host começar a partida… A configuração aparece aqui conforme ele escolhe.</p>}
+
+      <section className="panel stack lobby-step">
+        <h3 className="step"><span>1</span>Modo</h3>
+        <div className="modes" role="radiogroup" aria-label="Modo">
+          {MODES.map(({ m, t, d }) => (
+            <button key={m} type="button" role="radio" aria-checked={c.mode === m} data-modo={m} className={'mode-card' + (c.mode === m ? ' on' : '')}
+              disabled={!isHost || !READY_MODES.includes(m)} onClick={() => set({ mode: m })}>
+              <ModeIcon m={m} />
+              <b>{t}</b>
+              <small>{d}</small>
+            </button>
           ))}
         </div>
-      )}
-      {c.mode === 'cup' && (
-        <div className="stack">
-          <label>Participantes <select id="onCupSize" value={c.cup.size} disabled={!isHost} onChange={e => set({ cup: { ...c.cup, size: +e.target.value } })}>
-            {SIZES.map(n => <option key={n} value={n}>{n}</option>)}
-          </select></label>
-          <div className="bar" id="onCupFr">
-            {frs.map(k => (
-              <label key={k}><input type="checkbox" id={'onCup_' + k} disabled={!isHost} checked={c.cup.frs.includes(k)}
-                onChange={e => set({ cup: { ...c.cup, frs: e.target.checked ? frs.filter(x => x === k || c.cup.frs.includes(x)) : c.cup.frs.filter(x => x !== k) } })} /> {label(k)}</label>
-            ))}
+      </section>
+
+      <section className="panel stack lobby-step">
+        <h3 className="step"><span>2</span>Franquias</h3>
+        {sides && (
+          <div className={'sides n' + sides.length}>
+            {sides.map((k, i) => <SideSelect key={i} id={SIDE_IDS[c.mode as keyof typeof SIDE_IDS][i]!} n={i + 1} value={k} frs={frs} disabled={!isHost} onChange={x => setSide(i, x)} />)}
           </div>
-          <label><input type="checkbox" id="onCupEven" disabled={!isHost} checked={c.cup.even} onChange={e => set({ cup: { ...c.cup, even: e.target.checked } })} /> Dividir as vagas igualmente entre as franquias</label>
-          <label><input type="checkbox" id="onCupMix" disabled={!isHost} checked={c.cup.mix} onChange={e => set({ cup: { ...c.cup, mix: e.target.checked } })} /> Evitar confronto entre a mesma franquia (os pares são refeitos a cada rodada)</label>
-        </div>
-      )}
-      {c.mode === 'draft' && <DraftConfig c={c} isHost={isHost} set={set} frs={frs} />}
-      <div className="stack opts">
-        <label><input type="checkbox" id="onSecret" disabled={!isHost} checked={c.secret} onChange={e => set({ secret: e.target.checked })} /> Voto secreto (o resultado mostra só a contagem, sem quem votou em quem)</label>
-        <label><input type="checkbox" id="onRoulette" disabled={!isHost} checked={c.roulette} onChange={e => set({ roulette: e.target.checked })} /> Roleta nas rodadas (o host pode girar a roleta em vez de esperar a votação)</label>
-      </div>
+        )}
+        {c.mode === 'cup' && (
+          <div className="stack">
+            <div className="row-label"><span>Participantes</span>
+              <Segmented id="onCupSize" ariaLabel="Participantes" value={c.cup.size} disabled={!isHost}
+                options={SIZES.map(n => ({ value: n, label: n }))} onChange={n => set({ cup: { ...c.cup, size: n } })} />
+            </div>
+            <div className="fr-toggles" id="onCupFr">
+              {frs.map(k => (
+                <FranchiseToggle key={k} k={k} id={'onCup_' + k} disabled={!isHost} checked={c.cup.frs.includes(k)}
+                  onChange={on => set({ cup: { ...c.cup, frs: on ? frs.filter(x => x === k || c.cup.frs.includes(x)) : c.cup.frs.filter(x => x !== k) } })} />
+              ))}
+            </div>
+            <Switch id="onCupEven" title="Dividir as vagas igualmente" checked={c.cup.even} disabled={!isHost} onChange={on => set({ cup: { ...c.cup, even: on } })}>
+              Cada franquia marcada recebe o mesmo número de participantes.
+            </Switch>
+            <Switch id="onCupMix" title="Evitar confronto da mesma franquia" checked={c.cup.mix} disabled={!isHost} onChange={on => set({ cup: { ...c.cup, mix: on } })}>
+              Os pares são refeitos a cada rodada.
+            </Switch>
+          </div>
+        )}
+        {c.mode === 'draft' && <DraftConfig c={c} isHost={isHost} set={set} frs={frs} />}
+      </section>
+
+      <section className="panel stack lobby-step">
+        <h3 className="step"><span>3</span>Regras</h3>
+        <Switch id="onSecret" title="Voto secreto" checked={c.secret} disabled={!isHost} onChange={on => set({ secret: on })}>
+          O resultado mostra só a contagem, sem quem votou em quem. Vale pra todas as votações, inclusive as do Draft.
+        </Switch>
+        <Switch id="onRoulette" title="Roleta nas rodadas" checked={c.roulette} disabled={!isHost} onChange={on => set({ roulette: on })}>
+          O host pode girar a roleta em vez de esperar a votação. Empate sempre vai pra roleta, ligado ou não.
+        </Switch>
+      </section>
+
       <CustomsPanel v={v} />
-      {isHost
-        ? <div><button className="btn main" id="onStart" onClick={host.start}>Começar</button> <span className="mute">{v.players.length < 2 ? 'Mande o link pros amigos entrarem.' : `${v.players.length} jogadores na sala.`}</span></div>
-        : <p className="mute" id="onWaiting" style={{ margin: 0 }}>Esperando o host começar a partida…</p>}
+
+      <div className="start-bar" id="onStartBar">
+        <span className="resumo"><b>{resumo(c)}</b><small className="mute">{v.players.length} {v.players.length === 1 ? 'jogador' : 'jogadores'}{v.players.length < 2 && isHost ? ' · mande o link pros amigos entrarem' : ''}</small></span>
+        {isHost && <button className="btn main big" id="onStart" onClick={host.start}>Começar</button>}
+      </div>
     </div>
   );
 }
@@ -99,13 +144,15 @@ function CustomsPanel({ v }: { v: RoomView }) {
   const list = isHost ? cs.getMine() : cs.getRoom() ?? [];
   if (!isHost && !list.length) return null;
   return (
-    <details className="panel" id="onCustoms" open={isHost || list.length > 0}>
-      <summary><b>Franquias personalizadas</b> <span className="mute">({list.length})</span></summary>
+    <details className="panel lobby-step" id="onCustoms" open={isHost || list.length > 0}>
+      <summary><h3 className="step"><span>4</span>Franquias personalizadas <small className="mute">({list.length})</small></h3></summary>
       <div className="stack" style={{ marginTop: 8 }}>
         {isHost
           ? <>
             <p className="mute" style={{ margin: 0 }}>Grupos de imagens que viram franquias nesta sala (são os mesmos da aba Personalizar). Ficam só enquanto a sala existir.</p>
-            <label><input type="checkbox" id="onCustomEdit" checked={v.cfg.customEdit} onChange={e => host.config({ customEdit: e.target.checked })} /> Deixar os jogadores adicionarem imagens e mudarem os rótulos</label>
+            <Switch id="onCustomEdit" title="Jogadores podem adicionar imagens e mudar rótulos" checked={v.cfg.customEdit} onChange={on => host.config({ customEdit: on })}>
+              Criar e apagar grupos continua só com você.
+            </Switch>
           </>
           : <p className="mute" style={{ margin: 0 }}>{v.cfg.customEdit ? 'O host deixou você adicionar imagens e mudar os rótulos.' : 'Só o host muda estas franquias.'}</p>}
         <CustomEditor list={list} actions={isHost ? mineActions : v.cfg.customEdit ? guestActions : { manage: null, edit: null }} idPrefix="onCst" />
