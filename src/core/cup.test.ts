@@ -597,7 +597,7 @@ describe('equivalência com o site antigo (mulberry32)', () => {
     const refOut = lists.map(makeRefCup(SRC).pairUp);
     const refCalls = r.calls();
     r = seedRandom(seed);
-    expect(lists.map(pairUp)).toEqual(refOut);
+    expect(lists.map(l => pairUp(l))).toEqual(refOut);
     expect(r.calls()).toBe(refCalls);
   });
 });

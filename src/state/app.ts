@@ -10,7 +10,7 @@ import { loadStats, saveStats, record, updateBest, emptyStats } from '../core/st
 import { buildEntrants, startCup, cupSync, cupPair, cupChoose } from '../core/cup';
 import { planSpin, spinDelay, spinIndex, PICK_MS, PICK_MS_CALM } from '../core/spin';
 
-export type Mode = 'duel' | 'trio' | 'cup' | 'stats';
+export type Mode = 'duel' | 'trio' | 'cup' | 'stats' | 'online';
 export type Row = 'duel' | 'trio' | 'cup';
 
 // ---------- assinatura (React) ----------
@@ -231,9 +231,13 @@ export function setMode(m: Mode) {
   if (m === 'cup' && app.cup && !app.cupHidden.play) cupStep();
   emit();
 }
+let onlineKey: ((e: KeyboardEvent) => void) | null = null;
+/** O modo online registra aqui o próprio teclado (votar com 1-9, R pra roleta do host). */
+export function setOnlineKey(fn: (e: KeyboardEvent) => void) { onlineKey = fn; }
 export function onKey(e: KeyboardEvent) {
   const t = e.target as HTMLElement | null;
   if (t && ['SELECT', 'INPUT'].includes(t.tagName)) return;
+  if (app.mode === 'online') { onlineKey?.(e); return; }
   const n = +e.key;
   if (app.spinning) return;
   if (n >= 1 && n <= app.current.length && app.onChoose) app.onChoose(app.current[n - 1]!);
@@ -264,6 +268,7 @@ export function init() {
         emit();
       });
   });
+  if (new URLSearchParams(location.search).has('sala')) app.mode = 'online';
   renderDuel();
   document.addEventListener('keydown', e => { onKey(e); emit(); });
 }
