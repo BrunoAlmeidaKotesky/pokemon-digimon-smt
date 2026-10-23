@@ -1,0 +1,132 @@
+{
+ "content": [
+  {
+   "id": 1,
+   "name": "Agumon",
+   "href": "https://digi-api.com/api/v1/digimon/1",
+   "image": "https://digi-api.com/images/digimon/w/Agumon.png"
+  },
+  {
+   "id": 2,
+   "name": "Airdramon",
+   "href": "https://digi-api.com/api/v1/digimon/2",
+   "image": "https://digi-api.com/images/digimon/w/Airdramon.png"
+  },
+  {
+   "id": 3,
+   "name": "Angemon",
+   "href": "https://digi-api.com/api/v1/digimon/3",
+   "image": "https://digi-api.com/images/digimon/w/Angemon.png"
+  },
+  {
+   "id": 4,
+   "name": "Betamon",
+   "href": "https://digi-api.com/api/v1/digimon/4",
+   "image": null
+  },
+  {
+   "id": 5,
+   "name": "Birdramon",
+   "href": "https://digi-api.com/api/v1/digimon/5",
+   "image": "https://digi-api.com/images/digimon/w/Birdramon.png"
+  },
+  {
+   "id": 6,
+   "name": "Botamon",
+   "href": "https://digi-api.com/api/v1/digimon/6",
+   "image": "https://digi-api.com/images/digimon/w/Botamon.png"
+  },
+  {
+   "id": 7,
+   "name": "Bun",
+   "href": "https://digi-api.com/api/v1/digimon/7",
+   "image": "https://digi-api.com/images/digimon/w/Bun.png"
+  },
+  {
+   "id": 8,
+   "name": "Death Airdramon",
+   "href": "https://digi-api.com/api/v1/digimon/8",
+   "image": "https://digi-api.com/images/digimon/w/Death_Airdramon.png"
+  },
+  {
+   "id": 9,
+   "name": "Death Devimon",
+   "href": "https://digi-api.com/api/v1/digimon/9",
+   "image": "https://digi-api.com/images/digimon/w/Death_Devimon.png"
+  },
+  {
+   "id": 10,
+   "name": "Death Meramon (C'mon Digimon Version)",
+   "href": "https://digi-api.com/api/v1/digimon/10",
+   "image": "https://digi-api.com/images/digimon/w/Death_Meramon_(C'mon_Digimon_Version).png"
+  },
+  {
+   "id": 11,
+   "name": "Death Metal Greymon",
+   "href": "https://digi-api.com/api/v1/digimon/11",
+   "image": "https://digi-api.com/images/digimon/w/Death_Metal_Greymon.png"
+  },
+  {
+   "id": 12,
+   "name": "Death Tyranomon",
+   "href": "https://digi-api.com/api/v1/digimon/12",
+   "image": "https://digi-api.com/images/digimon/w/Death_Tyranomon.png"
+  },
+  {
+   "id": 13,
+   "name": "Deathmon (C'mon Digimon Version)",
+   "href": "https://digi-api.com/api/v1/digimon/13",
+   "image": "https://digi-api.com/images/digimon/w/Deathmon_(C'mon_Digimon_Version).png"
+  },
+  {
+   "id": 14,
+   "name": "Devimon",
+   "href": "https://digi-api.com/api/v1/digimon/14",
+   "image": "https://digi-api.com/images/digimon/w/Devimon.png"
+  },
+  {
+   "id": 15,
+   "name": "Elecmon",
+   "href": "https://digi-api.com/api/v1/digimon/15",
+   "image": "https://digi-api.com/images/digimon/w/Elecmon.png"
+  },
+  {
+   "id": 16,
+   "name": "Gabumon",
+   "href": "https://digi-api.com/api/v1/digimon/16",
+   "image": "https://digi-api.com/images/digimon/w/Gabumon.png"
+  },
+  {
+   "id": 17,
+   "name": "Mamemon",
+   "href": "https://digi-api.com/api/v1/digimon/17",
+   "image": "https://digi-api.com/images/digimon/w/Mamemon.png"
+  },
+  {
+   "id": 18,
+   "name": "Meramon",
+   "href": "https://digi-api.com/api/v1/digimon/18",
+   "image": "https://digi-api.com/images/digimon/w/Meramon.png"
+  },
+  {
+   "id": 19,
+   "name": "Metal Greymon (Virus)",
+   "href": "https://digi-api.com/api/v1/digimon/19",
+   "image": "https://digi-api.com/images/digimon/w/Metal_Greymon_(Virus).png"
+  },
+  {
+   "id": 20,
+   "name": "Metal Mamemon",
+   "href": "https://digi-api.com/api/v1/digimon/20",
+   "image": "https://digi-api.com/images/digimon/w/Metal_Mamemon.png"
+  }
+ ],
+ "pageable": {
+  "currentPage": 0,
+  "elementsOnPage": 20,
+  "totalElements": 40,
+  "totalPages": 2,
+  "previousPage": "",
+  "nextPage": "https://digi-api.com/api/v1/digimon?page=1&pageSize=20"
+ }
+}

@@ -1,19 +1,23 @@
-# Pokémon x Digimon x SMT
+# Quem Você Prefere — Pokémon x Digimon x SMT x JoJo x Yu-Gi-Oh! x Bakugan x Sujimon
 
-This project is a simple web page for comparing Pokémon, Digimon, and SMT/Persona characters in duels, trios, and tournament mode.
+Site pessoal (em português) pra escolher entre personagens de franquias diferentes: Duelo (rei do morro), Trio,
+Campeonato com chaveamento e Placar. Publicado no GitHub Pages.
 
-## Run locally
+## Desenvolvimento
 
-Open `index.html` directly in your browser.
+React + TypeScript (estrito) + Vite.
 
-## GitHub Pages
+```sh
+npm ci
+npm run dev        # servidor local
+npm run build      # gera dist/
+npm run check      # typecheck + lint + Vitest + build + Playwright
+```
 
-Once the repository is published with GitHub Pages, the site can be accessed through the Pages URL.
+- `src/sources/`: uma franquia por arquivo (carga das listas).
+- `src/core/`: lógica pura sem React (saco de sorteio, campeonato, placar, roleta, localStorage), com testes Vitest.
+- `src/state/`: estado do site e ações dos modos.
+- `src/modes/`: um modo por pasta. `src/components/`: Carta, Arena, Roleta, Chaveamento, seletores.
+- `tests/`: Playwright sem internet (APIs respondem com `tests/fixtures/`).
 
-## Features
-
-- 1v1 duel mode
-- Trio mode
-- Tournament mode
-- Local win tracking using browser storage
-- Keyboard shortcuts for quick voting
+Os dados dos jogadores ficam no localStorage com as chaves `pdx-stats`, `pdx-bags` e `pdx-ygo-v1`.

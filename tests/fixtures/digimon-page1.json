@@ -1,0 +1,132 @@
+{
+ "content": [
+  {
+   "id": 21,
+   "name": "Monzaemon",
+   "href": "https://digi-api.com/api/v1/digimon/21",
+   "image": "https://digi-api.com/images/digimon/w/Monzaemon.png"
+  },
+  {
+   "id": 22,
+   "name": "Numemon",
+   "href": "https://digi-api.com/api/v1/digimon/22",
+   "image": "https://digi-api.com/images/digimon/w/Numemon.png"
+  },
+  {
+   "id": 23,
+   "name": "Ohakadamon",
+   "href": "https://digi-api.com/api/v1/digimon/23",
+   "image": "https://digi-api.com/images/digimon/w/Ohakadamon.png"
+  },
+  {
+   "id": 24,
+   "name": "Tunomon",
+   "href": "https://digi-api.com/api/v1/digimon/24",
+   "image": "https://digi-api.com/images/digimon/w/Tunomon.png"
+  },
+  {
+   "id": 25,
+   "name": "Tyranomon",
+   "href": "https://digi-api.com/api/v1/digimon/25",
+   "image": "https://digi-api.com/images/digimon/w/Tyranomon.png"
+  },
+  {
+   "id": 26,
+   "name": "Vademon",
+   "href": "https://digi-api.com/api/v1/digimon/26",
+   "image": null
+  },
+  {
+   "id": 27,
+   "name": "Vegimon",
+   "href": "https://digi-api.com/api/v1/digimon/27",
+   "image": "https://digi-api.com/images/digimon/w/Vegimon.png"
+  },
+  {
+   "id": 28,
+   "name": "Whamon",
+   "href": "https://digi-api.com/api/v1/digimon/28",
+   "image": "https://digi-api.com/images/digimon/w/Whamon.png"
+  },
+  {
+   "id": 29,
+   "name": "Yukidarumon",
+   "href": "https://digi-api.com/api/v1/digimon/29",
+   "image": "https://digi-api.com/images/digimon/w/Yukidarumon.png"
+  },
+  {
+   "id": 30,
+   "name": "Punimon",
+   "href": "https://digi-api.com/api/v1/digimon/30",
+   "image": "https://digi-api.com/images/digimon/w/Punimon.png"
+  },
+  {
+   "id": 31,
+   "name": "Seadramon",
+   "href": "https://digi-api.com/api/v1/digimon/31",
+   "image": "https://digi-api.com/images/digimon/w/Seadramon.png"
+  },
+  {
+   "id": 32,
+   "name": "Skull Greymon",
+   "href": "https://digi-api.com/api/v1/digimon/32",
+   "image": "https://digi-api.com/images/digimon/w/Skull_Greymon.png"
+  },
+  {
+   "id": 33,
+   "name": "Garurumon",
+   "href": "https://digi-api.com/api/v1/digimon/33",
+   "image": "https://digi-api.com/images/digimon/w/Garurumon.png"
+  },
+  {
+   "id": 34,
+   "name": "Greymon",
+   "href": "https://digi-api.com/api/v1/digimon/34",
+   "image": "https://digi-api.com/images/digimon/w/Greymon.png"
+  },
+  {
+   "id": 35,
+   "name": "Kabuterimon",
+   "href": "https://digi-api.com/api/v1/digimon/35",
+   "image": "https://digi-api.com/images/digimon/w/Kabuterimon.png"
+  },
+  {
+   "id": 36,
+   "name": "Koromon",
+   "href": "https://digi-api.com/api/v1/digimon/36",
+   "image": "https://digi-api.com/images/digimon/w/Koromon.png"
+  },
+  {
+   "id": 37,
+   "name": "Andromon",
+   "href": "https://digi-api.com/api/v1/digimon/37",
+   "image": "https://digi-api.com/images/digimon/w/Andromon.png"
+  },
+  {
+   "id": 38,
+   "name": "Angewomon",
+   "href": "https://digi-api.com/api/v1/digimon/38",
+   "image": "https://digi-api.com/images/digimon/w/Angewomon.png"
+  },
+  {
+   "id": 39,
+   "name": "Anomalocarimon",
+   "href": "https://digi-api.com/api/v1/digimon/39",
+   "image": "https://digi-api.com/images/digimon/w/Anomalocarimon.png"
+  },
+  {
+   "id": 40,
+   "name": "Atlur Kabuterimon (Blue)",
+   "href": "https://digi-api.com/api/v1/digimon/40",
+   "image": "https://digi-api.com/images/digimon/w/Atlur_Kabuterimon_(Blue).png"
+  }
+ ],
+ "pageable": {
+  "currentPage": 1,
+  "elementsOnPage": 20,
+  "totalElements": 40,
+  "totalPages": 2,
+  "previousPage": "https://digi-api.com/api/v1/digimon?page=0&pageSize=20",
+  "nextPage": ""
+ }
+}
