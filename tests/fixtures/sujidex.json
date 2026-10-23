@@ -1,0 +1,607 @@
+{
+ "wikitext": "[[File:SuijidexIcon.png|thumb]]\nThe '''Sujidex''' ({{JP|スジモン図鑑}}, ''Sujimon Zukan'', Lit. \"Sujimon Encyclopedia\") is a telephone application featured in both ''[[Yakuza: Like a Dragon]]'' and ''[[Like a Dragon: Infinite Wealth]]''. It is the franchise's equivalent of an enemy list or {{WP|Bestiary|bestiary}}, as it keeps track of all the '''[[Sujimon]]''' that the player encounters.\n\n==List of Sujimon ([[Yakuza: Like a Dragon|Y:LAD]])==\n{| class=\"wikitable sortable\"\n|-\n! class=\"unsortable\" |Icon!!Number !!Name \n|-\n|[[File:Burnout Bully Icon.png|75px]]||1||[[Burnout Bully]]\n|-\n|[[File:Capitalist Punisher Icon.png|75px]]||2||[[Capitalist Punisher]]\n|-\n|[[File:Dotcombatant Icon.png|75px]]||3||[[Dotcombatant]]\n|}\n\n==List of Sujimon ([[Like a Dragon: Infinite Wealth|LaD:IW]])==\n{| class=\"wikitable sortable\"\n|-\n! class=\"unsortable\" |Icon!!Number!!Name\n|-\n|[[File:Burnout Bully Icon.png|75px]]||1||[[Burnout Bully]]\n|-\n|[[File:Capitalist Punisher Icon.png|75px]]||2||[[Capitalist Punisher]]\n|-\n|[[File:Hammeredhead Icon.png|75px]]||3||[[Hammeredhead]]\n|-\n|[[File:Knight of the Cask Icon.png|75px]]||4||[[Knight of the Cask]]\n|-\n|[[File:Urbane Legend Icon.png|75px]]||5||[[Urbane Legend]]\n|-\n|[[File:Battle Bum Icon.png|75px]]||6||[[Battle Bum]]\n|-\n| [[File:Hungry_Hungry_Homeless Icon.png|75px]]||7||[[Hungry Hungry Homeless]]\n|-\n|[[File:Invested Vagabond Icon.png|75px]]|| 8|| [[Invested Vagabond]]\n|-\n| ||9||[[Transcendent Transient]] \n|-\n|[[File:Biting Barker Icon.png|75px]]||10 ||[[Biting Barker]]\n|-\n| [[File:Punkling Icon.png|75px]]||13||[[Punkling|Street Punk]]\n|-\n|[[File:The Fist Icon.png|75px]]||22||[[The Fist|Fundoshin]]\n|-\n|[[File:Demolitioneer Icon.png|75px]]||25||[[Demolitioneer]]\n|-\n|[[File:King of Thieves Icon.png|75px]]||30||[[King of Thieves]]\n|-\n|[[File:Weltraiser Icon.png|75px]]||40||[[Weltraiser]]\n|-\n|[[File:King Joe Icon.png|75px]]||60||[[King Joe]]\n|-\n|[[File:Peacemaker Icon.png|75px]]||90||[[Peacemaker]]\n|-\n|[[File:Bobcutter Icon.png|75px]]||120||[[Bobcutter]]\n|-\n|[[File:Metal Headsman Icon.png|75px]]||130||[[Metal Headsman]]\n|-\n|[[File:Shaman Icon.png|75px]]||131||[[Shaman]]\n|-\n| ||133||[[Dance Dictator]]\n|-\n| ||134||[[Slammed Dancer]]\n|-\n| ||135||[[Dancing Madman]]\n|-\n| ||140||[[Half-Baked Blowhard]]\n|-\n| ||200||[[Blood Shadow]]\n|-\n|\n|270\n|[[Pest Uncontrol]]\n|-\n|\n|271\n|[[Verminferno]]\n|-\n|\n|273\n|[[Powered Tool]]\n|-\n|\n|282\n|[[Shinya Sasaki]]\n|-\n|\n|284\n|[[Roman Reynolds]]\n|-\n|\n|285\n|[[José Henderson]]\n|-\n|\n|286\n|[[Dwight Mendez]]\n|-\n|\n|288\n|[[Eiji Mitamura]]\n|-\n|\n|290\n|[[Masafumi Narasaki]]\n|-\n|\n|292\n|[[Goro Majima]]\n|-\n|\n|296\n|[[Masataka Ebina]]\n|-\n|\n|297\n|[[Heavy Machinery]]\n|-\n|\n|300\n|Legendary Excavators\nft. Lam-chan and Lun-chan\n|-\n|\n|303\n|[[Asakura]]\n|-\n|\n|305\n|[[Lau Ka Long|Chau Ka Long]]\n|-\n|\n|306\n|Yoshida\n|-\n|\n|309\n|[[Robo Michio]]\n|-\n|\n|314\n|[[Jo Amon]]\n|-\n|\n|317\n|[[Sango Amon]]\n\n|}\n{{Sujidex}}\n\n[[Category:Sujidex]]\n",
+ "pageimages": {
+  "warnings": {
+   "main": {
+    "*": "Unrecognized parameter: pilimit."
+   }
+  },
+  "batchcomplete": "",
+  "query": {
+   "pages": {
+    "2047": {
+     "pageid": 2047,
+     "ns": 0,
+     "title": "Goro Majima",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/f/f1/LADPYIH_-_Character_Profile_-_Goro_Majima.jpg/revision/latest/scale-to-width-down/400?cb=20241102212057",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "2089": {
+     "pageid": 2089,
+     "ns": 0,
+     "title": "Lau Ka Long",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/3/3c/YLAD_-_Character_Profile_-_Chau_Ka_Long.png/revision/latest/scale-to-width-down/400?cb=20220121225155",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "5755": {
+     "pageid": 5755,
+     "ns": 0,
+     "title": "Jo Amon",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/1/19/IW_-_Character_Profile_-_Jo_Amon.jpg/revision/latest/scale-to-width-down/400?cb=20251126223243",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "13968": {
+     "pageid": 13968,
+     "ns": 0,
+     "title": "Sango Amon",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/0/06/LADIW_-_Character_Profile_-_Sango_Amon.png/revision/latest/scale-to-width-down/400?cb=20240611152403",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "26287": {
+     "pageid": 26287,
+     "ns": 0,
+     "title": "Burnout Bully",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/5/52/001_burnout_bully.png/revision/latest/scale-to-width-down/400?cb=20250709103418",
+      "width": 400,
+      "height": 211
+     }
+    },
+    "26371": {
+     "pageid": 26371,
+     "ns": 0,
+     "title": "Capitalist Punisher"
+    },
+    "26373": {
+     "pageid": 26373,
+     "ns": 0,
+     "title": "Hammeredhead"
+    },
+    "26375": {
+     "pageid": 26375,
+     "ns": 0,
+     "title": "Knight of the Cask"
+    },
+    "26376": {
+     "pageid": 26376,
+     "ns": 0,
+     "title": "Urbane Legend"
+    },
+    "26377": {
+     "pageid": 26377,
+     "ns": 0,
+     "title": "Battle Bum"
+    },
+    "26378": {
+     "pageid": 26378,
+     "ns": 0,
+     "title": "Hungry Hungry Homeless"
+    },
+    "26381": {
+     "pageid": 26381,
+     "ns": 0,
+     "title": "Invested Vagabond"
+    },
+    "26382": {
+     "pageid": 26382,
+     "ns": 0,
+     "title": "Biting Barker"
+    },
+    "26386": {
+     "pageid": 26386,
+     "ns": 0,
+     "title": "Punkling"
+    },
+    "26406": {
+     "pageid": 26406,
+     "ns": 0,
+     "title": "The Fist"
+    },
+    "26413": {
+     "pageid": 26413,
+     "ns": 0,
+     "title": "Demolitioneer"
+    },
+    "26420": {
+     "pageid": 26420,
+     "ns": 0,
+     "title": "King of Thieves"
+    },
+    "26450": {
+     "pageid": 26450,
+     "ns": 0,
+     "title": "Weltraiser"
+    },
+    "26482": {
+     "pageid": 26482,
+     "ns": 0,
+     "title": "King Joe"
+    },
+    "26526": {
+     "pageid": 26526,
+     "ns": 0,
+     "title": "Peacemaker"
+    },
+    "26566": {
+     "pageid": 26566,
+     "ns": 0,
+     "title": "Bobcutter"
+    },
+    "26580": {
+     "pageid": 26580,
+     "ns": 0,
+     "title": "Metal Headsman"
+    },
+    "26581": {
+     "pageid": 26581,
+     "ns": 0,
+     "title": "Shaman"
+    },
+    "36060": {
+     "pageid": 36060,
+     "ns": 0,
+     "title": "Masataka Ebina",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/3/39/LADIW_-_Character_Profile_-_Masataka_Ebina.png/revision/latest/scale-to-width-down/400?cb=20240202020234",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "36061": {
+     "pageid": 36061,
+     "ns": 0,
+     "title": "Eiji Mitamura",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/b/bb/LADIW_-_Character_Profile_-_Eiji_Mitamura.png/revision/latest/scale-to-width-down/400?cb=20240202012512",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "36066": {
+     "pageid": 36066,
+     "ns": 0,
+     "title": "Dwight Mendez",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/b/b3/LADIW_-_Character_Profile_-_Dwight_Mendez.png/revision/latest/scale-to-width-down/400?cb=20240202032601",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "36805": {
+     "pageid": 36805,
+     "ns": 0,
+     "title": "Asakura",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/4/4f/LADIW_-_Character_Profile_-_Asakura.jpeg/revision/latest/scale-to-width-down/400?cb=20231229224257",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "37031": {
+     "pageid": 37031,
+     "ns": 0,
+     "title": "Robo Michio",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/e/e3/LADIW_-_Character_Profile_-_Robo_Michio.jpg/revision/latest/scale-to-width-down/371?cb=20251110060136",
+      "width": 371,
+      "height": 400
+     }
+    },
+    "37069": {
+     "pageid": 37069,
+     "ns": 0,
+     "title": "Masafumi Narasaki",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/6/60/LADIW_-_Character_Profile_-_Masafumi_Narasaki.png/revision/latest/scale-to-width-down/400?cb=20240201214336",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "37076": {
+     "pageid": 37076,
+     "ns": 0,
+     "title": "Roman Reynolds",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/4/49/LADIW_-_Character_Profile_-_Roman_Reynolds.png/revision/latest/scale-to-width-down/400?cb=20250716003408",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "37100": {
+     "pageid": 37100,
+     "ns": 0,
+     "title": "Shinya Sasaki",
+     "thumbnail": {
+      "source": "https://static.wikia.nocookie.net/yakuza/images/0/08/IW_-_Character_Profile_-_Shinya_Sasaki.jpg/revision/latest/scale-to-width-down/400?cb=20251126223331",
+      "width": 400,
+      "height": 225
+     }
+    },
+    "-1": {
+     "ns": 0,
+     "title": "Transcendent Transient",
+     "missing": ""
+    },
+    "-2": {
+     "ns": 0,
+     "title": "Dance Dictator",
+     "missing": ""
+    },
+    "-3": {
+     "ns": 0,
+     "title": "Slammed Dancer",
+     "missing": ""
+    },
+    "-4": {
+     "ns": 0,
+     "title": "Dancing Madman",
+     "missing": ""
+    },
+    "-5": {
+     "ns": 0,
+     "title": "Half-Baked Blowhard",
+     "missing": ""
+    },
+    "-6": {
+     "ns": 0,
+     "title": "Blood Shadow",
+     "missing": ""
+    },
+    "-7": {
+     "ns": 0,
+     "title": "Pest Uncontrol",
+     "missing": ""
+    },
+    "-8": {
+     "ns": 0,
+     "title": "Verminferno",
+     "missing": ""
+    },
+    "-9": {
+     "ns": 0,
+     "title": "Powered Tool",
+     "missing": ""
+    },
+    "-10": {
+     "ns": 0,
+     "title": "José Henderson",
+     "missing": ""
+    },
+    "-11": {
+     "ns": 0,
+     "title": "Heavy Machinery",
+     "missing": ""
+    }
+   }
+  }
+ },
+ "imageinfo": {
+  "batchcomplete": "",
+  "query": {
+   "normalized": [
+    {
+     "from": "File:Hungry_Hungry_Homeless Icon.png",
+     "to": "File:Hungry Hungry Homeless Icon.png"
+    }
+   ],
+   "pages": {
+    "26044": {
+     "pageid": 26044,
+     "ns": 6,
+     "title": "File:Battle Bum Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/f/f1/Battle_Bum_Icon.png/revision/latest?cb=20201224043045",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/f/f1/Battle_Bum_Icon.png/revision/latest?cb=20201224043045",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Battle_Bum_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26044"
+      }
+     ]
+    },
+    "26055": {
+     "pageid": 26055,
+     "ns": 6,
+     "title": "File:Biting Barker Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/7/77/Biting_Barker_Icon.png/revision/latest?cb=20201224044559",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/7/77/Biting_Barker_Icon.png/revision/latest?cb=20201224044559",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Biting_Barker_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26055"
+      }
+     ]
+    },
+    "26060": {
+     "pageid": 26060,
+     "ns": 6,
+     "title": "File:Bobcutter Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/4/40/Bobcutter_Icon.png/revision/latest?cb=20201224115133",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/4/40/Bobcutter_Icon.png/revision/latest?cb=20201224115133",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Bobcutter_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26060"
+      }
+     ]
+    },
+    "26070": {
+     "pageid": 26070,
+     "ns": 6,
+     "title": "File:Burnout Bully Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/c/c6/Burnout_Bully_Icon.png/revision/latest?cb=20201224115142",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/c/c6/Burnout_Bully_Icon.png/revision/latest?cb=20201224115142",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Burnout_Bully_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26070"
+      }
+     ]
+    },
+    "26071": {
+     "pageid": 26071,
+     "ns": 6,
+     "title": "File:Capitalist Punisher Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/1/10/Capitalist_Punisher_Icon.png/revision/latest?cb=20201224115143",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/1/10/Capitalist_Punisher_Icon.png/revision/latest?cb=20201224115143",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Capitalist_Punisher_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26071"
+      }
+     ]
+    },
+    "26089": {
+     "pageid": 26089,
+     "ns": 6,
+     "title": "File:Demolitioneer Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/7/71/Demolitioneer_Icon.png/revision/latest?cb=20201224121351",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/7/71/Demolitioneer_Icon.png/revision/latest?cb=20201224121351",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Demolitioneer_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26089"
+      }
+     ]
+    },
+    "26125": {
+     "pageid": 26125,
+     "ns": 6,
+     "title": "File:Hammeredhead Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/6/6d/Hammeredhead_Icon.png/revision/latest?cb=20201224124755",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/6/6d/Hammeredhead_Icon.png/revision/latest?cb=20201224124755",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Hammeredhead_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26125"
+      }
+     ]
+    },
+    "26140": {
+     "pageid": 26140,
+     "ns": 6,
+     "title": "File:Invested Vagabond Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/5/5f/Invested_Vagabond_Icon.png/revision/latest?cb=20201224125745",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/5/5f/Invested_Vagabond_Icon.png/revision/latest?cb=20201224125745",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Invested_Vagabond_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26140"
+      }
+     ]
+    },
+    "26151": {
+     "pageid": 26151,
+     "ns": 6,
+     "title": "File:King Joe Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/c/c0/King_Joe_Icon.png/revision/latest?cb=20201224125758",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/c/c0/King_Joe_Icon.png/revision/latest?cb=20201224125758",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:King_Joe_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26151"
+      }
+     ]
+    },
+    "26152": {
+     "pageid": 26152,
+     "ns": 6,
+     "title": "File:King of Thieves Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/d/d7/King_of_Thieves_Icon.png/revision/latest?cb=20201224125759",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/d/d7/King_of_Thieves_Icon.png/revision/latest?cb=20201224125759",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:King_of_Thieves_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26152"
+      }
+     ]
+    },
+    "26153": {
+     "pageid": 26153,
+     "ns": 6,
+     "title": "File:Knight of the Cask Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/d/d8/Knight_of_the_Cask_Icon.png/revision/latest?cb=20201224125759",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/d/d8/Knight_of_the_Cask_Icon.png/revision/latest?cb=20201224125759",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Knight_of_the_Cask_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26153"
+      }
+     ]
+    },
+    "26167": {
+     "pageid": 26167,
+     "ns": 6,
+     "title": "File:Metal Headsman Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/3/3b/Metal_Headsman_Icon.png/revision/latest?cb=20201224131353",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/3/3b/Metal_Headsman_Icon.png/revision/latest?cb=20201224131353",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Metal_Headsman_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26167"
+      }
+     ]
+    },
+    "26190": {
+     "pageid": 26190,
+     "ns": 6,
+     "title": "File:Peacemaker Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/6/6b/Peacemaker_Icon.png/revision/latest?cb=20201224133230",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/6/6b/Peacemaker_Icon.png/revision/latest?cb=20201224133230",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Peacemaker_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26190"
+      }
+     ]
+    },
+    "26208": {
+     "pageid": 26208,
+     "ns": 6,
+     "title": "File:Punkling Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/5/51/Punkling_Icon.png/revision/latest?cb=20201224134618",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/5/51/Punkling_Icon.png/revision/latest?cb=20201224134618",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Punkling_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26208"
+      }
+     ]
+    },
+    "26228": {
+     "pageid": 26228,
+     "ns": 6,
+     "title": "File:Shaman Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/f/ff/Shaman_Icon.png/revision/latest?cb=20201224140322",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/f/ff/Shaman_Icon.png/revision/latest?cb=20201224140322",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Shaman_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26228"
+      }
+     ]
+    },
+    "26252": {
+     "pageid": 26252,
+     "ns": 6,
+     "title": "File:The Fist Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/b/b7/The_Fist_Icon.png/revision/latest?cb=20201224142405",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/b/b7/The_Fist_Icon.png/revision/latest?cb=20201224142405",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:The_Fist_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26252"
+      }
+     ]
+    },
+    "26276": {
+     "pageid": 26276,
+     "ns": 6,
+     "title": "File:Urbane Legend Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/8/83/Urbane_Legend_Icon.png/revision/latest?cb=20201224144355",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/8/83/Urbane_Legend_Icon.png/revision/latest?cb=20201224144355",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Urbane_Legend_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26276"
+      }
+     ]
+    },
+    "26279": {
+     "pageid": 26279,
+     "ns": 6,
+     "title": "File:Weltraiser Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/3/3c/Weltraiser_Icon.png/revision/latest?cb=20201224144400",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/3/3c/Weltraiser_Icon.png/revision/latest?cb=20201224144400",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Weltraiser_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26279"
+      }
+     ]
+    },
+    "26288": {
+     "pageid": 26288,
+     "ns": 6,
+     "title": "File:Hungry Hungry Homeless Icon.png",
+     "imagerepository": "local",
+     "imageinfo": [
+      {
+       "thumburl": "https://static.wikia.nocookie.net/yakuza/images/8/80/Hungry_Hungry_Homeless_Icon.png/revision/latest?cb=20201224153655",
+       "thumbwidth": 100,
+       "thumbheight": 100,
+       "url": "https://static.wikia.nocookie.net/yakuza/images/8/80/Hungry_Hungry_Homeless_Icon.png/revision/latest?cb=20201224153655",
+       "descriptionurl": "https://yakuza.fandom.com/wiki/File:Hungry_Hungry_Homeless_Icon.png",
+       "descriptionshorturl": "https://yakuza.fandom.com/index.php?curid=26288"
+      }
+     ]
+    }
+   }
+  }
+ }
+}

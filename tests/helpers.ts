@@ -2,6 +2,7 @@
 import { expect, type BrowserContext, type Page, type Route } from '@playwright/test';
 import fs from 'node:fs';
 import zlib from 'node:zlib';
+import { sujidexResponse, type SujidexFixture } from './sujidex-mock';
 
 const FIX = new URL('./fixtures/', import.meta.url);
 export const fixture = <T = unknown>(name: string): T => JSON.parse(fs.readFileSync(new URL(name, FIX), 'utf8')) as T;
@@ -30,6 +31,8 @@ export interface MockOpts {
   falha?: Franquia[];
   /** 'fixture' (padrão), 'ausente' (404) ou uma lista própria [[nome, "NNN"]] */
   sujimon?: 'fixture' | 'ausente' | [string, string][];
+  /** responde a API da Yakuza Wiki (Sujidex) com a fixture; sem isso ela fica bloqueada */
+  sujimonWiki?: boolean;
   /** atraso (ms) antes de responder cada franquia */
   atraso?: Partial<Record<Franquia, number>>;
 }
@@ -87,6 +90,11 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
       count('bakugan'); await espera('bakugan');
       if (falha.has('bakugan')) return route.fulfill({ status: 500, body: 'erro' });
       return json(route, bakugan[u.searchParams.get('geicontinue') ? 1 : 0]);
+    }
+    if (u.hostname === 'yakuza.fandom.com' && u.pathname === '/api.php' && opts.sujimonWiki) {
+      count('sujidex');
+      const body = sujidexResponse(u, fixture<SujidexFixture>('sujidex.json'));
+      if (body !== undefined) return json(route, body);
     }
     if (u.hostname === 'fonts.googleapis.com') return route.fulfill({ status: 200, contentType: 'text/css', body: '' });
     if (req.resourceType() === 'image' || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u.pathname)) {

@@ -2,6 +2,7 @@
 // seguindo as mesmas regras de tests/helpers.ts, e um localStorage em memória.
 import fs from 'node:fs';
 import { vi } from 'vitest';
+import { sujidexResponse, type SujidexFixture } from '../../tests/sujidex-mock';
 
 const FIX = new URL('../../tests/fixtures/', import.meta.url);
 export const fixture = <T = unknown>(name: string): T => JSON.parse(fs.readFileSync(new URL(name, FIX), 'utf8')) as T;
@@ -30,6 +31,10 @@ function fixtureRoute(u: URL): Response | undefined {
   if (u.hostname === 'db.ygoprodeck.com') return json(fixture('ygo-cardinfo.json'));
   if (u.hostname === 'bakugan.fandom.com' && u.pathname === '/api.php') {
     return json(fixture<unknown[]>('bakugan.json')[u.searchParams.get('geicontinue') ? 1 : 0]);
+  }
+  if (u.hostname === 'yakuza.fandom.com' && u.pathname === '/api.php') {
+    const body = sujidexResponse(u, fixture<SujidexFixture>('sujidex.json'));
+    return body === undefined ? undefined : json(body);
   }
   return undefined;
 }

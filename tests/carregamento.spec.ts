@@ -37,7 +37,7 @@ test.describe('carregamento e status', () => {
     expect(await franquias(page, '#duelRow')).toEqual(['smt', 'digimon']);
   });
 
-  test('sem sujimon/list.json o Sujimon some de tudo', async ({ page }) => {
+  test('sem sujimon/list.json e sem a Yakuza Wiki o Sujimon some de tudo', async ({ page }) => {
     await prepare(page, { sujimon: 'ausente' });
     await abrir(page);
     await expect(page.locator('#status')).toHaveText(statusEsperado(['sujimon']));
@@ -47,6 +47,22 @@ test.describe('carregamento e status', () => {
     await aba(page, 'Campeonato');
     await expect(page.locator('#cup_sujimon')).toHaveCount(0);
     await expect(page.locator('#cupFr label')).toHaveCount(6);
+  });
+
+  test('sem sujimon/list.json o Sujimon vem da Yakuza Wiki', async ({ page }) => {
+    const calls = await prepare(page, { sujimon: 'ausente', sujimonWiki: true, atraso: { pokemon: 300, digimon: 300 } });
+    await abrir(page);
+    await expect(page.locator('#status')).toContainText('Sujimon: ');
+    const n = Number((await page.locator('#status').textContent())!.match(/Sujimon: (\d+)/)![1]);
+    expect(n).toBeGreaterThan(20);
+    expect(calls.sujidex).toBeGreaterThanOrEqual(3);
+    await expect(page.locator('#h1suji')).toBeVisible();
+    await page.selectOption('#duelB', 'sujimon');
+    const card = page.locator('#duelRow .card').nth(1);
+    await expect(card).toHaveAttribute('data-fr', 'sujimon');
+    await expect(card.locator('img')).toHaveAttribute('src', /^https:\/\/static\.wikia\.nocookie\.net\/yakuza\//);
+    await aba(page, 'Campeonato');
+    await expect(page.locator('#cup_sujimon')).toBeChecked();
   });
 
   test('com list.json o Sujimon aparece nos seletores, no campeonato e no título', async ({ page }) => {
