@@ -62,8 +62,9 @@ entre dois navegadores e vota. A `main` e a `react` têm o mesmo código; a `mai
   - 162 recortados do screenshot (só o painel do meio, com o personagem);
   - 133 a partir do retrato (rosto com fundo transparente), porque a página deles não tinha screenshot.
 - Recorte próprio pros mais largos (escavadeiras, tubarão e lula).
-- **Ficaram de fora 22 números**, que não vieram no download. A lista está em
-  [`relatorio/sujimon-fora.md`](relatorio/sujimon-fora.md).
+- Dos 22 números que não vieram no download, 19 entraram pelo link da imagem na Yakuza Wiki (`sujimon/links.json`,
+  com os nomes que você passou). **Total no site: 314.** Ficaram de fora 3, sem imagem em lugar nenhum: 144, 233 e
+  248 ([`relatorio/sujimon-fora.md`](relatorio/sujimon-fora.md)).
 - A Yakuza Wiki continua como reserva: sem `public/sujimon/list.json`, o Sujimon vem de lá (154 com imagem).
 - `sujimon.mjs`: `recortar` (só local) lê os screenshots de `sujimon/_orig/` com o número e o nome no nome do
   arquivo (`001 Burnout Bully.png` ou `001 - Burnout Bully.png`; também `NNN.img` + `nomes.json`) e grava em
@@ -134,7 +135,7 @@ entre dois navegadores e vota. A `main` e a `react` têm o mesmo código; a `mai
 Nada é obrigatório: o site está no ar e funcionando. Opcionais:
 
 1. **Testar com os amigos** (passo a passo abaixo).
-2. **Sujimon que faltam (22):** se quiser incluir algum, coloque a imagem em `sujimon/_orig/` como `018 Nome.png`,
+2. **Sujimon que faltam (144, 233 e 248):** se conseguir a imagem, coloque em `sujimon/_orig/` como `144 Nome.png`,
    rode `node sujimon.mjs recortar` e faça commit de `public/sujimon/`. O `RECORTE` já está ajustado pros
    screenshots do Sujidex; `--teste` mostra o retângulo do corte, se precisar conferir.
 3. O `PROMPT-claude-code.md` ficou na raiz sem commit. Apague ou comite, como preferir.

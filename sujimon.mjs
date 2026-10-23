@@ -281,8 +281,17 @@ async function recortar() {
     console.log(`\nAbra ${OUT}/_teste/: *-conferir.jpg mostra o retângulo do recorte; *.webp é o resultado.`);
     console.log('Ajuste RECORTE (ou EXCECOES) no topo do script e rode de novo. Quando estiver bom: node sujimon.mjs recortar');
   } else {
+    // sujimon/links.json: {"018": ["Tribesman", "https://..."]} pros que não têm imagem local; o site mostra a imagem
+    // direto do endereço (não baixamos nada).
+    const locais = lista.length;
+    const temLocal = new Set(lista.map(([, n]) => n));
+    for (const [num, par] of Object.entries(await lerJSON('sujimon/links.json', {}))) {
+      const n = num.padStart(3, '0'), [nome, url] = Array.isArray(par) ? par : [];
+      if (!temLocal.has(n) && typeof nome === 'string' && typeof url === 'string' && url.startsWith('https://')) lista.push([nome, n, url]);
+    }
+    lista.sort((a, b) => a[1].localeCompare(b[1]));
     await fs.writeFile(`${OUT}/list.json`, JSON.stringify(lista));
-    console.log(`\nPronto: ${lista.length} Sujimon em ${OUT}/ (list.json + .webp).`);
+    console.log(`\nPronto: ${lista.length} Sujimon em ${OUT}/list.json (${locais} com imagem local, ${lista.length - locais} com link de sujimon/links.json).`);
   }
   if (foraDeProposito.length) console.log('Fora de propósito (EXCECOES = null): ' + foraDeProposito.join(', '));
   if (falhas.length) console.log('Falharam: ' + falhas.join(', '));
