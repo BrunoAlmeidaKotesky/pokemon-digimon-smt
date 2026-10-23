@@ -3,8 +3,9 @@ import { Duel } from './modes/duel/Duel';
 import { Trio } from './modes/trio/Trio';
 import { Cup } from './modes/cup/Cup';
 import { Stats } from './modes/stats/Stats';
+import { Online } from './modes/online/Online';
 
-const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['cup', 'Campeonato'], ['stats', 'Placar']];
+const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['cup', 'Campeonato'], ['stats', 'Placar'], ['online', 'Online']];
 
 export function App() {
   const app = useApp();
@@ -24,6 +25,7 @@ export function App() {
       <Trio />
       <Cup />
       <Stats />
+      <Online />
     </div>
   );
 }

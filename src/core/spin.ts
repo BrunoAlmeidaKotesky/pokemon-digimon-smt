@@ -6,9 +6,9 @@ export const PICK_MS = 1000;
 export const PICK_MS_CALM = 400;
 
 /** Onde começa e quantos passos dá (3 chamadas a Math.random, nesta ordem). */
-export function planSpin(n: number): { start: number; total: number } {
-  const start = Math.floor(Math.random() * n);
-  const total = n * (3 + Math.floor(Math.random() * 2)) + Math.floor(Math.random() * n);
+export function planSpin(n: number, rand: () => number = Math.random): { start: number; total: number } {
+  const start = Math.floor(rand() * n);
+  const total = n * (3 + Math.floor(rand() * 2)) + Math.floor(rand() * n);
   return { start, total };
 }
 

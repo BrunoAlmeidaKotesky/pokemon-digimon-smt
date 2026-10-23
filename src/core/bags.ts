@@ -39,12 +39,14 @@ export function memoryBagStore(): BagStore {
 
 export class Bags {
   private readonly store: BagStore;
+  private readonly rand: () => number;
   private readonly bags: Record<string, string[]>;
   /** nome -> personagem, por lista (o antigo guardava em SRC[k].byName). */
   private readonly byName = new WeakMap<Item[], Map<string, Item>>();
 
-  constructor(store: BagStore) {
+  constructor(store: BagStore, rand: () => number = Math.random) {
     this.store = store;
+    this.rand = rand;
     this.bags = store.load();
   }
 
@@ -57,7 +59,7 @@ export class Bags {
     }
     const names = byName;
     let bag = (this.bags[k] || []).filter(n => names.has(n));
-    if (!bag.length) bag = shuffle(list.map(x => x.name));
+    if (!bag.length) bag = shuffle(list.map(x => x.name), this.rand);
     const name = bag.pop() as string;
     this.bags[k] = bag;
     this.store.save(this.bags);

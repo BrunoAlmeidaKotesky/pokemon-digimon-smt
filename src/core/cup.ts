@@ -13,9 +13,9 @@ export function roundName(n: number): string {
  * Monta os pares sempre juntando a franquia com mais gente sobrando com a segunda maior,
  * o que deixa o mínimo possível de confrontos da mesma franquia. Devolve a lista achatada [a1, b1, a2, b2, ...].
  */
-export function pairUp(list: Entry[]): Entry[] {
+export function pairUp(list: Entry[], rand: () => number = Math.random): Entry[] {
   const g: Record<string, Entry[]> = {};
-  shuffle([...list]).forEach(x => (g[x.fr] = g[x.fr] || []).push(x));
+  shuffle([...list], rand).forEach(x => (g[x.fr] = g[x.fr] || []).push(x));
   const pairs: (Entry | undefined)[][] = [];
   for (;;) {
     const ks = Object.keys(g)
@@ -26,7 +26,7 @@ export function pairUp(list: Entry[]): Entry[] {
     const b = (g[(ks.length > 1 ? ks[1] : ks[0]) as string] as Entry[]).pop();
     pairs.push([a, b]);
   }
-  return shuffle(pairs).flat() as Entry[];
+  return shuffle(pairs, rand).flat() as Entry[];
 }
 
 /** [a1, b1, a2, b2, ...] -> confrontos ainda sem vencedor. */
@@ -40,26 +40,26 @@ export function toMatches(list: (Entry | null)[]): Match[] {
  * Participantes do campeonato (o $('cupStart').onclick do antigo, sem a parte de tela).
  * `frs` = franquias marcadas e já carregadas, na ordem das franquias; `lists[k]` = lista completa de cada uma.
  */
-export function buildEntrants(opts: { frs: string[]; size: number; even: boolean; mix: boolean; lists: Record<string, Item[]> }): Entry[] {
-  const { frs, size, even, mix, lists } = opts;
+export function buildEntrants(opts: { frs: string[]; size: number; even: boolean; mix: boolean; lists: Record<string, Item[]>; rand?: () => number }): Entry[] {
+  const { frs, size, even, mix, lists, rand = Math.random } = opts;
   if (!frs.length) return [];
   const counts: Record<string, number> = {};
   frs.forEach(k => (counts[k] = 0));
   if (even) {
     frs.forEach(k => (counts[k] = Math.floor(size / frs.length)));
-    shuffle([...frs])
+    shuffle([...frs], rand)
       .slice(0, size % frs.length)
       .forEach(k => (counts[k] = (counts[k] as number) + 1));
   } else {
     for (let i = 0; i < size; i++) {
-      const k = rnd(frs);
+      const k = rnd(frs, rand);
       counts[k] = (counts[k] as number) + 1;
     }
   }
   let entrants: Entry[] = [];
   const pools: Record<string, Item[]> = {};
   frs.forEach(k => {
-    const pool = (pools[k] = shuffle([...(lists[k] as Item[])]));
+    const pool = (pools[k] = shuffle([...(lists[k] as Item[])], rand));
     entrants.push(...pool.splice(0, counts[k] as number).map(p => ({ ...p, fr: k })));
   });
   // franquia com poucos personagens: completa as vagas com as outras
@@ -70,8 +70,8 @@ export function buildEntrants(opts: { frs: string[]; size: number; even: boolean
   }
   let n = 2;
   while (n * 2 <= Math.min(size, entrants.length)) n *= 2;
-  entrants = shuffle(entrants).slice(0, n);
-  if (mix) entrants = pairUp(entrants);
+  entrants = shuffle(entrants, rand).slice(0, n);
+  if (mix) entrants = pairUp(entrants, rand);
   return entrants;
 }
 
@@ -80,13 +80,13 @@ export function startCup(entrants: Entry[], mix: boolean): Cup {
 }
 
 /** Início do cupStep antigo: rodada acabou -> campeão (sobrou 1) ou próxima rodada (re-pareada se misto). */
-export function cupSync(c: Cup): void {
+export function cupSync(c: Cup, rand: () => number = Math.random): void {
   if (c.i >= c.round.length) {
     if (c.next.length === 1) {
       c.champ = c.next[0] as Entry;
       return;
     }
-    c.round = c.mix ? pairUp(c.next) : c.next;
+    c.round = c.mix ? pairUp(c.next, rand) : c.next;
     c.next = [];
     c.i = 0;
     c.rounds.push(toMatches(c.round));
@@ -105,7 +105,7 @@ export function same(a: Entry | null | undefined, b: Entry | null | undefined): 
 }
 
 /** Escolha no confronto da vez (o callback do cupStep antigo) e avanço da rodada. */
-export function cupChoose(c: Cup, w: Entry): void {
+export function cupChoose(c: Cup, w: Entry, rand: () => number = Math.random): void {
   if (c.champ) return;
   const a = c.round[c.i] as Entry;
   const b = c.round[c.i + 1] as Entry;
@@ -114,7 +114,7 @@ export function cupChoose(c: Cup, w: Entry): void {
   ((c.rounds[c.rounds.length - 1] as Match[])[c.i / 2] as Match).w = w;
   (c.losers[c.round.length] = c.losers[c.round.length] || []).push(l);
   c.i += 2;
-  cupSync(c);
+  cupSync(c, rand);
 }
 
 export interface BracketMatch {
