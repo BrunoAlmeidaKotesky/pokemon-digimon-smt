@@ -4,7 +4,6 @@ import { host, player } from '../../online/runtime';
 import { label } from '../../state/app';
 import { Card } from '../../components/Card';
 import { Bracket } from '../../components/Bracket';
-import { keyOf } from '../../components/Arena';
 import { VoteBox } from './Play';
 
 const X_OPTS = [2, 3, 4, 5, 6];
@@ -91,7 +90,7 @@ function DraftPick({ v, g }: { v: RoomView; g: DraftView }) {
           <p style={{ margin: 0 }} id="onDraftAsk">Escolha 1 de <b>{label(g.frs[me.fi]!)}</b> <span className="mute">({me.fi + 1} de {F})</span></p>
           <div className={me.opts.length === 2 ? 'arena two' : me.opts.length === 3 ? 'arena three' : 'arena grid'} id="onDraftOpts" data-att={me.att} data-fi={me.fi}>
             {me.opts.map((it, i) => (
-              <Card key={keyOf(it) + ':' + me.att + ':' + me.fi} it={it} index={i} onClick={() => player.pick(g.round, me.att, i)} />
+              <Card key={`${g.round}:${me.att}:${me.fi}:${i}`} it={it} index={i} onClick={() => player.pick(g.round, me.att, i)} />
             ))}
           </div>
         </>

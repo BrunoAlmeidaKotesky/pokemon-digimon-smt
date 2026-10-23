@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_CONFIG } from './room';
 import { cleanName, MAX_NAME, parseClientMsg, parseHostMsg } from './protocol';
 import type { RoomView } from './types';
 
@@ -13,7 +14,7 @@ function view(over: Record<string, unknown> = {}): Record<string, unknown> {
     me: 'p1',
     hostId: 'h1',
     phase: 'lobby',
-    cfg: { mode: 'duel', secret: false },
+    cfg: structuredClone(DEFAULT_CONFIG),
     notice: '',
     players: [
       { id: 'h1', name: 'Host', host: true, online: true, voted: false },
@@ -139,6 +140,30 @@ describe('parseHostMsg', () => {
 
   it('recusa o que não é objeto', () => {
     for (const j of JUNK) expect(parseHostMsg(j)).toBeNull();
+  });
+
+  it('replaced', () => {
+    expect(parseHostMsg({ t: 'replaced' })).toEqual({ t: 'replaced' });
+  });
+
+  it('state: recusa visão que derrubaria a tela (jogo ou votação tortos, configuração incompleta)', () => {
+    const entry = { name: 'A', img: '', fr: 'pokemon' };
+    const vote = { seq: 2, items: [entry, entry], extras: ['', ''], mine: null, result: null };
+    const bad: Record<string, unknown>[] = [
+      { phase: 'play', game: { mode: 'cup' } },
+      { phase: 'play', game: { mode: 'quiz', frs: [] } },
+      { phase: 'play', game: { mode: 'duel', frs: ['pokemon'], streak: ['1'] } },
+      { phase: 'play', game: { mode: 'draft', frs: [] } },
+      { phase: 'play', vote: { ...vote, items: [1] } },
+      { phase: 'play', vote: { ...vote, mine: 5 } },
+      { phase: 'play', vote: { ...vote, result: { counts: [1, 0], voters: null, win: 9, tie: null, how: 'votos', spin: null } } },
+      { phase: 'play', vote: { ...vote, result: { counts: [1], voters: null, win: 0, tie: null, how: 'votos', spin: null } } },
+      { phase: 'play', vote: { ...vote, result: { counts: [1, 1], voters: null, win: 0, tie: [0, 1], how: 'empate', spin: { id: 1, among: [], start: 0, total: 6, age: 0 } } } },
+      { cfg: { mode: 'duel', secret: false } },
+    ];
+    for (const over of bad) expect(parseHostMsg({ t: 'state', view: view(over) }), JSON.stringify(over)).toBeNull();
+    const ok = { ...vote, result: { counts: [1, 1], voters: [['Ana'], ['Beto']], win: 1, tie: [0, 1], how: 'empate', spin: { id: 3, among: [0, 1], start: 1, total: 7, at: 5, age: 12 } } };
+    expect(parseHostMsg({ t: 'state', view: view({ phase: 'play', game: { mode: 'duel', frs: ['pokemon', 'digimon'], streak: [0, 0] }, vote: ok }) })).not.toBeNull();
   });
 
   it('recusa tipo desconhecido, campos faltando e strings enormes', () => {

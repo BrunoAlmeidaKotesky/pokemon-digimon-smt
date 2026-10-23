@@ -11,8 +11,6 @@ import type { Action, Ctx, DraftGame, DraftTeam, OnlineConfig, Qualified, RoomSt
 export const DRAFT_X = { min: 2, max: 6, def: 3 } as const;
 /** Rodadas: mínimo, máximo e padrão. */
 export const DRAFT_ROUNDS = { min: 1, max: 5, def: 1 } as const;
-/** Depois de tantas refações da mesma franquia numa rodada, o repetido é aceito (limite de segurança). */
-export const MAX_REDOS = 5;
 
 /** O que o Draft usa da sala (room.ts passa as dele, pra não ter import circular). */
 export interface DraftIO {
@@ -206,7 +204,6 @@ function settle(s: RoomState, g: DraftGame, ctx: Ctx, io: DraftIO): void {
 function repeated(g: DraftGame, act: [string, DraftTeam][]): { fi: number; names: string[] }[] {
   const out: { fi: number; names: string[] }[] = [];
   g.frs.forEach((_, fi) => {
-    if ((g.redos[fi] ?? 0) >= MAX_REDOS) return;
     const n = new Map<string, number>();
     for (const [, t] of act) {
       const p = t.picks[fi];

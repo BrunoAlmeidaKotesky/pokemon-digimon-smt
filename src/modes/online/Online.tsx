@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Component, useEffect, useState, type ReactNode } from 'react';
 import { app } from '../../state/app';
 import { useOnline, hostRoom, joinRoom, leave, dismiss, roomLink } from '../../online/runtime';
 import { loadTurn, saveTurn, isValidTurn } from '../../online/config';
@@ -101,10 +101,10 @@ function Room() {
       </div>
       {on.banner && <p className="note" id="onBanner" role="status">{on.banner}</p>}
       {v?.notice && <p className="note" id="onNotice">{v.notice}</p>}
-      {v ? <>
+      {v ? <Guard reset={v}>
         <Players v={v} />
         {v.phase === 'lobby' ? <Lobby v={v} /> : <Play v={v} />}
-      </> : <p className="mute">Esperando o host…</p>}
+      </Guard> : <p className="mute">Esperando o host…</p>}
     </div>
   );
 }
@@ -121,4 +121,21 @@ function useWakeLock(on: boolean) {
     document.addEventListener('visibilitychange', vis);
     return () => { vivo = false; document.removeEventListener('visibilitychange', vis); lock?.release().catch(() => {}); };
   }, [on]);
+}
+
+/** Se uma visão inesperada derrubar a tela (ex.: o site foi atualizado no meio da partida), mostra um aviso em vez
+ * de deixar a página em branco; a próxima visão que chegar tenta de novo. */
+class Guard extends Component<{ reset: unknown; children: ReactNode }, { erro: boolean }> {
+  override state = { erro: false };
+  static getDerivedStateFromError() { return { erro: true }; }
+  override componentDidUpdate(prev: { reset: unknown }) { if (prev.reset !== this.props.reset && this.state.erro) this.setState({ erro: false }); }
+  override render() {
+    if (!this.state.erro) return this.props.children;
+    return (
+      <div className="note bad" id="onCrash" role="alert">
+        <p style={{ margin: '0 0 8px' }}>A tela do jogo encontrou um problema (talvez o site tenha sido atualizado no meio da partida). Recarregue a página pra voltar pra sala.</p>
+        <button className="btn" onClick={() => location.reload()}>Recarregar</button>
+      </div>
+    );
+  }
 }

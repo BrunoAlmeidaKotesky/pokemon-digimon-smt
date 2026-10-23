@@ -5,33 +5,36 @@ import type { VoteView } from '../../online/types';
 type Spin = NonNullable<NonNullable<VoteView['result']>['spin']>;
 /** Roleta antiga demais (de quem entrou depois) não anima: mostra direto o resultado. */
 const MAX_AGE = 8000;
-const iniciada = new Set<number>();
-const terminada = new Set<number>();
+// chave = código da sala + id da roleta (o id recomeça a cada sala)
+const iniciada = new Set<string>();
+const terminada = new Set<string>();
+/** classe própria no body (a do modo solo é 'spinning'): gira a roda do botão e trava o cursor das cartas */
+const BODY = 'spinning-online';
 
 /**
  * Anima a roleta decidida pelo host: acende as cartas `among` em sequência, desacelerando, e para no vencedor
  * (mesma conta da roleta do modo solo). Todos usam o mesmo plano, então a animação é a mesma em todos os aparelhos.
  * `done` = pode mostrar o resultado.
  */
-export function useSpinAnim(spin: Spin | null): { lit: number | null; picked: number | null; done: boolean } {
-  const [cur, setCur] = useState<{ id: number; lit: number | null; picked: number | null } | null>(null);
+export function useSpinAnim(spin: Spin | null, room: string): { lit: number | null; picked: number | null; done: boolean } {
+  const [cur, setCur] = useState<{ id: string; lit: number | null; picked: number | null } | null>(null);
   const [, setFim] = useState(0);
-  const id = spin?.id ?? null;
+  const id = spin ? `${room}:${spin.id}` : null;
 
   useEffect(() => {
-    if (!spin || iniciada.has(spin.id)) return;
-    const { among, start, total } = spin, sid = spin.id, m = among.length;
+    if (!spin || id == null || iniciada.has(id)) return;
+    const { among, start, total } = spin, sid = id, m = among.length;
     iniciada.add(sid);
     let t: ReturnType<typeof setTimeout> | null = null;
     let vivo = true;
     const acabar = () => {
       terminada.add(sid);
-      document.body.classList.remove('spinning');
+      document.body.classList.remove(BODY);
       if (vivo) { setCur(null); setFim(x => x + 1); }
     };
     if (spin.age > MAX_AGE) { t = setTimeout(acabar, 0); return () => { vivo = false; if (t) clearTimeout(t); terminada.add(sid); }; }
     const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    document.body.classList.add('spinning');
+    document.body.classList.add(BODY);
     let k = calm ? total : 0;
     const tick = () => {
       const idx = among[(start + k) % m]!;
@@ -45,7 +48,7 @@ export function useSpinAnim(spin: Spin | null): { lit: number | null; picked: nu
       t = setTimeout(tick, spinDelay(k, total));
     };
     t = setTimeout(tick, 0);
-    return () => { vivo = false; if (t) clearTimeout(t); terminada.add(sid); document.body.classList.remove('spinning'); };
+    return () => { vivo = false; if (t) clearTimeout(t); terminada.add(sid); document.body.classList.remove(BODY); };
     // o plano de uma roleta não muda depois de decidido: basta reagir ao id
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);

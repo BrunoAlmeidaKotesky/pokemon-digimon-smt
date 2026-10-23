@@ -6,7 +6,6 @@ import { label } from '../../state/app';
 import { Card } from '../../components/Card';
 import { SpinButton } from '../../components/SpinButton';
 import { Bracket } from '../../components/Bracket';
-import { keyOf } from '../../components/Arena';
 import { useSpinAnim } from './useSpinAnim';
 import { DraftPlay } from './Draft';
 
@@ -42,7 +41,7 @@ export function Play({ v }: { v: RoomView }) {
 export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
   const isHost = v.me === v.hostId;
   const res = vote.result;
-  const anim = useSpinAnim(res?.spin ?? null);
+  const anim = useSpinAnim(res?.spin ?? null, v.code);
   const show = !!res && anim.done;
   const n = vote.items.length;
   const cls = n === 2 ? 'arena two' : n === 3 ? 'arena three' : 'arena grid';
@@ -52,7 +51,7 @@ export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
     <>
       <div className={cls} id="onArena" data-seq={vote.seq}>
         {vote.items.map((it: Entry, i) => (
-          <Fragment key={keyOf(it) + ':' + vote.seq}>
+          <Fragment key={vote.seq + ':' + i}>
             {i > 0 && n <= 3 && <span className="vs">VS</span>}
             <Card it={it} index={i} lit={anim.lit === i} picked={anim.picked === i}
               extra={<>{vote.extras[i] && <span className="crown">{vote.extras[i]}</span>}{vote.mine === i && <span className="mine-tag">seu voto</span>}</>}
