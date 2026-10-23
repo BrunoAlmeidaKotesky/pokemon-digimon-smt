@@ -122,12 +122,28 @@ describe('viewFor', () => {
     expect(r.spin).toEqual({ ...plan, age: 750 });
   });
 
-  it('Duelo e Trio: modo, franquias e coroas (sem os slots nem o saco)', () => {
+  it('Duelo, Trio e Quarteto: modo, franquias e coroas (sem os slots nem o saco)', () => {
     let s = started(['Ana']);
     s = R(vote(vote(s, 'h', 1), 'ana', 1), { type: 'next' });
     expect(viewFor(s, 'h', 0).game).toEqual({ mode: 'duel', frs: ['pokemon', 'digimon'], streak: [0, 1] });
     const t = started(['Ana'], { mode: 'trio' });
     expect(viewFor(t, 'h', 0).game).toEqual({ mode: 'trio', frs: (t.game as KingGame).frs, streak: [0, 0, 0] });
+    let q = started(['Ana'], { mode: 'quartet' });
+    q = R(vote(vote(q, 'h', 3), 'ana', 3), { type: 'next' });
+    const qv = viewFor(q, 'ana', 0);
+    expect(qv.cfg.mode).toBe('quartet');
+    expect(qv.game).toEqual({ mode: 'quartet', frs: ['pokemon', 'digimon', 'smt', 'jojo'], streak: [0, 0, 0, 1] });
+    expect(qv.vote!.items.map(e => e.fr)).toEqual(['pokemon', 'digimon', 'smt', 'jojo']);
+    expect(qv.vote!.extras).toEqual(['', '', '', '♛ 1 vitória']);
+  });
+
+  it('Quarteto: empate entre três das quatro cartas, com a roleta só entre as empatadas', () => {
+    let s = started(['Ana', 'Bia'], { mode: 'quartet' });
+    s = vote(vote(vote(s, 'h', 0, 1000), 'ana', 2, 1000), 'bia', 3, 3000);
+    const r = viewFor(s, 'bia', 3500).vote!.result!;
+    expect(r).toMatchObject({ how: 'empate', tie: [0, 2, 3], counts: [1, 0, 1, 1], voters: [['Host'], [], ['Ana'], ['Bia']] });
+    expect(r.spin).toMatchObject({ among: [0, 2, 3], at: 3000, age: 500 });
+    expect([0, 2, 3]).toContain(r.win);
   });
 
   it('Campeonato: chave, título da rodada e contagem do confronto; no fim, Campeão', () => {

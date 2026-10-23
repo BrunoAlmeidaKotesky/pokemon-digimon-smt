@@ -19,6 +19,7 @@ export const DEFAULT_CONFIG: OnlineConfig = {
   roulette: false,
   duel: ['pokemon', 'digimon'],
   trio: ['pokemon', 'digimon', 'smt'],
+  quartet: ['pokemon', 'digimon', 'smt', 'jojo'],
   cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'sujimon'], even: true, mix: true },
   draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
 };
@@ -233,8 +234,9 @@ function start(s: RoomState, ctx: Ctx): boolean {
     openVote(s, [...(cupPair(cup) as [Entry, Entry])], ['', '']);
     return true;
   }
-  if (cfg.mode !== 'duel' && cfg.mode !== 'trio') return false;
-  const frs = [...(cfg.mode === 'duel' ? cfg.duel : cfg.trio)];
+  // Duelo, Trio e Quarteto: o mesmo rei do morro, com um lado por franquia configurada
+  if (cfg.mode !== 'duel' && cfg.mode !== 'trio' && cfg.mode !== 'quartet') return false;
+  const frs: FranchiseKey[] = [...cfg[cfg.mode]];
   const miss = frs.find(k => !listOf(ctx, k));
   if (miss !== undefined) return notice(s, missing(miss));
   const slots: Entry[] = [];

@@ -1,13 +1,14 @@
+import { Fragment } from 'react';
 import type { OnlineConfig, OnlineMode, RoomView } from '../../online/types';
 import { host } from '../../online/runtime';
 import { app, label } from '../../state/app';
 import { KEYS } from '../../sources';
 import { DraftConfig } from './Draft';
 
-const MODES: [OnlineMode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['cup', 'Campeonato'], ['draft', 'Draft']];
+const MODES: [OnlineMode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['draft', 'Draft']];
 const SIZES = [8, 16, 32, 64, 128];
 /** Modos que já funcionam online. */
-export const READY_MODES: OnlineMode[] = ['duel', 'trio', 'cup', 'draft'];
+export const READY_MODES: OnlineMode[] = ['duel', 'trio', 'quartet', 'cup', 'draft'];
 
 /** Lobby: o host configura a partida; os outros veem a mesma configuração, sem poder mudar. */
 export function Lobby({ v }: { v: RoomView }) {
@@ -37,6 +38,16 @@ export function Lobby({ v }: { v: RoomView }) {
           {sel('onTrio0', c.trio[0], k => set({ trio: [k, c.trio[1], c.trio[2]] }), 'Franquia 1')} <span className="vsx">VS</span>{' '}
           {sel('onTrio1', c.trio[1], k => set({ trio: [c.trio[0], k, c.trio[2]] }), 'Franquia 2')} <span className="vsx">VS</span>{' '}
           {sel('onTrio2', c.trio[2], k => set({ trio: [c.trio[0], c.trio[1], k] }), 'Franquia 3')}
+        </div>
+      )}
+      {c.mode === 'quartet' && (
+        <div className="bar">
+          {c.quartet.map((fr, i) => (
+            <Fragment key={i}>
+              {i > 0 && <>{' '}<span className="vsx">VS</span>{' '}</>}
+              {sel('onQuartet' + i, fr, k => set({ quartet: c.quartet.map((x, j) => (j === i ? k : x)) as OnlineConfig['quartet'] }), 'Franquia ' + (i + 1))}
+            </Fragment>
+          ))}
         </div>
       )}
       {c.mode === 'cup' && (

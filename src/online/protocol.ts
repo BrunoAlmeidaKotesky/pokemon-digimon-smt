@@ -69,7 +69,7 @@ const isCup = (c: unknown): boolean =>
 
 function isCfg(c: unknown): boolean {
   return isRec(c) && isText(c.mode) && isBool(c.secret) && isBool(c.roulette) &&
-    isArr(c.duel, isText) && isArr(c.trio, isText) &&
+    isArr(c.duel, isText) && isArr(c.trio, isText) && isArr(c.quartet, isText) &&
     isRec(c.cup) && isArr(c.cup.frs, isText) && isNat(c.cup.size) &&
     isRec(c.draft) && isArr(c.draft.frs, isText) && isNat(c.draft.x) && isNat(c.draft.rounds);
 }
@@ -78,7 +78,7 @@ function isCfg(c: unknown): boolean {
 function isGame(g: unknown): boolean {
   if (!isRec(g)) return false;
   switch (g.mode) {
-    case 'duel': case 'trio':
+    case 'duel': case 'trio': case 'quartet':
       return isArr(g.frs, isText) && isArr(g.streak, isNat);
     case 'cup':
       return isCup(g.cup) && isText(g.title) && isText(g.count);

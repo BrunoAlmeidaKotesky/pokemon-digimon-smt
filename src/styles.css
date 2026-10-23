@@ -83,6 +83,9 @@ ol,ul{padding-left:20px;margin:0}
   .arena.two{gap:8px}.arena.two .vs{font-size:14px}
   .card{padding:4px 4px 8px}.card .name{font-size:15px}
   .arena.three{flex-direction:column;align-items:center}.arena.three .card{width:100%;max-width:340px}.arena.three .vs{display:none}
+  /* Quarteto no celular: grade 2×2, sem VS, cartas menores */
+  .arena.four{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.arena.four .vs{display:none}
+  .arena.four .card{max-width:none}.arena.four .card .name{font-size:14px}
   .meter{grid-template-columns:80px 1fr 80px}
 }
 @media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}body.spinning .spin svg .wheel,.card.picked{animation:none}}

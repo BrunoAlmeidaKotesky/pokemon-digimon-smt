@@ -10,8 +10,20 @@ import { loadStats, saveStats, record, updateBest, emptyStats } from '../core/st
 import { buildEntrants, startCup, cupSync, cupPair, cupChoose } from '../core/cup';
 import { planSpin, spinDelay, spinIndex, PICK_MS, PICK_MS_CALM } from '../core/spin';
 
-export type Mode = 'duel' | 'trio' | 'cup' | 'stats' | 'online';
-export type Row = 'duel' | 'trio' | 'cup';
+export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'stats' | 'online';
+export type Row = 'duel' | 'trio' | 'quartet' | 'cup';
+/** Trio e Quarteto: rei do morro com 3 ou 4 lados. */
+export type Multi = 'trio' | 'quartet';
+/** Um modo de N lados: franquia, carta na arena, sequência de vitórias e desafiante já sorteado de cada lado. */
+export interface Sides {
+  fr: string[];
+  slots: (Entry | null)[] | null;
+  streak: number[];
+  queue: (Entry | null)[];
+  /** alguma lista ainda não carregou */
+  waiting: boolean;
+}
+const sides = (fr: string[]): Sides => ({ fr, slots: null, streak: fr.map(() => 0), queue: fr.map(() => null), waiting: true });
 
 // ---------- assinatura (React) ----------
 let version = 0;
@@ -39,9 +51,8 @@ export const app = {
   duel: { slots: [null, null] as (Entry | null)[], streak: [0, 0], queue: [null, null] as (Entry | null)[] },
   duelWaiting: true,
 
-  trioFr: ['pokemon', 'digimon', 'smt'] as [string, string, string],
-  trio: { slots: null as (Entry | null)[] | null, streak: [0, 0, 0], queue: [null, null, null] as (Entry | null)[] },
-  trioWaiting: true,
+  trio: sides(['pokemon', 'digimon', 'smt']),
+  quartet: sides(['pokemon', 'digimon', 'smt', 'jojo']),
 
   cupCfg: { size: 16, frs: Object.fromEntries(KEYS.map(k => [k, true])) as Record<string, boolean>, even: true, mix: true },
   cup: null as Cup | null,
@@ -100,38 +111,47 @@ export function setDuelFr(i: 0 | 1, k: string) {
 }
 export function duelSkip() { resetDuel(); emit(); }
 
-// ---------- trio ----------
-// Quem vence fica no lugar; os outros dois lados mandam novos desafiantes da sua franquia.
-const trioFr = (i: number) => app.trioFr[i]!;
-function trioChallenger(i: number): Entry {
-  const q = app.trio.queue[i]; app.trio.queue[i] = null;
-  return q && q.fr === trioFr(i) ? q : pick(trioFr(i), app.trio.slots ? app.trio.slots.filter(Boolean) as Entry[] : []);
+// ---------- trio e quarteto ----------
+// Quem vence fica no lugar; os outros lados mandam novos desafiantes da sua franquia (sorteados na rodada anterior).
+// O mesmo código serve pros dois e faz os sorteios na mesma ordem do Trio antigo.
+function multiChallenger(m: Multi, i: number): Entry {
+  const s = app[m];
+  const q = s.queue[i]; s.queue[i] = null;
+  return q && q.fr === s.fr[i] ? q : pick(s.fr[i]!, s.slots ? s.slots.filter(Boolean) as Entry[] : []);
 }
-function nextTrio() {
-  if (![0, 1, 2].every(i => ready(trioFr(i)))) { app.current = []; app.trioWaiting = true; return; }
-  app.trioWaiting = false;
-  if (!app.trio.slots) app.trio.slots = [null, null, null];
-  const slots = app.trio.slots;
-  [0, 1, 2].forEach(i => { if (!slots[i]) { slots[i] = trioChallenger(i); app.trio.streak[i] = 0; } });
-  show('trio', slots as Entry[], w => {
-    const wi = app.trio.slots!.indexOf(w);
-    record2(w, app.trio.slots as Entry[]);
-    app.trio.streak[wi]!++;
-    app.trio.slots = app.trio.slots!.map((x, i) => i === wi ? x : null);
-    nextTrio();
-    [0, 1, 2].forEach(i => {
-      if (i !== wi && ready(trioFr(i))) { const q = pick(trioFr(i), app.trio.slots as Entry[]); app.trio.queue[i] = q; preload([q]); }
+function nextMulti(m: Multi) {
+  const s = app[m];
+  if (!s.fr.every(k => ready(k))) { app.current = []; s.waiting = true; return; }
+  s.waiting = false;
+  if (!s.slots) s.slots = s.fr.map(() => null);
+  const slots = s.slots;
+  s.fr.forEach((_, i) => { if (!slots[i]) { slots[i] = multiChallenger(m, i); s.streak[i] = 0; } });
+  show(m, slots as Entry[], w => {
+    const wi = s.slots!.indexOf(w);
+    record2(w, s.slots as Entry[]);
+    s.streak[wi]!++;
+    s.slots = s.slots!.map((x, i) => i === wi ? x : null);
+    nextMulti(m);
+    s.fr.forEach((k, i) => {
+      if (i !== wi && ready(k)) { const q = pick(k, s.slots as Entry[]); s.queue[i] = q; preload([q]); }
     });
     emit();
   });
 }
-function resetTrio() { app.trio = { slots: null, streak: [0, 0, 0], queue: [null, null, null] }; nextTrio(); }
-export function setTrioFr(i: 0 | 1 | 2, k: string) {
-  app.trioFr[i] = k;
-  if (app.trio.slots) app.trio.slots[i] = null;
-  app.trio.queue[i] = null; app.trio.streak[i] = 0; nextTrio(); emit();
+function resetMulti(m: Multi) {
+  const s = app[m];
+  s.slots = null; s.streak = s.fr.map(() => 0); s.queue = s.fr.map(() => null);
+  nextMulti(m);
 }
-export function trioSkip() { resetTrio(); emit(); }
+/** Troca a franquia de um lado: só aquele lado recebe um desafiante novo (e perde a coroa). */
+export function setSideFr(m: Multi, i: number, k: string) {
+  const s = app[m];
+  s.fr[i] = k;
+  if (s.slots) s.slots[i] = null;
+  s.queue[i] = null; s.streak[i] = 0; nextMulti(m); emit();
+}
+/** "Trocar os três" / "Trocar os quatro": recomeça com desafiantes novos em todos os lados. */
+export function multiSkip(m: Multi) { resetMulti(m); emit(); }
 
 // ---------- roleta ----------
 // Acende as cartas em sequência, desacelerando, e escolhe a carta onde parar.
@@ -144,7 +164,7 @@ function setSpinning(on: boolean) {
 }
 export function spin() {
   if (app.spinning || !app.onChoose || !app.current.length) return;
-  const row = ({ duel: 'duel', trio: 'trio', cup: 'cup' } as const)[app.mode as Row];
+  const row = ({ duel: 'duel', trio: 'trio', quartet: 'quartet', cup: 'cup' } as const)[app.mode as Row];
   if (!row || app.currentRow !== row) return;
   const items = app.current, chooseFn = app.onChoose, n = items.length;
   const { start, total } = planSpin(n);
@@ -227,7 +247,7 @@ export function setMode(m: Mode) {
   app.mode = m;
   app.current = []; app.onChoose = null; app.currentRow = null; cancelSpin();
   if (m === 'duel') renderDuel();
-  if (m === 'trio') nextTrio();
+  if (m === 'trio' || m === 'quartet') nextMulti(m);
   if (m === 'cup' && app.cup && !app.cupHidden.play) cupStep();
   emit();
 }
@@ -249,7 +269,7 @@ function dropFranchise(k: string) {
   app.avail = app.avail.filter(x => x !== k);
   const first = app.avail[0]!;
   ([0, 1] as const).forEach(i => { if (app.duelFr[i] === k) setDuelFr(i, first); });
-  ([0, 1, 2] as const).forEach(i => { if (app.trioFr[i] === k) setTrioFr(i, first); });
+  (['trio', 'quartet'] as const).forEach(m => app[m].fr.forEach((x, i) => { if (x === k) setSideFr(m, i, first); }));
   app.st[k] = null;
 }
 export function statusText() { return KEYS.filter(k => app.st[k] != null).map(k => `${label(k)}: ${app.st[k]}`).join(' · '); }
@@ -264,7 +284,7 @@ export function init() {
       .catch(() => { if (s.optional) dropFranchise(s.key); else app.st[s.key] = 'falhou'; })
       .finally(() => {
         if (app.mode === 'duel' && !app.current.length) resetDuel();
-        if (app.mode === 'trio' && !app.current.length) resetTrio();
+        if ((app.mode === 'trio' || app.mode === 'quartet') && !app.current.length) resetMulti(app.mode);
         emit();
       });
   });

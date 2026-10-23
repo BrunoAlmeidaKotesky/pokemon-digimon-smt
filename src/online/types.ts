@@ -2,7 +2,7 @@
 import type { Cup, Entry, FranchiseKey, Item } from '../types';
 
 // ---------- configuração ----------
-export type OnlineMode = 'duel' | 'trio' | 'cup' | 'draft';
+export type OnlineMode = 'duel' | 'trio' | 'quartet' | 'cup' | 'draft';
 
 export interface OnlineConfig {
   mode: OnlineMode;
@@ -12,6 +12,7 @@ export interface OnlineConfig {
   roulette: boolean;
   duel: [FranchiseKey, FranchiseKey];
   trio: [FranchiseKey, FranchiseKey, FranchiseKey];
+  quartet: [FranchiseKey, FranchiseKey, FranchiseKey, FranchiseKey];
   cup: { size: number; frs: FranchiseKey[]; even: boolean; mix: boolean };
   /** Draft (etapa 6): franquias na ordem, opções por franquia e nº de rodadas */
   draft: { frs: FranchiseKey[]; x: number; rounds: number };
@@ -59,9 +60,9 @@ export interface Vote {
   result: VoteResult | null;
 }
 
-/** Duelo e Trio online: rei do morro com 2 ou 3 lados. */
+/** Duelo, Trio e Quarteto online: rei do morro com 2, 3 ou 4 lados. */
 export interface KingGame {
-  mode: 'duel' | 'trio';
+  mode: 'duel' | 'trio' | 'quartet';
   frs: FranchiseKey[];
   slots: Entry[];
   streak: number[];
@@ -239,7 +240,7 @@ export interface DraftView {
 }
 
 export type GameView =
-  | { mode: 'duel' | 'trio'; frs: FranchiseKey[]; streak: number[] }
+  | { mode: KingGame['mode']; frs: FranchiseKey[]; streak: number[] }
   | { mode: 'cup'; cup: Cup; title: string; count: string }
   | DraftView;
 
