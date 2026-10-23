@@ -258,6 +258,7 @@ export interface RoomView {
 
 // ---------- mensagens ----------
 export type ClientMsg =
+  /** `id` = senha do aparelho (fica só no localStorage dele; o id público do jogador é outro) */
   | { t: 'hello'; id: string; name: string }
   | { t: 'vote'; seq: number; idx: number }
   | { t: 'pick'; round: number; att: number; idx: number }
@@ -272,6 +273,8 @@ export type HostMsg =
   | { t: 'kicked' }
   /** o host encerrou a sala */
   | { t: 'closed' }
+  /** este jogador entrou de novo por outra aba ou aparelho: esta conexão sai e não tenta voltar */
+  | { t: 'replaced' }
   | { t: 'ping' };
 
 // ---------- transporte ----------

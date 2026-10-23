@@ -169,6 +169,19 @@ test.describe('modo online (3 participantes, transporte local)', () => {
     await expect(volta.locator('#onResult')).toContainText('venceu com 2 votos');
   });
 
+  test('a mesma pessoa abre a sala em outra aba: a aba antiga sai e não fica reconectando', async ({ context }) => {
+    const s = await criarSala(context);
+    const velha = s.outros[0]!;
+    const nova = await abrirJogador(context, 2, s.code);
+    await expect(nova.locator('#onRoom')).toBeVisible();
+    await expect(velha.locator('#onEnded')).toContainText('outra aba');
+    await expect(s.host.locator('#onPlayers .chip')).toHaveCount(3);
+    await nova.waitForTimeout(3000);
+    await expect(nova.locator('#onEnded')).toHaveCount(0);
+    await expect(nova.locator('#onBanner')).toHaveCount(0);
+    await expect(chip(s.host, 'Beto')).not.toHaveClass(/off/);
+  });
+
   test('jogador que caiu não trava a votação: o host vê quem falta e remove', async ({ context }) => {
     const s = await criarSala(context);
     await s.host.locator('#onStart').click();

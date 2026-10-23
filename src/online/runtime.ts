@@ -24,6 +24,7 @@ const ls = {
   get(k: string) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k: string, v: string) { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } },
 };
+/** Senha deste aparelho (só fica aqui; o host a troca por um id público do jogador, que todos veem). */
 function myId() {
   let id = ls.get(ID_KEY);
   if (!id) { id = crypto.randomUUID().slice(0, 18); ls.set(ID_KEY, id); }
@@ -85,11 +86,16 @@ let room: RoomState | null = null;
 let endpoint: HostEndpoint | null = null;
 const links = new Map<string, Link>();       // id do jogador -> conexão
 const lastSeen = new Map<string, number>();  // id do jogador -> última mensagem
+const tokens = new Map<string, string>();    // senha do aparelho -> id público do jogador
+const publicId = () => crypto.randomUUID().slice(0, 12);
 let hostTimer: ReturnType<typeof setInterval> | null = null;
 
 const ctx = () => ({ rand: Math.random, now: Date.now(), lists: app.lists });
+/** Última configuração do host, mas o voto secreto e a roleta sempre começam desligados. */
 function loadCfg(): OnlineConfig {
-  try { return { ...DEFAULT_CONFIG, ...(JSON.parse(ls.get(CFG_KEY) ?? 'null') as Partial<OnlineConfig> | null ?? {}) }; } catch { return DEFAULT_CONFIG; }
+  let saved: Partial<OnlineConfig> = {};
+  try { saved = (JSON.parse(ls.get(CFG_KEY) ?? 'null') as Partial<OnlineConfig> | null) ?? {}; } catch { /* configuração ilegível */ }
+  return { ...DEFAULT_CONFIG, ...saved, secret: false, roulette: false };
 }
 function send(link: Link, msg: HostMsg) { try { link.send(msg); } catch { /* conexão já caiu */ } }
 function broadcast() {
@@ -112,16 +118,21 @@ function acceptLink(link: Link) {
     if (!msg || !room) return;
     if (pid) lastSeen.set(pid, Date.now());
     if (msg.t === 'hello') {
-      const check = canJoin(room, msg.id, msg.name);
+      const name = cleanName(msg.name);
+      // mesmo aparelho (senha conhecida) volta pro mesmo lugar; senão, id novo (ou o de quem caiu com o mesmo apelido)
+      const known = tokens.get(msg.id);
+      const check = canJoin(room, known && room.players.some(p => p.id === known) ? known : publicId(), name);
       if (!check.ok) { send(link, { t: 'reject', reason: check.reason }); setTimeout(() => link.close(), 300); return; }
       if (check.id === room.hostId) { send(link, { t: 'reject', reason: 'Esse aparelho já é o host desta sala.' }); setTimeout(() => link.close(), 300); return; }
       pid = check.id;
+      tokens.set(msg.id, pid);
       const old = links.get(pid);
-      if (old && old !== link) old.close();
+      // a mesma pessoa entrou de novo (outra aba ou aparelho): a conexão antiga sai sem tentar voltar
+      if (old && old !== link) { send(old, { t: 'replaced' }); setTimeout(() => old.close(), 300); }
       links.set(pid, link);
       lastSeen.set(pid, Date.now());
       send(link, { t: 'welcome', id: pid });
-      dispatch({ type: 'join', id: pid, name: cleanName(msg.name) });
+      dispatch({ type: 'join', id: pid, name });
       return;
     }
     if (!pid) return;
@@ -147,7 +158,7 @@ export async function hostRoom(name: string) {
     }
   }
   if (!endpoint) { online.stage = 'fora'; online.error = errorText(lastErr, ''); emit(); return; }
-  room = createRoom(endpoint.code, { id: myId(), name: nome }, loadCfg());
+  room = createRoom(endpoint.code, { id: publicId(), name: nome }, loadCfg());
   online.code = endpoint.code; online.stage = 'host'; online.banner = '';
   endpoint.onLink(acceptLink);
   endpoint.onTrouble(ok => {
@@ -188,7 +199,7 @@ function endHost() {
   for (const link of links.values()) send(link, { t: 'closed' });
   const ep = endpoint;
   setTimeout(() => { ep?.close(); }, 150);
-  links.clear(); lastSeen.clear();
+  links.clear(); lastSeen.clear(); tokens.clear();
   if (hostTimer) clearInterval(hostTimer);
   hostTimer = null; endpoint = null; room = null;
 }
@@ -211,11 +222,12 @@ async function connect(code: string): Promise<void> {
     if (!msg || link !== l) return;
     lastHostMsg = Date.now();
     switch (msg.t) {
-      case 'welcome': ls.set(ID_KEY, msg.id); break;
+      case 'welcome': break;
       case 'state': online.view = msg.view; online.stage = 'jogador'; online.banner = ''; emit(); break;
       case 'reject': finish('', msg.reason); break;
       case 'kicked': finish('O host removeu você da sala.'); break;
-      case 'closed': finish('O host encerrou a sala.'); break;
+      case 'closed': finish('A sala acabou: o host encerrou a sala ou fechou a página.'); break;
+      case 'replaced': finish('Você entrou nesta sala por outra aba ou aparelho, então esta aba saiu da sala.'); break;
       case 'ping': break;
     }
   });
@@ -240,15 +252,21 @@ async function lost() {
   if (retrying) return;
   retrying = true;
   online.banner = 'A conexão com o host caiu. Tentando reconectar…'; emit();
+  let ultimo: unknown = null;
   for (let i = 0; i < T.tries && !leaving && !link; i++) {
     await new Promise(r => setTimeout(r, i ? T.retry : 100));
     if (leaving || link) break;
     try { await connect(online.code); break; } catch (e) {
       if (e instanceof TransportError && e.kind === 'sala-nao-existe') { retrying = false; finish('A sala acabou: o host saiu ou fechou a página.'); return; }
+      ultimo = e;
     }
   }
   retrying = false;
-  if (!link && !leaving) { online.banner = ''; finish('Não consegui reconectar. O host pode ter saído ou a internet caiu.'); }
+  if (!link && !leaving) {
+    online.banner = '';
+    const p2p = ultimo instanceof TransportError && (ultimo.kind === 'p2p-bloqueado' || ultimo.kind === 'rede');
+    finish('Não consegui reconectar. ' + (p2p ? errorText(ultimo, online.code) : 'O host pode ter saído ou a internet caiu.'));
+  }
 }
 
 export async function joinRoom(code: string, name: string) {

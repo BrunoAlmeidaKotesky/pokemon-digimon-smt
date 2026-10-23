@@ -31,7 +31,9 @@ export function Card({ it, index, extra, lit, picked, isStatic, hideKey, onClick
       im.onerror = () => { if (vivo) setImg('erro'); };
     });
     return () => { vivo = false; };
-  }, [it]);
+    // depende do conteúdo, não do objeto: no modo online cada visão chega como objeto novo
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [it.name, it.img, it.href]);
 
   const cls = ['card', isStatic && 'static', lit && 'lit', picked && 'picked', more].filter(Boolean).join(' ');
   return (

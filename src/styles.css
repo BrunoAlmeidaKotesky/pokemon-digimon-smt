@@ -133,3 +133,6 @@ ol,ul{padding-left:20px;margin:0}
 .team li img{width:28px;height:28px;object-fit:contain}
 .chip .tag.dr.pronto{color:var(--ok)}
 .team.hist li{display:block}
+body.spinning-online #online .spin svg .wheel{animation:rot .5s linear infinite;transform-origin:20px 20px}
+body.spinning-online #online .card{cursor:default}
+@media (prefers-reduced-motion:reduce){body.spinning-online #online .spin svg .wheel{animation:none}}

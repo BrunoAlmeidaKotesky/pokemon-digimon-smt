@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { planSpin } from '../core/spin';
 import { makeList, mulberry32, SEEDS } from '../core/test-helpers';
 import type { Entry, Item } from '../types';
-import { DRAFT_ROUNDS, DRAFT_X, draftSettings, isBye, MAX_REDOS, redoNotice } from './draft';
+import { DRAFT_ROUNDS, DRAFT_X, draftSettings, isBye, redoNotice } from './draft';
 import { createRoom, DEFAULT_CONFIG, reduce } from './room';
 import type { Action, Ctx, DraftGame, DraftTeam, DraftView, OnlineConfig, Qualified, RoomState, Vote } from './types';
 import { viewFor } from './view';
@@ -359,21 +359,21 @@ describe('Draft: repetidos', () => {
     expect(redoNotice(['Pokémon'])).toBe(`Pokémon vai ser refeita ${NOTICE_TAIL}`);
   });
 
-  it(`limite de segurança: depois de ${MAX_REDOS} refações da mesma franquia o repetido é aceito`, () => {
+  it('repete até não ter repetido: refaz quantas vezes precisar (aqui 7 seguidas)', () => {
     let s = started(['Ana'], { frs: ['digimon'], x: 6 });
-    for (let n = 1; n <= MAX_REDOS + 1; n++) {
+    for (let n = 1; n <= 7; n++) {
       const both = namesOf(cur(s, 'h')).find(x => namesOf(cur(s, 'ana')).includes(x))!;
       s = pickName(pickName(s, 'h', both), 'ana', both);
-      if (n <= MAX_REDOS) {
-        expect(G(s).redos).toEqual({ 0: n });
-        expect(G(s).step).toBe('pick');
-      }
+      expect(G(s).redos).toEqual({ 0: n });
+      expect(G(s).step).toBe('pick');
+      expect(G(s).banned[0]).toHaveLength(n);
+      for (const id of ['h', 'ana']) expect(namesOf(cur(s, id)).some(x => G(s).banned[0]!.includes(x))).toBe(false);
     }
-    expect(G(s).redos).toEqual({ 0: MAX_REDOS });
-    expect(G(s).banned[0]).toHaveLength(MAX_REDOS);
+    // sem repetido, segue pra revelação com dois personagens diferentes
+    const a = namesOf(cur(s, 'h'))[0]!, b = namesOf(cur(s, 'ana')).find(x => x !== a)!;
+    s = pickName(pickName(s, 'h', a), 'ana', b);
     expect(G(s).step).toBe('reveal');
-    expect(V(s).items[0]!.name).toBe(V(s).items[1]!.name);
-    expect(V(s).items[0]!.k).not.toBe(V(s).items[1]!.k);
+    expect(V(s).items.map(e => e.name)).toEqual([a, b]);
   });
 
   it('banidos nunca voltam: sem opção, a franquia é pulada (e a revelação pula ela)', () => {
@@ -837,4 +837,25 @@ describe('Draft: pureza', () => {
     expect(mr).not.toHaveBeenCalled();
     expect(dn).not.toHaveBeenCalled();
   });
+});
+
+describe('Draft: voto secreto vale também na revelação e na final', () => {
+  for (const secret of [false, true]) {
+    it(secret ? 'ligado: só a contagem' : 'desligado: com os nomes de quem votou', () => {
+      let s = pickAll(started(['Ana', 'Bia'], { frs: ['pokemon', 'jojo'], x: 3 }, { secret }));
+      expect(G(s).step).toBe('reveal');
+      // revelação: host e Ana votam no 0, Bia no 1
+      for (const [id, idx] of [['h', 0], ['ana', 0], ['bia', 1]] as const) s = R(s, { type: 'vote', id, seq: V(s).seq, idx });
+      const r = viewFor(s, 'bia', NOW).vote!.result!;
+      expect(r.counts).toEqual([2, 1, 0]);
+      expect(r.voters).toEqual(secret ? null : [['Host', 'Ana'], ['Bia'], []]);
+      s = R(s, { type: 'next' });
+      s = decide(s, 0);
+      // final: 2 classificados, um confronto
+      expect(G(s).step).toBe('final');
+      for (const [id, idx] of [['h', 1], ['ana', 0], ['bia', 1]] as const) s = R(s, { type: 'vote', id, seq: V(s).seq, idx });
+      const f2 = viewFor(s, 'ana', NOW).vote!.result!;
+      expect(f2.voters).toEqual(secret ? null : [['Ana'], ['Host', 'Bia']]);
+    });
+  }
 });

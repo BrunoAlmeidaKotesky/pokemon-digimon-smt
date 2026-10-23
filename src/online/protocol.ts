@@ -57,7 +57,65 @@ function isPlayerView(p: unknown): boolean {
   );
 }
 
-/** Conferência rasa da visão: o que a tela usa direto tem o tipo certo; o resto (cfg, game, vote) passa como está. */
+const isArr = (x: unknown, ok: (y: unknown) => boolean): boolean => Array.isArray(x) && x.every(ok);
+const isText = (x: unknown): x is string => typeof x === 'string';
+/** personagem: o que a carta usa (nome, imagem, franquia) */
+const isEntry = (e: unknown): boolean => isRec(e) && isText(e.name) && isText(e.img) && isText(e.fr);
+const isEntryOrNull = (e: unknown): boolean => e === null || isEntry(e);
+const isMatch = (m: unknown): boolean => isRec(m) && isEntryOrNull(m.a) && isEntryOrNull(m.b) && isEntryOrNull(m.w);
+const isCup = (c: unknown): boolean =>
+  isRec(c) && isArr(c.round, isEntry) && isArr(c.next, isEntry) && isNat(c.i) &&
+  isArr(c.rounds, r => isArr(r, isMatch)) && (c.rounds as unknown[]).length > 0 && isRec(c.losers) && isEntryOrNull(c.champ);
+
+function isCfg(c: unknown): boolean {
+  return isRec(c) && isText(c.mode) && isBool(c.secret) && isBool(c.roulette) &&
+    isArr(c.duel, isText) && isArr(c.trio, isText) &&
+    isRec(c.cup) && isArr(c.cup.frs, isText) && isNat(c.cup.size) &&
+    isRec(c.draft) && isArr(c.draft.frs, isText) && isNat(c.draft.x) && isNat(c.draft.rounds);
+}
+
+/** O jogo, conferido pelo modo (o que a tela de cada modo usa direto). */
+function isGame(g: unknown): boolean {
+  if (!isRec(g)) return false;
+  switch (g.mode) {
+    case 'duel': case 'trio':
+      return isArr(g.frs, isText) && isArr(g.streak, isNat);
+    case 'cup':
+      return isCup(g.cup) && isText(g.title) && isText(g.count);
+    case 'draft': {
+      const me = g.me;
+      const meOk = me === null || (isRec(me) && (me.fi === null || isNat(me.fi)) && isArr(me.opts, isEntry) &&
+        isArr(me.picks, isEntryOrNull) && isNat(me.att) && isBool(me.skipped));
+      return isArr(g.frs, isText) && isNat(g.x) && isNat(g.rounds) && isNat(g.round) && isNat(g.reveal) &&
+        ['pick', 'reveal', 'final', 'end'].includes(g.step as string) && meOk &&
+        isArr(g.progress, p => isRec(p) && isText(p.id) && isText(p.name) && isText(p.state)) &&
+        (g.redo === null || isArr(g.redo, isText)) && isArr(g.qualified, isEntry) &&
+        (g.final === null || isCup(g.final)) && isText(g.title) && isText(g.count) && isEntryOrNull(g.champion) &&
+        (g.history === null || isArr(g.history, h => isRec(h) && isNat(h.round) &&
+          isArr(h.teams, t => isRec(t) && isText(t.id) && isText(t.name) && isArr(t.picks, isEntry))));
+    }
+    default:
+      return false;
+  }
+}
+
+/** A votação aberta (ou com resultado). */
+function isVote(v: unknown): boolean {
+  if (!isRec(v)) return false;
+  const n = Array.isArray(v.items) ? v.items.length : -1;
+  const idx = (i: unknown) => isNat(i) && i < n;
+  if (!isNat(v.seq) || !isArr(v.items, isEntry) || !isArr(v.extras, isText) || !(v.mine === null || idx(v.mine))) return false;
+  const r = v.result;
+  if (r === null) return true;
+  if (!isRec(r) || !isArr(r.counts, isNat) || (r.counts as unknown[]).length !== n || !idx(r.win)) return false;
+  if (!(r.voters === null || isArr(r.voters, x => isArr(x, isText)))) return false;
+  if (!(r.tie === null || isArr(r.tie, idx)) || !['votos', 'empate', 'roleta'].includes(r.how as string)) return false;
+  const s = r.spin;
+  return s === null || (isRec(s) && isNat(s.id) && isArr(s.among, idx) && (s.among as unknown[]).length > 0 &&
+    isNat(s.start) && isNat(s.total) && typeof s.age === 'number');
+}
+
+/** Conferência da visão: tudo o que a tela usa direto tem o tipo certo; visão torta é ignorada. */
 function isRoomView(v: unknown): v is RoomView {
   return (
     isRec(v) &&
@@ -68,9 +126,9 @@ function isRoomView(v: unknown): v is RoomView {
     typeof v.notice === 'string' &&
     Array.isArray(v.players) &&
     v.players.every(isPlayerView) &&
-    isRec(v.cfg) &&
-    (v.game === null || isRec(v.game)) &&
-    (v.vote === null || (isRec(v.vote) && Array.isArray(v.vote.items)))
+    isCfg(v.cfg) &&
+    (v.game === null || isGame(v.game)) &&
+    (v.vote === null || isVote(v.vote))
   );
 }
 
@@ -89,6 +147,8 @@ export function parseHostMsg(x: unknown): HostMsg | null {
         return { t: 'kicked' };
       case 'closed':
         return { t: 'closed' };
+      case 'replaced':
+        return { t: 'replaced' };
       case 'ping':
         return { t: 'ping' };
       default:
