@@ -69,6 +69,16 @@ describe('sujimon: lista local primeiro, wiki depois', () => {
     expect(urls(f)).toEqual(['sujimon/list.json']);
   });
 
+  it('item com link (terceiro campo https) usa a imagem desse endereço; os outros, a local', async () => {
+    const url = 'https://static.wikia.nocookie.net/yakuza/images/6/6d/Tribesman_Icon.png/revision/latest';
+    stubFetch(u => u.pathname === '/sujimon/list.json' ? json([['Burnout Bully', '001'], ['Tribesman', '018', url], ['Torto', '019', 'javascript:alert(1)']]) : undefined);
+    expect(await sujimon.load()).toEqual([
+      { name: 'Burnout Bully', img: 'sujimon/001.webp' },
+      { name: 'Tribesman', img: url },
+      { name: 'Torto', img: 'sujimon/019.webp' },
+    ]);
+  });
+
   it('sem list.json (404) usa a Yakuza Wiki', async () => {
     const f = stubFetch(u => u.pathname === '/sujimon/list.json' ? text('not found', 404) : undefined);
     const list = await sujimon.load();

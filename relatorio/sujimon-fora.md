@@ -8,8 +8,11 @@ imagens que você baixou do Sujidex (`sujimon/_orig/`, fora do git):
   - 133 a partir do retrato (rosto, 168px com fundo transparente, ampliado 2×), porque a página deles não tinha
     screenshot.
 - Recorte próprio pros que são mais largos que o normal: 297 e 300 (escavadeiras), 298 (tubarão) e 299 (lula).
-- **Ficaram de fora 22 números**, que não vieram no download (não estavam na tabela da página): 018, 020, 033, 034,
-  036, 037, 038, 050, 051, 052, 053, 054, 055, 058, 059, 060, 066, 089, 090, 144, 233 e 248.
+- Dos 22 que não vieram no download, **19 entraram pelo link da imagem na Yakuza Wiki** (`sujimon/links.json`, com os
+  nomes que você passou): 018, 020, 033, 034, 036, 037, 038, 050, 051, 052, 053, 054, 055, 058, 059, 060, 066, 089 e 090.
+  São ícones pequenos (100px) e aparecem direto do endereço da wiki, sem cópia no repositório.
+- **Total no site: 314.** Ficaram de fora só 3, que não têm imagem nem no download nem na wiki: 144 (Strummageddon),
+  233 (Golden Statesman) e 248 (Slycanthrope).
 
 Pra incluir algum, coloque a imagem em `sujimon/_orig/` como `018 Nome.png` (ou o screenshot como `018.jpg`, com o
 nome no `nomes.json`) e rode `node sujimon.mjs recortar` de novo.
