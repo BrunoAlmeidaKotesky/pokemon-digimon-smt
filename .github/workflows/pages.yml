@@ -1,5 +1,5 @@
 # Checa e publica o site no GitHub Pages.
-# Push na main: typecheck, lint, Vitest, build, Playwright e publicação.
+# Push na main: typecheck, lint, Vitest, build e publicação (o Playwright já rodou na react).
 # Push na react (ou PR): só as checagens, sem publicar.
 name: Publicar no GitHub Pages
 
@@ -32,7 +32,9 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      # Playwright roda na react e nos PRs; na main o mesmo código já passou por ele, então o deploy pula (mais rápido)
       - name: Playwright (Chromium)
+        if: github.ref != 'refs/heads/main'
         run: |
           npx playwright install --with-deps chromium
           npm run test:e2e
