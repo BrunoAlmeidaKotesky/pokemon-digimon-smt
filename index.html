@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pokémon x Digimon x SMT x JoJo</title>
+<meta name="referrer" content="no-referrer">
+<title>Quem Você Prefere</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&display=swap">
@@ -12,21 +13,21 @@
 :root{
   color-scheme:light;
   --bg:#eef0f4; --panel:#ffffff; --fg:#15171c; --mute:#626875; --line:#d5d9e1;
-  --pokemon:#d6302a; --digimon:#1f6fd1; --smt:#7a1fa8; --jojo:#0c8a5a; --gold:#c58a00;
+  --pokemon:#d6302a; --digimon:#1f6fd1; --smt:#7a1fa8; --jojo:#0c8a5a; --ygo:#c2410c; --bakugan:#0e8fa8; --gold:#c58a00;
   --display:"Chakra Petch", "Segoe UI", system-ui, sans-serif;
   --body:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 @media (prefers-color-scheme:dark){:root{
   color-scheme:dark;
   --bg:#101216; --panel:#1a1d23; --fg:#eceef2; --mute:#9aa1ad; --line:#2c313a;
-  --pokemon:#ff5a4f; --digimon:#4f9bff; --smt:#b866e8; --jojo:#3fd39a; --gold:#ffc23d;
+  --pokemon:#ff5a4f; --digimon:#4f9bff; --smt:#b866e8; --jojo:#3fd39a; --ygo:#ff8a4c; --bakugan:#3cc8e6; --gold:#ffc23d;
 }}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 var(--body)}
 .wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
 header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:14px}
 h1{font:700 26px/1.1 var(--display);margin:0;letter-spacing:.5px;text-transform:uppercase}
-h1 .p{color:var(--pokemon)} h1 .d{color:var(--digimon)} h1 .s{color:var(--smt)} h1 .j{color:var(--jojo)}
+h1 .p{color:var(--pokemon)} h1 .d{color:var(--digimon)} h1 .s{color:var(--smt)} h1 .j{color:var(--jojo)} h1 .y{color:var(--ygo)} h1 .b{color:var(--bakugan)}
 #status{font-size:12px;color:var(--mute)}
 nav{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:16px}
 nav button{font:600 14px var(--display);text-transform:uppercase;letter-spacing:.6px;background:none;border:0;color:var(--mute);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
@@ -53,7 +54,7 @@ body.spinning .card{cursor:default}
 .arena{display:flex;gap:10px;align-items:stretch;justify-content:center;margin:12px 0}
 .vs{align-self:center;font:700 22px var(--display);color:var(--mute);flex:none}
 .card{--c:var(--line);position:relative;flex:1 1 0;min-width:0;max-width:400px;background:var(--panel);border:2px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:6px 6px 10px;cursor:pointer;text-align:center;transition:transform .12s, box-shadow .12s, border-color .12s}
-.card[data-fr=pokemon]{--c:var(--pokemon)} .card[data-fr=digimon]{--c:var(--digimon)} .card[data-fr=smt]{--c:var(--smt)} .card[data-fr=jojo]{--c:var(--jojo)}
+.card[data-fr=pokemon]{--c:var(--pokemon)} .card[data-fr=digimon]{--c:var(--digimon)} .card[data-fr=smt]{--c:var(--smt)} .card[data-fr=jojo]{--c:var(--jojo)} .card[data-fr=ygo]{--c:var(--ygo)} .card[data-fr=bakugan]{--c:var(--bakugan)}
 .card:hover,.card:focus-visible{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 20px -10px var(--c);outline:none}
 .card .img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:13px;border-radius:6px;background:radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--c) 14%, transparent), transparent 75%)}
 .card img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
@@ -78,7 +79,7 @@ body.spinning .card{cursor:default}
 .match.champ{border-color:var(--gold)}
 .slot{--c:var(--line);display:flex;align-items:center;gap:6px;height:26px;padding-right:6px;border-left:4px solid var(--c);font-size:12px}
 .slot+.slot{border-top:1px solid var(--line)}
-.slot[data-fr=pokemon]{--c:var(--pokemon)}.slot[data-fr=digimon]{--c:var(--digimon)}.slot[data-fr=smt]{--c:var(--smt)}.slot[data-fr=jojo]{--c:var(--jojo)}
+.slot[data-fr=pokemon]{--c:var(--pokemon)}.slot[data-fr=digimon]{--c:var(--digimon)}.slot[data-fr=smt]{--c:var(--smt)}.slot[data-fr=jojo]{--c:var(--jojo)}.slot[data-fr=ygo]{--c:var(--ygo)}.slot[data-fr=bakugan]{--c:var(--bakugan)}
 .slot .th{width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center}
 .slot .th img{width:24px;height:24px;object-fit:contain}
 .slot .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
@@ -101,7 +102,7 @@ ol,ul{padding-left:20px;margin:0}
 <body>
 <div class="wrap">
 <header>
-  <h1><span class="p">Pokémon</span> x <span class="d">Digimon</span> x <span class="s">SMT</span> x <span class="j">JoJo</span></h1>
+  <h1><span class="p">Pokémon</span> x <span class="d">Digimon</span> x <span class="s">SMT</span> x <span class="j">JoJo</span> x <span class="y">Yu-Gi-Oh!</span> x <span class="b">Bakugan</span></h1>
   <div id="status">Carregando listas…</div>
 </header>
 <nav>
@@ -117,14 +118,14 @@ ol,ul{padding-left:20px;margin:0}
     <button class="btn" id="duelSkip">Trocar os dois</button>
   </div>
   <div class="arena two" id="duelRow"></div>
-  <div class="spinbar"><button class="spin" title="Roleta (tecla R)"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="wheel"><circle cx="20" cy="20" r="18" fill="var(--line)"/><path d="M20 20L20 2A18 18 0 0 1 38 20Z" fill="var(--pokemon)"/><path d="M20 20L38 20A18 18 0 0 1 20 38Z" fill="var(--digimon)"/><path d="M20 20L20 38A18 18 0 0 1 2 20Z" fill="var(--smt)"/><path d="M20 20L2 20A18 18 0 0 1 20 2Z" fill="var(--jojo)"/><circle cx="20" cy="20" r="18" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="20" cy="20" r="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="2"/></g><path d="M20 0L24 7H16Z" fill="var(--gold)" stroke="var(--fg)" stroke-width="1"/></svg><span>Roleta</span></button></div>
+  <div class="spinbar"><button class="spin" title="Roleta (tecla R)"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="wheel"><circle cx="20" cy="20" r="18" fill="var(--line)"/><path d="M20 20L20.00 2.00A18 18 0 0 1 35.59 11.00Z" fill="var(--pokemon)"/><path d="M20 20L35.59 11.00A18 18 0 0 1 35.59 29.00Z" fill="var(--digimon)"/><path d="M20 20L35.59 29.00A18 18 0 0 1 20.00 38.00Z" fill="var(--smt)"/><path d="M20 20L20.00 38.00A18 18 0 0 1 4.41 29.00Z" fill="var(--jojo)"/><path d="M20 20L4.41 29.00A18 18 0 0 1 4.41 11.00Z" fill="var(--ygo)"/><path d="M20 20L4.41 11.00A18 18 0 0 1 20.00 2.00Z" fill="var(--bakugan)"/><circle cx="20" cy="20" r="18" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="20" cy="20" r="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="2"/></g><path d="M20 0L24 7H16Z" fill="var(--gold)" stroke="var(--fg)" stroke-width="1"/></svg><span>Roleta</span></button></div>
   <p class="hint">Quem você escolhe fica na arena; o outro lado manda um novo desafiante. Teclas 1 e 2 escolhem; R gira a roleta.</p>
 </section>
 
 <section id="trio" hidden>
   <div class="bar"><select id="trio0" aria-label="Franquia 1"></select> <span class="vsx">VS</span> <select id="trio1" aria-label="Franquia 2"></select> <span class="vsx">VS</span> <select id="trio2" aria-label="Franquia 3"></select> <button class="btn" id="trioSkip">Trocar os três</button></div>
   <div class="arena three" id="trioRow"></div>
-  <div class="spinbar"><button class="spin" title="Roleta (tecla R)"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="wheel"><circle cx="20" cy="20" r="18" fill="var(--line)"/><path d="M20 20L20 2A18 18 0 0 1 38 20Z" fill="var(--pokemon)"/><path d="M20 20L38 20A18 18 0 0 1 20 38Z" fill="var(--digimon)"/><path d="M20 20L20 38A18 18 0 0 1 2 20Z" fill="var(--smt)"/><path d="M20 20L2 20A18 18 0 0 1 20 2Z" fill="var(--jojo)"/><circle cx="20" cy="20" r="18" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="20" cy="20" r="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="2"/></g><path d="M20 0L24 7H16Z" fill="var(--gold)" stroke="var(--fg)" stroke-width="1"/></svg><span>Roleta</span></button></div>
+  <div class="spinbar"><button class="spin" title="Roleta (tecla R)"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="wheel"><circle cx="20" cy="20" r="18" fill="var(--line)"/><path d="M20 20L20.00 2.00A18 18 0 0 1 35.59 11.00Z" fill="var(--pokemon)"/><path d="M20 20L35.59 11.00A18 18 0 0 1 35.59 29.00Z" fill="var(--digimon)"/><path d="M20 20L35.59 29.00A18 18 0 0 1 20.00 38.00Z" fill="var(--smt)"/><path d="M20 20L20.00 38.00A18 18 0 0 1 4.41 29.00Z" fill="var(--jojo)"/><path d="M20 20L4.41 29.00A18 18 0 0 1 4.41 11.00Z" fill="var(--ygo)"/><path d="M20 20L4.41 11.00A18 18 0 0 1 20.00 2.00Z" fill="var(--bakugan)"/><circle cx="20" cy="20" r="18" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="20" cy="20" r="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="2"/></g><path d="M20 0L24 7H16Z" fill="var(--gold)" stroke="var(--fg)" stroke-width="1"/></svg><span>Roleta</span></button></div>
   <p class="hint">Quem você escolhe fica; os outros dois lados mandam novos desafiantes. Teclas 1, 2 e 3 escolhem; R gira a roleta.</p>
 </section>
 
@@ -142,7 +143,7 @@ ol,ul{padding-left:20px;margin:0}
   <div id="cupPlay" hidden>
     <div class="bar"><h2 id="cupRound" style="margin:0"></h2> <span class="mute" id="cupCount"></span> <button class="btn" id="cupQuit">Abandonar</button></div>
     <div class="arena two" id="cupRow"></div>
-    <div class="spinbar"><button class="spin" title="Roleta (tecla R)"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="wheel"><circle cx="20" cy="20" r="18" fill="var(--line)"/><path d="M20 20L20 2A18 18 0 0 1 38 20Z" fill="var(--pokemon)"/><path d="M20 20L38 20A18 18 0 0 1 20 38Z" fill="var(--digimon)"/><path d="M20 20L20 38A18 18 0 0 1 2 20Z" fill="var(--smt)"/><path d="M20 20L2 20A18 18 0 0 1 20 2Z" fill="var(--jojo)"/><circle cx="20" cy="20" r="18" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="20" cy="20" r="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="2"/></g><path d="M20 0L24 7H16Z" fill="var(--gold)" stroke="var(--fg)" stroke-width="1"/></svg><span>Roleta</span></button></div>
+    <div class="spinbar"><button class="spin" title="Roleta (tecla R)"><svg viewBox="0 0 40 40" aria-hidden="true"><g class="wheel"><circle cx="20" cy="20" r="18" fill="var(--line)"/><path d="M20 20L20.00 2.00A18 18 0 0 1 35.59 11.00Z" fill="var(--pokemon)"/><path d="M20 20L35.59 11.00A18 18 0 0 1 35.59 29.00Z" fill="var(--digimon)"/><path d="M20 20L35.59 29.00A18 18 0 0 1 20.00 38.00Z" fill="var(--smt)"/><path d="M20 20L20.00 38.00A18 18 0 0 1 4.41 29.00Z" fill="var(--jojo)"/><path d="M20 20L4.41 29.00A18 18 0 0 1 4.41 11.00Z" fill="var(--ygo)"/><path d="M20 20L4.41 11.00A18 18 0 0 1 20.00 2.00Z" fill="var(--bakugan)"/><circle cx="20" cy="20" r="18" fill="none" stroke="var(--fg)" stroke-width="2"/><circle cx="20" cy="20" r="4" fill="var(--panel)" stroke="var(--fg)" stroke-width="2"/></g><path d="M20 0L24 7H16Z" fill="var(--gold)" stroke="var(--fg)" stroke-width="1"/></svg><span>Roleta</span></button></div>
   </div>
   <div id="cupEnd" hidden></div>
   <details id="cupLog" class="panel" hidden open style="margin-top:12px"><summary><b>Chaveamento</b></summary><div class="bracket" id="cupLogBody"></div></details>
@@ -169,7 +170,9 @@ const SRC = {
   pokemon: {label:'Pokémon', list:null},
   digimon: {label:'Digimon', list:null},
   smt:     {label:'SMT/Persona', list:SMT_DATA.map(([n,f]) => ({name:n, img:'smt/'+f+'.webp'}))},
-  jojo:    {label:'JoJo', list:null}
+  jojo:    {label:'JoJo', list:null},
+  ygo:     {label:'Yu-Gi-Oh!', list:null},
+  bakugan: {label:'Bakugan', list:null}
 };
 const KEYS = Object.keys(SRC);
 const $ = id => document.getElementById(id);
@@ -209,6 +212,28 @@ async function loadJojo(){
       cont = j.continue || null;
     }while(cont);
   }));
+  const list = [...map.values()]
+    .filter(x => x.thumbnail && !x.title.includes('/') && !/^List of/i.test(x.title))
+    .map(x => ({name:x.title, img:x.thumbnail.source}));
+  if(!list.length) throw new Error('vazio');
+  return list;
+}
+// Yu-Gi-Oh!: os monstros mais vistos da YGOPRODeck, com a arte baixada uma vez para a pasta ygo/
+// (scripts/ygo.mjs, rodado pela automação do GitHub). Não usamos as imagens direto do site deles.
+async function loadYgo(){
+  const list = await (await fetch('ygo/list.json')).json();
+  return list.map(([name, id]) => ({name, img:`ygo/img/${id}.webp`}));
+}
+// Bakugan: páginas da Bakugan Wiki (Fandom) que usam a ficha de Bakugan.
+async function loadBakugan(){
+  const map = new Map(); let cont = {};
+  do{
+    const p = new URLSearchParams({action:'query', generator:'embeddedin', geititle:'Template:Infobox Bakugan', geilimit:'500', geinamespace:'0',
+      prop:'pageimages', piprop:'thumbnail', pithumbsize:'400', pilimit:'500', format:'json', origin:'*', ...cont});
+    const j = await (await fetch('https://bakugan.fandom.com/api.php?'+p)).json();
+    Object.values(j.query?.pages || {}).forEach(x => map.set(x.pageid, x));
+    cont = j.continue || null;
+  }while(cont);
   const list = [...map.values()]
     .filter(x => x.thumbnail && !x.title.includes('/') && !/^List of/i.test(x.title))
     .map(x => ({name:x.title, img:x.thumbnail.source}));
@@ -414,8 +439,15 @@ $('cupStart').onclick = () => {
     shuffle([...frs]).slice(0, size % frs.length).forEach(k => counts[k]++);
   } else for(let i=0;i<size;i++) counts[rnd(frs)]++;
   let entrants = [];
-  frs.forEach(k => entrants.push(...shuffle([...SRC[k].list]).slice(0, counts[k]).map(p => ({...p, fr:k}))));
-  entrants = shuffle(entrants).slice(0, size);
+  const pools = {};
+  frs.forEach(k => { pools[k] = shuffle([...SRC[k].list]); entrants.push(...pools[k].splice(0, counts[k]).map(p => ({...p, fr:k}))); });
+  // franquia com poucos personagens: completa as vagas com as outras
+  for(let i = 0; entrants.length < size && frs.some(k => pools[k].length); i++){
+    const k = frs[i % frs.length];
+    if(pools[k].length) entrants.push({...pools[k].pop(), fr:k});
+  }
+  let n = 2; while(n*2 <= Math.min(size, entrants.length)) n *= 2;
+  entrants = shuffle(entrants).slice(0, n);
   cupMix = $('cupMix').checked;
   if(cupMix) entrants = pairUp(entrants);
   preload(entrants);
@@ -532,10 +564,10 @@ document.addEventListener('keydown', e => {
 });
 
 // ---------- início ----------
-const st = {pokemon:'carregando', digimon:'carregando', smt: SRC.smt.list.length, jojo:'carregando'};
+const st = {pokemon:'carregando', digimon:'carregando', smt: SRC.smt.list.length, jojo:'carregando', ygo:'carregando', bakugan:'carregando'};
 function status(){ $('status').textContent = KEYS.map(k => `${SRC[k].label}: ${st[k]}`).join(' · '); }
 status();
-[['pokemon', loadPokemon], ['digimon', loadDigimon], ['jojo', loadJojo]].forEach(([k, fn]) => {
+[['pokemon', loadPokemon], ['digimon', loadDigimon], ['jojo', loadJojo], ['ygo', loadYgo], ['bakugan', loadBakugan]].forEach(([k, fn]) => {
   fn().then(list => { SRC[k].list = list; st[k] = list.length; })
       .catch(() => { st[k] = 'falhou'; })
       .finally(() => { status(); if(mode==='duel' && !current.length) resetDuel(); if(mode==='trio' && !current.length) resetTrio(); });
