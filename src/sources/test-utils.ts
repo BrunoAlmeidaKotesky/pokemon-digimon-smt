@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import { vi } from 'vitest';
 import { sujidexResponse, type SujidexFixture } from '../../tests/sujidex-mock';
+import { rendersResponse, type RendersFixture } from '../../tests/wiki-renders-mock';
 
 const FIX = new URL('../../tests/fixtures/', import.meta.url);
 export const fixture = <T = unknown>(name: string): T => JSON.parse(fs.readFileSync(new URL(name, FIX), 'utf8')) as T;
@@ -38,6 +39,8 @@ function fixtureRoute(u: URL): Response | undefined {
   }
   if (u.hostname === 'overfast-api.tekrop.fr' && u.pathname === '/heroes') return json(fixture('overwatch-heroes.json'));
   if (u.hostname === 'api.deadlock-api.com' && u.pathname === '/v1/assets/heroes') return json(fixture('deadlock-heroes.json'));
+  const renders = rendersResponse(u, fixture<RendersFixture>('wiki-renders.json'));
+  if (renders !== undefined) return json(renders);
   if (u.hostname === 'yakuza.fandom.com' && u.pathname === '/api.php') {
     const body = sujidexResponse(u, fixture<SujidexFixture>('sujidex.json'));
     return body === undefined ? undefined : json(body);

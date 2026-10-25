@@ -3,6 +3,7 @@ import { expect, type BrowserContext, type Page, type Route } from '@playwright/
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import { sujidexResponse, type SujidexFixture } from './sujidex-mock';
+import { RENDER_HOSTS, rendersResponse, type RendersFixture } from './wiki-renders-mock';
 
 const FIX = new URL('./fixtures/', import.meta.url);
 export const fixture = <T = unknown>(name: string): T => JSON.parse(fs.readFileSync(new URL(name, FIX), 'utf8')) as T;
@@ -38,6 +39,8 @@ export interface MockOpts {
   sujimon?: 'fixture' | 'ausente' | [string, string][];
   /** responde a API da Yakuza Wiki (Sujidex) com a fixture; sem isso ela fica bloqueada */
   sujimonWiki?: boolean;
+  /** as wikis dos renders (LoL, Overwatch, Deadlock) respondem erro 500: fica a imagem da API */
+  semRenders?: boolean;
   /** atraso (ms) antes de responder cada franquia */
   atraso?: Partial<Record<Franquia, number>>;
 }
@@ -111,6 +114,12 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
     if (u.hostname === 'api.deadlock-api.com' && u.pathname === '/v1/assets/heroes') {
       count('deadlock'); await espera('deadlock');
       return falha.has('deadlock') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('deadlock-heroes.json'));
+    }
+    if (RENDER_HOSTS.includes(u.hostname) && u.pathname === '/api.php') {
+      count('renders');
+      if (opts.semRenders) return route.fulfill({ status: 500, body: 'erro' });
+      const body = rendersResponse(u, fixture<RendersFixture>('wiki-renders.json'));
+      if (body !== undefined) return json(route, body);
     }
     if (u.hostname === 'yakuza.fandom.com' && u.pathname === '/api.php' && opts.sujimonWiki) {
       count('sujidex');

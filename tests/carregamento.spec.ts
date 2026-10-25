@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { prepare, abrir, statusEsperado, nomes, franquias, aba, fixture } from './helpers';
 
 test.describe('carregamento e status', () => {
@@ -116,18 +116,39 @@ test.describe('carregamento e status', () => {
     await page.selectOption('#duelA', 'bakugan');
     await expect(page.locator('#duelRow .card').nth(0).locator('.name')).toHaveText('Drago');
     // Deadlock: herói fora de seleção (player_selectable false) fica de fora
-    await page.selectOption('#duelA', 'deadlock');
-    await expect(page.locator('#duelRow .card').nth(0).locator('.name')).toHaveText('Infernus');
-    await expect(page.locator('#duelRow .card').nth(0).locator('img')).toHaveAttribute('src', 'https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/inferno_card.webp');
-    // LoL: imagem do CommunityDragon pelo número do campeão; Overwatch: o retrato da API
-    await page.selectOption('#duelA', 'lol');
-    await expect(page.locator('#duelRow .card').nth(0).locator('.name')).toHaveText('Ahri');
-    await expect(page.locator('#duelRow .card').nth(0).locator('img')).toHaveAttribute('src', 'https://cdn.communitydragon.org/latest/champion/103/tile');
-    await page.selectOption('#duelA', 'overwatch');
-    await expect(page.locator('#duelRow .card').nth(0).locator('.name')).toHaveText('Ana');
-    await expect(page.locator('#duelRow .card').nth(0).locator('img')).toHaveAttribute('src', /^https:\/\/d15f34w2p8l1cc\.cloudfront\.net\/overwatch\/985b06be[0-9a-f]+\.png$/);
-    // as imagens das três (inclusive o /tile sem extensão do CommunityDragon) caem na rota de imagem falsa
-    await expect(page.locator('#duelRow .card').nth(0).locator('img')).toHaveJSProperty('complete', true);
+    await conferirRenders(page, RENDERS);
+    expect(calls.renders).toBeGreaterThanOrEqual(3);
+    expect(calls.bloqueado ?? 0).toBe(0);
+  });
+
+  test('wiki dos renders fora do ar: LoL, Overwatch e Deadlock ficam com a imagem da API', async ({ page }) => {
+    const calls = await prepare(page, { semRenders: true, storage: { 'pdx-bags': { deadlock: ['Infernus'], lol: ['Ahri'], overwatch: ['Ana'] } } });
+    await abrir(page);
+    await expect(page.locator('#status')).toHaveText(statusEsperado());
+    await conferirRenders(page, SEM_RENDERS);
+    expect(calls.renders).toBeGreaterThanOrEqual(3);
     expect(calls.bloqueado ?? 0).toBe(0);
   });
 });
+
+// imagem esperada na carta de Infernus, Ahri e Ana (render da wiki, ou a imagem da API se a wiki falhar)
+const RENDERS = {
+  deadlock: 'https://cdn.deadlock.wiki/thumb/Infernus_Render.png/500px-Infernus_Render.png',
+  lol: /^https:\/\/static\.wikia\.nocookie\.net\/leagueoflegends\/images\/.+\/Ahri_Render\.png\/revision\/latest\/scale-to-width-down\/600\?/,
+  overwatch: /^https:\/\/static\.wikia\.nocookie\.net\/overwatch_gamepedia\/images\/.+\/OW2_Ana\.png\//,
+};
+const SEM_RENDERS = {
+  deadlock: 'https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/inferno_card.webp',
+  lol: 'https://cdn.communitydragon.org/latest/champion/103/tile',
+  overwatch: /^https:\/\/d15f34w2p8l1cc\.cloudfront\.net\/overwatch\/985b06be[0-9a-f]+\.png$/,
+};
+async function conferirRenders(page: Page, img: Record<'deadlock' | 'lol' | 'overwatch', string | RegExp>) {
+  const carta = page.locator('#duelRow .card').nth(0);
+  for (const [fr, nome] of [['deadlock', 'Infernus'], ['lol', 'Ahri'], ['overwatch', 'Ana']] as const) {
+    await page.selectOption('#duelA', fr);
+    await expect(carta.locator('.name')).toHaveText(nome);
+    await expect(carta.locator('img')).toHaveAttribute('src', img[fr]);
+    // a imagem (com ou sem extensão no caminho) cai na rota de imagem falsa
+    await expect(carta.locator('img')).toHaveJSProperty('complete', true);
+  }
+}

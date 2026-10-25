@@ -1,6 +1,7 @@
 // Sujimon pela Yakuza Wiki (Fandom): lista "List of Sujimon (LaD:IW)" da página Sujidex, com a imagem principal da
 // página de cada Sujimon ou, se não houver, o ícone da tabela. Quem não tem nenhuma imagem na wiki fica de fora.
 import type { Item } from '../types';
+import { fileThumbs, pageThumbs } from './mediawiki';
 
 export const YAKUZA_API = 'https://yakuza.fandom.com/api.php';
 
@@ -34,34 +35,15 @@ export function parseSujidex(wikitext: string): SujidexRow[] {
   }).filter(x => x.num > 0 && x.name);
 }
 
-interface QueryPage { title: string; thumbnail?: { source: string }; imageinfo?: { url?: string; thumburl?: string }[] }
-interface QueryResult { query?: { pages?: Record<string, QueryPage>; normalized?: { from: string; to: string }[]; redirects?: { from: string; to: string }[] } }
-
 const api = async <T>(p: Record<string, string>): Promise<T> =>
   (await fetch(YAKUZA_API + '?' + new URLSearchParams({ format: 'json', origin: '*', ...p }))).json() as Promise<T>;
-const chunks = <T>(a: T[], n: number) => Array.from({ length: Math.ceil(a.length / n) }, (_, k) => a.slice(k * n, k * n + n));
-
-/** Busca várias páginas de uma vez (50 por pedido) e devolve título pedido -> url da imagem. */
-async function images(titles: string[], params: Record<string, string>, pick: (p: QueryPage) => string | undefined) {
-  const out = new Map<string, string>();
-  await Promise.all(chunks([...new Set(titles)], 50).map(async c => {
-    const r = await api<QueryResult>({ action: 'query', titles: c.join('|'), ...params });
-    const back = new Map<string, string>();
-    (r.query?.normalized ?? []).forEach(x => back.set(x.to, x.from));
-    (r.query?.redirects ?? []).forEach(x => back.set(x.to, back.get(x.from) ?? x.from));
-    Object.values(r.query?.pages ?? {}).forEach(p => { const u = pick(p); if (u) out.set(back.get(p.title) ?? p.title, u); });
-  }));
-  return out;
-}
 
 export async function loadSujidexWiki(): Promise<Item[]> {
   const j = await api<{ parse?: { wikitext?: { '*': string } } }>({ action: 'parse', page: 'Sujidex', prop: 'wikitext' });
   const rows = parseSujidex(j.parse?.wikitext?.['*'] ?? '');
-  const thumbs = await images(rows.flatMap(r => r.page ? [r.page] : []),
-    { prop: 'pageimages', piprop: 'thumbnail', pithumbsize: '400', pilimit: '50', redirects: '1' }, p => p.thumbnail?.source);
+  const thumbs = await pageThumbs(YAKUZA_API, rows.flatMap(r => r.page ? [r.page] : []));
   const semFoto = rows.filter(r => !(r.page && thumbs.has(r.page)) && r.icon);
-  const icons = await images(semFoto.map(r => 'File:' + r.icon),
-    { prop: 'imageinfo', iiprop: 'url', iiurlwidth: '300' }, p => p.imageinfo?.[0]?.thumburl ?? p.imageinfo?.[0]?.url);
+  const icons = await fileThumbs(YAKUZA_API, semFoto.map(r => 'File:' + r.icon), 300);
   const seen = new Set<string>();
   const list: Item[] = [];
   for (const r of rows) {
