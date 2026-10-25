@@ -20,7 +20,7 @@ export const DEFAULT_CONFIG: OnlineConfig = {
   duel: ['pokemon', 'digimon'],
   trio: ['pokemon', 'digimon', 'smt'],
   quartet: ['pokemon', 'digimon', 'smt', 'jojo'],
-  cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'sujimon'], even: true, mix: true },
+  cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'sujimon'], even: true, mix: true },
   customEdit: false,
   draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
 };
@@ -28,13 +28,15 @@ export const DEFAULT_CONFIG: OnlineConfig = {
 const LABELS: Record<string, string> = {
   pokemon: 'Pokémon',
   digimon: 'Digimon',
-  smt: 'SMT/Persona',
+  smt: 'SMT',
+  persona: 'Persona',
   jojo: 'JoJo',
   ygo: 'Yu-Gi-Oh!',
   bakugan: 'Bakugan',
   lol: 'LoL',
   overwatch: 'Overwatch',
   deadlock: 'Deadlock',
+  ff: 'Final Fantasy',
   sujimon: 'Sujimon',
 };
 

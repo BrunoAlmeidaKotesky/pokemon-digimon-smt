@@ -11,12 +11,13 @@ const nice = (s: string) => s.split('-').map(w => w[0]!.toUpperCase() + w.slice(
 const bags = {
   pokemon: fixture<{ results: { name: string }[] }>('pokemon-species.json').results.map(x => nice(x.name)).reverse(),
   digimon: [...fixture<{ content: { name: string }[] }>('digimon-page0.json').content, ...fixture<{ content: { name: string }[] }>('digimon-page1.json').content].map(x => x.name).reverse(),
-  smt: ['Pixie', 'Jack Frost', 'Pyro Jack', 'Arsène', 'Alice', 'Cerberus', 'Lucifer', 'Mara', 'Odin', 'Thor', 'Zeus', 'Kali', 'Lilith', 'Metatron', 'Satan'].reverse(),
+  smt: ['Pixie', 'Jack Frost', "Jack-o'-Lantern", 'Alice', 'Cerberus', 'Lucifer', 'Mara', 'Odin', 'Thor', 'Zeus', 'Kali', 'Lilith', 'Metatron', 'Satan'].reverse(),
+  persona: ['Arsène', 'Izanagi', 'Orpheus', 'Thanatos', 'Carmen', 'Zorro', 'Johanna'].reverse(),
 };
 const stats = {
-  w: { pokemon: 12, digimon: 9, smt: 7, jojo: 3, ygo: 2, bakugan: 1, lol: 4, overwatch: 2, deadlock: 1 },
-  n: { pokemon: 20, digimon: 18, smt: 10, jojo: 8, ygo: 6, bakugan: 4, lol: 7, overwatch: 5, deadlock: 3, sujimon: 2 },
-  hist: ['Charizard (Pokémon) venceu Agumon (Digimon)', 'Jack Frost (SMT/Persona) venceu Pikachu (Pokémon), Gabumon (Digimon)', 'Star Platinum (JoJo) venceu Dark Magician (Yu-Gi-Oh!)'],
+  w: { pokemon: 12, digimon: 9, smt: 7, persona: 5, jojo: 3, ygo: 2, bakugan: 1, lol: 4, overwatch: 2, deadlock: 1, ff: 3 },
+  n: { pokemon: 20, digimon: 18, smt: 10, persona: 9, jojo: 8, ygo: 6, bakugan: 4, lol: 7, overwatch: 5, deadlock: 3, ff: 6, sujimon: 2 },
+  hist: ['Charizard (Pokémon) venceu Agumon (Digimon)', 'Jack Frost (SMT) venceu Pikachu (Pokémon), Gabumon (Digimon)', 'Arsène (Persona) venceu Pixie (SMT)', 'Star Platinum (JoJo) venceu Dark Magician (Yu-Gi-Oh!)'],
   best: { name: 'Charizard', fr: 'pokemon', streak: 6 },
 };
 

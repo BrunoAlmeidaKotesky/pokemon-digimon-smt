@@ -15,7 +15,7 @@ export function App() {
     <div className="wrap">
       <header>
         <h1>
-          <span className="p">Pokémon</span> x <span className="d">Digimon</span> x <span className="s">SMT</span> x <span className="j">JoJo</span> x <span className="y">Yu-Gi-Oh!</span> x <span className="b">Bakugan</span> x <span className="l">LoL</span> x <span className="o">Overwatch</span> x <span className="dl">Deadlock</span>
+          <span className="p">Pokémon</span> x <span className="d">Digimon</span> x <span className="s">SMT</span> x <span className="pe">Persona</span> x <span className="j">JoJo</span> x <span className="y">Yu-Gi-Oh!</span> x <span className="b">Bakugan</span> x <span className="l">LoL</span> x <span className="o">Overwatch</span> x <span className="dl">Deadlock</span> x <span className="ff">Final Fantasy</span>
           <span id="h1suji" hidden={!app.sujiVisible}> x <span className="sj">Sujimon</span></span>
         </h1>
         <div id="status">{statusText()}</div>

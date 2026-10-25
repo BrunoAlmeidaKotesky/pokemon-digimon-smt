@@ -12,7 +12,7 @@ test('site real: abre, carrega as franquias e faz um duelo', async ({ page }) =>
   console.log('status:', status);
   expect(status).not.toContain('falhou');
   const partes = Object.fromEntries(status!.split(' · ').map(p => p.split(': ') as [string, string]));
-  for (const f of ['Pokémon', 'Digimon', 'SMT/Persona', 'JoJo', 'Yu-Gi-Oh!', 'Bakugan', 'LoL', 'Overwatch', 'Deadlock', 'Sujimon']) expect(Number(partes[f]), f).toBeGreaterThan(0);
+  for (const f of ['Pokémon', 'Digimon', 'SMT', 'Persona', 'JoJo', 'Yu-Gi-Oh!', 'Bakugan', 'LoL', 'Overwatch', 'Deadlock', 'Final Fantasy', 'Sujimon']) expect(Number(partes[f]), f).toBeGreaterThan(0);
   await expect(page.locator('#h1suji')).toBeVisible();
 
   const cards = page.locator('#duelRow .card');
