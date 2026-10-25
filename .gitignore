@@ -1,6 +1,8 @@
 node_modules/
 sujimon/_orig/
-.claude/
+# só as skills do projeto vão pro git; o resto da .claude/ é local
+.claude/*
+!.claude/skills/
 dist/
 test-results/
 playwright-report/
