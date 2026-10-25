@@ -39,7 +39,7 @@ export interface MockOpts {
   sujimon?: 'fixture' | 'ausente' | [string, string][];
   /** responde a API da Yakuza Wiki (Sujidex) com a fixture; sem isso ela fica bloqueada */
   sujimonWiki?: boolean;
-  /** as wikis dos renders (LoL, Overwatch, Deadlock) respondem erro 500: fica a imagem da API */
+  /** as wikis dos renders (Overwatch, Deadlock) respondem erro 500: fica a imagem da API */
   semRenders?: boolean;
   /** atraso (ms) antes de responder cada franquia */
   atraso?: Partial<Record<Franquia, number>>;
@@ -127,9 +127,9 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
       if (body !== undefined) return json(route, body);
     }
     if (u.hostname === 'fonts.googleapis.com') return route.fulfill({ status: 200, contentType: 'text/css', body: '' });
-    // o quadrado do CommunityDragon (LoL) não tem extensão: /latest/champion/{key}/tile
-    const tile = u.hostname === 'cdn.communitydragon.org' && u.pathname.endsWith('/tile');
-    if (req.resourceType() === 'image' || tile || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u.pathname)) {
+    // a splash do CommunityDragon (LoL) não tem extensão: /latest/champion/{key}/splash-art/centered
+    const cdragon = u.hostname === 'cdn.communitydragon.org';
+    if (req.resourceType() === 'image' || cdragon || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u.pathname)) {
       count('imagem');
       return route.fulfill({ status: 200, contentType: 'image/png', body: PNG });
     }

@@ -1,9 +1,9 @@
-// Resposta falsa das wikis com os renders de LoL, Overwatch e Deadlock, montada a partir de
+// Resposta falsa das wikis com os renders de Overwatch e Deadlock, montada a partir de
 // tests/fixtures/wiki-renders.json ({ host: { título pedido: url da imagem } }).
 // Usada pelos testes do Playwright (tests/helpers.ts) e do Vitest (src/sources/test-utils.ts).
 
 export type RendersFixture = Record<string, Record<string, string>>;
-export const RENDER_HOSTS = ['leagueoflegends.fandom.com', 'overwatch.fandom.com', 'deadlock.wiki'];
+export const RENDER_HOSTS = ['overwatch.fandom.com', 'deadlock.wiki'];
 
 /** Devolve o corpo JSON da resposta pra URL pedida, ou undefined se não for um pedido conhecido. */
 export function rendersResponse(u: URL, fx: RendersFixture): unknown {

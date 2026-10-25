@@ -1,5 +1,5 @@
 // Consulta paginada da API do MediaWiki (JoJo Wiki, Bakugan Wiki) e o filtro comum das páginas.
-// Também busca a imagem de vários títulos de uma vez (Sujidex e os renders de LoL, Overwatch e Deadlock).
+// Também busca a imagem de vários títulos de uma vez (Sujidex e os renders de Overwatch e Deadlock).
 import type { Item } from '../types';
 
 export interface WikiPage {
