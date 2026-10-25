@@ -186,11 +186,12 @@ test.describe('campeonato: partidas e chaveamento', () => {
         expect(await linhas(page)).toBe('');
       }
     }
-    // dividir igualmente: as 7 franquias, uma delas com 2
+    // dividir igualmente: 8 vagas pras 10 franquias, então 8 franquias diferentes com 1 cada
     const fr0 = await frsDaColuna(page, 0);
     expect(fr0).toHaveLength(8);
-    expect(Object.keys(contar(fr0)).sort()).toEqual([...TODAS].sort());
-    expect(Object.values(contar(fr0)).sort()).toEqual([1, 1, 1, 1, 1, 1, 2]);
+    expect(Object.keys(contar(fr0))).toHaveLength(8);
+    Object.keys(contar(fr0)).forEach(k => expect(TODAS).toContain(k));
+    expect(Object.values(contar(fr0))).toEqual(Array(8).fill(1));
 
     // ---- semifinal
     await expect(page.locator('#cupRound')).toHaveText('Semifinal');

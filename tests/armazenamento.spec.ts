@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { prepare, abrir, aba, nomes, lerStorage, statusEsperado, fixture, type Stats } from './helpers';
+import { prepare, abrir, aba, nomes, lerStorage, statusEsperado, fixture, LABEL, type Stats } from './helpers';
 
 const lerStats = (page: Page) => lerStorage<Stats>(page, 'pdx-stats');
 const lerBags = (page: Page) => lerStorage<Record<string, unknown>>(page, 'pdx-bags');
@@ -52,7 +52,7 @@ test.describe('armazenamento: pdx-stats', () => {
     await prepare(page, { storage: { 'pdx-stats': SALVO } });
     await abrir(page);
     await aba(page, 'Placar');
-    await expect(page.locator('#statsList .meter .n')).toHaveText(['60% · 3/5', '0% · 0/5', '0% · 0/0', '0% · 0/0', '0% · 0/0', '0% · 0/0', '0% · 0/0']);
+    await expect(page.locator('#statsList .meter .n')).toHaveText(['60% · 3/5', '0% · 0/5', ...Array(Object.keys(LABEL).length - 2).fill('0% · 0/0')]);
     await expect(page.locator('#bestStreak')).toHaveText('Pikachu (Pokémon): 7 vitórias seguidas');
     await expect(page.locator('#bestStreak b')).toHaveText('Pikachu');
     await expect(page.locator('#histList li')).toHaveText(['Pikachu (Pokémon) venceu Agumon (Digimon)']);
@@ -97,7 +97,7 @@ test.describe('armazenamento: pdx-stats', () => {
     await prepare(page, { storage: { 'pdx-stats': '{quebrado' } });
     await abrir(page);
     await aba(page, 'Placar');
-    await expect(page.locator('#statsList .meter .n')).toHaveText(Array(7).fill('0% · 0/0'));
+    await expect(page.locator('#statsList .meter .n')).toHaveText(Object.keys(LABEL).map(() => '0% · 0/0'));
     await expect(page.locator('#histList li')).toHaveText(['Nada ainda.']);
 
     await aba(page, 'Duelo');
