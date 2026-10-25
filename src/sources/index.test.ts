@@ -4,14 +4,14 @@ import { resolve as resolveDireto } from './resolve';
 import { nice as niceDireto } from './text';
 
 describe('SOURCES / KEYS / LABELS', () => {
-  it('as dez franquias, na ordem do site', () => {
-    expect(KEYS).toEqual(['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'sujimon']);
+  it('as onze franquias, na ordem do site', () => {
+    expect(KEYS).toEqual(['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'sujimon']);
     expect(SOURCES.map(s => s.key)).toEqual(KEYS);
   });
 
   it('rótulos', () => {
     expect(LABELS).toEqual({
-      pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT/Persona', jojo: 'JoJo', ygo: 'Yu-Gi-Oh!', bakugan: 'Bakugan', lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', sujimon: 'Sujimon',
+      pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT/Persona', jojo: 'JoJo', ygo: 'Yu-Gi-Oh!', bakugan: 'Bakugan', lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', ff: 'Final Fantasy', sujimon: 'Sujimon',
     });
   });
 

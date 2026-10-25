@@ -23,13 +23,13 @@ function pngPixel(r: number, g: number, b: number): Buffer {
 }
 export const PNG = pngPixel(150, 150, 160);
 
-export type Franquia = 'pokemon' | 'digimon' | 'smt' | 'jojo' | 'ygo' | 'bakugan' | 'lol' | 'overwatch' | 'deadlock' | 'sujimon';
+export type Franquia = 'pokemon' | 'digimon' | 'smt' | 'jojo' | 'ygo' | 'bakugan' | 'lol' | 'overwatch' | 'deadlock' | 'ff' | 'sujimon';
 export const LABEL: Record<Franquia, string> = {
   pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT/Persona', jojo: 'JoJo', ygo: 'Yu-Gi-Oh!', bakugan: 'Bakugan',
-  lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', sujimon: 'Sujimon',
+  lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', ff: 'Final Fantasy', sujimon: 'Sujimon',
 };
 export const CONTAGEM: Record<Franquia, number> = {
-  pokemon: 40, digimon: 40, smt: 392, jojo: 41, ygo: 45, bakugan: 49, lol: 40, overwatch: 54, deadlock: 44, sujimon: 40,
+  pokemon: 40, digimon: 40, smt: 392, jojo: 41, ygo: 45, bakugan: 49, lol: 40, overwatch: 54, deadlock: 44, ff: 40, sujimon: 40,
 };
 
 export interface MockOpts {
@@ -70,6 +70,11 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
         return json(route, s === 'fixture' ? fixture('sujimon-list.json') : s);
       }
       if (/\/sujimon\/\d+\.webp$/.test(u.pathname)) return route.fulfill({ status: 200, contentType: 'image/png', body: PNG });
+      // Final Fantasy: a lista é um arquivo do próprio site (public/ff/list.json, milhares de monstros); aqui vira a fixture
+      if (u.pathname.endsWith('/ff/list.json')) {
+        count('ff'); await espera('ff');
+        return falha.has('ff') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('ff-list.json'));
+      }
       return route.continue();
     }
     if (u.hostname === 'pokeapi.co') {

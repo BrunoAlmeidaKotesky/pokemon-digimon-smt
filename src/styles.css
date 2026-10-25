@@ -2,21 +2,21 @@
 :root{
   color-scheme:light;
   --bg:#eef0f4; --panel:#ffffff; --fg:#15171c; --mute:#626875; --line:#d5d9e1;
-  --pokemon:#d6302a; --digimon:#1f6fd1; --smt:#7a1fa8; --jojo:#0c8a5a; --ygo:#c2410c; --bakugan:#0e8fa8; --lol:#4a3fc4; --overwatch:#5a6f8a; --deadlock:#77791a; --sujimon:#c0267a; --gold:#c58a00;
+  --pokemon:#d6302a; --digimon:#1f6fd1; --smt:#7a1fa8; --jojo:#0c8a5a; --ygo:#c2410c; --bakugan:#0e8fa8; --lol:#4a3fc4; --overwatch:#5a6f8a; --deadlock:#77791a; --ff:#3f8a1c; --sujimon:#c0267a; --gold:#c58a00;
   --display:"Chakra Petch", "Segoe UI", system-ui, sans-serif;
   --body:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 @media (prefers-color-scheme:dark){:root{
   color-scheme:dark;
   --bg:#101216; --panel:#1a1d23; --fg:#eceef2; --mute:#9aa1ad; --line:#2c313a;
-  --pokemon:#ff5a4f; --digimon:#4f9bff; --smt:#b866e8; --jojo:#3fd39a; --ygo:#ff8a4c; --bakugan:#3cc8e6; --lol:#9a92ff; --overwatch:#9fb5d0; --deadlock:#c9cc5e; --sujimon:#ff6fb5; --gold:#ffc23d;
+  --pokemon:#ff5a4f; --digimon:#4f9bff; --smt:#b866e8; --jojo:#3fd39a; --ygo:#ff8a4c; --bakugan:#3cc8e6; --lol:#9a92ff; --overwatch:#9fb5d0; --deadlock:#c9cc5e; --ff:#86d95a; --sujimon:#ff6fb5; --gold:#ffc23d;
 }}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 var(--body)}
 .wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
 header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px;margin-bottom:14px}
 h1{font:700 26px/1.1 var(--display);margin:0;letter-spacing:.5px;text-transform:uppercase}
-h1 .p{color:var(--pokemon)} h1 .d{color:var(--digimon)} h1 .s{color:var(--smt)} h1 .j{color:var(--jojo)} h1 .y{color:var(--ygo)} h1 .b{color:var(--bakugan)} h1 .l{color:var(--lol)} h1 .o{color:var(--overwatch)} h1 .dl{color:var(--deadlock)} h1 .sj{color:var(--sujimon)}
+h1 .p{color:var(--pokemon)} h1 .d{color:var(--digimon)} h1 .s{color:var(--smt)} h1 .j{color:var(--jojo)} h1 .y{color:var(--ygo)} h1 .b{color:var(--bakugan)} h1 .l{color:var(--lol)} h1 .o{color:var(--overwatch)} h1 .dl{color:var(--deadlock)} h1 .ff{color:var(--ff)} h1 .sj{color:var(--sujimon)}
 #status{font-size:12px;color:var(--mute)}
 nav{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid var(--line);margin-bottom:16px}
 nav button{font:600 14px var(--display);text-transform:uppercase;letter-spacing:.6px;background:none;border:0;color:var(--mute);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
@@ -43,7 +43,7 @@ body.spinning .card{cursor:default}
 .arena{display:flex;gap:10px;align-items:stretch;justify-content:center;margin:12px 0}
 .vs{align-self:center;font:700 22px var(--display);color:var(--mute);flex:none}
 .card{--c:var(--line);position:relative;flex:1 1 0;min-width:0;max-width:400px;background:var(--panel);border:2px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:6px 6px 10px;cursor:pointer;text-align:center;transition:transform .12s, box-shadow .12s, border-color .12s}
-.card[data-fr=pokemon]{--c:var(--pokemon)} .card[data-fr=digimon]{--c:var(--digimon)} .card[data-fr=smt]{--c:var(--smt)} .card[data-fr=jojo]{--c:var(--jojo)} .card[data-fr=ygo]{--c:var(--ygo)} .card[data-fr=bakugan]{--c:var(--bakugan)} .card[data-fr=lol]{--c:var(--lol)} .card[data-fr=overwatch]{--c:var(--overwatch)} .card[data-fr=deadlock]{--c:var(--deadlock)} .card[data-fr=sujimon]{--c:var(--sujimon)}
+.card[data-fr=pokemon]{--c:var(--pokemon)} .card[data-fr=digimon]{--c:var(--digimon)} .card[data-fr=smt]{--c:var(--smt)} .card[data-fr=jojo]{--c:var(--jojo)} .card[data-fr=ygo]{--c:var(--ygo)} .card[data-fr=bakugan]{--c:var(--bakugan)} .card[data-fr=lol]{--c:var(--lol)} .card[data-fr=overwatch]{--c:var(--overwatch)} .card[data-fr=deadlock]{--c:var(--deadlock)} .card[data-fr=ff]{--c:var(--ff)} .card[data-fr=sujimon]{--c:var(--sujimon)}
 .card:hover,.card:focus-visible{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 20px -10px var(--c);outline:none}
 .card .img{aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--mute);font-size:13px;border-radius:6px;background:radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--c) 14%, transparent), transparent 75%)}
 .card img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}

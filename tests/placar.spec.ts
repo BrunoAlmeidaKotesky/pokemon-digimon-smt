@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { prepare, abrir, aba, nomes, lerStorage, LABEL, type Franquia, type Stats } from './helpers';
 
 // Ordem fixa das franquias no placar.
-const ORDEM: Franquia[] = ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'sujimon'];
+const ORDEM: Franquia[] = ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'sujimon'];
 const VAZIO = { w: {}, n: {}, hist: [], best: null };
 
 const lerStats = (page: Page) => lerStorage<Stats>(page, 'pdx-stats');
@@ -174,8 +174,8 @@ test.describe('placar', () => {
 
   test('barras: todas as franquias na ordem, largura pct% na cor da franquia, texto "pct% · w/n"', async ({ page }) => {
     await prepare(page, { storage: { 'pdx-stats': {
-      w: { pokemon: 3, digimon: 1, smt: 2, ygo: 1, lol: 1, deadlock: 2 },
-      n: { pokemon: 5, digimon: 8, smt: 3, jojo: 4, ygo: 1, lol: 4, overwatch: 2, deadlock: 2 },
+      w: { pokemon: 3, digimon: 1, smt: 2, ygo: 1, lol: 1, deadlock: 2, ff: 3 },
+      n: { pokemon: 5, digimon: 8, smt: 3, jojo: 4, ygo: 1, lol: 4, overwatch: 2, deadlock: 2, ff: 4 },
       hist: [], best: null,
     } } });
     await abrir(page);
@@ -190,13 +190,14 @@ test.describe('placar', () => {
       { rotulo: 'LoL', texto: '25% · 1/4', largura: '25%' },
       { rotulo: 'Overwatch', texto: '0% · 0/2', largura: '0%' },
       { rotulo: 'Deadlock', texto: '100% · 2/2', largura: '100%' },
+      { rotulo: 'Final Fantasy', texto: '75% · 3/4', largura: '75%' },
       { rotulo: 'Sujimon', texto: '0% · 0/0', largura: '0%' },
     ]);
 
     // a barra ocupa de fato essa fração do trilho
     const fracoes = await page.locator('#statsList .meter').evaluateAll(ms => ms.map(m =>
       m.querySelector('.fill')!.getBoundingClientRect().width / m.querySelector('.track')!.getBoundingClientRect().width));
-    [0.6, 0.13, 0.67, 0, 1, 0, 0.25, 0, 1, 0].forEach((p, i) => expect(fracoes[i]).toBeCloseTo(p, 2));
+    [0.6, 0.13, 0.67, 0, 1, 0, 0.25, 0, 1, 0.75, 0].forEach((p, i) => expect(fracoes[i]).toBeCloseTo(p, 2));
 
     // cor: a mesma de var(--franquia)
     const cores = await page.locator('#statsList .meter .fill').evaluateAll((fills, ks) => fills.map((f, i) => {

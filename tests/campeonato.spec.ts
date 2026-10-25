@@ -186,7 +186,7 @@ test.describe('campeonato: partidas e chaveamento', () => {
         expect(await linhas(page)).toBe('');
       }
     }
-    // dividir igualmente: 8 vagas pras 10 franquias, então 8 franquias diferentes com 1 cada
+    // dividir igualmente: 8 vagas pras 11 franquias, então 8 franquias diferentes com 1 cada
     const fr0 = await frsDaColuna(page, 0);
     expect(fr0).toHaveLength(8);
     expect(Object.keys(contar(fr0))).toHaveLength(8);
