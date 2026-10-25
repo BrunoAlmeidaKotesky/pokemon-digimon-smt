@@ -89,7 +89,7 @@ describe('createRoom e DEFAULT_CONFIG', () => {
       duel: ['pokemon', 'digimon'],
       trio: ['pokemon', 'digimon', 'smt'],
       quartet: ['pokemon', 'digimon', 'smt', 'jojo'],
-      cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'sujimon'], even: true, mix: true },
+      cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'sujimon'], even: true, mix: true },
       customEdit: false,
       draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
     });
@@ -123,7 +123,8 @@ describe('createRoom e DEFAULT_CONFIG', () => {
 
   it('rótulos e coroa', () => {
     expect(frLabel('pokemon')).toBe('Pokémon');
-    expect(frLabel('smt')).toBe('SMT/Persona');
+    expect(frLabel('smt')).toBe('SMT');
+    expect(frLabel('persona')).toBe('Persona');
     expect(frLabel('ygo')).toBe('Yu-Gi-Oh!');
     expect(frLabel('xyz')).toBe('xyz');
     expect(crown(0)).toBe('');
@@ -376,7 +377,7 @@ describe('start', () => {
     s = R(s, { type: 'start' }, ctx({ lists: { ...LISTS, pokemon: [] } }));
     expect(s.notice).toBe('Lista de Pokémon ainda não carregou.');
     const trio = R(room([], { mode: 'trio' }), { type: 'start' }, ctx({ lists: { ...LISTS, smt: null } }));
-    expect(trio.notice).toBe('Lista de SMT/Persona ainda não carregou.');
+    expect(trio.notice).toBe('Lista de SMT ainda não carregou.');
     const quartet = R(room([], { mode: 'quartet' }), { type: 'start' }, ctx({ lists: { ...LISTS, jojo: null } }));
     expect(quartet.phase).toBe('lobby');
     expect(quartet.notice).toBe('Lista de JoJo ainda não carregou.');
@@ -404,7 +405,7 @@ describe('start', () => {
       expect(s.notice).toBe(msg);
     }
     const miss = R(room(['Ana'], draft(['jojo', 'smt'])), { type: 'start' }, ctx({ lists: { ...LISTS, smt: null } }));
-    expect(miss.notice).toBe('Lista de SMT/Persona ainda não carregou.');
+    expect(miss.notice).toBe('Lista de SMT ainda não carregou.');
     const s = R(room(['Ana'], { mode: 'draft' }), { type: 'start' });
     expect(s.phase).toBe('play');
     expect(s.notice).toBe('');

@@ -6,7 +6,7 @@ import { mockApis, seedRandom } from './helpers';
 test.use({ reducedMotion: 'reduce' });
 
 const SUJIMON: [string, string][] = Array.from({ length: 8 }, (_, i) => [`Sujimon ${i + 1}`, String(i + 1).padStart(3, '0')]);
-const FRS = ['JoJo', 'SMT/Persona', 'Sujimon'];
+const FRS = ['JoJo', 'SMT', 'Sujimon'];
 
 async function abrir(ctx: BrowserContext, n: number, sala?: string) {
   const p = await ctx.newPage();
@@ -55,7 +55,7 @@ test('Draft de 2 rodadas e 3 franquias, do começo ao fim, com repetido refeito 
   }
   await ana.locator('#onStart').click();
 
-  const usados: Record<string, Set<string>> = { JoJo: new Set(), 'SMT/Persona': new Set(), Sujimon: new Set() };
+  const usados: Record<string, Set<string>> = { JoJo: new Set(), SMT: new Set(), Sujimon: new Set() };
   let repetido: string | null = null;
   for (const rodada of [1, 2]) {
     for (const p of todos) await expect(p.locator('#onDraftRound')).toContainText(`Rodada ${rodada} de 2`);

@@ -1,12 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
-import { prepare, abrir, statusEsperado, nomes, franquias, aba, fixture, LABEL } from './helpers';
+import { prepare, abrir, statusEsperado, nomes, franquias, aba, fixture, LABEL, CONTAGEM } from './helpers';
 
 test.describe('carregamento e status', () => {
   test('carrega todas as franquias e mostra a contagem', async ({ page }) => {
     const calls = await prepare(page);
     await abrir(page);
     await expect(page.locator('#status')).toHaveText(statusEsperado());
-    await expect(page.locator('h1')).toHaveText('Pokémon x Digimon x SMT x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Sujimon');
+    await expect(page.locator('h1')).toHaveText('Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Sujimon');
     await expect(page.locator('#h1suji')).toBeVisible();
     await expect(page.locator('meta[name=referrer]')).toHaveAttribute('content', 'no-referrer');
     await expect(page).toHaveTitle('Quem Você Prefere');
@@ -104,6 +104,28 @@ test.describe('carregamento e status', () => {
     await expect(carta.locator('.name')).toHaveText('Bomb (FF III)');
     await expect(carta.locator('img')).toHaveAttribute('src', 'https://images.moogleapi.com/gen/monsters/8581.webp');
     expect(calls.ff).toBe(1);
+    expect(calls.bloqueado ?? 0).toBe(0);
+  });
+
+  test('Persona é uma franquia à parte: as personas não aparecem mais no SMT', async ({ page }) => {
+    // o saco sai de trás pra frente: no SMT o Arsène fica no topo, mas ele agora é do Persona e é ignorado
+    const calls = await prepare(page, { storage: { 'pdx-bags': { persona: ['Arsène'], smt: ['Pixie', 'Arsène'] } } });
+    await abrir(page);
+    await expect(page.locator('#status')).toContainText(`SMT: ${CONTAGEM.smt} · Persona: ${CONTAGEM.persona}`);
+    await expect(page.locator('#duelA option[value=persona]')).toHaveText('Persona');
+    await expect(page.locator('#duelA option[value=smt]')).toHaveText('SMT');
+    const carta = page.locator('#duelRow .card').nth(0);
+    await page.selectOption('#duelA', 'persona');
+    await expect(carta).toHaveAttribute('data-fr', 'persona');
+    await expect(carta.locator('.name')).toHaveText('Arsène');
+    await expect(carta.locator('.fr')).toHaveText(LABEL.persona);
+    // as imagens do Persona ficam na mesma pasta das do SMT (public/smt/)
+    await expect(carta.locator('img')).toHaveAttribute('src', 'smt/arsene.webp');
+    await page.selectOption('#duelA', 'smt');
+    await expect(carta).toHaveAttribute('data-fr', 'smt');
+    await expect(carta.locator('.name')).toHaveText('Pixie');
+    await expect(carta.locator('.fr')).toHaveText(LABEL.smt);
+    // listas fixas do próprio site: nenhuma chamada a mais
     expect(calls.bloqueado ?? 0).toBe(0);
   });
 

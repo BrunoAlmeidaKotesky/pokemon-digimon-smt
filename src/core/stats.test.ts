@@ -5,7 +5,7 @@ import { installStorage, mulberry32, SEEDS } from './test-helpers';
 
 afterEach(() => vi.unstubAllGlobals());
 
-const LABEL: Record<string, string> = { pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT/Persona' };
+const LABEL: Record<string, string> = { pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT' };
 const label = (k: string) => LABEL[k] as string;
 const e = (name: string, fr: string): Entry => ({ name, img: '', fr });
 
@@ -69,7 +69,7 @@ describe('record', () => {
     record(s, b, [a, b, c], label);
     expect(s.w).toEqual({ smt: 1 });
     expect(s.n).toEqual({ smt: 2, digimon: 1 });
-    expect(s.hist[0]).toBe('Pixie (SMT/Persona) venceu Jack Frost (SMT/Persona), Gabumon (Digimon)');
+    expect(s.hist[0]).toBe('Pixie (SMT) venceu Jack Frost (SMT), Gabumon (Digimon)');
   });
 
   it('perdedor = todos menos o vencedor por identidade (mesmo nome em outro objeto conta como perdedor)', () => {

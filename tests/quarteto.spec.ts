@@ -116,7 +116,7 @@ test.describe('quarteto', () => {
     expect(s.n).toEqual({ pokemon: 3, digimon: 3, smt: 3, jojo: 3 });
     expect(s.best ?? null).toBeNull();
     expect(s.hist).toEqual(rodadas);
-    expect(s.hist[0]).toMatch(/^.+ \(Pokémon\) venceu .+ \(Digimon\), .+ \(SMT\/Persona\), .+ \(JoJo\)$/);
+    expect(s.hist[0]).toMatch(/^.+ \(Pokémon\) venceu .+ \(Digimon\), .+ \(SMT\), .+ \(JoJo\)$/);
 
     await aba(page, 'Placar');
     await expect(page.locator('#stats')).toContainText('Duelo, Trio e Quarteto. Salvo neste navegador.');
