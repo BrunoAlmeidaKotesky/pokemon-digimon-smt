@@ -14,8 +14,8 @@ const bags = {
   smt: ['Pixie', 'Jack Frost', 'Pyro Jack', 'Arsène', 'Alice', 'Cerberus', 'Lucifer', 'Mara', 'Odin', 'Thor', 'Zeus', 'Kali', 'Lilith', 'Metatron', 'Satan'].reverse(),
 };
 const stats = {
-  w: { pokemon: 12, digimon: 9, smt: 7, jojo: 3, ygo: 2, bakugan: 1 },
-  n: { pokemon: 20, digimon: 18, smt: 10, jojo: 8, ygo: 6, bakugan: 4, sujimon: 2 },
+  w: { pokemon: 12, digimon: 9, smt: 7, jojo: 3, ygo: 2, bakugan: 1, lol: 4, overwatch: 2, deadlock: 1 },
+  n: { pokemon: 20, digimon: 18, smt: 10, jojo: 8, ygo: 6, bakugan: 4, lol: 7, overwatch: 5, deadlock: 3, sujimon: 2 },
   hist: ['Charizard (Pokémon) venceu Agumon (Digimon)', 'Jack Frost (SMT/Persona) venceu Pikachu (Pokémon), Gabumon (Digimon)', 'Star Platinum (JoJo) venceu Dark Magician (Yu-Gi-Oh!)'],
   best: { name: 'Charizard', fr: 'pokemon', streak: 6 },
 };

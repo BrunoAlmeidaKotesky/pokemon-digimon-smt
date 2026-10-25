@@ -32,6 +32,12 @@ function fixtureRoute(u: URL): Response | undefined {
   if (u.hostname === 'bakugan.fandom.com' && u.pathname === '/api.php') {
     return json(fixture<unknown[]>('bakugan.json')[u.searchParams.get('geicontinue') ? 1 : 0]);
   }
+  if (u.hostname === 'ddragon.leagueoflegends.com') {
+    if (u.pathname === '/api/versions.json') return json(fixture('lol-versions.json'));
+    if (u.pathname.endsWith('/data/en_US/champion.json')) return json(fixture('lol-champions.json'));
+  }
+  if (u.hostname === 'overfast-api.tekrop.fr' && u.pathname === '/heroes') return json(fixture('overwatch-heroes.json'));
+  if (u.hostname === 'api.deadlock-api.com' && u.pathname === '/v1/assets/heroes') return json(fixture('deadlock-heroes.json'));
   if (u.hostname === 'yakuza.fandom.com' && u.pathname === '/api.php') {
     const body = sujidexResponse(u, fixture<SujidexFixture>('sujidex.json'));
     return body === undefined ? undefined : json(body);

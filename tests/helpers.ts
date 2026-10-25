@@ -22,9 +22,14 @@ function pngPixel(r: number, g: number, b: number): Buffer {
 }
 export const PNG = pngPixel(150, 150, 160);
 
-export type Franquia = 'pokemon' | 'digimon' | 'smt' | 'jojo' | 'ygo' | 'bakugan' | 'sujimon';
-export const LABEL: Record<Franquia, string> = { pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT/Persona', jojo: 'JoJo', ygo: 'Yu-Gi-Oh!', bakugan: 'Bakugan', sujimon: 'Sujimon' };
-export const CONTAGEM: Record<Franquia, number> = { pokemon: 40, digimon: 40, smt: 392, jojo: 41, ygo: 45, bakugan: 49, sujimon: 40 };
+export type Franquia = 'pokemon' | 'digimon' | 'smt' | 'jojo' | 'ygo' | 'bakugan' | 'lol' | 'overwatch' | 'deadlock' | 'sujimon';
+export const LABEL: Record<Franquia, string> = {
+  pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT/Persona', jojo: 'JoJo', ygo: 'Yu-Gi-Oh!', bakugan: 'Bakugan',
+  lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', sujimon: 'Sujimon',
+};
+export const CONTAGEM: Record<Franquia, number> = {
+  pokemon: 40, digimon: 40, smt: 392, jojo: 41, ygo: 45, bakugan: 49, lol: 40, overwatch: 54, deadlock: 44, sujimon: 40,
+};
 
 export interface MockOpts {
   /** franquias cuja API responde erro 500 */
@@ -91,13 +96,31 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
       if (falha.has('bakugan')) return route.fulfill({ status: 500, body: 'erro' });
       return json(route, bakugan[u.searchParams.get('geicontinue') ? 1 : 0]);
     }
+    if (u.hostname === 'ddragon.leagueoflegends.com') {
+      // duas chamadas: a lista de versões (é ela que falha) e os campeões da versão mais nova
+      if (u.pathname === '/api/versions.json') {
+        count('lol'); await espera('lol');
+        return falha.has('lol') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('lol-versions.json'));
+      }
+      if (u.pathname.endsWith('/data/en_US/champion.json')) { count('lol-campeoes'); return json(route, fixture('lol-champions.json')); }
+    }
+    if (u.hostname === 'overfast-api.tekrop.fr' && u.pathname === '/heroes') {
+      count('overwatch'); await espera('overwatch');
+      return falha.has('overwatch') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('overwatch-heroes.json'));
+    }
+    if (u.hostname === 'api.deadlock-api.com' && u.pathname === '/v1/assets/heroes') {
+      count('deadlock'); await espera('deadlock');
+      return falha.has('deadlock') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('deadlock-heroes.json'));
+    }
     if (u.hostname === 'yakuza.fandom.com' && u.pathname === '/api.php' && opts.sujimonWiki) {
       count('sujidex');
       const body = sujidexResponse(u, fixture<SujidexFixture>('sujidex.json'));
       if (body !== undefined) return json(route, body);
     }
     if (u.hostname === 'fonts.googleapis.com') return route.fulfill({ status: 200, contentType: 'text/css', body: '' });
-    if (req.resourceType() === 'image' || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u.pathname)) {
+    // o quadrado do CommunityDragon (LoL) não tem extensão: /latest/champion/{key}/tile
+    const tile = u.hostname === 'cdn.communitydragon.org' && u.pathname.endsWith('/tile');
+    if (req.resourceType() === 'image' || tile || /\.(png|jpe?g|webp|gif)(\?|$)/i.test(u.pathname)) {
       count('imagem');
       return route.fulfill({ status: 200, contentType: 'image/png', body: PNG });
     }
