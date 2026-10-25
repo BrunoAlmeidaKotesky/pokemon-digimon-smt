@@ -2,6 +2,10 @@
 
 Data: 23/10/2026. Branch de trabalho: `react`. Tag do site antigo: `antes-do-react`.
 
+> Retrato daquela noite: depois disso entraram LoL, Overwatch, Deadlock, Final Fantasy e a Persona separada do SMT.
+> O estado atual (franquias, testes, publicação) está no [README](README.md). A seção
+> [Como testar com amigos](#como-testar-com-amigos) continua valendo.
+
 ## Resumo
 
 | Etapa | Estado | Onde |
