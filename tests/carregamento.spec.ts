@@ -117,29 +117,29 @@ test.describe('carregamento e status', () => {
     await expect(page.locator('#duelRow .card').nth(0).locator('.name')).toHaveText('Drago');
     // Deadlock: herói fora de seleção (player_selectable false) fica de fora
     await conferirRenders(page, RENDERS);
-    expect(calls.renders).toBeGreaterThanOrEqual(3);
+    expect(calls.renders).toBeGreaterThanOrEqual(2);
     expect(calls.bloqueado ?? 0).toBe(0);
   });
 
-  test('wiki dos renders fora do ar: LoL, Overwatch e Deadlock ficam com a imagem da API', async ({ page }) => {
+  test('wiki dos renders fora do ar: Overwatch e Deadlock ficam com a imagem da API', async ({ page }) => {
     const calls = await prepare(page, { semRenders: true, storage: { 'pdx-bags': { deadlock: ['Infernus'], lol: ['Ahri'], overwatch: ['Ana'] } } });
     await abrir(page);
     await expect(page.locator('#status')).toHaveText(statusEsperado());
     await conferirRenders(page, SEM_RENDERS);
-    expect(calls.renders).toBeGreaterThanOrEqual(3);
+    expect(calls.renders).toBeGreaterThanOrEqual(2);
     expect(calls.bloqueado ?? 0).toBe(0);
   });
 });
 
-// imagem esperada na carta de Infernus, Ahri e Ana (render da wiki, ou a imagem da API se a wiki falhar)
+// imagem esperada na carta de Infernus, Ahri e Ana (render da wiki, ou a imagem da API se a wiki falhar; o LoL não usa wiki)
 const RENDERS = {
   deadlock: 'https://cdn.deadlock.wiki/thumb/Infernus_Render.png/500px-Infernus_Render.png',
-  lol: /^https:\/\/static\.wikia\.nocookie\.net\/leagueoflegends\/images\/.+\/Ahri_Render\.png\/revision\/latest\/scale-to-width-down\/600\?/,
+  lol: 'https://cdn.communitydragon.org/latest/champion/103/splash-art/centered',
   overwatch: /^https:\/\/static\.wikia\.nocookie\.net\/overwatch_gamepedia\/images\/.+\/OW2_Ana\.png\//,
 };
 const SEM_RENDERS = {
   deadlock: 'https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes/inferno_card.webp',
-  lol: 'https://cdn.communitydragon.org/latest/champion/103/tile',
+  lol: 'https://cdn.communitydragon.org/latest/champion/103/splash-art/centered',
   overwatch: /^https:\/\/d15f34w2p8l1cc\.cloudfront\.net\/overwatch\/985b06be[0-9a-f]+\.png$/,
 };
 async function conferirRenders(page: Page, img: Record<'deadlock' | 'lol' | 'overwatch', string | RegExp>) {
@@ -150,5 +150,7 @@ async function conferirRenders(page: Page, img: Record<'deadlock' | 'lol' | 'ove
     await expect(carta.locator('img')).toHaveAttribute('src', img[fr]);
     // a imagem (com ou sem extensão no caminho) cai na rota de imagem falsa
     await expect(carta.locator('img')).toHaveJSProperty('complete', true);
+    // a splash do LoL é horizontal e é recortada pra preencher a carta; as outras aparecem inteiras
+    await expect(carta.locator('img')).toHaveCSS('object-fit', fr === 'lol' ? 'cover' : 'contain');
   }
 }

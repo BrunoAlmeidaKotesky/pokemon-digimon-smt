@@ -134,6 +134,8 @@ ol,ul{padding-left:20px;margin:0}
 .team{list-style:none;padding:0;margin:0;display:grid;gap:4px}
 .team li{border-left:4px solid var(--line);padding:2px 8px;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .team li img{width:28px;height:28px;object-fit:contain}
+/* splash art do LoL é horizontal: recorta pra preencher (carta, chaveamento e lista do Draft) */
+.card[data-fr=lol] img{object-fit:cover;border-radius:6px} .slot[data-fr=lol] .th img,.team li[data-fr=lol] img{object-fit:cover;border-radius:3px}
 .chip .tag.dr.pronto{color:var(--ok)}
 .team.hist li{display:block}
 body.spinning-online #online .spin svg .wheel{animation:rot .5s linear infinite;transform-origin:20px 20px}
