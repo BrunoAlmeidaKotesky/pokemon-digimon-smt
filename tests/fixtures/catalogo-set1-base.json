@@ -1,0 +1,31 @@
+{
+  "versao": 1,
+  "geradoEm": "2026-10-26",
+  "classes": [
+    { "id": "dragao", "nome": "Dragão" },
+    { "id": "fadinhas", "nome": "Fadinhas", "descricao": "Fofas e mágicas" },
+    { "id": "atirador", "nome": "Atirador" }
+  ],
+  "selecao": {
+    "pokemon": ["Bulbasaur", "Ivysaur", "Venusaur", "Charmander", "Charmeleon", "Charizard", "Squirtle", "Wartortle", "Pikachu", "Raichu", "Clefairy", "Clefable", "Fora da Lista"],
+    "persona": ["Orpheus", "Orpheus F", "Messiah", "Orpheus Telos"],
+    "bakugan": ["Drago", "Gorem"],
+    "lol": ["Ahri", "Jinx"],
+    "franquia-futura": ["Alguém"]
+  },
+  "linhas": {
+    "pokemon": [
+      { "id": "pokemon:bulbasaur", "nome": "Bulbasaur", "niveis": [["Bulbasaur"], ["Ivysaur"], ["Venusaur"]] },
+      { "id": "pokemon:charmander", "nome": "Charmander", "niveis": [["Charmander"], ["Charmeleon"], ["Charizard"]] },
+      { "id": "pokemon:squirtle", "nome": "Squirtle", "niveis": [["Squirtle"], ["Wartortle"]] },
+      { "id": "pokemon:pikachu", "nome": "Pikachu", "niveis": [["Pikachu"], ["Raichu"]] }
+    ],
+    "persona": [
+      { "id": "persona:orpheus", "nome": "Protagonista (P3)", "niveis": [["Orpheus", "Orpheus F"], ["Messiah"], ["Orpheus Telos"]] }
+    ]
+  },
+  "itens": {
+    "componentes": [{ "id": "pyrus", "nome": "Pyrus", "bonus": "Mais dano de ataque" }],
+    "receitas": [{ "a": "pyrus", "b": "pyrus", "bakugan": "Drago" }]
+  }
+}

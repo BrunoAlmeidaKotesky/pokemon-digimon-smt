@@ -20,8 +20,8 @@ node node_modules/vite/bin/vite.js build
 node node_modules/@playwright/test/cli.js test        # sobe o vite preview sozinho (playwright.config.ts)
 ```
 
-Os 8 testes pulados do Playwright são esperados (screenshots só com `SHOTS`, e layouts que valem só pra um tamanho de
-tela).
+O Playwright roda só no tamanho de computador (projeto `computador`): o usuário não quer suíte de celular. Testes
+pulados são esperados (screenshots só com `SHOTS`, e os que só valiam pro antigo projeto `celular`).
 
 ## 2. Commit e push na `react`
 

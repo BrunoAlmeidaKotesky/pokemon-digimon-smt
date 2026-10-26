@@ -2,6 +2,7 @@
 // Junta a lista de personagens do site com as informações que a fonte tem de cada um (public/catalogo/<chave>.json,
 // gerado pelo catalogo.mjs), filtra, conta os valores de cada campo e monta/lê o arquivo exportado (set1.json).
 import type { Item } from '../types';
+import { limparPlano, type ExtrasExportados, type LinhaExportada, type Plano } from './plano';
 
 /** Valor de um campo: texto, número ou lista de textos (ex.: os dois tipos de um Pokémon). */
 export type Valor = string | number | string[];
@@ -130,35 +131,74 @@ export function montarLinhas(lista: readonly Item[], cat: Catalogo | null): Linh
   });
 }
 
-/** Valor do filtro de campo que pega quem não tem informação nesse campo. */
+/** Valor do filtro de campo que pega quem não tem informação nesse campo (e, no filtro de classe, quem não tem classe). */
 export const SEM = '__sem__';
+/** Filtro de linha evolutiva: com linha, sem linha, linha confirmada, linha ainda não confirmada. */
+export type FiltroLinha = '' | 'com' | 'sem' | 'confirmada' | 'pendente';
 export interface Filtros {
-  /** busca no nome e nos valores */
+  /** busca no nome, nos valores, na habilidade e nas classes */
   q: string;
   /** id do campo -> valor escolhido ('' ou ausente = todos; SEM = sem informação) */
   campos: Record<string, string>;
-  soMarcados: boolean;
+  /** id da classe do plano ('' = todas; SEM = sem classe) */
+  classe: string;
+  linha: FiltroLinha;
 }
-export const filtrosVazios = (): Filtros => ({ q: '', campos: {}, soMarcados: false });
-export const temFiltro = (f: Filtros) => !!f.q.trim() || f.soMarcados || Object.values(f.campos).some(Boolean);
+export const filtrosVazios = (): Filtros => ({ q: '', campos: {}, classe: '', linha: '' });
+export const temFiltro = (f: Filtros) => !!f.q.trim() || !!f.classe || !!f.linha || Object.values(f.campos).some(Boolean);
+
+/** O que o filtro precisa saber de fora da lista: o grupo e o planejamento de cada personagem. */
+export interface Contexto {
+  /** quem está no grupo escolhido (Set 1 base ou marcados); null = todos */
+  grupo: ReadonlySet<string> | null;
+  /** ids das classes do personagem */
+  classes?: (nome: string) => readonly string[] | undefined;
+  /** a linha do personagem (undefined = sem linha) */
+  linha?: (nome: string) => { confirmada?: boolean } | undefined;
+  /** texto a mais pra busca (habilidade, nomes das classes), já normalizado */
+  texto?: (nome: string) => string;
+}
+/** Sem grupo nem planejamento. */
+export const TODOS: Contexto = { grupo: null };
+/** Ids pro `ignorar` do filtrar: deixam de fora o filtro de classe ou o de linha (pra contar as opções deles). */
+export const F_CLASSE = '#classe';
+export const F_LINHA = '#linha';
 
 /** O personagem tem esse valor no campo (campo com lista: qualquer um dos valores serve). */
 function casaCampo(l: Linha, id: string, v: string): boolean {
   const vs = valores(l.info?.[id]);
   return v === SEM ? vs.length === 0 : vs.includes(v);
 }
+function casaClasse(cs: readonly string[] | undefined, v: string): boolean {
+  return v === SEM ? !cs?.length : !!cs?.includes(v);
+}
+function casaLinha(pos: { confirmada?: boolean } | undefined, v: FiltroLinha): boolean {
+  if (v === 'com') return !!pos;
+  if (v === 'sem') return !pos;
+  if (v === 'confirmada') return !!pos?.confirmada;
+  if (v === 'pendente') return !!pos && !pos.confirmada;
+  return true;
+}
 
 /**
- * Personagens que passam em todos os filtros (busca E cada campo E "só marcados"), na ordem da lista.
- * `ignorar` deixa um campo de fora (pra contar as opções dele).
+ * Personagens que passam em todos os filtros (grupo E busca E cada campo E classe E linha), na ordem da lista.
+ * `ignorar` deixa um campo de fora (ou F_CLASSE, F_LINHA), pra contar as opções dele.
  */
-export function filtrar(linhas: readonly Linha[], f: Filtros, marcados: ReadonlySet<string>, ignorar?: string): Linha[] {
+export function filtrar(linhas: readonly Linha[], f: Filtros, ctx: Contexto, ignorar?: string): Linha[] {
   const termos = normalizar(f.q).split(/\s+/).filter(Boolean);
   const campos = Object.entries(f.campos).filter(([id, v]) => v && id !== ignorar);
-  return linhas.filter(l =>
-    (!f.soMarcados || marcados.has(l.nome))
-    && termos.every(t => l.busca.includes(t))
-    && campos.every(([id, v]) => casaCampo(l, id, v)));
+  const classe = ignorar === F_CLASSE ? '' : f.classe;
+  const linha = ignorar === F_LINHA ? '' : f.linha;
+  return linhas.filter(l => {
+    if (ctx.grupo && !ctx.grupo.has(l.nome)) return false;
+    if (termos.length) {
+      const extra = ctx.texto?.(l.nome) ?? '';
+      if (!termos.every(t => l.busca.includes(t) || extra.includes(t))) return false;
+    }
+    return campos.every(([id, v]) => casaCampo(l, id, v))
+      && (!classe || casaClasse(ctx.classes?.(l.nome), classe))
+      && (!linha || casaLinha(ctx.linha?.(l.nome), linha));
+  });
 }
 
 export interface Opcao { valor: string; n: number }
@@ -191,10 +231,10 @@ export function filtravel(linhas: readonly Linha[], id: string): boolean {
  * (a contagem acompanha a busca e os outros campos). Valor sem ninguém some, menos o escolhido. "Sem informação"
  * (SEM) vem por último, se houver alguém sem esse campo.
  */
-export function opcoes(linhas: readonly Linha[], id: string, f: Filtros, marcados: ReadonlySet<string>): Opcao[] {
+export function opcoes(linhas: readonly Linha[], id: string, f: Filtros, ctx: Contexto): Opcao[] {
   const conta = new Map<string, number>();
   let sem = 0;
-  for (const l of filtrar(linhas, f, marcados, id)) {
+  for (const l of filtrar(linhas, f, ctx, id)) {
     const vs = new Set(valores(l.info?.[id]));
     if (!vs.size) sem++;
     for (const v of vs) conta.set(v, (conta.get(v) ?? 0) + 1);
@@ -204,6 +244,36 @@ export function opcoes(linhas: readonly Linha[], id: string, f: Filtros, marcado
   const l = [...conta].map(([valor, n]) => ({ valor, n })).sort((a, b) => compararNatural(a.valor, b.valor));
   if (sem || atual === SEM) l.push({ valor: SEM, n: sem });
   return l;
+}
+
+/**
+ * Opções do filtro de classe: toda classe (na ordem dada, mesmo sem ninguém) com quantos a têm entre os que passam
+ * nos outros filtros, e "sem classe" (SEM) no fim.
+ */
+export function opcoesClasse(linhas: readonly Linha[], ids: readonly string[], f: Filtros, ctx: Contexto): Opcao[] {
+  const conta = new Map(ids.map(id => [id, 0]));
+  let sem = 0;
+  for (const l of filtrar(linhas, f, ctx, F_CLASSE)) {
+    const cs = ctx.classes?.(l.nome)?.filter(c => conta.has(c));
+    if (!cs?.length) sem++;
+    else for (const c of new Set(cs)) conta.set(c, conta.get(c)! + 1);
+  }
+  return [...[...conta].map(([valor, n]) => ({ valor, n })), { valor: SEM, n: sem }];
+}
+
+/** Opções do filtro de linha, cada uma com quantos passam nos outros filtros. */
+export function opcoesLinha(linhas: readonly Linha[], f: Filtros, ctx: Contexto): { valor: Exclude<FiltroLinha, ''>; n: number }[] {
+  const n = { com: 0, sem: 0, confirmada: 0, pendente: 0 };
+  for (const l of filtrar(linhas, f, ctx, F_LINHA)) {
+    const pos = ctx.linha?.(l.nome);
+    if (!pos) n.sem++;
+    else {
+      n.com++;
+      if (pos.confirmada) n.confirmada++;
+      else n.pendente++;
+    }
+  }
+  return (['com', 'sem', 'confirmada', 'pendente'] as const).map(valor => ({ valor, n: n[valor] }));
 }
 
 // ---------- marcações ----------
@@ -237,7 +307,11 @@ export function juntarMarcas(atual: Marcas, novas: Marcas): { marcas: Marcas; no
 export interface PersonagemExportado {
   nome: string;
   img: string;
-  [campo: string]: Valor;
+  /** do planejamento: nomes das classes, habilidade e linha evolutiva */
+  classes?: string[];
+  habilidade?: string;
+  linha?: LinhaExportada;
+  [campo: string]: Valor | LinhaExportada | undefined;
 }
 export interface FranquiaExportada {
   rotulo: string;
@@ -249,20 +323,35 @@ export interface FranquiaExportada {
 }
 export interface Exportacao {
   geradoEm: string;
+  /** quem foi exportado: os marcados ou o grupo "Set 1 (base)" (importar este não marca ninguém) */
+  grupo?: 'marcados' | 'base';
   franquias: Record<string, FranquiaExportada>;
+  /** o planejamento inteiro (classes, unidades e linhas), pra Importar restaurar */
+  plano?: Plano;
 }
+/** O planejamento na exportação: os campos a mais de cada personagem e o plano inteiro. */
+export interface PlanoNaExportacao {
+  grupo: 'marcados' | 'base';
+  extras: (k: string, nome: string) => ExtrasExportados;
+  plano: Plano;
+}
+/** Campos da exportação que não vêm da fonte: informação da fonte com o mesmo id não entra. */
+const RESERVADOS = new Set(['nome', 'img', 'classes', 'habilidade', 'linha']);
 
 /**
  * Monta o set1.json: só as franquias com alguém marcado, na ordem `ordem`; personagens na ordem da lista do site
  * (marcado que não está na lista vai pro fim, na ordem das marcações). Imagem: a da lista, senão a do catálogo.
+ * Com `plano`, cada personagem ganha classes, habilidade e linha, e o arquivo leva o plano inteiro.
  */
 export function montarExportacao(p: {
+  /** quem exportar: as marcações (ou o grupo base) */
   marcas: Marcas;
   ordem: readonly string[];
   listas: Record<string, readonly Item[] | null | undefined>;
   catalogos: Record<string, Catalogo | null | undefined>;
   rotulo: (k: string) => string;
   geradoEm: string;
+  plano?: PlanoNaExportacao;
 }): Exportacao {
   const franquias: Record<string, FranquiaExportada> = {};
   for (const k of p.ordem) {
@@ -279,21 +368,28 @@ export function montarExportacao(p: {
       campos: cat ? cat.campos : [],
       personagens: ordenados.map(nome => {
         const info = cat?.itens.get(nome) ?? {};
-        const extra = Object.fromEntries(Object.entries(info).filter(([c]) => c !== 'nome' && c !== 'img'));
-        return { nome, img: itens.get(nome)?.img || cat?.imagens.get(nome) || '', ...extra };
+        const extra = Object.fromEntries(Object.entries(info).filter(([c]) => !RESERVADOS.has(c)));
+        return { nome, img: itens.get(nome)?.img || cat?.imagens.get(nome) || '', ...extra, ...p.plano?.extras(k, nome) };
       }),
     };
   }
-  return { geradoEm: p.geradoEm, franquias };
+  if (!p.plano) return { geradoEm: p.geradoEm, franquias };
+  return { geradoEm: p.geradoEm, grupo: p.plano.grupo, franquias, plano: p.plano.plano };
 }
 
 /**
  * Lê um arquivo importado: o set1.json exportado ({ franquias: { chave: { personagens: [{ nome }] } } }) ou as
  * marcações cruas ({ chave: [nomes] }). Franquia fora de `validas` é ignorada (e listada). Formato estranho -> null.
+ * `plano` = o planejamento do arquivo (arquivo antigo não tem). O set1.json do grupo base (grupo: "base") não marca
+ * ninguém: só traz o plano.
  */
-export function lerImportacao(j: unknown, validas: readonly string[]): { marcas: Marcas; ignoradas: string[] } | null {
+export function lerImportacao(j: unknown, validas: readonly string[]): { marcas: Marcas; ignoradas: string[]; plano: Plano | null } | null {
   if (!isObj(j)) return null;
   const bruto: Record<string, unknown> = {};
+  const plano = isObj(j.plano) ? limparPlano(j.plano) : null;
+  if (isObj(j.franquias) && j.grupo === 'base') {
+    return { marcas: {}, ignoradas: Object.keys(j.franquias).filter(k => !validas.includes(k)), plano };
+  }
   if (isObj(j.franquias)) {
     for (const [k, fr] of Object.entries(j.franquias)) {
       const ps = isObj(fr) ? fr.personagens : undefined;
@@ -309,5 +405,5 @@ export function lerImportacao(j: unknown, validas: readonly string[]): { marcas:
     if (validas.includes(k)) marcas[k] = v;
     else ignoradas.push(k);
   }
-  return { marcas, ignoradas };
+  return { marcas, ignoradas, plano };
 }
