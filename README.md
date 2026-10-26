@@ -3,8 +3,9 @@
 Site pessoal (em português) pra escolher entre personagens de franquias diferentes. Publicado no GitHub Pages:
 https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/
 
-**Modos:** Duelo (rei do morro), Trio, Quarteto, Campeonato com chaveamento, Placar, franquias personalizadas (grupos
-de imagens próprias) e Online (salas com votação em cada celular: Duelo, Trio, Quarteto, Campeonato e Draft, via
+**Modos:** Duelo (rei do morro), Trio, Quarteto, Campeonato com chaveamento, Ranking (top às cegas: um personagem por vez
+vai pra uma posição do top e fica travado lá), Placar, franquias personalizadas (grupos
+de imagens próprias) e Online (salas com votação em cada celular: Duelo, Trio, Quarteto, Campeonato, Draft e Ranking, via
 PeerJS). O passo a passo pra jogar com amigos está em [RELATORIO.md](RELATORIO.md#como-testar-com-amigos).
 
 ## Franquias
@@ -58,7 +59,7 @@ node node_modules/@playwright/test/cli.js test
   busca de imagens em lote (50 títulos por pedido) usada pelas wikis.
 - `src/core/`: lógica pura sem React (saco de sorteio, campeonato, placar, roleta, localStorage).
 - `src/state/`: estado do site e ações dos modos.
-- `src/modes/`: um modo por pasta. `src/components/`: Carta, Arena, Roleta, Chaveamento, seletores.
+- `src/modes/`: um modo por pasta. `src/components/`: Carta, Arena, Roleta, Chaveamento, posições do Ranking, seletores.
 - `src/online/`: modo online (redutor puro da sala, protocolo, transporte PeerJS).
 - `src/customs/`: franquias personalizadas.
 - `public/`: imagens e listas locais (`smt/`, `sujimon/`, `ff/`).
@@ -85,6 +86,9 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
   novos e confira os avisos.
 - `node sujimon.mjs recortar`: recorta os screenshots do Sujidex de `sujimon/_orig/` pra `public/sujimon/`. Instruções
   no começo do arquivo.
+- `node catalogo.mjs [chaves]`: gera `public/catalogo/<chave>.json` com o que a fonte informa de cada personagem (um
+  coletor por franquia em `catalogo/`). A aba **Catálogo** lista cada franquia com essas informações, filtros e marcações
+  do Set 1 do modo estilo TFT (salvas em `pdx-set1`), e exporta/importa um `set1.json`.
 
 ## Publicação
 

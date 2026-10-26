@@ -79,7 +79,9 @@ function isCfg(c: unknown): boolean {
     isArr(c.duel, isText) && isArr(c.trio, isText) && isArr(c.quartet, isText) &&
     isRec(c.cup) && isArr(c.cup.frs, isText) && isNat(c.cup.size) &&
     isRec(c.draft) && isArr(c.draft.frs, isText) && isNat(c.draft.x) && isNat(c.draft.rounds) &&
-    (c.customEdit === undefined || isBool(c.customEdit));
+    (c.customEdit === undefined || isBool(c.customEdit)) &&
+    // host de versão anterior ao Ranking não manda `rank`
+    (c.rank === undefined || (isRec(c.rank) && isArr(c.rank.frs, isText) && isNat(c.rank.size) && isBool(c.rank.mix)));
 }
 
 /** Pedido de mudança nas franquias customizadas (o host ainda confere tudo de novo ao aplicar). */
@@ -113,15 +115,20 @@ function isGame(g: unknown): boolean {
         (g.history === null || isArr(g.history, h => isRec(h) && isNat(h.round) &&
           isArr(h.teams, t => isRec(t) && isText(t.id) && isText(t.name) && isArr(t.picks, isEntry))));
     }
+    case 'rank':
+      return isNat(g.size) && isBool(g.mix) && isNat(g.cur) &&
+        isArr(g.tops, t => isRec(t) && (t.fr === null || isText(t.fr)) && isArr(t.slots, isEntryOrNull) && isNat(t.left));
     default:
       return false;
   }
 }
 
-/** A votação aberta (ou com resultado). */
+/** A votação aberta (ou com resultado). No Ranking (`pos`), os índices são posições de 0 a pos.n - 1. */
 function isVote(v: unknown): boolean {
   if (!isRec(v)) return false;
-  const n = Array.isArray(v.items) ? v.items.length : -1;
+  const p = v.pos;
+  if (!(p === undefined || (isRec(p) && isNat(p.n) && isArr(p.free, i => isNat(i) && i < (p.n as number))))) return false;
+  const n = isRec(p) ? (p.n as number) : Array.isArray(v.items) ? v.items.length : -1;
   const idx = (i: unknown) => isNat(i) && i < n;
   if (!isNat(v.seq) || !isArr(v.items, isEntry) || !isArr(v.extras, isText) || !(v.mine === null || idx(v.mine))) return false;
   const r = v.result;

@@ -92,6 +92,7 @@ describe('createRoom e DEFAULT_CONFIG', () => {
       cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'sujimon'], even: true, mix: true },
       customEdit: false,
       draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
+      rank: { size: 10, frs: ['pokemon', 'digimon'], mix: false },
     });
   });
 

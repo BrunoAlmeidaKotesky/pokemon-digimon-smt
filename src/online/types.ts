@@ -1,9 +1,10 @@
 // Contrato do modo online: estado da sala (vive no host), ações, visão de cada jogador, mensagens e transporte.
 import type { Cup, Entry, FranchiseKey, Item } from '../types';
+import type { Rank, RankTop } from '../core/rank';
 import type { CustomFranchise, CustomOp } from '../customs/types';
 
 // ---------- configuração ----------
-export type OnlineMode = 'duel' | 'trio' | 'quartet' | 'cup' | 'draft';
+export type OnlineMode = 'duel' | 'trio' | 'quartet' | 'cup' | 'draft' | 'rank';
 
 export interface OnlineConfig {
   mode: OnlineMode;
@@ -19,6 +20,8 @@ export interface OnlineConfig {
   customEdit: boolean;
   /** Draft (etapa 6): franquias na ordem, opções por franquia e nº de rodadas */
   draft: { frs: FranchiseKey[]; x: number; rounds: number };
+  /** Ranking às cegas: tamanho do top, franquias (na ordem dos tops separados) e se mistura tudo num top só */
+  rank: { size: number; frs: FranchiseKey[]; mix: boolean };
 }
 
 // ---------- estado da sala (só no host) ----------
@@ -61,6 +64,11 @@ export interface Vote {
   /** id do jogador -> índice escolhido */
   ballots: Record<string, number>;
   result: VoteResult | null;
+  /**
+   * Ranking: vota-se a POSIÇÃO (0 = 1º lugar, até n-1) do personagem items[0], só entre as livres (`free`). Com `pos`,
+   * os índices dos votos, da contagem (counts tem n posições), do vencedor, do empate e da roleta são posições.
+   */
+  pos?: { n: number; free: number[] };
 }
 
 /** Duelo, Trio e Quarteto online: rei do morro com 2, 3 ou 4 lados. */
@@ -129,7 +137,13 @@ export interface DraftGame {
   champion: Qualified | null;
 }
 
-export type Game = KingGame | CupGame | DraftGame;
+/** Ranking às cegas online: a fila inteira fica só no host; cada personagem vira uma votação da posição. */
+export interface RankGame {
+  mode: 'rank';
+  rank: Rank;
+}
+
+export type Game = KingGame | CupGame | DraftGame | RankGame;
 
 export interface RoomState {
   code: string;
@@ -200,6 +214,8 @@ export interface VoteView {
   extras: string[];
   /** o meu voto (índice) ou null */
   mine: number | null;
+  /** Ranking: votação da posição (ver Vote.pos) */
+  pos?: { n: number; free: number[] };
   result: {
     counts: number[];
     /** nomes de quem votou em cada item; null com voto secreto */
@@ -244,10 +260,21 @@ export interface DraftView {
   history: DraftGame['history'] | null;
 }
 
+/** O ranking visto por um jogador: os tops sem a fila (às cegas), só quantos ainda faltam em cada um. */
+export interface RankView {
+  mode: 'rank';
+  size: number;
+  mix: boolean;
+  tops: (Omit<RankTop, 'queue'> & { left: number })[];
+  /** top da vez; igual a tops.length quando acabou */
+  cur: number;
+}
+
 export type GameView =
   | { mode: KingGame['mode']; frs: FranchiseKey[]; streak: number[] }
   | { mode: 'cup'; cup: Cup; title: string; count: string }
-  | DraftView;
+  | DraftView
+  | RankView;
 
 export interface RoomView {
   code: string;

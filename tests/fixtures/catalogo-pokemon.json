@@ -1,0 +1,108 @@
+{
+ "chave": "pokemon",
+ "fonte": "PokeAPI (GraphQL)",
+ "geradoEm": "2026-10-25",
+ "campos": [
+  {
+   "id": "tipo",
+   "rotulo": "Tipo"
+  },
+  {
+   "id": "geracao",
+   "rotulo": "Geração"
+  },
+  {
+   "id": "habitat",
+   "rotulo": "Habitat"
+  }
+ ],
+ "itens": {
+  "Bulbasaur": {
+   "tipo": [
+    "Grass",
+    "Poison"
+   ],
+   "geracao": "I",
+   "habitat": "grassland"
+  },
+  "Ivysaur": {
+   "tipo": [
+    "Grass",
+    "Poison"
+   ],
+   "geracao": "I",
+   "habitat": "grassland"
+  },
+  "Venusaur": {
+   "tipo": [
+    "Grass",
+    "Poison"
+   ],
+   "geracao": "I",
+   "habitat": "grassland"
+  },
+  "Charmander": {
+   "tipo": [
+    "Fire"
+   ],
+   "geracao": "I",
+   "habitat": "mountain"
+  },
+  "Charmeleon": {
+   "tipo": [
+    "Fire"
+   ],
+   "geracao": "I",
+   "habitat": "mountain"
+  },
+  "Charizard": {
+   "tipo": [
+    "Fire",
+    "Flying"
+   ],
+   "geracao": "I",
+   "habitat": "mountain"
+  },
+  "Squirtle": {
+   "tipo": [
+    "Water"
+   ],
+   "geracao": "I",
+   "habitat": "waters-edge"
+  },
+  "Pidgey": {
+   "tipo": [
+    "Normal",
+    "Flying"
+   ],
+   "geracao": "I",
+   "habitat": "forest"
+  },
+  "Pikachu": {
+   "tipo": [
+    "Electric"
+   ],
+   "geracao": "I",
+   "habitat": "forest"
+  },
+  "Vulpix": {
+   "tipo": [
+    "Fire"
+   ],
+   "geracao": "I"
+  },
+  "Ninetales": {
+   "tipo": [
+    "Fire"
+   ],
+   "geracao": "I"
+  },
+  "Mew": {
+   "tipo": [
+    "Psychic"
+   ],
+   "geracao": "I",
+   "habitat": "rare"
+  }
+ }
+}
