@@ -1,8 +1,9 @@
 // O que cada jogador recebe da sala: sem o saco de sorteio, com o próprio voto e, com voto secreto, sem os nomes de quem votou.
 // No Draft: só as próprias opções e escolhas; dos outros, só se já terminaram (até a revelação).
+// No Ranking: só o personagem da vez (na votação) e as posições já preenchidas, nunca a fila.
 import { roundName } from '../core/cup';
 import { isBye } from './draft';
-import type { DraftGame, DraftView, GameView, RoomState, RoomView, Vote, VoteView } from './types';
+import type { DraftGame, DraftView, GameView, RankGame, RankView, RoomState, RoomView, Vote, VoteView } from './types';
 
 export function viewFor(s: RoomState, pid: string, now: number): RoomView {
   const v = s.vote;
@@ -39,7 +40,20 @@ function gameView(s: RoomState, pid: string): GameView | null {
     };
   }
   if (g.mode === 'draft') return draftView(s, g, pid);
+  if (g.mode === 'rank') return rankView(g);
   return { mode: g.mode, frs: [...g.frs], streak: [...g.streak] };
+}
+
+/** Ranking às cegas: as posições de cada top e quantos faltam (contando o da vez); a fila não sai do host. */
+function rankView(g: RankGame): RankView {
+  const r = g.rank;
+  return {
+    mode: 'rank',
+    size: r.size,
+    mix: r.mix,
+    cur: r.cur,
+    tops: r.tops.map(t => ({ fr: t.fr, slots: t.slots.map(e => (e ? { ...e } : null)), left: t.queue.length })),
+  };
 }
 
 function draftView(s: RoomState, g: DraftGame, pid: string): DraftView {
@@ -94,6 +108,7 @@ function voteView(s: RoomState, v: Vote, pid: string, now: number): VoteView {
     items: v.items.map(e => ({ ...e })),
     extras: [...v.extras],
     mine: Object.hasOwn(v.ballots, pid) ? (v.ballots[pid] as number) : null,
+    ...(v.pos ? { pos: { n: v.pos.n, free: [...v.pos.free] } } : {}),
     result: r
       ? {
           counts: [...r.counts],

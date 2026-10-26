@@ -3,11 +3,12 @@ import { Duel } from './modes/duel/Duel';
 import { Trio } from './modes/trio/Trio';
 import { Quartet } from './modes/quartet/Quartet';
 import { Cup } from './modes/cup/Cup';
+import { Rank } from './modes/rank/Rank';
 import { Stats } from './modes/stats/Stats';
 import { Online } from './modes/online/Online';
 import { Customs } from './modes/customs/Customs';
 
-const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['stats', 'Placar'], ['customs', 'Personalizar'], ['online', 'Online']];
+const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['rank', 'Ranking'], ['stats', 'Placar'], ['customs', 'Personalizar'], ['online', 'Online']];
 
 export function App() {
   const app = useApp();
@@ -27,6 +28,7 @@ export function App() {
       <Trio />
       <Quartet />
       <Cup />
+      <Rank />
       <Stats />
       <Customs />
       <Online />

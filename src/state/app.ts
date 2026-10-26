@@ -11,8 +11,9 @@ import { toItems, isCustomKey } from '../customs/model';
 import { loadStats, saveStats, record, updateBest, emptyStats } from '../core/stats';
 import { buildEntrants, startCup, cupSync, cupPair, cupChoose } from '../core/cup';
 import { planSpin, spinDelay, spinIndex, PICK_MS, PICK_MS_CALM } from '../core/spin';
+import { RANK_SIZE, rankSize, startRank, rankTop, rankPlace as placeInRank, rankDone, type Rank } from '../core/rank';
 
-export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'stats' | 'customs' | 'online';
+export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'rank' | 'stats' | 'customs' | 'online';
 export type Row = 'duel' | 'trio' | 'quartet' | 'cup';
 /** Trio e Quarteto: rei do morro com 3 ou 4 lados. */
 export type Multi = 'trio' | 'quartet';
@@ -60,6 +61,12 @@ export const app = {
   cup: null as Cup | null,
   cupStartLabel: 'Começar',
   cupHidden: { setup: false, play: true, end: true, log: true },
+
+  /** Ranking às cegas: tamanho do top, franquias marcadas e se mistura tudo num top só */
+  rankCfg: { size: RANK_SIZE.def as number, frs: { pokemon: true, digimon: true } as Record<string, boolean>, mix: false },
+  /** ranking em andamento ou acabado (tela final); null = tela de configuração */
+  rank: null as Rank | null,
+  rankStartLabel: 'Começar',
 
   stats: loadStats() as Stats,
 
@@ -250,6 +257,52 @@ function resolveBracketImages() {
   }));
 }
 
+// ---------- ranking ----------
+// Um personagem por vez vai pra uma posição livre do top e fica travado lá; ninguém vê quem vem depois.
+// A fila inteira é sorteada no começo (o saco de sorteio de sempre), então dá pra pré-carregar a imagem do próximo.
+// Nada do ranking fica salvo.
+export function setRankCfg(patch: Partial<typeof app.rankCfg>) {
+  Object.assign(app.rankCfg, patch.size === undefined ? patch : { ...patch, size: rankSize(patch.size) });
+  emit();
+}
+export function setRankFr(k: string, on: boolean) { app.rankCfg.frs[k] = on; emit(); }
+let rankLabelTimer: ReturnType<typeof setTimeout> | null = null;
+export function rankStart() {
+  const frs = app.avail.filter(k => app.rankCfg.frs[k] && ready(k));
+  if (!frs.length) {
+    app.rankStartLabel = 'Marque uma franquia já carregada'; emit();
+    if (rankLabelTimer) clearTimeout(rankLabelTimer);
+    rankLabelTimer = setTimeout(() => { app.rankStartLabel = 'Começar'; emit(); }, 2000);
+    return;
+  }
+  const lists = Object.fromEntries(frs.map(k => [k, app.lists[k]!]));
+  app.rank = startRank({ frs, size: app.rankCfg.size, mix: app.rankCfg.mix, lists, draw: pick, rand: Math.random });
+  rankPreload();
+  emit();
+}
+/** Pré-carrega a imagem do personagem da vez e a do próximo (que pode ser o primeiro do top seguinte). */
+function rankPreload() {
+  const r = app.rank;
+  if (r) preload(r.tops.slice(r.cur).flatMap(t => t.queue).slice(0, 2));
+}
+/** Põe o personagem da vez na posição `pos` (0 = 1º lugar). Posição ocupada ou fora do top não faz nada. */
+export function rankPlace(pos: number) {
+  if (!app.rank || !placeInRank(app.rank, pos)) return;
+  rankPreload();
+  emit();
+}
+/** "Abandonar" e "Mudar configuração": volta pra configuração. */
+export function rankQuit() { app.rank = null; emit(); }
+/** "Jogar de novo": outro ranking com a mesma configuração. */
+export function rankAgain() { rankStart(); }
+/** Teclas 1 a 9 põem nas posições 1 a 9; 0 põe na 10ª. Só posição livre. */
+function rankKey(e: KeyboardEvent) {
+  const r = app.rank;
+  if (!r || rankDone(r) || e.ctrlKey || e.metaKey || e.altKey || !/^[0-9]$/.test(e.key)) return;
+  const pos = e.key === '0' ? 9 : +e.key - 1;
+  if (rankTop(r)?.slots[pos] === null) rankPlace(pos);
+}
+
 // ---------- placar ----------
 export function statsReset() { app.stats = emptyStats(); saveStats(app.stats); emit(); }
 
@@ -269,6 +322,7 @@ export function onKey(e: KeyboardEvent) {
   const t = e.target as HTMLElement | null;
   if (t && ['SELECT', 'INPUT'].includes(t.tagName)) return;
   if (app.mode === 'online') { onlineKey?.(e); return; }
+  if (app.mode === 'rank') { rankKey(e); return; }
   const n = +e.key;
   if (app.spinning) return;
   if (n >= 1 && n <= app.current.length && app.onChoose) app.onChoose(app.current[n - 1]!);

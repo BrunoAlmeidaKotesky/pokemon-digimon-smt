@@ -8,10 +8,11 @@ import { SpinButton } from '../../components/SpinButton';
 import { Bracket } from '../../components/Bracket';
 import { useSpinAnim } from './useSpinAnim';
 import { DraftPlay } from './Draft';
+import { RankPlay } from './Rank';
 
-const MODE_TITLE = { duel: 'Duelo', trio: 'Trio', quartet: 'Quarteto', cup: 'Campeonato', draft: 'Draft' } as const;
-const votos = (n: number) => `${n} ${n === 1 ? 'voto' : 'votos'}`;
-const nomeLista = (ns: string[]) => ns.length <= 1 ? ns.join('') : ns.slice(0, -1).join(', ') + ' e ' + ns.at(-1);
+const MODE_TITLE = { duel: 'Duelo', trio: 'Trio', quartet: 'Quarteto', cup: 'Campeonato', draft: 'Draft', rank: 'Ranking' } as const;
+export const votos = (n: number) => `${n} ${n === 1 ? 'voto' : 'votos'}`;
+export const nomeLista = (ns: string[]) => ns.length <= 1 ? ns.join('') : ns.slice(0, -1).join(', ') + ' e ' + ns.at(-1);
 
 /** Partida online: cartas da votação, quem já votou, resultado e os controles do host. */
 export function Play({ v }: { v: RoomView }) {
@@ -26,7 +27,7 @@ export function Play({ v }: { v: RoomView }) {
         <span className="grow" />
         {isHost && <button className="btn" id="onLobbyBtn" onClick={host.lobby}>Voltar ao lobby</button>}
       </div>
-      {g?.mode === 'draft' ? <DraftPlay v={v} /> : v.vote && <VoteBox v={v} vote={v.vote} />}
+      {g?.mode === 'draft' ? <DraftPlay v={v} /> : g?.mode === 'rank' ? <RankPlay v={v} /> : v.vote && <VoteBox v={v} vote={v.vote} />}
       {champ && g?.mode === 'cup' && <CupEnd v={v} />}
       {g?.mode === 'cup' && (
         <details className="panel" open id="onBracket">
@@ -39,7 +40,6 @@ export function Play({ v }: { v: RoomView }) {
 }
 
 export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
-  const isHost = v.me === v.hostId;
   const res = vote.result;
   const anim = useSpinAnim(res?.spin ?? null, v.code);
   const show = !!res && anim.done;
@@ -47,8 +47,6 @@ export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
   // Quarteto: quatro cartas em linha com VS (no celular, 2×2); no Draft, 4 ou mais cartas ficam em grade
   const four = v.game?.mode === 'quartet';
   const cls = four ? 'arena four' : n === 2 ? 'arena two' : n === 3 ? 'arena three' : 'arena grid';
-  const nameOf = (id: string) => v.players.find(p => p.id === id)?.name ?? '?';
-  const faltam = v.players.filter(p => !p.voted);
   return (
     <>
       <div className={cls} id="onArena" data-seq={vote.seq}>
@@ -59,12 +57,7 @@ export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
               extra={<>{vote.extras[i] && <span className="crown">{vote.extras[i]}</span>}{vote.mine === i && <span className="mine-tag">seu voto</span>}</>}
               cls={[vote.mine === i && 'mine', show && (res!.win === i ? 'win' : 'lose')].filter(Boolean).join(' ')}
               onClick={() => { if (!res) player.vote(vote.seq, i); }}>
-              {show && (
-                <span className="tally" data-votos={res!.counts[i]}>
-                  <b>{votos(res!.counts[i] ?? 0)}</b>
-                  {res!.voters && res!.voters[i]!.length > 0 && <span className="who">{res!.voters[i]!.join(', ')}</span>}
-                </span>
-              )}
+              {show && <Tally res={res!} i={i} />}
             </Card>
           </Fragment>
         ))}
@@ -72,7 +65,7 @@ export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
       <div className="vote-info" id="onVoteInfo" role="status">
         {!res && <p style={{ margin: 0 }}>
           {vote.mine == null ? 'Escolha uma carta.' : 'Voto registrado (dá pra trocar até todos votarem).'}{' '}
-          <span className="mute">Votaram {v.players.length - faltam.length} de {v.players.length}.{faltam.length > 0 && ` Falta: ${faltam.map(p => p.name + (p.online ? '' : ' (fora do ar)')).join(', ')}.`}</span>
+          <Faltam v={v} />
         </p>}
         {res && !show && <p style={{ margin: 0 }}><b>{res.how === 'roleta' ? 'O host girou a roleta…' : `Empate entre ${nomeLista((res.tie ?? []).map(i => vote.items[i]!.name))}! A roleta decide…`}</b></p>}
         {show && <p style={{ margin: 0 }} id="onResult">
@@ -83,6 +76,34 @@ export function VoteBox({ v, vote }: { v: RoomView; vote: VoteView }) {
           {v.cfg.secret && <span className="mute"> Voto secreto: só a contagem aparece.</span>}
         </p>}
       </div>
+      <HostCtl v={v} res={res} show={show} />
+    </>
+  );
+}
+
+/** Votos de uma opção depois do resultado, e quem votou nela (sem nomes com voto secreto). */
+export function Tally({ res, i }: { res: NonNullable<VoteView['result']>; i: number }) {
+  return (
+    <span className="tally" data-votos={res.counts[i]}>
+      <b>{votos(res.counts[i] ?? 0)}</b>
+      {res.voters && res.voters[i]!.length > 0 && <span className="who">{res.voters[i]!.join(', ')}</span>}
+    </span>
+  );
+}
+
+/** "Votaram 2 de 3. Falta: Caio." */
+export function Faltam({ v }: { v: RoomView }) {
+  const faltam = v.players.filter(p => !p.voted);
+  return <span className="mute">Votaram {v.players.length - faltam.length} de {v.players.length}.{faltam.length > 0 && ` Falta: ${faltam.map(p => p.name + (p.online ? '' : ' (fora do ar)')).join(', ')}.`}</span>;
+}
+
+/** Controles do host durante uma votação (encerrar, roleta, próximo); os outros veem "esperando o host". */
+export function HostCtl({ v, res, show }: { v: RoomView; res: VoteView['result']; show: boolean }) {
+  const isHost = v.me === v.hostId;
+  const faltam = v.players.filter(p => !p.voted);
+  const nameOf = (id: string) => v.players.find(p => p.id === id)?.name ?? '?';
+  return (
+    <>
       {isHost && (
         <div className="bar host-ctl">
           {!res && faltam.length > 0 && <button className="btn" id="onClose" title="Fecha a votação com os votos que já tem" onClick={host.close}>Encerrar votação</button>}

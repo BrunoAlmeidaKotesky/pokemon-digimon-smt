@@ -361,6 +361,10 @@ setOnlineKey(e => {
   }
   if (!v?.vote || v.vote.result) return;
   const n = +e.key;
-  if (n >= 1 && n <= v.vote.items.length) player.vote(v.vote.seq, n - 1);
+  if (v.vote.pos) {
+    // Ranking: 1-9 votam nas posições 1 a 9 e o 0 na 10ª (só as livres)
+    const pos = e.key === '0' ? 9 : n - 1;
+    if (/^[0-9]$/.test(e.key) && v.vote.pos.free.includes(pos)) player.vote(v.vote.seq, pos);
+  } else if (n >= 1 && n <= v.vote.items.length) player.vote(v.vote.seq, n - 1);
   if ((e.key === 'r' || e.key === 'R') && online.stage === 'host' && v.cfg.roulette) host.spin();
 });

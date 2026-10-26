@@ -1,12 +1,14 @@
 // Sala do modo online: o estado vive no navegador do host e só muda por reduce(estado, ação, ctx).
 // Tudo puro: sorteio só com ctx.rand, relógio só com ctx.now, personagens só de ctx.lists (nada de Math.random, Date ou DOM).
 // Cada escolha vira uma votação: quando todos da sala votam (ou o host encerra) ela é apurada; empate vira roleta entre os empatados.
+// No Ranking a votação é da posição do personagem da vez (Vote.pos), não de uma carta.
 import { buildEntrants, cupChoose, cupPair, startCup } from '../core/cup';
 import { shuffle } from '../core/random';
+import { rankDone, rankEntry, rankFree, rankPlace, rankTop, startRank } from '../core/rank';
 import { planSpin } from '../core/spin';
 import type { Entry, FranchiseKey, Item } from '../types';
 import { draftDrop, type DraftIO, draftNext, draftPick, draftSkip, startDraft } from './draft';
-import type { Action, Ctx, JoinCheck, KingGame, OnlineConfig, Player, RoomState, SpinPlan, Vote } from './types';
+import type { Action, Ctx, JoinCheck, KingGame, OnlineConfig, Player, RankGame, RoomState, SpinPlan, Vote } from './types';
 
 /** Máximo de jogadores na sala (host incluído). */
 export const MAX_PLAYERS = 16;
@@ -23,6 +25,7 @@ export const DEFAULT_CONFIG: OnlineConfig = {
   cup: { size: 16, frs: ['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'sujimon'], even: true, mix: true },
   customEdit: false,
   draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
+  rank: { size: 10, frs: ['pokemon', 'digimon'], mix: false },
 };
 
 const LABELS: Record<string, string> = {
@@ -231,6 +234,27 @@ function start(s: RoomState, ctx: Ctx): boolean {
     startDraft(s, ctx, DRAFT_IO);
     return true;
   }
+  if (cfg.mode === 'rank') {
+    const raw: unknown[] = Array.isArray(cfg.rank?.frs) ? cfg.rank.frs : [];
+    if (!raw.length) return notice(s, 'Escolha pelo menos uma franquia.');
+    if (raw.some(k => typeof k !== 'string')) return notice(s, 'Franquia desconhecida no Ranking.');
+    const frs = [...new Set(raw as FranchiseKey[])];
+    const miss = frs.find(k => !listOf(ctx, k));
+    if (miss !== undefined) return notice(s, missing(miss));
+    const lists: Record<FranchiseKey, Item[]> = Object.fromEntries(frs.map(k => [k, listOf(ctx, k) as Item[]]));
+    // a fila inteira é sorteada agora (saco da sala) e fica só no host: os jogadores veem um personagem por vez
+    const rank = startRank({
+      frs, size: cfg.rank.size, mix: cfg.rank.mix === true, lists, rand: ctx.rand,
+      draw: (k, avoid) => pick(s, ctx, k, lists[k] as Item[], avoid),
+    });
+    if (rankDone(rank)) return notice(s, 'Poucos personagens para o ranking.');
+    const g: RankGame = { mode: 'rank', rank };
+    s.game = g;
+    s.phase = 'play';
+    s.notice = '';
+    openRankVote(s, g);
+    return true;
+  }
   if (cfg.mode === 'cup') {
     const frs = cfg.cup.frs.filter(k => listOf(ctx, k));
     if (!frs.length) return notice(s, cfg.cup.frs.length ? missing(cfg.cup.frs[0] as string) : 'Escolha pelo menos uma franquia.');
@@ -268,6 +292,12 @@ function next(s: RoomState, ctx: Ctx): boolean {
   if (s.phase !== 'play' || !g || !v || !v.result) return false;
   if (g.mode === 'draft') return draftNext(s, ctx, DRAFT_IO);
   const win = v.result.win;
+  if (g.mode === 'rank') {
+    if (!rankPlace(g.rank, win)) return false;
+    s.notice = '';
+    openRankVote(s, g);
+    return true;
+  }
   if (g.mode === 'cup') {
     const pair = cupPair(g.cup);
     if (!pair) return false;
@@ -312,6 +342,21 @@ function openKingVote(s: RoomState, g: KingGame): void {
   openVote(s, [...g.slots], g.streak.map(crown));
 }
 
+/** Ranking: votação da posição do personagem da vez entre as livres do top da vez; acabou = sem votação. */
+function openRankVote(s: RoomState, g: RankGame): void {
+  const t = rankTop(g.rank);
+  const e = rankEntry(g.rank);
+  if (!t || !e) {
+    s.vote = null;
+    return;
+  }
+  openVote(s, [e], ['']);
+  (s.vote as Vote).pos = { n: t.slots.length, free: rankFree(t) };
+}
+
+/** Opções da votação: as posições livres (Ranking) ou os índices das cartas. */
+const options = (v: Vote): number[] => (v.pos ? [...v.pos.free] : v.items.map((_, i) => i));
+
 function isOpen(s: RoomState): s is RoomState & { vote: Vote } {
   return s.phase === 'play' && !!s.vote && !s.vote.result;
 }
@@ -323,7 +368,7 @@ function allVoted(s: RoomState, v: Vote): boolean {
 function vote(s: RoomState, id: string, seq: number, idx: number, ctx: Ctx): boolean {
   if (!isOpen(s)) return false;
   const v = s.vote;
-  if (seq !== v.seq || !Number.isInteger(idx) || idx < 0 || idx >= v.items.length) return false;
+  if (seq !== v.seq || !Number.isInteger(idx) || !options(v).includes(idx)) return false;
   if (!s.players.some(p => p.id === id)) return false;
   if (v.ballots[id] === idx) return false;
   v.ballots[id] = idx;
@@ -331,10 +376,11 @@ function vote(s: RoomState, id: string, seq: number, idx: number, ctx: Ctx): boo
   return true;
 }
 
-/** Votos por item e quem votou (na ordem dos jogadores). */
+/** Votos por item (ou por posição, no Ranking) e quem votou (na ordem dos jogadores). */
 function count(s: RoomState, v: Vote): { counts: number[]; voters: string[][] } {
-  const counts = v.items.map(() => 0);
-  const voters: string[][] = v.items.map(() => []);
+  const n = v.pos ? v.pos.n : v.items.length;
+  const counts: number[] = Array.from({ length: n }, () => 0);
+  const voters: string[][] = Array.from({ length: n }, () => []);
   for (const p of s.players) {
     if (!Object.hasOwn(v.ballots, p.id)) continue;
     const i = v.ballots[p.id] as number;
@@ -351,12 +397,16 @@ function roulette(s: RoomState, ctx: Ctx, among: number[]): { win: number; spin:
   return { win: among[(start + total) % m] as number, spin: { id: s.nextSeq++, among, start, total, at: ctx.now } };
 }
 
-/** Apura com os votos atuais: um mais votado ganha; empate (inclusive sem votos) vai pra roleta entre os empatados. */
+/**
+ * Apura com os votos atuais: um mais votado ganha; empate (inclusive sem votos) vai pra roleta entre os empatados.
+ * No Ranking só contam as posições livres (sem votos, a roleta gira entre todas elas).
+ */
 function tally(s: RoomState, ctx: Ctx): void {
   const v = s.vote as Vote;
   const { counts, voters } = count(s, v);
-  const max = Math.max(...counts);
-  const top = counts.flatMap((c, i) => (c === max ? [i] : []));
+  const opts = options(v);
+  const max = Math.max(...opts.map(i => counts[i] as number));
+  const top = opts.filter(i => counts[i] === max);
   if (top.length === 1) {
     v.result = { counts, voters, win: top[0] as number, tie: null, how: 'votos', spin: null };
     return;
@@ -365,12 +415,12 @@ function tally(s: RoomState, ctx: Ctx): void {
   v.result = { counts, voters, win: r.win, tie: top, how: 'empate', spin: r.spin };
 }
 
-/** O host gira a roleta entre todos os itens (só com cfg.roulette); os votos já dados continuam na contagem. */
+/** O host gira a roleta entre todos os itens, ou posições livres (só com cfg.roulette); os votos já dados continuam na contagem. */
 function hostSpin(s: RoomState, ctx: Ctx): boolean {
   if (!s.cfg.roulette || !isOpen(s)) return false;
   const v = s.vote;
   const { counts, voters } = count(s, v);
-  const r = roulette(s, ctx, v.items.map((_, i) => i));
+  const r = roulette(s, ctx, options(v));
   v.result = { counts, voters, win: r.win, tie: null, how: 'roleta', spin: r.spin };
   return true;
 }
