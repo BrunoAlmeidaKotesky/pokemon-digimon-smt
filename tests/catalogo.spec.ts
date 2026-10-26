@@ -16,6 +16,13 @@ const opcoes = (page: Page, id: string) => page.locator(`#catCampo_${id} option`
 const FOGO = ['Charmander', 'Charmeleon', 'Charizard', 'Vulpix', 'Ninetales'];
 const FRANQUIAS = ['Pokémon', 'Digimon', 'SMT', 'Persona', 'JoJo', 'Yu-Gi-Oh!', 'Bakugan', 'LoL', 'Overwatch', 'Deadlock', 'Final Fantasy', 'Sujimon'];
 
+/** Escolhe um valor no filtro de um campo (no celular os seletores ficam recolhidos atrás de um botão). */
+async function campo(page: Page, id: string, valor: string) {
+  const btn = page.locator('#catCamposBtn');
+  if (await btn.isVisible() && (await btn.getAttribute('aria-expanded')) === 'false') await btn.click();
+  await page.selectOption(`#catCampo_${id}`, valor);
+}
+
 /** Abre o site com tudo carregado e vai pra aba Catálogo. */
 async function inicio(page: Page, opts: MockOpts & { storage?: Record<string, unknown> } = {}) {
   const calls = await prepare(page, opts);
@@ -68,14 +75,14 @@ test.describe('catálogo do Set 1', () => {
 
   test('filtra por campo (lista: basta um dos valores) e pela busca; contagem "N de M"; limpar filtros', async ({ page }) => {
     await inicio(page);
-    await page.selectOption('#catCampo_tipo', 'Fire');
+    await campo(page, 'tipo', 'Fire');
     await expect(page.locator('#catCount')).toHaveText('5 de 40');
     expect(await nomes(page)).toEqual(FOGO);
     // a contagem dos outros campos acompanha o filtro
     expect(await opcoes(page, 'habitat')).toEqual(['Todos', 'mountain (3)', 'Sem informação (2)']);
-    await page.selectOption('#catCampo_habitat', '__sem__');
+    await campo(page, 'habitat', '__sem__');
     expect(await nomes(page)).toEqual(['Vulpix', 'Ninetales']);
-    await page.selectOption('#catCampo_habitat', '');
+    await campo(page, 'habitat', '');
 
     await page.fill('#catBusca', 'CHAR');
     await expect(page.locator('#catCount')).toHaveText('3 de 40');
@@ -94,7 +101,7 @@ test.describe('catálogo do Set 1', () => {
     await page.fill('#catBusca', 'flying');
     expect(await nomes(page)).toEqual(['Charizard', 'Pidgey']);
     await page.fill('#catBusca', '');
-    await page.selectOption('#catCampo_tipo', 'Flying');
+    await campo(page, 'tipo', 'Flying');
     expect(await nomes(page)).toEqual(['Charizard', 'Pidgey']);
   });
 
@@ -135,16 +142,16 @@ test.describe('catálogo do Set 1', () => {
 
   test('troca de franquia: cada uma com as suas informações e os seus filtros; sem catálogo, só nome e imagem', async ({ page }) => {
     await inicio(page);
-    await page.selectOption('#catCampo_tipo', 'Fire');
+    await campo(page, 'tipo', 'Fire');
 
     await chip(page, 'lol').click();
     await expect(page.locator('#catFonte')).toHaveText('Informações: Data Dragon (Riot) (gerado em 24/10/2026) · 8 de 40 com informação');
     await expect(page.locator('#catCount')).toHaveText('40 de 40');
     await expect(linha(page, 'Ahri').locator('.campos')).toHaveText('Classe: Mage, Assassin · Região: Ionia · Alcance: À distância');
     await expect(page.locator('.cat-filters select')).toHaveCount(3);
-    await page.selectOption('#catCampo_classe', 'Marksman');
+    await campo(page, 'classe', 'Marksman');
     expect(await nomes(page)).toEqual(['Ashe', 'Caitlyn', 'Jinx']);
-    await page.selectOption('#catCampo_regiao', 'Zaun');
+    await campo(page, 'regiao', 'Zaun');
     expect(await nomes(page)).toEqual(['Jinx']);
 
     // Bakugan não tem catálogo: lista igual, sem informações nem seletores de campo
@@ -195,7 +202,7 @@ test.describe('catálogo do Set 1', () => {
     await inicio(page);
     await expect(page.locator('#catDesmarcar')).toBeDisabled();
     await expect(page.locator('#catLimpar')).toBeDisabled();
-    await page.selectOption('#catCampo_tipo', 'Fire');
+    await campo(page, 'tipo', 'Fire');
     await page.locator('#catMarcar').click();
     await expect(chip(page, 'pokemon')).toHaveText('Pokémon · 5');
     for (const n of FOGO) await expect(caixa(page, n)).toBeChecked();
@@ -341,12 +348,29 @@ test.describe('catálogo do Set 1', () => {
 
   test('cabe na tela: sem rolagem horizontal; uma coluna no celular, duas no computador', async ({ page }, info) => {
     await inicio(page, { storage: { 'pdx-set1': { pokemon: ['Bulbasaur'] } } });
-    await page.selectOption('#catCampo_tipo', 'Grass');
+    const celular = info.project.name === 'celular';
+    const btn = page.locator('#catCamposBtn');
+    if (celular) {
+      // no celular os seletores dos campos ficam recolhidos; o botão diz quantos estão ativos
+      await expect(page.locator('#catCampo_tipo')).toBeHidden();
+      await expect(btn).toHaveText('Filtros por campo (3)');
+      await btn.click();
+      await expect(btn).toHaveAttribute('aria-expanded', 'true');
+      await expect(btn).toHaveText('Esconder os filtros por campo');
+      await page.selectOption('#catCampo_tipo', 'Grass');
+      await btn.click();
+      await expect(page.locator('#catCampo_tipo')).toBeHidden();
+      await expect(btn).toHaveText('Filtros por campo (3) · 1 ativo');
+    } else {
+      await expect(btn).toBeHidden();
+      await expect(page.locator('#catCampo_tipo')).toBeVisible();
+      await campo(page, 'tipo', 'Grass');
+    }
     await expect(page.locator('#catList .cat-row')).toHaveCount(3);
     const largura = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, tela: window.innerWidth }));
     expect(largura.doc).toBeLessThanOrEqual(largura.tela);
     const caixas = await page.locator('#catList .cat-row').evaluateAll(els => els.map(e => e.getBoundingClientRect().x));
-    if (info.project.name === 'celular') expect(new Set(caixas).size).toBe(1);
+    if (celular) expect(new Set(caixas).size).toBe(1);
     else expect(new Set(caixas).size).toBe(2);
     // a caixa de marcar é grande o bastante pra tocar e o rótulo inteiro marca
     const cx = await caixa(page, 'Ivysaur').boundingBox();

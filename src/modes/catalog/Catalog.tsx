@@ -161,9 +161,8 @@ function Topo() {
       <div>
         <h2 style={{ margin: 0 }}>Catálogo do Set 1</h2>
         <p className="mute" style={{ margin: 0 }}>
-          Todos os personagens de cada franquia, com o que a fonte deles informa. Marque quem você quer no Set 1 do modo
-          estilo TFT: fica salvo neste navegador. Exportar baixa um set1.json com os marcados e as informações de cada um;
-          Importar soma as marcações de um set1.json às de agora.
+          Marque quem entra no Set 1 do modo estilo TFT; fica salvo neste navegador. Exportar baixa um set1.json com os
+          marcados e o que a fonte informa de cada um, e Importar soma as marcações de um set1.json às de agora.
         </p>
       </div>
       <div className="cat-acts">
@@ -200,6 +199,9 @@ function Franquia({ k }: { k: string }) {
   const vis = filtradas.slice(0, cat.quantosMostrar());
   const comInfo = catOk ? linhas.filter(l => l.info && Object.keys(l.info).length).length : 0;
   const nome = label(k);
+  // no celular os seletores dos campos ficam recolhidos atrás de um botão (no computador o botão nem aparece)
+  const [abertos, setAbertos] = useState(false);
+  const ativos = campos.filter(x => f.campos[x.id]).length;
 
   return (
     <div className="panel stack cat-body" data-fr={k} style={style(k)}>
@@ -220,11 +222,16 @@ function Franquia({ k }: { k: string }) {
           : <p id="catLista" className="mute">Carregando a lista de {nome}…</p>
       ) : (
         <>
-          <div className="cat-filters">
+          <div className={'cat-filters' + (abertos ? '' : ' fechado')}>
             <label className="cat-field cat-q">
               <span>Buscar</span>
               <input id="catBusca" type="search" placeholder="Nome ou informação" value={f.q} onChange={e => cat.mudarFiltros(k, { q: e.target.value })} />
             </label>
+            {campos.length > 0 && (
+              <button type="button" id="catCamposBtn" className="btn mini cat-campos-btn" aria-expanded={abertos} onClick={() => setAbertos(!abertos)}>
+                {abertos ? 'Esconder os filtros por campo' : `Filtros por campo (${campos.length})`}{ativos ? ` · ${plural(ativos, 'ativo', 'ativos')}` : ''}
+              </button>
+            )}
             {campos.map((x, i) => <CampoFiltro key={x.id} k={k} campo={x} valor={f.campos[x.id] ?? ''} ops={ops[i]!} />)}
           </div>
           <div className="cat-tools">

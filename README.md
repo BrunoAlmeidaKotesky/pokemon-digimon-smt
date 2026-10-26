@@ -86,6 +86,9 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
   novos e confira os avisos.
 - `node sujimon.mjs recortar`: recorta os screenshots do Sujidex de `sujimon/_orig/` pra `public/sujimon/`. Instruções
   no começo do arquivo.
+- `node catalogo.mjs [chaves]`: gera `public/catalogo/<chave>.json` com o que a fonte informa de cada personagem (um
+  coletor por franquia em `catalogo/`). A aba **Catálogo** lista cada franquia com essas informações, filtros e marcações
+  do Set 1 do modo estilo TFT (salvas em `pdx-set1`), e exporta/importa um `set1.json`.
 
 ## Publicação
 
