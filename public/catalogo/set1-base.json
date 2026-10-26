@@ -1,0 +1,2279 @@
+{
+ "versao": 1,
+ "geradoEm": "2026-10-26",
+ "classes": [
+  {
+   "id": "demoniacos",
+   "nome": "Demoníacos"
+  },
+  {
+   "id": "criaturinha-bizarra",
+   "nome": "Criaturinha Bizarra"
+  },
+  {
+   "id": "fadinhas",
+   "nome": "Fadinhas"
+  },
+  {
+   "id": "safada",
+   "nome": "Safada"
+  },
+  {
+   "id": "atirador",
+   "nome": "Atirador"
+  },
+  {
+   "id": "anjo",
+   "nome": "Anjo"
+  },
+  {
+   "id": "robo",
+   "nome": "Robô"
+  },
+  {
+   "id": "dragao",
+   "nome": "Dragão"
+  },
+  {
+   "id": "temporais",
+   "nome": "Temporais"
+  },
+  {
+   "id": "unicos",
+   "nome": "Únicos"
+  }
+ ],
+ "selecao": {
+  "pokemon": [
+   "Bulbasaur",
+   "Ivysaur",
+   "Venusaur",
+   "Charmander",
+   "Charmeleon",
+   "Charizard",
+   "Squirtle",
+   "Wartortle",
+   "Blastoise",
+   "Ekans",
+   "Arbok",
+   "Pikachu",
+   "Raichu",
+   "Poliwag",
+   "Poliwhirl",
+   "Poliwrath",
+   "Abra",
+   "Kadabra",
+   "Alakazam",
+   "Machop",
+   "Machoke",
+   "Machamp",
+   "Shellder",
+   "Cloyster",
+   "Dratini",
+   "Dragonair",
+   "Dragonite",
+   "Mewtwo",
+   "Mew",
+   "Chikorita",
+   "Bayleef",
+   "Meganium",
+   "Cyndaquil",
+   "Quilava",
+   "Typhlosion",
+   "Totodile",
+   "Croconaw",
+   "Feraligatr",
+   "Raikou",
+   "Entei",
+   "Suicune",
+   "Lugia",
+   "Ho Oh",
+   "Celebi",
+   "Treecko",
+   "Grovyle",
+   "Sceptile",
+   "Torchic",
+   "Combusken",
+   "Blaziken",
+   "Mudkip",
+   "Marshtomp",
+   "Swampert",
+   "Ralts",
+   "Kirlia",
+   "Gardevoir",
+   "Whismur",
+   "Loudred",
+   "Exploud",
+   "Aron",
+   "Lairon",
+   "Aggron",
+   "Carvanha",
+   "Sharpedo",
+   "Zangoose",
+   "Castform",
+   "Shuppet",
+   "Banette",
+   "Duskull",
+   "Dusclops",
+   "Regirock",
+   "Regice",
+   "Registeel",
+   "Kyogre",
+   "Groudon",
+   "Rayquaza",
+   "Jirachi",
+   "Deoxys",
+   "Turtwig",
+   "Grotle",
+   "Torterra",
+   "Chimchar",
+   "Monferno",
+   "Infernape",
+   "Piplup",
+   "Prinplup",
+   "Empoleon",
+   "Shinx",
+   "Luxio",
+   "Luxray",
+   "Drifloon",
+   "Drifblim",
+   "Buneary",
+   "Lopunny",
+   "Chatot",
+   "Gible",
+   "Gabite",
+   "Garchomp",
+   "Croagunk",
+   "Toxicroak",
+   "Gallade",
+   "Dialga",
+   "Palkia",
+   "Regigigas",
+   "Giratina",
+   "Cresselia",
+   "Darkrai",
+   "Snivy",
+   "Servine",
+   "Serperior",
+   "Tepig",
+   "Pignite",
+   "Emboar",
+   "Oshawott",
+   "Dewott",
+   "Samurott",
+   "Roggenrola",
+   "Boldore",
+   "Gigalith",
+   "Timburr",
+   "Gurdurr",
+   "Conkeldurr",
+   "Sandile",
+   "Krokorok",
+   "Krookodile",
+   "Solosis",
+   "Duosion",
+   "Reuniclus",
+   "Vanillite",
+   "Vanillish",
+   "Vanilluxe",
+   "Tynamo",
+   "Eelektrik",
+   "Eelektross",
+   "Deino",
+   "Zweilous",
+   "Hydreigon",
+   "Larvesta",
+   "Volcarona",
+   "Reshiram",
+   "Zekrom",
+   "Kyurem",
+   "Genesect",
+   "Chespin",
+   "Quilladin",
+   "Chesnaught",
+   "Fennekin",
+   "Braixen",
+   "Delphox",
+   "Froakie",
+   "Frogadier",
+   "Greninja",
+   "Scatterbug",
+   "Spewpa",
+   "Vivillon",
+   "Honedge",
+   "Doublade",
+   "Aegislash",
+   "Sylveon",
+   "Noibat",
+   "Noivern",
+   "Xerneas",
+   "Yveltal",
+   "Zygarde",
+   "Rowlet",
+   "Dartrix",
+   "Decidueye",
+   "Litten",
+   "Torracat",
+   "Incineroar",
+   "Popplio",
+   "Brionne",
+   "Primarina",
+   "Grubbin",
+   "Charjabug",
+   "Vikavolt",
+   "Salandit",
+   "Salazzle",
+   "Bounsweet",
+   "Steenee",
+   "Tsareena",
+   "Cosmog",
+   "Cosmoem",
+   "Solgaleo",
+   "Lunala",
+   "Magearna",
+   "Rookidee",
+   "Corvisquire",
+   "Corviknight",
+   "Hatenna",
+   "Hattrem",
+   "Hatterene"
+  ],
+  "digimon": [
+   "Agumon",
+   "Angemon",
+   "Elecmon",
+   "Gabumon",
+   "Vademon",
+   "Greymon",
+   "Kabuterimon",
+   "Andromon",
+   "Angewomon",
+   "Etemon",
+   "Palmon",
+   "Tailmon",
+   "Tentomon",
+   "Tyumon",
+   "Patamon",
+   "Candmon",
+   "Clear Agumon",
+   "Clockmon",
+   "Demon",
+   "Lilimon",
+   "Metal Garurumon",
+   "Metal Greymon",
+   "War Greymon",
+   "Were Garurumon",
+   "Wizarmon",
+   "Pico Devimon",
+   "Pumpmon",
+   "Revolmon",
+   "Rosemon",
+   "Mermaimon",
+   "Shakkoumon",
+   "Lucemon",
+   "Lilithmon",
+   "Lucemon(Falldown Mode)",
+   "Lucemon(Satan Mode)",
+   "Neo Devimon",
+   "Lucemon(Larva)",
+   "Garurumon",
+   "Atlur Kabuterimon (Red)",
+   "Herakle Kabuterimon",
+   "Togemon",
+   "Holy Angemon",
+   "Seraphimon",
+   "Plotmon",
+   "Ofanimon",
+   "Devimon",
+   "Leomon",
+   "Grappu Leomon",
+   "Saber Leomon",
+   "Hi Andromon",
+   "Sukamon",
+   "Metal Etemon",
+   "Bakemon",
+   "Fantomon",
+   "Necromon"
+  ],
+  "smt": [
+   "Abdiel",
+   "Abdiel -Fallen-",
+   "Adramelech",
+   "Agathion",
+   "Alice",
+   "Amanozako",
+   "Ame-no-Uzume",
+   "Angel",
+   "Anubis",
+   "Arahabaki",
+   "Baal",
+   "Baal Zebul",
+   "Baphomet",
+   "Barong",
+   "Beelzebub",
+   "Belial",
+   "Belphegor",
+   "Black Frost",
+   "Black Ooze",
+   "Bugs",
+   "Cait Sith",
+   "Camael",
+   "Chernobog",
+   "Cironnup",
+   "Cleopatra",
+   "Cu Sith",
+   "Cybele",
+   "Daemon",
+   "Demeter",
+   "Dominion",
+   "Flauros",
+   "Fortuna",
+   "Futsunushi",
+   "Gurr",
+   "Hecatoncheires",
+   "Helel",
+   "Hell Biker",
+   "High Pixie",
+   "Hua Po",
+   "Hydra",
+   "Idun",
+   "Incubus",
+   "Ishtar",
+   "Isis",
+   "Jack Frost",
+   "Jack-o'-Lantern",
+   "King Frost",
+   "Koropokguru",
+   "Lamia",
+   "Loup-garou",
+   "Lucifer",
+   "Mandrake",
+   "Mara",
+   "Maria",
+   "Melchizedek",
+   "Mermaid",
+   "Metatron",
+   "Moloch",
+   "Mothman",
+   "Nuwa",
+   "Nuwa -Snake-",
+   "Odin",
+   "Pixie",
+   "Sandalphon",
+   "Satan",
+   "Seiten Taisei",
+   "Succubus",
+   "Thor",
+   "Trumpeter",
+   "Ukobach",
+   "Yamata-no-Orochi",
+   "Yoshitsune",
+   "Zeus"
+  ],
+  "persona": [
+   "Arsène",
+   "Athena",
+   "Athena Picaro",
+   "Captain Kidd",
+   "Carmen",
+   "Célestine",
+   "Cendrillon",
+   "Diego",
+   "Ella",
+   "Hecate",
+   "Himiko",
+   "Izanagi",
+   "Izanagi-no-Okami",
+   "Izanagi-no-Okami Picaro",
+   "Kamui",
+   "Kamui-Moshiri",
+   "Kanzeon",
+   "Kintoki-Douji",
+   "Kouzeon",
+   "Mercurius",
+   "Messiah",
+   "Orpheus",
+   "Orpheus F",
+   "Orpheus Telos",
+   "Palladion",
+   "Raoul",
+   "Satanael",
+   "Sukuna-Hikona - P4",
+   "Thanatos",
+   "Thanatos Picaro",
+   "William",
+   "Yamato Sumeragi",
+   "Yamato-Takeru",
+   "Zorro",
+   "Seiten Taisei - P5",
+   "Vanadis",
+   "Orpheus Picaro"
+  ],
+  "jojo": [
+   "Boy II Man",
+   "Pearl Jam",
+   "Ball Breaker",
+   "Civil War",
+   "Dirty Deeds Done Dirt Cheap",
+   "Hey Ya!",
+   "Scary Monsters",
+   "The World (Steel Ball Run)",
+   "Tubular Bells",
+   "Tusk",
+   "C-MOON",
+   "Chariot Requiem",
+   "Echoes",
+   "Gold Experience Requiem",
+   "Made in Heaven",
+   "Bad Company",
+   "Crazy Diamond",
+   "Harvest",
+   "Red Hot Chili Pepper",
+   "Star Platinum",
+   "Stray Cat",
+   "The Hand",
+   "Silver Chariot",
+   "The World",
+   "Holy's Stand",
+   "November Rain",
+   "Light Rod Stand",
+   "Baby Face",
+   "Gold Experience",
+   "Metallica",
+   "Sex Pistols",
+   "Talking Head",
+   "Foo Fighters (Stand)",
+   "Whitesnake",
+   "California King Bed",
+   "Soft & Wet",
+   "Wonder of U"
+  ],
+  "lol": [
+   "Aatrox",
+   "Ahri",
+   "Akali",
+   "Aurora",
+   "Blitzcrank",
+   "Braum",
+   "Caitlyn",
+   "Ekko",
+   "Fiddlesticks",
+   "Garen",
+   "Gragas",
+   "Gwen",
+   "Jinx",
+   "Kai'Sa",
+   "Kassadin",
+   "Lillia",
+   "Lulu",
+   "Malzahar",
+   "Milio",
+   "Nami",
+   "Orianna",
+   "Poppy",
+   "Seraphine",
+   "Sona",
+   "Soraka",
+   "Twitch",
+   "Vel'Koz",
+   "Volibear",
+   "Warwick",
+   "Yuumi",
+   "Zilean",
+   "Zoe"
+  ],
+  "overwatch": [
+   "Ana",
+   "Bastion",
+   "D.Mon",
+   "Doctrine",
+   "D.Va",
+   "Echo",
+   "Genji",
+   "Jetpack Cat",
+   "Juno",
+   "Kiriko",
+   "Lifeweaver",
+   "Mauga",
+   "Mei",
+   "Mercy",
+   "Orisa",
+   "Ramattra",
+   "Reinhardt",
+   "Roadhog",
+   "Shion",
+   "Tracer",
+   "Vendetta",
+   "Venture",
+   "Widowmaker",
+   "Winston"
+  ],
+  "deadlock": [
+   "Seven",
+   "Vindicta",
+   "Abrams",
+   "Wraith",
+   "McGinnis",
+   "Paradox",
+   "Ivy",
+   "Yamato",
+   "Lash",
+   "Vyper",
+   "Mina",
+   "Drifter",
+   "Venator",
+   "Paige",
+   "The Doorman",
+   "Graves",
+   "Apollo",
+   "Rem",
+   "Rat King",
+   "Violet",
+   "Baba"
+  ],
+  "sujimon": [
+   "Hammered Man",
+   "Knight of the Cask",
+   "Urbane Legend",
+   "Pro Pickpocket",
+   "Break-and-Entryman",
+   "King of Thieves",
+   "Dine-and-Dasher",
+   "Chomp-and-Charger",
+   "Noblesse Obesity",
+   "Escapist",
+   "Feral Felon",
+   "Twisted Mind",
+   "Baseball Diehard",
+   "Massacre Mascot",
+   "City Slicker",
+   "Grease Monk",
+   "Pornogra-Pharoah",
+   "Crabby Sentinel",
+   "Pier Reviewer",
+   "Captain Cruncher",
+   "Pseudotrash",
+   "Gifted Gatherer",
+   "Shaman",
+   "High Necromancer",
+   "Wild Hog",
+   "Feast 'n Flyer",
+   "Gorgin' Gourmand",
+   "Sham Man Shaman",
+   "False Prophet",
+   "Monster Monastic",
+   "Chucklehead",
+   "Warhead",
+   "Death's-head",
+   "Beach Baller",
+   "Basket Case",
+   "Stress Tester",
+   "Masked Demonling",
+   "Profaner Demon",
+   "Weeping Archdemon",
+   "Heavy Machinery",
+   "Tyrant of the Tides",
+   "Blessed Leviathan",
+   "Legendary Excavators ft. Lam-chan & Lun-chan",
+   "Sojimaru v2.1",
+   "Sojimaru Flying Beta Max"
+  ],
+  "ygo": [
+   "Dark Magician",
+   "Dark Magician Girl",
+   "Kuriboh",
+   "Celtic Guardian",
+   "Summoned Skull",
+   "Gaia The Fierce Knight",
+   "Black Luster Soldier",
+   "Big Shield Gardna",
+   "Alpha The Magnet Warrior",
+   "Beta The Magnet Warrior",
+   "Valkyrion the Magna Warrior",
+   "Buster Blader",
+   "Silent Swordsman LV3",
+   "Silent Magician LV4",
+   "Dark Magician of Chaos",
+   "Exodia the Forbidden One",
+   "Obelisk the Tormentor",
+   "Slifer the Sky Dragon",
+   "The Winged Dragon of Ra",
+   "Mystical Elf",
+   "Blue-Eyes White Dragon",
+   "Blue-Eyes Ultimate Dragon",
+   "Battle Ox",
+   "Saggi the Dark Clown",
+   "Lord of D.",
+   "Vorse Raider",
+   "XYZ-Dragon Cannon",
+   "Kaiser Glider",
+   "Blade Knight",
+   "Hitotsu-Me Giant",
+   "La Jinn the Mystical Genie of the Lamp",
+   "Blue-Eyes Toon Dragon",
+   "Red-Eyes Black Dragon",
+   "Flame Swordsman",
+   "Time Wizard",
+   "Baby Dragon",
+   "Thousand Dragon",
+   "Jinzo",
+   "Panther Warrior",
+   "Rocket Warrior",
+   "Gearfried the Iron Knight",
+   "Black Skull Dragon",
+   "Alligator's Sword",
+   "Swordsman of Landstar",
+   "Little-Winguard",
+   "Red-Eyes Black Metal Dragon",
+   "Harpie Lady",
+   "Harpie Lady Sisters",
+   "Cyber Harpie Lady",
+   "Thousand-Eyes Restrict",
+   "Relinquished",
+   "Toon Mermaid",
+   "Dark Necrofear",
+   "Man-Eater Bug",
+   "Witch of the Black Forest",
+   "Mammoth Graveyard",
+   "Great Moth",
+   "Insect Queen",
+   "Lava Golem",
+   "Sangan",
+   "Dark Ruler Ha Des",
+   "Labyrinth Wall",
+   "Wall of Illusion",
+   "Twin-Headed Behemoth",
+   "Gate Guardian",
+   "Sanga of the Thunder",
+   "Kazejin",
+   "Suijin",
+   "Doom Dozer",
+   "Dragon Master Knight"
+  ],
+  "bakugan": [
+   "Drago",
+   "Preyas",
+   "Tigrerra",
+   "Hydranoid (Generation 1)",
+   "Gorem",
+   "Skyress",
+   "Nobilious",
+   "Siege",
+   "Griffon",
+   "Fear Ripper",
+   "Saurus",
+   "Falconeer",
+   "Pyravian",
+   "Jelldon",
+   "Limulus",
+   "Serpenoid",
+   "Tayghen",
+   "Hydorous X Aurelus",
+   "Hammersaur",
+   "Hynoid",
+   "Monarus",
+   "Pegatrix X Aurelus",
+   "Wormquake",
+   "Gargonoid",
+   "Dragonoid X Darkus",
+   "El Condor",
+   "Goreene",
+   "Howlkor X Aurelus"
+  ]
+ },
+ "linhas": {
+  "pokemon": [
+   {
+    "id": "pokemon:bulbasaur",
+    "niveis": [
+     [
+      "Bulbasaur"
+     ],
+     [
+      "Ivysaur"
+     ],
+     [
+      "Venusaur"
+     ]
+    ],
+    "nome": "Bulbasaur"
+   },
+   {
+    "id": "pokemon:charmander",
+    "niveis": [
+     [
+      "Charmander"
+     ],
+     [
+      "Charmeleon"
+     ],
+     [
+      "Charizard"
+     ]
+    ],
+    "nome": "Charmander"
+   },
+   {
+    "id": "pokemon:squirtle",
+    "niveis": [
+     [
+      "Squirtle"
+     ],
+     [
+      "Wartortle"
+     ],
+     [
+      "Blastoise"
+     ]
+    ],
+    "nome": "Squirtle"
+   },
+   {
+    "id": "pokemon:ekans",
+    "niveis": [
+     [
+      "Ekans"
+     ],
+     [
+      "Arbok"
+     ]
+    ],
+    "nome": "Ekans"
+   },
+   {
+    "id": "pokemon:pikachu",
+    "niveis": [
+     [
+      "Pikachu"
+     ],
+     [
+      "Raichu"
+     ]
+    ],
+    "nome": "Pikachu"
+   },
+   {
+    "id": "pokemon:poliwag",
+    "niveis": [
+     [
+      "Poliwag"
+     ],
+     [
+      "Poliwhirl"
+     ],
+     [
+      "Poliwrath"
+     ]
+    ],
+    "nome": "Poliwag"
+   },
+   {
+    "id": "pokemon:abra",
+    "niveis": [
+     [
+      "Abra"
+     ],
+     [
+      "Kadabra"
+     ],
+     [
+      "Alakazam"
+     ]
+    ],
+    "nome": "Abra"
+   },
+   {
+    "id": "pokemon:machop",
+    "niveis": [
+     [
+      "Machop"
+     ],
+     [
+      "Machoke"
+     ],
+     [
+      "Machamp"
+     ]
+    ],
+    "nome": "Machop"
+   },
+   {
+    "id": "pokemon:shellder",
+    "niveis": [
+     [
+      "Shellder"
+     ],
+     [
+      "Cloyster"
+     ]
+    ],
+    "nome": "Shellder"
+   },
+   {
+    "id": "pokemon:dratini",
+    "niveis": [
+     [
+      "Dratini"
+     ],
+     [
+      "Dragonair"
+     ],
+     [
+      "Dragonite"
+     ]
+    ],
+    "nome": "Dratini"
+   },
+   {
+    "id": "pokemon:chikorita",
+    "niveis": [
+     [
+      "Chikorita"
+     ],
+     [
+      "Bayleef"
+     ],
+     [
+      "Meganium"
+     ]
+    ],
+    "nome": "Chikorita"
+   },
+   {
+    "id": "pokemon:cyndaquil",
+    "niveis": [
+     [
+      "Cyndaquil"
+     ],
+     [
+      "Quilava"
+     ],
+     [
+      "Typhlosion"
+     ]
+    ],
+    "nome": "Cyndaquil"
+   },
+   {
+    "id": "pokemon:totodile",
+    "niveis": [
+     [
+      "Totodile"
+     ],
+     [
+      "Croconaw"
+     ],
+     [
+      "Feraligatr"
+     ]
+    ],
+    "nome": "Totodile"
+   },
+   {
+    "id": "pokemon:treecko",
+    "niveis": [
+     [
+      "Treecko"
+     ],
+     [
+      "Grovyle"
+     ],
+     [
+      "Sceptile"
+     ]
+    ],
+    "nome": "Treecko"
+   },
+   {
+    "id": "pokemon:torchic",
+    "niveis": [
+     [
+      "Torchic"
+     ],
+     [
+      "Combusken"
+     ],
+     [
+      "Blaziken"
+     ]
+    ],
+    "nome": "Torchic"
+   },
+   {
+    "id": "pokemon:mudkip",
+    "niveis": [
+     [
+      "Mudkip"
+     ],
+     [
+      "Marshtomp"
+     ],
+     [
+      "Swampert"
+     ]
+    ],
+    "nome": "Mudkip"
+   },
+   {
+    "id": "pokemon:ralts",
+    "niveis": [
+     [
+      "Ralts"
+     ],
+     [
+      "Kirlia"
+     ],
+     [
+      "Gardevoir",
+      "Gallade"
+     ]
+    ],
+    "nome": "Ralts"
+   },
+   {
+    "id": "pokemon:whismur",
+    "niveis": [
+     [
+      "Whismur"
+     ],
+     [
+      "Loudred"
+     ],
+     [
+      "Exploud"
+     ]
+    ],
+    "nome": "Whismur"
+   },
+   {
+    "id": "pokemon:aron",
+    "niveis": [
+     [
+      "Aron"
+     ],
+     [
+      "Lairon"
+     ],
+     [
+      "Aggron"
+     ]
+    ],
+    "nome": "Aron"
+   },
+   {
+    "id": "pokemon:carvanha",
+    "niveis": [
+     [
+      "Carvanha"
+     ],
+     [
+      "Sharpedo"
+     ]
+    ],
+    "nome": "Carvanha"
+   },
+   {
+    "id": "pokemon:shuppet",
+    "niveis": [
+     [
+      "Shuppet"
+     ],
+     [
+      "Banette"
+     ]
+    ],
+    "nome": "Shuppet"
+   },
+   {
+    "id": "pokemon:duskull",
+    "niveis": [
+     [
+      "Duskull"
+     ],
+     [
+      "Dusclops"
+     ]
+    ],
+    "nome": "Duskull"
+   },
+   {
+    "id": "pokemon:turtwig",
+    "niveis": [
+     [
+      "Turtwig"
+     ],
+     [
+      "Grotle"
+     ],
+     [
+      "Torterra"
+     ]
+    ],
+    "nome": "Turtwig"
+   },
+   {
+    "id": "pokemon:chimchar",
+    "niveis": [
+     [
+      "Chimchar"
+     ],
+     [
+      "Monferno"
+     ],
+     [
+      "Infernape"
+     ]
+    ],
+    "nome": "Chimchar"
+   },
+   {
+    "id": "pokemon:piplup",
+    "niveis": [
+     [
+      "Piplup"
+     ],
+     [
+      "Prinplup"
+     ],
+     [
+      "Empoleon"
+     ]
+    ],
+    "nome": "Piplup"
+   },
+   {
+    "id": "pokemon:shinx",
+    "niveis": [
+     [
+      "Shinx"
+     ],
+     [
+      "Luxio"
+     ],
+     [
+      "Luxray"
+     ]
+    ],
+    "nome": "Shinx"
+   },
+   {
+    "id": "pokemon:drifloon",
+    "niveis": [
+     [
+      "Drifloon"
+     ],
+     [
+      "Drifblim"
+     ]
+    ],
+    "nome": "Drifloon"
+   },
+   {
+    "id": "pokemon:buneary",
+    "niveis": [
+     [
+      "Buneary"
+     ],
+     [
+      "Lopunny"
+     ]
+    ],
+    "nome": "Buneary"
+   },
+   {
+    "id": "pokemon:gible",
+    "niveis": [
+     [
+      "Gible"
+     ],
+     [
+      "Gabite"
+     ],
+     [
+      "Garchomp"
+     ]
+    ],
+    "nome": "Gible"
+   },
+   {
+    "id": "pokemon:croagunk",
+    "niveis": [
+     [
+      "Croagunk"
+     ],
+     [
+      "Toxicroak"
+     ]
+    ],
+    "nome": "Croagunk"
+   },
+   {
+    "id": "pokemon:snivy",
+    "niveis": [
+     [
+      "Snivy"
+     ],
+     [
+      "Servine"
+     ],
+     [
+      "Serperior"
+     ]
+    ],
+    "nome": "Snivy"
+   },
+   {
+    "id": "pokemon:tepig",
+    "niveis": [
+     [
+      "Tepig"
+     ],
+     [
+      "Pignite"
+     ],
+     [
+      "Emboar"
+     ]
+    ],
+    "nome": "Tepig"
+   },
+   {
+    "id": "pokemon:oshawott",
+    "niveis": [
+     [
+      "Oshawott"
+     ],
+     [
+      "Dewott"
+     ],
+     [
+      "Samurott"
+     ]
+    ],
+    "nome": "Oshawott"
+   },
+   {
+    "id": "pokemon:roggenrola",
+    "niveis": [
+     [
+      "Roggenrola"
+     ],
+     [
+      "Boldore"
+     ],
+     [
+      "Gigalith"
+     ]
+    ],
+    "nome": "Roggenrola"
+   },
+   {
+    "id": "pokemon:timburr",
+    "niveis": [
+     [
+      "Timburr"
+     ],
+     [
+      "Gurdurr"
+     ],
+     [
+      "Conkeldurr"
+     ]
+    ],
+    "nome": "Timburr"
+   },
+   {
+    "id": "pokemon:sandile",
+    "niveis": [
+     [
+      "Sandile"
+     ],
+     [
+      "Krokorok"
+     ],
+     [
+      "Krookodile"
+     ]
+    ],
+    "nome": "Sandile"
+   },
+   {
+    "id": "pokemon:solosis",
+    "niveis": [
+     [
+      "Solosis"
+     ],
+     [
+      "Duosion"
+     ],
+     [
+      "Reuniclus"
+     ]
+    ],
+    "nome": "Solosis"
+   },
+   {
+    "id": "pokemon:vanillite",
+    "niveis": [
+     [
+      "Vanillite"
+     ],
+     [
+      "Vanillish"
+     ],
+     [
+      "Vanilluxe"
+     ]
+    ],
+    "nome": "Vanillite"
+   },
+   {
+    "id": "pokemon:tynamo",
+    "niveis": [
+     [
+      "Tynamo"
+     ],
+     [
+      "Eelektrik"
+     ],
+     [
+      "Eelektross"
+     ]
+    ],
+    "nome": "Tynamo"
+   },
+   {
+    "id": "pokemon:deino",
+    "niveis": [
+     [
+      "Deino"
+     ],
+     [
+      "Zweilous"
+     ],
+     [
+      "Hydreigon"
+     ]
+    ],
+    "nome": "Deino"
+   },
+   {
+    "id": "pokemon:larvesta",
+    "niveis": [
+     [
+      "Larvesta"
+     ],
+     [
+      "Volcarona"
+     ]
+    ],
+    "nome": "Larvesta"
+   },
+   {
+    "id": "pokemon:chespin",
+    "niveis": [
+     [
+      "Chespin"
+     ],
+     [
+      "Quilladin"
+     ],
+     [
+      "Chesnaught"
+     ]
+    ],
+    "nome": "Chespin"
+   },
+   {
+    "id": "pokemon:fennekin",
+    "niveis": [
+     [
+      "Fennekin"
+     ],
+     [
+      "Braixen"
+     ],
+     [
+      "Delphox"
+     ]
+    ],
+    "nome": "Fennekin"
+   },
+   {
+    "id": "pokemon:froakie",
+    "niveis": [
+     [
+      "Froakie"
+     ],
+     [
+      "Frogadier"
+     ],
+     [
+      "Greninja"
+     ]
+    ],
+    "nome": "Froakie"
+   },
+   {
+    "id": "pokemon:scatterbug",
+    "niveis": [
+     [
+      "Scatterbug"
+     ],
+     [
+      "Spewpa"
+     ],
+     [
+      "Vivillon"
+     ]
+    ],
+    "nome": "Scatterbug"
+   },
+   {
+    "id": "pokemon:honedge",
+    "niveis": [
+     [
+      "Honedge"
+     ],
+     [
+      "Doublade"
+     ],
+     [
+      "Aegislash"
+     ]
+    ],
+    "nome": "Honedge"
+   },
+   {
+    "id": "pokemon:noibat",
+    "niveis": [
+     [
+      "Noibat"
+     ],
+     [
+      "Noivern"
+     ]
+    ],
+    "nome": "Noibat"
+   },
+   {
+    "id": "pokemon:rowlet",
+    "niveis": [
+     [
+      "Rowlet"
+     ],
+     [
+      "Dartrix"
+     ],
+     [
+      "Decidueye"
+     ]
+    ],
+    "nome": "Rowlet"
+   },
+   {
+    "id": "pokemon:litten",
+    "niveis": [
+     [
+      "Litten"
+     ],
+     [
+      "Torracat"
+     ],
+     [
+      "Incineroar"
+     ]
+    ],
+    "nome": "Litten"
+   },
+   {
+    "id": "pokemon:popplio",
+    "niveis": [
+     [
+      "Popplio"
+     ],
+     [
+      "Brionne"
+     ],
+     [
+      "Primarina"
+     ]
+    ],
+    "nome": "Popplio"
+   },
+   {
+    "id": "pokemon:grubbin",
+    "niveis": [
+     [
+      "Grubbin"
+     ],
+     [
+      "Charjabug"
+     ],
+     [
+      "Vikavolt"
+     ]
+    ],
+    "nome": "Grubbin"
+   },
+   {
+    "id": "pokemon:salandit",
+    "niveis": [
+     [
+      "Salandit"
+     ],
+     [
+      "Salazzle"
+     ]
+    ],
+    "nome": "Salandit"
+   },
+   {
+    "id": "pokemon:bounsweet",
+    "niveis": [
+     [
+      "Bounsweet"
+     ],
+     [
+      "Steenee"
+     ],
+     [
+      "Tsareena"
+     ]
+    ],
+    "nome": "Bounsweet"
+   },
+   {
+    "id": "pokemon:cosmog",
+    "niveis": [
+     [
+      "Cosmog"
+     ],
+     [
+      "Cosmoem"
+     ],
+     [
+      "Solgaleo",
+      "Lunala"
+     ]
+    ],
+    "nome": "Cosmog"
+   },
+   {
+    "id": "pokemon:rookidee",
+    "niveis": [
+     [
+      "Rookidee"
+     ],
+     [
+      "Corvisquire"
+     ],
+     [
+      "Corviknight"
+     ]
+    ],
+    "nome": "Rookidee"
+   },
+   {
+    "id": "pokemon:hatenna",
+    "niveis": [
+     [
+      "Hatenna"
+     ],
+     [
+      "Hattrem"
+     ],
+     [
+      "Hatterene"
+     ]
+    ],
+    "nome": "Hatenna"
+   }
+  ],
+  "digimon": [
+   {
+    "id": "digimon:agumon",
+    "nome": "Agumon",
+    "niveis": [
+     [
+      "Agumon"
+     ],
+     [
+      "Greymon"
+     ],
+     [
+      "Metal Greymon"
+     ],
+     [
+      "War Greymon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:gabumon",
+    "nome": "Gabumon",
+    "niveis": [
+     [
+      "Gabumon"
+     ],
+     [
+      "Garurumon"
+     ],
+     [
+      "Were Garurumon"
+     ],
+     [
+      "Metal Garurumon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:tentomon",
+    "nome": "Tentomon",
+    "niveis": [
+     [
+      "Tentomon"
+     ],
+     [
+      "Kabuterimon"
+     ],
+     [
+      "Atlur Kabuterimon (Red)"
+     ],
+     [
+      "Herakle Kabuterimon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:palmon",
+    "nome": "Palmon",
+    "niveis": [
+     [
+      "Palmon"
+     ],
+     [
+      "Togemon"
+     ],
+     [
+      "Lilimon"
+     ],
+     [
+      "Rosemon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:patamon",
+    "nome": "Patamon",
+    "niveis": [
+     [
+      "Patamon"
+     ],
+     [
+      "Angemon"
+     ],
+     [
+      "Holy Angemon"
+     ],
+     [
+      "Seraphimon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:plotmon",
+    "nome": "Tailmon",
+    "niveis": [
+     [
+      "Plotmon"
+     ],
+     [
+      "Tailmon"
+     ],
+     [
+      "Angewomon"
+     ],
+     [
+      "Ofanimon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:lucemon",
+    "nome": "Lucemon",
+    "niveis": [
+     [
+      "Lucemon"
+     ],
+     [
+      "Lucemon(Falldown Mode)"
+     ],
+     [
+      "Lucemon(Satan Mode)"
+     ],
+     [
+      "Lucemon(Larva)"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:pico-devimon",
+    "nome": "Pico Devimon",
+    "niveis": [
+     [
+      "Pico Devimon"
+     ],
+     [
+      "Devimon"
+     ],
+     [
+      "Neo Devimon"
+     ],
+     [
+      "Demon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:elecmon",
+    "nome": "Elecmon",
+    "niveis": [
+     [
+      "Elecmon"
+     ],
+     [
+      "Leomon"
+     ],
+     [
+      "Grappu Leomon"
+     ],
+     [
+      "Saber Leomon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:clear-agumon",
+    "nome": "Clear Agumon",
+    "niveis": [
+     [
+      "Clear Agumon"
+     ],
+     [
+      "Clockmon"
+     ],
+     [
+      "Andromon"
+     ],
+     [
+      "Hi Andromon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:candmon",
+    "nome": "Candmon",
+    "niveis": [
+     [
+      "Candmon"
+     ],
+     [
+      "Bakemon"
+     ],
+     [
+      "Fantomon"
+     ],
+     [
+      "Necromon"
+     ]
+    ]
+   },
+   {
+    "id": "digimon:tyumon",
+    "nome": "Tyumon",
+    "niveis": [
+     [
+      "Tyumon"
+     ],
+     [
+      "Sukamon"
+     ],
+     [
+      "Etemon"
+     ],
+     [
+      "Metal Etemon"
+     ]
+    ]
+   }
+  ],
+  "persona": [
+   {
+    "id": "persona:ars-ne",
+    "nome": "Joker (P5)",
+    "niveis": [
+     [
+      "Arsène"
+     ],
+     [
+      "Satanael"
+     ],
+     [
+      "Raoul"
+     ]
+    ]
+   },
+   {
+    "id": "persona:captain-kidd",
+    "nome": "Ryuji (P5)",
+    "niveis": [
+     [
+      "Captain Kidd"
+     ],
+     [
+      "Seiten Taisei - P5"
+     ],
+     [
+      "William"
+     ]
+    ]
+   },
+   {
+    "id": "persona:carmen",
+    "nome": "Ann (P5)",
+    "niveis": [
+     [
+      "Carmen"
+     ],
+     [
+      "Hecate"
+     ],
+     [
+      "Célestine"
+     ]
+    ]
+   },
+   {
+    "id": "persona:zorro",
+    "nome": "Morgana (P5)",
+    "niveis": [
+     [
+      "Zorro"
+     ],
+     [
+      "Mercurius"
+     ],
+     [
+      "Diego"
+     ]
+    ]
+   },
+   {
+    "id": "persona:cendrillon",
+    "nome": "Sumire (P5)",
+    "niveis": [
+     [
+      "Cendrillon"
+     ],
+     [
+      "Vanadis"
+     ],
+     [
+      "Ella"
+     ]
+    ]
+   },
+   {
+    "id": "persona:izanagi",
+    "nome": "Yu (P4)",
+    "niveis": [
+     [
+      "Izanagi"
+     ],
+     [
+      "Izanagi-no-Okami"
+     ],
+     [
+      "Izanagi-no-Okami Picaro"
+     ]
+    ]
+   },
+   {
+    "id": "persona:himiko",
+    "nome": "Rise (P4)",
+    "niveis": [
+     [
+      "Himiko"
+     ],
+     [
+      "Kanzeon"
+     ],
+     [
+      "Kouzeon"
+     ]
+    ]
+   },
+   {
+    "id": "persona:kintoki-douji",
+    "nome": "Teddie (P4)",
+    "niveis": [
+     [
+      "Kintoki-Douji"
+     ],
+     [
+      "Kamui"
+     ],
+     [
+      "Kamui-Moshiri"
+     ]
+    ]
+   },
+   {
+    "id": "persona:sukuna-hikona-p4",
+    "nome": "Naoto (P4)",
+    "niveis": [
+     [
+      "Sukuna-Hikona - P4"
+     ],
+     [
+      "Yamato-Takeru"
+     ],
+     [
+      "Yamato Sumeragi"
+     ]
+    ]
+   },
+   {
+    "id": "persona:orpheus",
+    "nome": "Protagonista (P3)",
+    "niveis": [
+     [
+      "Orpheus",
+      "Orpheus F"
+     ],
+     [
+      "Messiah"
+     ],
+     [
+      "Orpheus Telos"
+     ]
+    ]
+   },
+   {
+    "id": "persona:palladion",
+    "nome": "Aigis (P3)",
+    "niveis": [
+     [
+      "Palladion"
+     ],
+     [
+      "Athena"
+     ],
+     [
+      "Athena Picaro"
+     ]
+    ]
+   },
+   {
+    "id": "persona:orpheus-picaro",
+    "nome": "Thanatos",
+    "niveis": [
+     [
+      "Orpheus Picaro"
+     ],
+     [
+      "Thanatos"
+     ],
+     [
+      "Thanatos Picaro"
+     ]
+    ]
+   }
+  ],
+  "sujimon": [
+   {
+    "id": "sujimon:hammered-man",
+    "nome": "Hammered Man",
+    "niveis": [
+     [
+      "Hammered Man"
+     ],
+     [
+      "Knight of the Cask"
+     ],
+     [
+      "Urbane Legend"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:pro-pickpocket",
+    "nome": "Pro Pickpocket",
+    "niveis": [
+     [
+      "Pro Pickpocket"
+     ],
+     [
+      "Break-and-Entryman"
+     ],
+     [
+      "King of Thieves"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:dine-and-dasher",
+    "nome": "Dine-and-Dasher",
+    "niveis": [
+     [
+      "Dine-and-Dasher"
+     ],
+     [
+      "Chomp-and-Charger"
+     ],
+     [
+      "Noblesse Obesity"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:escapist",
+    "nome": "Escapist",
+    "niveis": [
+     [
+      "Escapist"
+     ],
+     [
+      "Feral Felon"
+     ],
+     [
+      "Twisted Mind"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:city-slicker",
+    "nome": "City Slicker",
+    "niveis": [
+     [
+      "City Slicker"
+     ],
+     [
+      "Grease Monk"
+     ],
+     [
+      "Pornogra-Pharoah"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:crabby-sentinel",
+    "nome": "Crabby Sentinel",
+    "niveis": [
+     [
+      "Crabby Sentinel"
+     ],
+     [
+      "Pier Reviewer"
+     ],
+     [
+      "Captain Cruncher"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:wild-hog",
+    "nome": "Wild Hog",
+    "niveis": [
+     [
+      "Wild Hog"
+     ],
+     [
+      "Feast 'n Flyer"
+     ],
+     [
+      "Gorgin' Gourmand"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:sham-man-shaman",
+    "nome": "Sham Man Shaman",
+    "niveis": [
+     [
+      "Sham Man Shaman"
+     ],
+     [
+      "False Prophet"
+     ],
+     [
+      "Monster Monastic"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:chucklehead",
+    "nome": "Chucklehead",
+    "niveis": [
+     [
+      "Chucklehead"
+     ],
+     [
+      "Warhead"
+     ],
+     [
+      "Death's-head"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:beach-baller",
+    "nome": "Beach Baller",
+    "niveis": [
+     [
+      "Beach Baller"
+     ],
+     [
+      "Basket Case"
+     ],
+     [
+      "Stress Tester"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:masked-demonling",
+    "nome": "Masked Demonling",
+    "niveis": [
+     [
+      "Masked Demonling"
+     ],
+     [
+      "Profaner Demon"
+     ],
+     [
+      "Weeping Archdemon"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:baseball-diehard",
+    "nome": "Baseball Diehard",
+    "niveis": [
+     [
+      "Baseball Diehard"
+     ],
+     [
+      "Massacre Mascot"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:pseudotrash",
+    "nome": "Pseudotrash",
+    "niveis": [
+     [
+      "Pseudotrash"
+     ],
+     [
+      "Gifted Gatherer"
+     ]
+    ]
+   },
+   {
+    "id": "sujimon:shaman",
+    "nome": "Shaman",
+    "niveis": [
+     [
+      "Shaman"
+     ],
+     [
+      "High Necromancer"
+     ]
+    ]
+   }
+  ]
+ },
+ "itens": {
+  "componentes": [
+   {
+    "id": "pyrus",
+    "nome": "Pyrus",
+    "bonus": "Mais dano de ataque"
+   },
+   {
+    "id": "aquos",
+    "nome": "Aquos",
+    "bonus": "Mais mana"
+   },
+   {
+    "id": "haos",
+    "nome": "Haos",
+    "bonus": "Cura ou escudo"
+   },
+   {
+    "id": "darkus",
+    "nome": "Darkus",
+    "bonus": "Roubo de vida"
+   },
+   {
+    "id": "subterra",
+    "nome": "Subterra",
+    "bonus": "Mais armadura"
+   },
+   {
+    "id": "ventus",
+    "nome": "Ventus",
+    "bonus": "Mais velocidade de ataque"
+   },
+   {
+    "id": "aurelus",
+    "nome": "Aurelus",
+    "bonus": "Mais vida"
+   }
+  ],
+  "receitas": [
+   {
+    "a": "pyrus",
+    "b": "pyrus",
+    "bakugan": "Drago"
+   },
+   {
+    "a": "aquos",
+    "b": "aquos",
+    "bakugan": "Preyas"
+   },
+   {
+    "a": "haos",
+    "b": "haos",
+    "bakugan": "Tigrerra"
+   },
+   {
+    "a": "darkus",
+    "b": "darkus",
+    "bakugan": "Hydranoid (Generation 1)"
+   },
+   {
+    "a": "subterra",
+    "b": "subterra",
+    "bakugan": "Gorem"
+   },
+   {
+    "a": "ventus",
+    "b": "ventus",
+    "bakugan": "Skyress"
+   },
+   {
+    "a": "aurelus",
+    "b": "aurelus",
+    "bakugan": "Nobilious"
+   },
+   {
+    "a": "pyrus",
+    "b": "aquos",
+    "bakugan": "Siege"
+   },
+   {
+    "a": "pyrus",
+    "b": "haos",
+    "bakugan": "Griffon"
+   },
+   {
+    "a": "pyrus",
+    "b": "darkus",
+    "bakugan": "Fear Ripper"
+   },
+   {
+    "a": "pyrus",
+    "b": "subterra",
+    "bakugan": "Saurus"
+   },
+   {
+    "a": "pyrus",
+    "b": "ventus",
+    "bakugan": "Falconeer"
+   },
+   {
+    "a": "pyrus",
+    "b": "aurelus",
+    "bakugan": "Pyravian"
+   },
+   {
+    "a": "aquos",
+    "b": "haos",
+    "bakugan": "Jelldon"
+   },
+   {
+    "a": "aquos",
+    "b": "darkus",
+    "bakugan": "Limulus"
+   },
+   {
+    "a": "aquos",
+    "b": "subterra",
+    "bakugan": "Serpenoid"
+   },
+   {
+    "a": "aquos",
+    "b": "ventus",
+    "bakugan": "Tayghen"
+   },
+   {
+    "a": "aquos",
+    "b": "aurelus",
+    "bakugan": "Hydorous X Aurelus"
+   },
+   {
+    "a": "haos",
+    "b": "darkus",
+    "bakugan": "Hammersaur"
+   },
+   {
+    "a": "haos",
+    "b": "subterra",
+    "bakugan": "Hynoid"
+   },
+   {
+    "a": "haos",
+    "b": "ventus",
+    "bakugan": "Monarus"
+   },
+   {
+    "a": "haos",
+    "b": "aurelus",
+    "bakugan": "Pegatrix X Aurelus"
+   },
+   {
+    "a": "darkus",
+    "b": "subterra",
+    "bakugan": "Wormquake"
+   },
+   {
+    "a": "darkus",
+    "b": "ventus",
+    "bakugan": "Gargonoid"
+   },
+   {
+    "a": "darkus",
+    "b": "aurelus",
+    "bakugan": "Dragonoid X Darkus"
+   },
+   {
+    "a": "subterra",
+    "b": "ventus",
+    "bakugan": "El Condor"
+   },
+   {
+    "a": "subterra",
+    "b": "aurelus",
+    "bakugan": "Goreene"
+   },
+   {
+    "a": "ventus",
+    "b": "aurelus",
+    "bakugan": "Howlkor X Aurelus"
+   }
+  ]
+ }
+}

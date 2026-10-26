@@ -44,6 +44,8 @@ export interface MockOpts {
   semRenders?: boolean;
   /** atraso (ms) antes de responder cada franquia */
   atraso?: Partial<Record<Franquia, number>>;
+  /** catalogo/set1-base.json responde 404 (sem o grupo base, as classes e as linhas da base) */
+  semBase?: boolean;
 }
 export interface Chamadas { [k: string]: number }
 
@@ -75,6 +77,12 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
       if (u.pathname.endsWith('/ff/list.json')) {
         count('ff'); await espera('ff');
         return falha.has('ff') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('ff-list.json'));
+      }
+      // Base do planejamento do Set 1 (classes, grupo base, linhas): a fixture catalogo-set1-base.json, ou 404
+      if (u.pathname.endsWith('/catalogo/set1-base.json')) {
+        count('set1-base');
+        const nome = 'catalogo-set1-base.json';
+        return !opts.semBase && fs.existsSync(new URL(nome, FIX)) ? json(route, fixture(nome)) : route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' });
       }
       // Catálogo do Set 1: public/catalogo/<chave>.json vira a fixture catalogo-<chave>.json; sem fixture, 404
       const cat = u.pathname.match(/\/catalogo\/([\w-]+)\.json$/);

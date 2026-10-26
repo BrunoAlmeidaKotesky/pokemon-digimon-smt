@@ -69,7 +69,8 @@ node node_modules/@playwright/test/cli.js test
 - **Vitest** (`*.test.ts` ao lado do código): fontes, lógica pura e sala online. O `fetch` é falso
   (`src/sources/test-utils.ts`) e responde com `tests/fixtures/`.
 - **Playwright** (`tests/*.spec.ts`): o site buildado, sem internet. `tests/helpers.ts` intercepta todas as APIs com as
-  fixtures e troca toda imagem externa por um PNG cinza. Roda em celular (390px) e computador (1280px).
+  fixtures e troca toda imagem externa por um PNG cinza. Roda só no tamanho de computador (1280px): é um site pessoal,
+  o layout de celular não tem teste próprio.
 - **Fumaça no site publicado** (`tests/real/`): APIs de verdade, roda à parte com
   `node node_modules/@playwright/test/cli.js test -c playwright.real.config.ts`.
 
@@ -89,6 +90,9 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
 - `node catalogo.mjs [chaves]`: gera `public/catalogo/<chave>.json` com o que a fonte informa de cada personagem (um
   coletor por franquia em `catalogo/`). A aba **Catálogo** lista cada franquia com essas informações, filtros e marcações
   do Set 1 do modo estilo TFT (salvas em `pdx-set1`), e exporta/importa um `set1.json`.
+- Planejamento do Set 1 na mesma aba: grupo "Set 1 (base)", classes e linhas propostas vêm de
+  `public/catalogo/set1-base.json`; classes, habilidade e linha evolutiva de cada personagem (vista Linhas, subaba
+  Classes) ficam em `pdx-set1-plano` e vão no `set1.json` (Importar restaura).
 
 ## Publicação
 

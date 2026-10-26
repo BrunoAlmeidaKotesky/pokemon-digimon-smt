@@ -20,7 +20,6 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   projects: [
-    { name: 'celular', use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 } },
     { name: 'computador', use: { viewport: { width: 1280, height: 800 } } },
   ],
   webServer: {

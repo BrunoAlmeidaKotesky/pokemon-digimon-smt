@@ -171,6 +171,20 @@ Todos os nomes de `smt.json` e `persona.json` batem. Zero pedidos: dá pra acres
 
 Só nome e imagem: precisariam de traços escolhidos por quem cria, ou ficar fora do modo.
 
+## Arquivos do Set 1
+
+- `set1-escolhas-v1.json`: primeira exportação do Catálogo feita pelo usuário (26/10/2026), 500 personagens:
+  Pokémon 192, SMT 73, Sujimon 45, Digimon 39, Persona 37, JoJo 37, LoL 32, Overwatch 24, Deadlock 21. Fora:
+  Bakugan; Final Fantasy vira os monstros das rodadas (PvE) e chefes; Yu-Gi-Oh! ainda a escolher.
+- `sugestoes-catalogo.json`: arquivo pra **Importar** no Catálogo (formato `{chave: [nomes]}`): 20 Digimon que
+  completam as linhas de 4 formas (Rookie → Mega), 2 personas que completam linhas (Seiten Taisei - P5 e Vanadis;
+  Persona evolui por estágio do mesmo dono, como Pokémon) e 70 monstros clássicos do anime de Yu-Gi-Oh! (todos na lista do
+  site; Gamma The Magnet Warrior, Judge Man, Gilford the Lightning, Harpie's Pet Dragon e Perfectly Ultimate Great
+  Moth ficaram de fora porque não estão entre os 3000 mais vistos). As linhas propostas estão no doc compartilhado.
+- Nomes dos Digimon seguem a Digi-API (japonês): Holy Angemon = MagnaAngemon, Ofanimon = Ophanimon,
+  Atlur Kabuterimon (Red) = MegaKabuterimon, Plotmon = Salamon, Tailmon = Gatomon, Pico Devimon = DemiDevimon,
+  Candmon = Candlemon, Tyumon = Chuumon, Demon = Daemon.
+
 ## Rascunhos e dados brutos
 
 Os scripts e downloads do levantamento ficaram no scratchpad da sessão de 25/10/2026 (`.../scratchpad/tft/` e

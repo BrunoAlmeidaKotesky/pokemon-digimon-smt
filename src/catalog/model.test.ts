@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
-  SEM, compararNatural, distintos, filtrar, filtravel, filtrosVazios, juntarMarcas, lerImportacao, limparMarcas, montarExportacao,
-  montarLinhas, normalizar, opcoes, parseCatalogo, resumoInfo, temFiltro, valores, type Filtros,
+  F_CLASSE, SEM, TODOS, compararNatural, distintos, filtrar, filtravel, filtrosVazios, juntarMarcas, lerImportacao, limparMarcas,
+  montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesLinha, parseCatalogo, resumoInfo, temFiltro, valores,
+  type Contexto, type Filtros,
 } from './model';
 
 const ARQUIVO = {
@@ -22,7 +23,8 @@ const cat = () => parseCatalogo(structuredClone(ARQUIVO))!;
 const LISTA = ['Bulbasaur', 'Charmander', 'Charizard', 'Pidgey', 'Pikachu', 'Agumon'].map(name => ({ name, img: name === 'Agumon' ? '' : `img/${name}.png` }));
 const f = (p: Partial<Filtros> = {}): Filtros => ({ ...filtrosVazios(), ...p });
 const nomes = (l: { nome: string }[]) => l.map(x => x.nome);
-const NADA = new Set<string>();
+const NADA = TODOS;
+const grupo = (...n: string[]): Contexto => ({ grupo: new Set(n) });
 
 describe('parseCatalogo', () => {
   it('lê o arquivo do catalogo.mjs', () => {
@@ -129,17 +131,68 @@ describe('filtrar', () => {
   it('SEM pega quem não tem o campo', () => {
     expect(nomes(filtrar(linhas, f({ campos: { peso: SEM } }), NADA))).toEqual(['Charizard', 'Pidgey', 'Pikachu', 'Agumon']);
   });
-  it('só marcados', () => {
-    expect(nomes(filtrar(linhas, f({ soMarcados: true }), new Set(['Pidgey', 'Bulbasaur', 'Fora'])))).toEqual(['Bulbasaur', 'Pidgey']);
-    expect(nomes(filtrar(linhas, f({ soMarcados: true, q: 'pid' }), new Set(['Pidgey', 'Bulbasaur'])))).toEqual(['Pidgey']);
+  it('grupo (base ou marcados): só quem está nele; sem grupo, todos', () => {
+    expect(nomes(filtrar(linhas, f(), grupo('Pidgey', 'Bulbasaur', 'Fora')))).toEqual(['Bulbasaur', 'Pidgey']);
+    expect(nomes(filtrar(linhas, f({ q: 'pid' }), grupo('Pidgey', 'Bulbasaur')))).toEqual(['Pidgey']);
+    expect(filtrar(linhas, f(), grupo())).toEqual([]);
   });
-  it('temFiltro', () => {
+  it('temFiltro (o grupo não conta: não é limpo pelo "Limpar filtros")', () => {
     expect(temFiltro(f())).toBe(false);
     expect(temFiltro(f({ q: '  ' }))).toBe(false);
     expect(temFiltro(f({ campos: { tipo: '' } }))).toBe(false);
     expect(temFiltro(f({ q: 'a' }))).toBe(true);
     expect(temFiltro(f({ campos: { tipo: 'Fire' } }))).toBe(true);
-    expect(temFiltro(f({ soMarcados: true }))).toBe(true);
+    expect(temFiltro(f({ classe: SEM }))).toBe(true);
+    expect(temFiltro(f({ linha: 'pendente' }))).toBe(true);
+  });
+});
+
+describe('filtros do planejamento (classe, linha, busca na habilidade)', () => {
+  const linhas = montarLinhas(LISTA, cat());
+  const CLS: Record<string, string[]> = { Charizard: ['dragao', 'fogo'], Charmander: ['fogo'], Pidgey: [] };
+  const LIN: Record<string, { confirmada?: boolean }> = { Bulbasaur: { confirmada: true }, Charmander: {}, Charizard: {} };
+  const ctx: Contexto = {
+    grupo: null,
+    classes: n => CLS[n],
+    linha: n => LIN[n],
+    texto: n => (n === 'Pikachu' ? 'choque do trovao\neletrico' : ''),
+  };
+  it('classe: quem tem a classe; SEM = sem classe nenhuma', () => {
+    expect(nomes(filtrar(linhas, f({ classe: 'fogo' }), ctx))).toEqual(['Charmander', 'Charizard']);
+    expect(nomes(filtrar(linhas, f({ classe: 'dragao' }), ctx))).toEqual(['Charizard']);
+    expect(nomes(filtrar(linhas, f({ classe: SEM }), ctx))).toEqual(['Bulbasaur', 'Pidgey', 'Pikachu', 'Agumon']);
+  });
+  it('linha: com, sem, confirmada, não confirmada', () => {
+    expect(nomes(filtrar(linhas, f({ linha: 'com' }), ctx))).toEqual(['Bulbasaur', 'Charmander', 'Charizard']);
+    expect(nomes(filtrar(linhas, f({ linha: 'sem' }), ctx))).toEqual(['Pidgey', 'Pikachu', 'Agumon']);
+    expect(nomes(filtrar(linhas, f({ linha: 'confirmada' }), ctx))).toEqual(['Bulbasaur']);
+    expect(nomes(filtrar(linhas, f({ linha: 'pendente' }), ctx))).toEqual(['Charmander', 'Charizard']);
+  });
+  it('a busca olha também a habilidade (cada termo em qualquer lugar)', () => {
+    expect(nomes(filtrar(linhas, f({ q: 'trovão' }), ctx))).toEqual(['Pikachu']);
+    expect(nomes(filtrar(linhas, f({ q: 'pika eletrico' }), ctx))).toEqual(['Pikachu']);
+  });
+  it('tudo junto: grupo E classe E linha', () => {
+    expect(nomes(filtrar(linhas, f({ classe: 'fogo', linha: 'pendente' }), { ...ctx, grupo: new Set(['Charizard', 'Pidgey']) }))).toEqual(['Charizard']);
+  });
+  it('opcoesClasse: toda classe, mesmo sem ninguém, e "sem classe"; acompanha os outros filtros', () => {
+    expect(opcoesClasse(linhas, ['dragao', 'fogo', 'anjo'], f(), ctx)).toEqual([
+      { valor: 'dragao', n: 1 }, { valor: 'fogo', n: 2 }, { valor: 'anjo', n: 0 }, { valor: SEM, n: 4 },
+    ]);
+    expect(opcoesClasse(linhas, ['dragao', 'fogo'], f({ classe: 'dragao', q: 'char' }), ctx)).toEqual([
+      { valor: 'dragao', n: 1 }, { valor: 'fogo', n: 2 }, { valor: SEM, n: 0 },
+    ]);
+    // classe que não existe mais na lista não conta (o personagem fica "sem classe")
+    expect(opcoesClasse(linhas, ['dragao'], f({ q: 'charmander' }), ctx)).toEqual([{ valor: 'dragao', n: 0 }, { valor: SEM, n: 1 }]);
+    expect(filtrar(linhas, f({ classe: 'fogo' }), ctx, F_CLASSE)).toHaveLength(6);
+  });
+  it('opcoesLinha conta cada situação', () => {
+    expect(opcoesLinha(linhas, f(), ctx)).toEqual([
+      { valor: 'com', n: 3 }, { valor: 'sem', n: 3 }, { valor: 'confirmada', n: 1 }, { valor: 'pendente', n: 2 },
+    ]);
+    expect(opcoesLinha(linhas, f({ classe: 'fogo', linha: 'sem' }), ctx)).toEqual([
+      { valor: 'com', n: 2 }, { valor: 'sem', n: 0 }, { valor: 'confirmada', n: 0 }, { valor: 'pendente', n: 2 },
+    ]);
   });
 });
 
@@ -155,7 +208,7 @@ describe('opcoes', () => {
   });
   it('acompanha os outros filtros, mas não o do próprio campo', () => {
     expect(opcoes(linhas, 'tipo', f({ q: 'char', campos: { tipo: 'Fire' } }), NADA)).toEqual([{ valor: 'Fire', n: 2 }, { valor: 'Flying', n: 1 }]);
-    expect(opcoes(linhas, 'tipo', f({ soMarcados: true }), new Set(['Pidgey']))).toEqual([{ valor: 'Flying', n: 1 }, { valor: 'Normal', n: 1 }]);
+    expect(opcoes(linhas, 'tipo', f(), grupo('Pidgey'))).toEqual([{ valor: 'Flying', n: 1 }, { valor: 'Normal', n: 1 }]);
   });
   it('o valor escolhido continua na lista mesmo sem ninguém', () => {
     expect(opcoes(linhas, 'tipo', f({ q: 'pidgey', campos: { tipo: 'Grass' } }), NADA)).toEqual([
@@ -231,14 +284,47 @@ describe('exportar e importar', () => {
     const e = montarExportacao({ marcas: { k: ['X'] }, ordem: ['k'], listas: { k: [{ name: 'X', img: 'x.png' }] }, catalogos: { k: c2 }, rotulo: () => 'K', geradoEm: '' });
     expect(e.franquias.k!.personagens).toEqual([{ nome: 'X', img: 'x.png', a: 'ok' }]);
   });
+  it('com o plano: classes, habilidade e linha em cada personagem, o grupo e o plano inteiro no arquivo', () => {
+    const plano = { versao: 1 as const, unidades: {}, linhas: {} };
+    const e = montarExportacao({
+      marcas: { pokemon: ['Charizard', 'Pidgey'] }, ordem: ['pokemon'], listas: { pokemon: LISTA }, catalogos: { pokemon: c }, rotulo: () => 'Pokémon',
+      geradoEm: 'x',
+      plano: {
+        grupo: 'base',
+        plano,
+        extras: (k, nome) => (nome === 'Charizard' ? { classes: [k], habilidade: 'Lança-chamas', linha: { nome: 'Charmander', nivel: 3, de: 3, confirmada: false } } : {}),
+      },
+    });
+    expect(e.grupo).toBe('base');
+    expect(e.plano).toBe(plano);
+    expect(e.franquias.pokemon!.personagens).toEqual([
+      { nome: 'Charizard', img: 'img/Charizard.png', tipo: ['Fire', 'Flying'], geracao: 'I', classes: ['pokemon'], habilidade: 'Lança-chamas', linha: { nome: 'Charmander', nivel: 3, de: 3, confirmada: false } },
+      { nome: 'Pidgey', img: 'img/Pidgey.png', tipo: ['Normal', 'Flying'], geracao: 'I' },
+    ]);
+    // sem plano, o arquivo fica como antes (sem grupo nem plano)
+    expect(Object.keys(exp())).toEqual(['geradoEm', 'franquias']);
+  });
+  it('campo da fonte chamado "classes", "habilidade" ou "linha" não entra (são do planejamento)', () => {
+    const c2 = parseCatalogo({ campos: ['classes', 'habilidade', 'linha', 'a'].map(id => ({ id, rotulo: id })), itens: { X: { classes: 'fonte', habilidade: 'fonte', linha: 'fonte', a: 'ok' } } })!;
+    const e = montarExportacao({ marcas: { k: ['X'] }, ordem: ['k'], listas: { k: [{ name: 'X', img: '' }] }, catalogos: { k: c2 }, rotulo: () => 'K', geradoEm: '' });
+    expect(e.franquias.k!.personagens).toEqual([{ nome: 'X', img: '', a: 'ok' }]);
+  });
+  it('lerImportacao traz o plano do arquivo; o arquivo do grupo base não marca ninguém', () => {
+    const plano = { classes: [{ id: 'dragao', nome: 'Dragão' }], unidades: { pokemon: { Charizard: { classes: ['dragao'], habilidade: 'Voa' } } }, linhas: {} };
+    const r = lerImportacao({ geradoEm: '', grupo: 'marcados', franquias: { pokemon: { personagens: [{ nome: 'Charizard' }] } }, plano }, ['pokemon']);
+    expect(r!.marcas).toEqual({ pokemon: ['Charizard'] });
+    expect(r!.plano).toEqual({ versao: 1, ...plano });
+    const b = lerImportacao({ geradoEm: '', grupo: 'base', franquias: { pokemon: { personagens: [{ nome: 'Charizard' }] }, zzz: { personagens: [] } }, plano }, ['pokemon']);
+    expect(b).toEqual({ marcas: {}, ignoradas: ['zzz'], plano: { versao: 1, ...plano } });
+  });
   it('lerImportacao lê o próprio set1.json exportado (ida e volta)', () => {
     const r = lerImportacao(JSON.parse(JSON.stringify(exp())), ['pokemon', 'lol']);
-    expect(r).toEqual({ marcas: { pokemon: ['Bulbasaur', 'Charizard', 'Pikachu', 'Agumon', 'Fora da lista'], lol: ['Ahri'] }, ignoradas: [] });
+    expect(r).toEqual({ marcas: { pokemon: ['Bulbasaur', 'Charizard', 'Pikachu', 'Agumon', 'Fora da lista'], lol: ['Ahri'] }, ignoradas: [], plano: null });
   });
   it('lerImportacao aceita as marcações cruas e ignora franquia desconhecida', () => {
-    expect(lerImportacao({ pokemon: ['A', 'A', 'B'], c_meu: ['x'], lol: [] }, ['pokemon', 'lol'])).toEqual({ marcas: { pokemon: ['A', 'B'] }, ignoradas: ['c_meu'] });
+    expect(lerImportacao({ pokemon: ['A', 'A', 'B'], c_meu: ['x'], lol: [] }, ['pokemon', 'lol'])).toEqual({ marcas: { pokemon: ['A', 'B'] }, ignoradas: ['c_meu'], plano: null });
     expect(lerImportacao({ franquias: { pokemon: { personagens: ['A', { nome: 'B' }, { x: 1 }, 7] }, zzz: { personagens: [{ nome: 'Q' }] } } }, ['pokemon']))
-      .toEqual({ marcas: { pokemon: ['A', 'B'] }, ignoradas: ['zzz'] });
+      .toEqual({ marcas: { pokemon: ['A', 'B'] }, ignoradas: ['zzz'], plano: null });
   });
   it('lerImportacao: formato estranho -> null', () => {
     expect(lerImportacao(null, ['pokemon'])).toBeNull();

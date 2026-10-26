@@ -7,7 +7,6 @@ export default defineConfig({
   reporter: [['list']],
   use: { baseURL: process.env.REAL_URL ?? 'https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/', browserName: 'chromium' },
   projects: [
-    { name: 'celular', use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
     { name: 'computador', use: { viewport: { width: 1280, height: 800 } } },
   ],
 });

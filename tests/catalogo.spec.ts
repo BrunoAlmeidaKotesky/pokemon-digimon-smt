@@ -1,5 +1,7 @@
 // Aba Catálogo: lista de cada franquia com as informações da fonte (public/catalogo/<chave>.json, aqui as fixtures
 // catalogo-<chave>.json), marcações do Set 1 salvas em pdx-set1, filtros, exportar, copiar e importar.
+// Tudo aqui roda sem o set1-base.json (semBase): o grupo padrão vira "Todos" e a lista mostra a franquia inteira. O
+// planejamento (grupo base, classes, habilidades, linhas) está em catalogo-plano.spec.ts.
 import { test, expect, type Page } from '@playwright/test';
 import fs from 'node:fs';
 import { prepare, abrir, aba, lerStorage, type MockOpts } from './helpers';
@@ -25,7 +27,7 @@ async function campo(page: Page, id: string, valor: string) {
 
 /** Abre o site com tudo carregado e vai pra aba Catálogo. */
 async function inicio(page: Page, opts: MockOpts & { storage?: Record<string, unknown> } = {}) {
-  const calls = await prepare(page, opts);
+  const calls = await prepare(page, { semBase: true, ...opts });
   await abrir(page);
   await aba(page, 'Catálogo');
   await expect(page.locator('section#catalog')).toBeVisible();
@@ -34,7 +36,7 @@ async function inicio(page: Page, opts: MockOpts & { storage?: Record<string, un
 
 test.describe('catálogo do Set 1', () => {
   test('aba depois de Personalizar; uma subaba por franquia; Pokémon com as informações da fonte e a imagem', async ({ page }) => {
-    const calls = await prepare(page);
+    const calls = await prepare(page, { semBase: true });
     await abrir(page);
     // o catálogo só é baixado quando a aba abre
     expect(calls.catalogo).toBeUndefined();
@@ -69,7 +71,7 @@ test.describe('catálogo do Set 1', () => {
     // um seletor por campo, com os valores e quantos têm cada um
     expect(await opcoes(page, 'tipo')).toEqual(['Todos', 'Electric (1)', 'Fire (5)', 'Flying (2)', 'Grass (3)', 'Normal (1)', 'Poison (3)', 'Water (1)', 'Sem informação (29)']);
     expect(await opcoes(page, 'geracao')).toEqual(['Todos', 'I (11)', 'Sem informação (29)']);
-    await expect(page.locator('.cat-filters select')).toHaveCount(3);
+    await expect(page.locator('.cat-filters select[data-campo]')).toHaveCount(3);
     expect(calls.catalogo).toBe(1);
   });
 
@@ -148,7 +150,7 @@ test.describe('catálogo do Set 1', () => {
     await expect(page.locator('#catFonte')).toHaveText('Informações: Data Dragon (Riot) (gerado em 24/10/2026) · 8 de 40 com informação');
     await expect(page.locator('#catCount')).toHaveText('40 de 40');
     await expect(linha(page, 'Ahri').locator('.campos')).toHaveText('Classe: Mage, Assassin · Região: Ionia · Alcance: À distância');
-    await expect(page.locator('.cat-filters select')).toHaveCount(3);
+    await expect(page.locator('.cat-filters select[data-campo]')).toHaveCount(3);
     await campo(page, 'classe', 'Marksman');
     expect(await nomes(page)).toEqual(['Ashe', 'Caitlyn', 'Jinx']);
     await campo(page, 'regiao', 'Zaun');
@@ -160,7 +162,7 @@ test.describe('catálogo do Set 1', () => {
     await expect(page.locator('#catCount')).toHaveText('49 de 49');
     await expect(page.locator('#catList .cat-row')).toHaveCount(49);
     await expect(page.locator('#catList .campos')).toHaveCount(0);
-    await expect(page.locator('.cat-filters select')).toHaveCount(0);
+    await expect(page.locator('.cat-filters select[data-campo]')).toHaveCount(0);
     await expect(page.locator('#catBusca')).toBeVisible();
 
     // Digimon sem imagem na lista: a do catálogo (Vademon) ou a do detalhe da API (Betamon)
@@ -198,7 +200,7 @@ test.describe('catálogo do Set 1', () => {
     await expect(page.locator('#catList .cat-row')).toHaveCount(60);
   });
 
-  test('"Só marcados", marcar e desmarcar os filtrados, e limpar marcações com dois cliques', async ({ page }) => {
+  test('grupo "Marcados", marcar e desmarcar os filtrados, e limpar marcações com dois cliques', async ({ page }) => {
     await inicio(page);
     await expect(page.locator('#catDesmarcar')).toBeDisabled();
     await expect(page.locator('#catLimpar')).toBeDisabled();
@@ -212,7 +214,7 @@ test.describe('catálogo do Set 1', () => {
 
     await page.locator('#catLimparFiltros').click();
     await caixa(page, 'Pikachu').check();
-    await page.locator('#catSoMarcados').check();
+    await page.locator('#catGrupo button[data-n="marcados"]').click();
     await expect(page.locator('#catCount')).toHaveText('6 de 40');
     expect(await nomes(page)).toEqual([...FOGO.slice(0, 3), 'Pikachu', ...FOGO.slice(3)]);
     // desmarcado some da lista de marcados (click: uncheck() reclamaria da caixa que sumiu)
@@ -334,7 +336,7 @@ test.describe('catálogo do Set 1', () => {
   });
 
   test('lista ainda carregando ou que falhou', async ({ page }) => {
-    await prepare(page, { atraso: { lol: 2500 }, falha: ['ygo'] });
+    await prepare(page, { atraso: { lol: 2500 }, falha: ['ygo'], semBase: true });
     await page.goto('./');
     await aba(page, 'Catálogo');
     await chip(page, 'lol').click();

@@ -56,6 +56,10 @@ não precisa de CORS, só a lista (JSON).
   formas delas, por nome exato e jogo; criatura com nome (Chaos, Ultros, Zeromus) fica. Pra revisar ao atualizar,
   cruze com `/api/characters?pageSize=5000` (mesmo jogo, nome exato ou primeiro nome: "Freya" x "Freya Crescent") e
   procure monstros com nome de personagem conhecido. Palavra solta não serve ("Shadow", "Judge", "Snow" são inimigos).
+- **Linha evolutiva de Digimon:** a Digi-API lista dezenas de evoluções possíveis por Digimon, sem dizer qual é a
+  principal. A Wikimon diz: `https://wikimon.net/api.php?action=parse&page=<Nome>&prop=wikitext&format=json&redirects=1`,
+  seção `==Evolves To==`; as evoluções em negrito (`'''[[Nome]]'''`) são as principais. Siga o negrito forma a forma
+  (Candmon → Bakemon → Fantomon → Necromon) e confira que cada nome existe no site (nomes da Digi-API, em japonês).
 - **User-Agent no Node:** caractere fora do ASCII (ex.: "ê") fez a MoogleAPI responder 400. Use só ASCII.
 - **Privacidade:** nunca ponha e-mail ou dado pessoal do usuário em User-Agent, URL ou corpo de pedido a serviço de
   terceiros, mesmo quando a API pede identificação.
