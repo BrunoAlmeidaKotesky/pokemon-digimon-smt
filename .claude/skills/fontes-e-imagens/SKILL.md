@@ -51,6 +51,11 @@ não precisa de CORS, só a lista (JSON).
   e no Liquipedia).
 - **MoogleAPI (Final Fantasy):** sem CORS; `pageSize` aceita até 5000; 60 pedidos por minuto sem chave; as imagens
   são ilustrações geradas com IA pelo projeto (não são arte oficial). Monstros sem `imageUrl` ficam de fora.
+  `/api/monsters` inclui gente da história que se enfrenta (heróis como Freya e Zidane, vilões como Kefka, NPCs como
+  os Turks) e às vezes erra a categoria. O usuário quer só monstros: `PESSOAS` no `ff.mjs` tira essas pessoas e as
+  formas delas, por nome exato e jogo; criatura com nome (Chaos, Ultros, Zeromus) fica. Pra revisar ao atualizar,
+  cruze com `/api/characters?pageSize=5000` (mesmo jogo, nome exato ou primeiro nome: "Freya" x "Freya Crescent") e
+  procure monstros com nome de personagem conhecido. Palavra solta não serve ("Shadow", "Judge", "Snow" são inimigos).
 - **User-Agent no Node:** caractere fora do ASCII (ex.: "ê") fez a MoogleAPI responder 400. Use só ASCII.
 - **Privacidade:** nunca ponha e-mail ou dado pessoal do usuário em User-Agent, URL ou corpo de pedido a serviço de
   terceiros, mesmo quando a API pede identificação.

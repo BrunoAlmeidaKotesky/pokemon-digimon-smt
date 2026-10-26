@@ -23,7 +23,7 @@ Cada franquia é um arquivo em `src/sources/`, na ordem de `SOURCES` (`src/sourc
 | `lol` | LoL | Data Dragon da Riot (versão mais nova) | splash centralizada do CommunityDragon, recortada pra preencher a carta |
 | `overwatch` | Overwatch | OverFast API | render da Overwatch Wiki; sem ele, o retrato da API |
 | `deadlock` | Deadlock | Deadlock API (`api.deadlock-api.com`), só heróis jogáveis | render da Deadlock Wiki (500px); sem ele, a carta da API |
-| `ff` | Final Fantasy | `public/ff/list.json`, gerado pelo `ff.mjs` a partir da MoogleAPI | `images.moogleapi.com` |
+| `ff` | Final Fantasy | `public/ff/list.json`, gerado pelo `ff.mjs` a partir da MoogleAPI (só monstros, sem personagens) | `images.moogleapi.com` |
 | `sujimon` | Sujimon | `public/sujimon/list.json` (gerado pelo `sujimon.mjs`); sem ele, a Yakuza Wiki | `public/sujimon/*.webp` ou a wiki |
 
 - O nome de cada personagem precisa ser único dentro da franquia: o saco de sorteio e o placar guardam pelo nome. Por
@@ -80,7 +80,9 @@ das wikis a partir delas; servem tanto pro Vitest quanto pro Playwright.
 Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho demais na hora; um script gera a lista:
 
 - `node ff.mjs`: baixa o bestiário da MoogleAPI pra `public/ff/list.json` (só monstros com imagem). A API não manda
-  cabeçalho CORS, então o site lê a lista salva. Rode de novo pra pegar monstros novos.
+  cabeçalho CORS, então o site lê a lista salva. Ela também lista como monstro os personagens que se enfrenta (Freya,
+  Kefka, Sephiroth...): a lista `PESSOAS` do script tira esses, por nome exato e jogo. Rode de novo pra pegar monstros
+  novos e confira os avisos.
 - `node sujimon.mjs recortar`: recorta os screenshots do Sujidex de `sujimon/_orig/` pra `public/sujimon/`. Instruções
   no começo do arquivo.
 

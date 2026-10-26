@@ -48,6 +48,18 @@ describe('public/ff/list.json (gerado pelo ff.mjs)', async () => {
     }
   });
 
+  it('personagem não vale: heróis, vilões e NPCs ficam de fora, com as formas; criatura com nome fica', () => {
+    const tem = (name: string, game: string) => list.some(([n, g]) => n === name && g === game);
+    for (const [n, g] of [['Freya', 'FF IX'], ['Zidane', 'FF IX'], ['Kuja', 'FF IX'], ['Kefka', 'FF VI'], ['Terra', 'FF VI'],
+      ['Sephiroth', 'FF VII'], ['Safer∙Sephiroth', 'FF VII'], ['Reno', 'FF VII'], ['Seymour Natus', 'FF X'], ['Gladiolus', 'FF XV']]) {
+      expect(tem(n!, g!), `${n} (${g})`).toBe(false);
+    }
+    for (const [n, g] of [['Chaos', 'FF I'], ['Ultros', 'FF VI'], ['Zeromus', 'FF IV'], ['Jenova∙BIRTH', 'FF VII'], ['Bomb', 'FF VII'],
+      ['Shadow', 'FF I'], ['Judge', 'FF XII']]) {
+      expect(tem(n!, g!), `${n} (${g})`).toBe(true);
+    }
+  });
+
   it('nome + jogo nunca repete (o site usa o nome como chave)', () => {
     expect(new Set(list.map(([n, g]) => `${n} (${g})`)).size).toBe(list.length);
   });
