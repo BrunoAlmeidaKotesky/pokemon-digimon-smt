@@ -52,6 +52,22 @@ describe('digimon', () => {
     expect(list.map(x => x.name)).toEqual([...p0.content, ...p1.content].map(d => d.name));
   });
 
+  it('a API conta uma página a menos quando a última não está cheia: vale a conta pelo total', async () => {
+    const p0 = fixture<Page>('digimon-page0.json'), p1 = fixture<Page>('digimon-page1.json');
+    // como a API real: 1488 em páginas de 100 diz totalPages 14, mas a página 14 existe com os 88 últimos
+    const last = { ...p1, content: p1.content.slice(0, 5) };
+    const f = stubFetch(u => {
+      const page = u.searchParams.get('page');
+      if (page === '0') return json({ ...p0, pageable: { totalPages: 2, totalElements: 45 } });
+      if (page === '1') return json(p1);
+      if (page === '2') return json(last);
+      return undefined;
+    });
+    const list = await digimon.load();
+    expect(urls(f)).toEqual([0, 1, 2].map(i => `${BASE}?pageSize=100&page=${i}`));
+    expect(list).toHaveLength(45);
+  });
+
   it('página sem content vira []', async () => {
     const p0 = fixture<Page>('digimon-page0.json');
     stubFetch(u => u.searchParams.get('page') === '1' ? json({}) : json(p0));

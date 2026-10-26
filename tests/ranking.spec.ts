@@ -27,7 +27,7 @@ async function abrirRanking(page: Page, opts: Parameters<typeof prepare>[1] = {}
 test.describe('Ranking', () => {
   test('configuração: aba depois do Campeonato, top 10 de Pokémon e Digimon, tamanho de 3 a 20', async ({ page }) => {
     await abrirRanking(page);
-    expect(await page.locator('nav button').allTextContents()).toEqual(['Duelo', 'Trio', 'Quarteto', 'Campeonato', 'Ranking', 'Placar', 'Personalizar', 'Online']);
+    expect(await page.locator('nav button').allTextContents()).toEqual(['Duelo', 'Trio', 'Quarteto', 'Campeonato', 'Ranking', 'Placar', 'Personalizar', 'Catálogo', 'Online']);
     await expect(page.locator('nav button.on')).toHaveText('Ranking');
     await expect(page.locator('#rankSize')).toHaveValue('10');
     await expect(page.locator('#rank_pokemon')).toBeChecked();

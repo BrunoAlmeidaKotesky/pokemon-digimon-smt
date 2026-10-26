@@ -7,8 +7,9 @@ import { Rank } from './modes/rank/Rank';
 import { Stats } from './modes/stats/Stats';
 import { Online } from './modes/online/Online';
 import { Customs } from './modes/customs/Customs';
+import { Catalog } from './modes/catalog/Catalog';
 
-const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['rank', 'Ranking'], ['stats', 'Placar'], ['customs', 'Personalizar'], ['online', 'Online']];
+const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['rank', 'Ranking'], ['stats', 'Placar'], ['customs', 'Personalizar'], ['catalog', 'Catálogo'], ['online', 'Online']];
 
 export function App() {
   const app = useApp();
@@ -31,6 +32,7 @@ export function App() {
       <Rank />
       <Stats />
       <Customs />
+      <Catalog />
       <Online />
     </div>
   );

@@ -76,6 +76,13 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
         count('ff'); await espera('ff');
         return falha.has('ff') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('ff-list.json'));
       }
+      // Catálogo do Set 1: public/catalogo/<chave>.json vira a fixture catalogo-<chave>.json; sem fixture, 404
+      const cat = u.pathname.match(/\/catalogo\/([\w-]+)\.json$/);
+      if (cat) {
+        count('catalogo');
+        const nome = `catalogo-${cat[1]}.json`;
+        return fs.existsSync(new URL(nome, FIX)) ? json(route, fixture(nome)) : route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' });
+      }
       return route.continue();
     }
     if (u.hostname === 'pokeapi.co') {
@@ -185,7 +192,7 @@ export async function abrir(page: Page, path = './') {
   await expect(page.locator('#status')).not.toContainText('carregando', { timeout: 15000 });
 }
 
-export async function aba(page: Page, nome: 'Duelo' | 'Trio' | 'Quarteto' | 'Campeonato' | 'Ranking' | 'Placar' | 'Personalizar' | 'Online') {
+export async function aba(page: Page, nome: 'Duelo' | 'Trio' | 'Quarteto' | 'Campeonato' | 'Ranking' | 'Placar' | 'Personalizar' | 'Catálogo' | 'Online') {
   await page.locator('nav button', { hasText: nome }).click();
 }
 

@@ -21,6 +21,15 @@ testes e publicação: [README.md](README.md).
 - `fontes-e-imagens`: como avaliar uma fonte (CORS, cobertura de imagem), comparar artes e as pegadinhas de cada API.
 - `publicar`: checagens, `react` → CI → `main` → deploy → teste de fumaça no site no ar.
 
+## Modo estilo TFT (em planejamento)
+
+- Decisões, discutidas com o usuário: doc compartilhado "Modo estilo TFT: planejamento"
+  (https://claude.ai/artifact/YZWHvKZY5tyVaJSqgz8Hx7). Já decidido: set fixo e curado, origem = franquia, classes
+  gerais que cruzam franquias.
+- Detalhes técnicos de cada fonte (campos, cobertura, custo): [docs/tft/notas-tecnicas.md](docs/tft/notas-tecnicas.md).
+- `node catalogo.mjs` gera `public/catalogo/<chave>.json` (informações de cada personagem) pra aba Catálogo, onde o
+  usuário marca e exporta os personagens do Set 1.
+
 ## Ambiente desta máquina
 
 - `npm`/`npx` globais podem estar quebrados: chame as ferramentas por `node node_modules/<pacote>/...` (comandos no

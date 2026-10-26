@@ -1,0 +1,82 @@
+{
+ "chave": "lol",
+ "fonte": "Data Dragon (Riot)",
+ "geradoEm": "2026-10-24",
+ "campos": [
+  {
+   "id": "classe",
+   "rotulo": "Classe"
+  },
+  {
+   "id": "regiao",
+   "rotulo": "Região"
+  },
+  {
+   "id": "alcance",
+   "rotulo": "Alcance"
+  }
+ ],
+ "itens": {
+  "Aatrox": {
+   "classe": [
+    "Fighter",
+    "Tank"
+   ],
+   "regiao": "Runeterra",
+   "alcance": "Corpo a corpo"
+  },
+  "Ahri": {
+   "classe": [
+    "Mage",
+    "Assassin"
+   ],
+   "regiao": "Ionia",
+   "alcance": "À distância"
+  },
+  "Akali": {
+   "classe": [
+    "Assassin"
+   ],
+   "regiao": "Ionia",
+   "alcance": "Corpo a corpo"
+  },
+  "Ashe": {
+   "classe": [
+    "Marksman",
+    "Support"
+   ],
+   "regiao": "Freljord",
+   "alcance": "À distância"
+  },
+  "Braum": {
+   "classe": [
+    "Support",
+    "Tank"
+   ],
+   "regiao": "Freljord",
+   "alcance": "Corpo a corpo"
+  },
+  "Caitlyn": {
+   "classe": [
+    "Marksman"
+   ],
+   "regiao": "Piltover",
+   "alcance": "À distância"
+  },
+  "Ekko": {
+   "classe": [
+    "Assassin",
+    "Mage"
+   ],
+   "regiao": "Zaun",
+   "alcance": "Corpo a corpo"
+  },
+  "Jinx": {
+   "classe": [
+    "Marksman"
+   ],
+   "regiao": "Zaun",
+   "alcance": "À distância"
+  }
+ }
+}

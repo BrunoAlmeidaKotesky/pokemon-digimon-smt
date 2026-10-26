@@ -1,0 +1,40 @@
+{
+ "chave": "digimon",
+ "fonte": "Digi-API",
+ "geradoEm": "2026-10-25",
+ "campos": [
+  {
+   "id": "nivel",
+   "rotulo": "Nível"
+  },
+  {
+   "id": "atributo",
+   "rotulo": "Atributo"
+  }
+ ],
+ "itens": {
+  "Agumon": {
+   "nivel": "Child",
+   "atributo": "Vaccine"
+  },
+  "Betamon": {
+   "nivel": "Child",
+   "atributo": "Vaccine"
+  },
+  "Gabumon": {
+   "nivel": "Child",
+   "atributo": "Data"
+  },
+  "Greymon": {
+   "nivel": "Adult",
+   "atributo": "Vaccine"
+  },
+  "Vademon": {
+   "nivel": "Perfect",
+   "atributo": "Virus"
+  }
+ },
+ "imagens": {
+  "Vademon": "https://catalogo.test/vademon.png"
+ }
+}

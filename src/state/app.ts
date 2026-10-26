@@ -13,7 +13,7 @@ import { buildEntrants, startCup, cupSync, cupPair, cupChoose } from '../core/cu
 import { planSpin, spinDelay, spinIndex, PICK_MS, PICK_MS_CALM } from '../core/spin';
 import { RANK_SIZE, rankSize, startRank, rankTop, rankPlace as placeInRank, rankDone, type Rank } from '../core/rank';
 
-export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'rank' | 'stats' | 'customs' | 'online';
+export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'rank' | 'stats' | 'customs' | 'catalog' | 'online';
 export type Row = 'duel' | 'trio' | 'quartet' | 'cup';
 /** Trio e Quarteto: rei do morro com 3 ou 4 lados. */
 export type Multi = 'trio' | 'quartet';
