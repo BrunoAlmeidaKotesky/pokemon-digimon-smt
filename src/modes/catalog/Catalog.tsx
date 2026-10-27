@@ -447,10 +447,11 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
   const nomeNorm = normalizar(l.nome);
   const minhas = pl.classesDaUnidade(unidade, classes);
   const hab = useTextoSalvo(unidade?.habilidade ?? '', t => cat.mudarHabilidade(k, l.nome, t));
-  // Pokémon (decidido em 27/10): a 1ª e a 2ª forma da linha não têm habilidade nem ult; na forma final, a ult é virar
-  // a próxima forma (a Mega, por exemplo), que só melhora os atributos
+  // Pokémon (decidido em 27/10): a habilidade especial é a ult. A 1ª e a 2ª forma da linha não têm; na forma final, ou a
+  // ult é virar a próxima forma (a Mega, por exemplo), que só melhora os atributos e dispensa o texto, ou é o texto
   const pokemon = k === 'pokemon';
   const semNada = pokemon && !!pos && pos.nivel < pos.linha.niveis.length - 1;
+  const semTexto = semNada || (pokemon && !!ult);
   return (
     <li className={'cat-row' + (on ? ' on' : '')} data-nome={l.nome}>
       <label>
@@ -517,8 +518,10 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
             }) : <span className="mute">Nenhuma classe ainda: crie na subaba Classes.</span>}
           </div>
         )}
-        {semNada && pos ? <p className="cat-sem-hab">Sem habilidade especial nem ult ({pos.nivel + 1}ª forma)</p> : (
-          <textarea className="cat-hab" rows={1} placeholder="Habilidade…" aria-label={`Habilidade de ${l.nome}`}
+        {semNada && pos && <p className="cat-sem-hab">Sem ult ({pos.nivel + 1}ª forma)</p>}
+        {!semTexto && (
+          <textarea className="cat-hab" rows={1} placeholder={pokemon ? 'Ult (habilidade especial)…' : 'Habilidade…'}
+            aria-label={`${pokemon ? 'Ult (habilidade especial)' : 'Habilidade'} de ${l.nome}`}
             value={hab.txt} onChange={e => hab.mudar(e.target.value)} onBlur={hab.flush} />
         )}
       </div>
