@@ -54,8 +54,6 @@
    "Squirtle",
    "Wartortle",
    "Blastoise",
-   "Ekans",
-   "Arbok",
    "Pikachu",
    "Raichu",
    "Poliwag",
@@ -67,8 +65,6 @@
    "Machop",
    "Machoke",
    "Machamp",
-   "Shellder",
-   "Cloyster",
    "Dratini",
    "Dragonair",
    "Dragonite",
@@ -86,9 +82,6 @@
    "Raikou",
    "Entei",
    "Suicune",
-   "Lugia",
-   "Ho Oh",
-   "Celebi",
    "Treecko",
    "Grovyle",
    "Sceptile",
@@ -109,20 +102,11 @@
    "Aggron",
    "Carvanha",
    "Sharpedo",
-   "Zangoose",
-   "Castform",
    "Shuppet",
    "Banette",
-   "Duskull",
-   "Dusclops",
-   "Regirock",
-   "Regice",
-   "Registeel",
    "Kyogre",
    "Groudon",
    "Rayquaza",
-   "Jirachi",
-   "Deoxys",
    "Turtwig",
    "Grotle",
    "Torterra",
@@ -135,22 +119,12 @@
    "Shinx",
    "Luxio",
    "Luxray",
-   "Drifloon",
-   "Drifblim",
    "Buneary",
    "Lopunny",
-   "Chatot",
    "Gible",
    "Gabite",
    "Garchomp",
-   "Croagunk",
-   "Toxicroak",
    "Gallade",
-   "Dialga",
-   "Palkia",
-   "Regigigas",
-   "Giratina",
-   "Cresselia",
    "Darkrai",
    "Snivy",
    "Servine",
@@ -184,10 +158,6 @@
    "Hydreigon",
    "Larvesta",
    "Volcarona",
-   "Reshiram",
-   "Zekrom",
-   "Kyurem",
-   "Genesect",
    "Chespin",
    "Quilladin",
    "Chesnaught",
@@ -203,11 +173,6 @@
    "Honedge",
    "Doublade",
    "Aegislash",
-   "Sylveon",
-   "Noibat",
-   "Noivern",
-   "Xerneas",
-   "Yveltal",
    "Zygarde",
    "Rowlet",
    "Dartrix",
@@ -221,8 +186,6 @@
    "Grubbin",
    "Charjabug",
    "Vikavolt",
-   "Salandit",
-   "Salazzle",
    "Bounsweet",
    "Steenee",
    "Tsareena",
@@ -736,18 +699,6 @@
     "nome": "Squirtle"
    },
    {
-    "id": "pokemon:ekans",
-    "niveis": [
-     [
-      "Ekans"
-     ],
-     [
-      "Arbok"
-     ]
-    ],
-    "nome": "Ekans"
-   },
-   {
     "id": "pokemon:pikachu",
     "niveis": [
      [
@@ -806,18 +757,6 @@
      ]
     ],
     "nome": "Machop"
-   },
-   {
-    "id": "pokemon:shellder",
-    "niveis": [
-     [
-      "Shellder"
-     ],
-     [
-      "Cloyster"
-     ]
-    ],
-    "nome": "Shellder"
    },
    {
     "id": "pokemon:dratini",
@@ -1001,18 +940,6 @@
     "nome": "Shuppet"
    },
    {
-    "id": "pokemon:duskull",
-    "niveis": [
-     [
-      "Duskull"
-     ],
-     [
-      "Dusclops"
-     ]
-    ],
-    "nome": "Duskull"
-   },
-   {
     "id": "pokemon:turtwig",
     "niveis": [
      [
@@ -1073,18 +1000,6 @@
     "nome": "Shinx"
    },
    {
-    "id": "pokemon:drifloon",
-    "niveis": [
-     [
-      "Drifloon"
-     ],
-     [
-      "Drifblim"
-     ]
-    ],
-    "nome": "Drifloon"
-   },
-   {
     "id": "pokemon:buneary",
     "niveis": [
      [
@@ -1113,18 +1028,6 @@
      ]
     ],
     "nome": "Gible"
-   },
-   {
-    "id": "pokemon:croagunk",
-    "niveis": [
-     [
-      "Croagunk"
-     ],
-     [
-      "Toxicroak"
-     ]
-    ],
-    "nome": "Croagunk"
    },
    {
     "id": "pokemon:snivy",
@@ -1368,18 +1271,6 @@
     "nome": "Honedge"
    },
    {
-    "id": "pokemon:noibat",
-    "niveis": [
-     [
-      "Noibat"
-     ],
-     [
-      "Noivern"
-     ]
-    ],
-    "nome": "Noibat"
-   },
-   {
     "id": "pokemon:rowlet",
     "niveis": [
      [
@@ -1438,18 +1329,6 @@
      ]
     ],
     "nome": "Grubbin"
-   },
-   {
-    "id": "pokemon:salandit",
-    "niveis": [
-     [
-      "Salandit"
-     ],
-     [
-      "Salazzle"
-     ]
-    ],
-    "nome": "Salandit"
    },
    {
     "id": "pokemon:bounsweet",
