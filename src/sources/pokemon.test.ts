@@ -27,7 +27,7 @@ describe('pokemon', () => {
     expect(POKEMON_FORMS_URL).toBe('https://pokeapi.co/api/v2/pokemon?limit=2000');
   });
 
-  it('depois das espécies vêm as Megas, Primais e formas regionais; Gigantamax, totem e afins ficam de fora', async () => {
+  it('depois das espécies vêm as Megas, Gigantamax, Primais e formas regionais; totem e afins ficam de fora', async () => {
     stubFetch();
     const list = await pokemon.load();
     expect(list.slice(40)).toEqual([
@@ -37,6 +37,7 @@ describe('pokemon', () => {
       { name: 'Paldean Tauros (Combat Breed)', img: ART + '10250.png' },
       { name: 'Galarian Darmanitan', img: ART + '10177.png' },
       { name: 'Galarian Mr Mime', img: ART + '10168.png' },
+      { name: 'Gigantamax Charizard', img: ART + '10196.png' },
     ]);
   });
 
@@ -85,8 +86,13 @@ describe('formName', () => {
     expect(formName('tauros-paldea-aqua-breed')).toBe('Paldean Tauros (Aqua Breed)');
   });
 
+  it('Gigantamax', () => {
+    expect(formName('machamp-gmax')).toBe('Gigantamax Machamp');
+    expect(formName('toxtricity-low-key-gmax')).toBe('Gigantamax Toxtricity Low Key');
+  });
+
   it('o resto das variedades fica de fora', () => {
-    for (const n of ['bulbasaur', 'charizard-gmax', 'raticate-totem-alola', 'pikachu-alola-cap', 'pikachu-rock-star', 'eevee-starter', 'zygarde-10'])
+    for (const n of ['bulbasaur', 'eternatus-eternamax', 'raticate-totem-alola', 'pikachu-alola-cap', 'pikachu-rock-star', 'eevee-starter', 'zygarde-10'])
       expect(formName(n), n).toBeNull();
   });
 });

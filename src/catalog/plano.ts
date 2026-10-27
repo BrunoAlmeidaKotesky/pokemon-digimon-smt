@@ -10,6 +10,11 @@ export interface Unidade {
   /** ids das classes */
   classes?: string[];
   habilidade?: string;
+  /**
+   * Forma em que a unidade vira na ult (nome de outro personagem da franquia, ex.: "Mega Venusaur"); não é uma
+   * unidade à parte. Ausente = a da base; '' = sem ult, mesmo que a base tenha uma.
+   */
+  ult?: string;
 }
 /** nome do personagem -> unidade */
 export type Unidades = Record<string, Unidade>;
@@ -35,6 +40,8 @@ export interface Base {
   /** chave da franquia -> nomes do grupo "Set 1 (base)" */
   selecao: Record<string, string[]>;
   linhas: Record<string, LinhaEvo[]>;
+  /** chave da franquia -> nome da unidade -> forma da ult */
+  ults: Record<string, Record<string, string>>;
 }
 
 const isObj = (x: unknown): x is Record<string, unknown> => typeof x === 'object' && x !== null && !Array.isArray(x);
@@ -107,7 +114,11 @@ export function limparUnidades(j: unknown): Record<string, Unidades> {
     const fr = dic<Unidade>();
     for (const [nome, u] of Object.entries(us)) {
       if (!isObj(u) || !nome) continue;
-      const limpa = unidadeLimpa({ classes: textos(u.classes), habilidade: typeof u.habilidade === 'string' ? u.habilidade : '' });
+      const limpa = unidadeLimpa({
+        classes: textos(u.classes),
+        habilidade: typeof u.habilidade === 'string' ? u.habilidade : '',
+        ...(typeof u.ult === 'string' ? { ult: u.ult } : {}),
+      });
       if (limpa) fr[nome] = limpa;
     }
     if (Object.keys(fr).length) r[k] = fr;
@@ -120,7 +131,9 @@ function unidadeLimpa(u: Unidade): Unidade | null {
   const out: Unidade = {};
   if (u.classes?.length) out.classes = [...new Set(u.classes)];
   if (u.habilidade?.trim()) out.habilidade = u.habilidade;
-  return out.classes || out.habilidade ? out : null;
+  // ult vazia também conta: é "sem ult" por cima da base
+  if (typeof u.ult === 'string') out.ult = u.ult.trim();
+  return out.classes || out.habilidade || out.ult !== undefined ? out : null;
 }
 
 /** Lê o set1-base.json. Não é objeto, ou não tem classes, seleção nem linhas -> null. */
@@ -140,12 +153,22 @@ export function parseBase(j: unknown): Base | null {
       if (l.length) linhas[k] = l;
     }
   }
+  const ults: Record<string, Record<string, string>> = {};
+  if (isObj(j.ults)) {
+    for (const [k, v] of Object.entries(j.ults)) {
+      if (!isObj(v)) continue;
+      const fr = dic<string>();
+      for (const [nome, ult] of Object.entries(v)) if (nome && texto(ult)) fr[nome] = texto(ult);
+      if (Object.keys(fr).length) ults[k] = fr;
+    }
+  }
   return {
     versao: typeof j.versao === 'number' ? j.versao : 1,
     geradoEm: texto(j.geradoEm),
     classes: limparClasses(j.classes),
     selecao,
     linhas,
+    ults,
   };
 }
 
@@ -166,6 +189,13 @@ const SEM_CLASSES: Classe[] = [];
 const SEM_LINHAS: LinhaEvo[] = [];
 export const classesEfetivas = (p: Plano, base: Base | null): Classe[] => p.classes ?? base?.classes ?? SEM_CLASSES;
 export const linhasEfetivas = (p: Plano, base: Base | null, k: string): LinhaEvo[] => p.linhas[k] ?? base?.linhas[k] ?? SEM_LINHAS;
+/** A forma da ult que vale: a do plano (mesmo vazia: tirada), senão a da base. '' = sem ult. */
+export const ultEfetiva = (u: Unidade | undefined, daBase: string | undefined): string => (u?.ult !== undefined ? u.ult : daBase ?? '');
+/**
+ * O que gravar como ult do personagem: igual à da base = nada (volta a seguir a base); diferente = o nome, ou ''
+ * pra tirar a ult que a base dá.
+ */
+export const ultPraGravar = (ult: string, daBase: string | undefined): string | undefined => (ult.trim() === (daBase ?? '') ? undefined : ult.trim());
 
 // ---------- linhas ----------
 /** Onde um personagem está: a linha e o nível (0 = primeiro). */
@@ -363,13 +393,15 @@ export interface LinhaExportada {
   alternativas?: string[];
 }
 /** Campos que o planejamento acrescenta a cada personagem do set1.json. */
-export interface ExtrasExportados { classes?: string[]; habilidade?: string; linha?: LinhaExportada }
+export interface ExtrasExportados { classes?: string[]; habilidade?: string; linha?: LinhaExportada; ult?: string }
 
-export function extrasDoPersonagem(nome: string, u: Unidade | undefined, classes: readonly Classe[], pos: PosLinha | undefined): ExtrasExportados {
+/** `ult`: a forma da ult que vale (ultEfetiva); '' = sem. */
+export function extrasDoPersonagem(nome: string, u: Unidade | undefined, classes: readonly Classe[], pos: PosLinha | undefined, ult = ''): ExtrasExportados {
   const r: ExtrasExportados = {};
   const cs = classesDaUnidade(u, classes);
   if (cs.length) r.classes = cs.map(c => c.nome);
   if (u?.habilidade?.trim()) r.habilidade = u.habilidade.trim();
+  if (ult) r.ult = ult;
   if (pos) {
     const alt = pos.linha.niveis[pos.nivel]!.filter(x => x !== nome);
     r.linha = { nome: pos.linha.nome, nivel: pos.nivel + 1, de: pos.linha.niveis.length, confirmada: !!pos.linha.confirmada, ...(alt.length ? { alternativas: alt } : {}) };
@@ -387,7 +419,16 @@ export function planoCompleto(p: Plano, base: Base | null, ks: readonly string[]
     const l = linhasEfetivas(p, base, k);
     if (l.length || p.linhas[k]) linhas[k] = l;
   }
-  const unidades = Object.fromEntries(Object.entries(p.unidades).filter(([k]) => ks.includes(k)));
+  // as unidades das franquias pedidas, com a ult da base escrita em quem não mexeu nela
+  const unidades: Record<string, Unidades> = {};
+  for (const k of ks) {
+    const us = p.unidades[k];
+    const daBase = base?.ults[k];
+    if (!us && !daBase) continue;
+    const fr = Object.assign(dic<Unidade>(), us);
+    for (const [nome, ult] of Object.entries(daBase ?? {})) if (fr[nome]?.ult === undefined) fr[nome] = { ...fr[nome], ult };
+    unidades[k] = fr;
+  }
   const classes = classesEfetivas(p, base).map(c => (c.descricao ? { ...c, descricao: c.descricao.trim() } : c));
   return { versao: 1, classes, unidades, linhas };
 }
@@ -397,7 +438,8 @@ const igual = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b
 /**
  * Restaura o plano de um set1.json por cima do atual: as classes do arquivo substituem as atuais, as linhas de cada
  * franquia do arquivo substituem as dela e cada personagem do arquivo substitui o atual (os outros ficam). O que for
- * igual à base volta a seguir a base. Franquia fora de `validas` é ignorada. Classe que deixou de existir sai das
+ * igual à base (classes, linhas de uma franquia, ult de um personagem) volta a seguir a base. Franquia fora de
+ * `validas` é ignorada. Classe que deixou de existir sai das
  * unidades.
  */
 export function restaurarPlano(atual: Plano, arq: Plano, base: Base | null, validas: readonly string[]): Plano {
@@ -411,7 +453,15 @@ export function restaurarPlano(atual: Plano, arq: Plano, base: Base | null, vali
   }
   for (const [k, us] of Object.entries(arq.unidades)) {
     if (!validas.includes(k)) continue;
-    p.unidades[k] = Object.assign(dic<Unidade>(), p.unidades[k], us);
+    const fr = Object.assign(dic<Unidade>(), p.unidades[k]);
+    for (const [nome, u] of Object.entries(us)) {
+      // ult igual à da base volta a seguir a base
+      const n = base && u.ult !== undefined ? unidadeLimpa({ ...u, ult: ultPraGravar(u.ult, base.ults[k]?.[nome]) }) : u;
+      if (n) fr[nome] = n;
+      else delete fr[nome];
+    }
+    if (Object.keys(fr).length) p.unidades[k] = fr;
+    else delete p.unidades[k];
   }
   const valem = p.classes ?? base?.classes;
   if (valem) p.unidades = soClassesValidas(p.unidades, valem);

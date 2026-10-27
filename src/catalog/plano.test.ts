@@ -3,7 +3,7 @@ import {
   adicionarClasse, adicionarMembro, alternarClasse, apagarLinha, classesDaUnidade, classesEfetivas, confirmarLinha, criarLinha,
   descreverClasse, extrasDoPersonagem, idUnico, indiceLinhas, limparClasses, limparLinhas, limparPlano, limparUnidades,
   linhasEfetivas, moverClasse, moverMembro, mudarUnidade, parseBase, planoCompleto, planoVazio, removerMembro, renomearClasse,
-  renomearLinha, restaurarPlano, resumoPlano, slug, tirarClasseDeTodos, type Base, type LinhaEvo, type Plano,
+  renomearLinha, restaurarPlano, resumoPlano, slug, tirarClasseDeTodos, ultEfetiva, ultPraGravar, type Base, type LinhaEvo, type Plano,
 } from './plano';
 
 const L = (id: string, ...niveis: string[][]): LinhaEvo => ({ id, nome: id, niveis });
@@ -19,6 +19,7 @@ const BASE_JSON = {
   selecao: { pokemon: ['Charmander', 'Charizard', 'Ralts'], lol: ['Ahri'], vazia: [] },
   linhas: { pokemon: [CHAR, RALTS], persona: [L('orpheus', ['Orpheus', 'Orpheus F'], ['Messiah'])] },
   itens: { componentes: [{ id: 'pyrus' }] },
+  ults: { pokemon: { Charizard: 'Mega Charizard X', Vazio: '  ', Numero: 3 }, lol: 'x' },
 };
 const base = (): Base => parseBase(structuredClone(BASE_JSON))!;
 
@@ -44,7 +45,9 @@ describe('parseBase', () => {
     expect(b.selecao).toEqual({ pokemon: ['Charmander', 'Charizard', 'Ralts'], lol: ['Ahri'] });
     expect(b.linhas.pokemon).toEqual([CHAR, RALTS]);
     expect(b.linhas.persona![0]!.niveis).toEqual([['Orpheus', 'Orpheus F'], ['Messiah']]);
-    expect(Object.keys(b)).toEqual(['versao', 'geradoEm', 'classes', 'selecao', 'linhas']);
+    expect(Object.keys(b)).toEqual(['versao', 'geradoEm', 'classes', 'selecao', 'linhas', 'ults']);
+    // ult sem texto (ou que não é texto) e franquia que não é objeto ficam de fora
+    expect(b.ults).toEqual({ pokemon: { Charizard: 'Mega Charizard X' } });
   });
   it('não é a base -> null', () => {
     expect(parseBase(null)).toBeNull();
@@ -53,7 +56,7 @@ describe('parseBase', () => {
     expect(parseBase({ campos: [], itens: {} })).toBeNull();
   });
   it('só com parte dos campos: o resto fica vazio', () => {
-    expect(parseBase({ selecao: { lol: ['Ahri', 'Ahri', 3] } })).toEqual({ versao: 1, geradoEm: '', classes: [], selecao: { lol: ['Ahri'] }, linhas: {} });
+    expect(parseBase({ selecao: { lol: ['Ahri', 'Ahri', 3] } })).toEqual({ versao: 1, geradoEm: '', classes: [], selecao: { lol: ['Ahri'] }, linhas: {}, ults: {} });
   });
 });
 
@@ -242,7 +245,7 @@ describe('exportar e restaurar', () => {
   it('planoCompleto: classes e linhas que valem agora (da base ou mudadas), só das franquias pedidas', () => {
     const p: Plano = { versao: 1, unidades: { pokemon: { Charizard: { habilidade: 'x' } }, zzz: { A: { habilidade: 'y' } } }, linhas: { lol: [] } };
     expect(planoCompleto(p, b, ['pokemon', 'persona', 'lol', 'smt'])).toEqual({
-      versao: 1, classes: b.classes, unidades: { pokemon: { Charizard: { habilidade: 'x' } } },
+      versao: 1, classes: b.classes, unidades: { pokemon: { Charizard: { habilidade: 'x', ult: 'Mega Charizard X' } } },
       linhas: { pokemon: b.linhas.pokemon, persona: b.linhas.persona, lol: [] },
     });
   });
@@ -281,5 +284,56 @@ describe('exportar e restaurar', () => {
     expect(resumoPlano({ versao: 1, classes: [], unidades: { a: { X: { habilidade: 'h' }, Y: { habilidade: 'h' } }, b: { Z: { habilidade: 'h' } } }, linhas: { a: [] } }))
       .toEqual({ classes: 0, unidades: 3, franquiasComLinhas: 1 });
     expect(resumoPlano(planoVazio()).classes).toBeNull();
+  });
+});
+
+describe('ult (forma em que a unidade vira)', () => {
+  const b = base();
+  it('vale a do plano (mesmo vazia: tirada), senão a da base', () => {
+    expect(ultEfetiva(undefined, 'Mega Charizard X')).toBe('Mega Charizard X');
+    expect(ultEfetiva({ habilidade: 'x' }, 'Mega Charizard X')).toBe('Mega Charizard X');
+    expect(ultEfetiva({ ult: 'Gigantamax Charizard' }, 'Mega Charizard X')).toBe('Gigantamax Charizard');
+    expect(ultEfetiva({ ult: '' }, 'Mega Charizard X')).toBe('');
+    expect(ultEfetiva(undefined, undefined)).toBe('');
+  });
+  it('o que gravar: igual à da base = nada (segue a base); tirar a da base = vazio; sem base, tirar = nada', () => {
+    expect(ultPraGravar('Mega Charizard X', 'Mega Charizard X')).toBeUndefined();
+    expect(ultPraGravar('Gigantamax Charizard', 'Mega Charizard X')).toBe('Gigantamax Charizard');
+    expect(ultPraGravar('', 'Mega Charizard X')).toBe('');
+    expect(ultPraGravar('', undefined)).toBeUndefined();
+    expect(ultPraGravar(' Mega Venusaur ', undefined)).toBe('Mega Venusaur');
+  });
+  it('unidade só com a ult tirada (vazia) não some: é o que impede a da base de voltar', () => {
+    let u = mudarUnidade({}, 'pokemon', 'Charizard', { ult: '' });
+    expect(u).toEqual({ pokemon: { Charizard: { ult: '' } } });
+    u = mudarUnidade(u, 'pokemon', 'Charizard', { habilidade: 'Voa' });
+    expect(u.pokemon!.Charizard).toEqual({ habilidade: 'Voa', ult: '' });
+    // ult undefined = volta a seguir a base
+    expect(mudarUnidade(u, 'pokemon', 'Charizard', { ult: undefined }).pokemon!.Charizard).toEqual({ habilidade: 'Voa' });
+    expect(limparUnidades({ pokemon: { Charizard: { ult: '' }, Pidgey: { ult: 3 } } })).toEqual({ pokemon: { Charizard: { ult: '' } } });
+    expect(limparPlano({ unidades: { pokemon: { Venusaur: { ult: 'Mega Venusaur', classes: [] } } } }).unidades).toEqual({ pokemon: { Venusaur: { ult: 'Mega Venusaur' } } });
+  });
+  it('exportação: o personagem leva a ult que vale; o plano completo escreve a da base em quem não mexeu', () => {
+    expect(extrasDoPersonagem('Charizard', undefined, b.classes, undefined, 'Mega Charizard X')).toEqual({ ult: 'Mega Charizard X' });
+    expect(extrasDoPersonagem('Charizard', undefined, b.classes, undefined, '')).toEqual({});
+    const tirada: Plano = { versao: 1, unidades: { pokemon: { Charizard: { ult: '' }, Venusaur: { ult: 'Mega Venusaur' } } }, linhas: {} };
+    expect(planoCompleto(tirada, b, ['pokemon']).unidades).toEqual({ pokemon: { Charizard: { ult: '' }, Venusaur: { ult: 'Mega Venusaur' } } });
+    expect(planoCompleto(planoVazio(), b, ['pokemon', 'lol']).unidades).toEqual({ pokemon: { Charizard: { ult: 'Mega Charizard X' } } });
+  });
+  it('importação: ult igual à da base volta a seguir a base; diferente ou tirada fica', () => {
+    const arq: Plano = {
+      versao: 1,
+      unidades: { pokemon: { Charizard: { ult: 'Mega Charizard X', habilidade: 'Voa' }, Venusaur: { ult: 'Mega Venusaur' } } },
+      linhas: {},
+    };
+    expect(restaurarPlano(planoVazio(), arq, b, ['pokemon']).unidades).toEqual({ pokemon: { Charizard: { habilidade: 'Voa' }, Venusaur: { ult: 'Mega Venusaur' } } });
+    // só a ult da base: o personagem sai do plano (inclusive o que havia antes, que o arquivo substitui)
+    const atual: Plano = { versao: 1, unidades: { pokemon: { Charizard: { ult: '' } } }, linhas: {} };
+    const so: Plano = { versao: 1, unidades: { pokemon: { Charizard: { ult: 'Mega Charizard X' } } }, linhas: {} };
+    expect(restaurarPlano(atual, so, b, ['pokemon']).unidades).toEqual({});
+    const tirou: Plano = { versao: 1, unidades: { pokemon: { Charizard: { ult: '' } } }, linhas: {} };
+    expect(restaurarPlano(planoVazio(), tirou, b, ['pokemon']).unidades).toEqual({ pokemon: { Charizard: { ult: '' } } });
+    // sem base: guarda como veio
+    expect(restaurarPlano(planoVazio(), so, null, ['pokemon']).unidades).toEqual(so.unidades);
   });
 });

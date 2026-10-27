@@ -6,10 +6,10 @@ import { Segmented } from '../../components/Controls';
 import * as cat from '../../catalog/store';
 import * as pl from '../../catalog/plano';
 import {
-  SEM, filtrar, filtravel, lerImportacao, montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesLinha, resumoInfo,
-  temFiltro, type Campo, type Contexto, type Exportacao, type FiltroLinha, type Linha,
+  SEM, filtrar, filtravel, lerImportacao, montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesLinha, opcoesUlt,
+  resumoInfo, temFiltro, type Campo, type Contexto, type Exportacao, type FiltroLinha, type FiltroUlt, type Linha,
 } from '../../catalog/model';
-import { BotaoConfirmar, Thumb, plural, style, useCatalogo, useTextoSalvo } from './comum';
+import { BotaoConfirmar, BuscaPersonagem, Thumb, linhaAvulsa, plural, style, useCatalogo, useTextoSalvo } from './comum';
 import { VistaLinhas } from './Linhas';
 import { PainelClasses } from './Classes';
 
@@ -88,7 +88,7 @@ async function gerarExportacao(grupo: 'marcados' | 'base'): Promise<Exportacao> 
     plano: {
       grupo,
       plano: cat.planoParaExportar(KEYS),
-      extras: (k, nome) => pl.extrasDoPersonagem(nome, cat.unidadesDe(k)[nome], classes, indices.get(k)?.get(nome)),
+      extras: (k, nome) => pl.extrasDoPersonagem(nome, cat.unidadesDe(k)[nome], classes, indices.get(k)?.get(nome), cat.ultDe(k, nome)),
     },
   });
 }
@@ -128,12 +128,12 @@ async function copiarTexto(t: string): Promise<boolean> {
   }
 }
 
-/** "10 classes, 120 personagens com classe ou habilidade e as linhas de 4 franquias" */
+/** "10 classes, 120 personagens com classe, habilidade ou ult e as linhas de 4 franquias" */
 function resumoDoPlano(p: pl.Plano): string {
   const r = pl.resumoPlano(p);
   const partes = [
     r.classes === null ? 'as classes da base' : plural(r.classes, 'classe', 'classes'),
-    `${plural(r.unidades, 'personagem', 'personagens')} com classe ou habilidade`,
+    `${plural(r.unidades, 'personagem', 'personagens')} com classe, habilidade ou ult`,
     `as linhas de ${plural(r.franquiasComLinhas, 'franquia', 'franquias')}`,
   ];
   return `${partes.slice(0, -1).join(', ')} e ${partes.at(-1)}`;
@@ -281,17 +281,26 @@ function VistaPersonagens({ k, linhas, campos: camposCat, pronto }: { k: string;
   const classes = cat.classes();
   const linhasEvo = cat.linhasDe(k);
   const indice = useMemo(() => pl.indiceLinhas(linhasEvo), [linhasEvo]);
-  // habilidade e nomes das classes, pra busca
+  const ultsBase = cat.ultsBase(k);
+  const porNome = useMemo(() => new Map(linhas.map(l => [l.nome, l])), [linhas]);
+  // habilidade, nomes das classes e ult, pra busca
   const textos = useMemo(() => {
     const nomes = new Map(classes.map(x => [x.id, x.nome]));
-    return new Map(Object.entries(unidades).map(([n, u]) => [n, normalizar([u.habilidade ?? '', ...(u.classes ?? []).map(id => nomes.get(id) ?? '')].join('\n'))]));
-  }, [unidades, classes]);
+    return new Map([...new Set([...Object.keys(unidades), ...Object.keys(ultsBase)])].map(n => {
+      const u = unidades[n];
+      return [n, normalizar([u?.habilidade ?? '', ...(u?.classes ?? []).map(id => nomes.get(id) ?? ''), pl.ultEfetiva(u, ultsBase[n])].join('\n'))];
+    }));
+  }, [unidades, classes, ultsBase]);
   const ctx = useMemo<Contexto>(() => ({
     grupo,
     classes: n => unidades[n]?.classes,
     linha: n => indice.get(n)?.linha,
+    ult: n => pl.ultEfetiva(unidades[n], ultsBase[n]),
     texto: n => textos.get(n) ?? '',
-  }), [grupo, unidades, indice, textos]);
+  }), [grupo, unidades, indice, ultsBase, textos]);
+  const opsUlt = useMemo(() => opcoesUlt(linhas, f, ctx), [linhas, f, ctx]);
+  // o filtro de ult só aparece na franquia em que alguém tem ult
+  const temUlt = !!f.ult || Object.keys(ultsBase).length > 0 || Object.values(unidades).some(u => u.ult);
   const filtradas = useMemo(() => filtrar(linhas, f, ctx), [linhas, f, ctx]);
   const campos = useMemo(() => (camposCat ? camposCat.filter(x => filtravel(linhas, x.id)) : []), [camposCat, linhas]);
   const ops = useMemo(() => campos.map(x => opcoes(linhas, x.id, f, ctx)), [campos, linhas, f, ctx]);
@@ -343,6 +352,15 @@ function VistaPersonagens({ k, linhas, campos: camposCat, pronto }: { k: string;
             {opsLinha.map(o => <option key={o.valor} value={o.valor}>{ROTULO_LINHA[o.valor]} ({o.n})</option>)}
           </select>
         </label>
+        {temUlt && (
+          <label className="cat-field cat-pf">
+            <span>Ult</span>
+            <select id="catUlt" value={f.ult} onChange={e => cat.mudarFiltros(k, { ult: e.target.value as FiltroUlt })}>
+              <option value="">Todas</option>
+              {opsUlt.map(o => <option key={o.valor} value={o.valor}>{o.valor === 'com' ? 'Com ult' : 'Sem ult'} ({o.n})</option>)}
+            </select>
+          </label>
+        )}
         {campos.length > 0 && (
           <button type="button" id="catCamposBtn" className="btn mini cat-campos-btn" aria-expanded={abertos} onClick={() => setAbertos(!abertos)}>
             {abertos ? 'Esconder os filtros por campo' : `Filtros por campo (${campos.length})`}{ativos ? ` · ${plural(ativos, 'ativo', 'ativos')}` : ''}
@@ -367,7 +385,8 @@ function VistaPersonagens({ k, linhas, campos: camposCat, pronto }: { k: string;
         <ul id="catList" className="cat-list">
           {vis.map(l => (
             <LinhaCat key={l.nome} k={k} l={l} on={marc.has(l.nome)} campos={camposCat} pronto={pronto}
-              unidade={unidades[l.nome]} pos={indice.get(l.nome)} classes={classes} />
+              unidade={unidades[l.nome]} pos={indice.get(l.nome)} classes={classes}
+              ult={pl.ultEfetiva(unidades[l.nome], ultsBase[l.nome])} ultBase={ultsBase[l.nome] ?? ''} porNome={porNome} />
           ))}
         </ul>
       ) : (
@@ -404,10 +423,11 @@ function CampoFiltro({ k, campo, valor, ops }: { k: string; campo: Campo; valor:
 
 /**
  * Um personagem: caixa de marcar, miniatura, nome e as informações da fonte (campos null = franquia sem catálogo);
- * embaixo, o planejamento: classes (com o seletor), linha evolutiva e habilidade.
+ * embaixo, o planejamento: classes (com o seletor), linha evolutiva, ult e habilidade.
  * `pronto`: o catálogo já chegou (ou não existe), então já dá pra saber se ele tem a imagem.
+ * `ult`: a forma da ult que vale ('' = sem); `ultBase`: a que a base dá; `porNome`: a lista da franquia (pra buscar a ult).
  */
-const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos, classes }: {
+const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos, classes, ult, ultBase, porNome }: {
   k: string;
   l: Linha;
   on: boolean;
@@ -416,9 +436,14 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
   unidade: pl.Unidade | undefined;
   pos: pl.PosLinha | undefined;
   classes: pl.Classe[];
+  ult: string;
+  ultBase: string;
+  porNome: ReadonlyMap<string, Linha>;
 }) {
   const info = campos ? resumoInfo(campos, l.info) : '';
   const [aberto, setAberto] = useState(false);
+  const [ultAberta, setUltAberta] = useState(false);
+  const nomeNorm = normalizar(l.nome);
   const minhas = pl.classesDaUnidade(unidade, classes);
   const hab = useTextoSalvo(unidade?.habilidade ?? '', t => cat.mudarHabilidade(k, l.nome, t));
   return (
@@ -446,7 +471,34 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
             <button type="button" className="lin-nova-row" title={`Criar uma linha evolutiva começando por ${l.nome}`}
               onClick={() => cat.irParaLinha(k, cat.criarLinha(k, '', l.nome))}>+ Linha</button>
           )}
+          {ult ? (
+            <button type="button" className="ult-selo" aria-expanded={ultAberta} title={`Na ult, ${l.nome} vira ${ult}. Trocar ou tirar`}
+              onClick={() => setUltAberta(!ultAberta)}>
+              <Thumb l={porNome.get(ult) ?? linhaAvulsa(k, ult)} pronto={pronto} />
+              <span>Ult: {ult}</span>
+            </button>
+          ) : (
+            <button type="button" className="ult-add" aria-expanded={ultAberta} aria-label={`Ult de ${l.nome}`}
+              title="A forma em que ele vira na ult (ex.: a Mega)" onClick={() => setUltAberta(!ultAberta)}>{ultAberta ? 'Fechar' : '+ Ult'}</button>
+          )}
         </div>
+        {ultAberta && (
+          <div className="ult-ed" role="group" aria-label={`Ult de ${l.nome}`}>
+            <BuscaPersonagem porNome={porNome} pronto={pronto} rotulo={`Forma da ult de ${l.nome}`} placeholder="Forma da ult (ex.: Mega)…"
+              vazio={`Ninguém com esse nome em ${label(k)}.`} onFechar={() => setUltAberta(false)}
+              // quem tem o nome dele (Mega Charizard X pro Charizard) vem primeiro
+              prioridade={n => (normalizar(n).includes(nomeNorm) && n !== l.nome ? 0 : 2)}
+              nota={n => (n === ultBase ? 'a da base' : '')}
+              onEscolher={n => { cat.mudarUlt(k, l.nome, n); setUltAberta(false); }} />
+            <div className="ult-acts">
+              {ult && <button type="button" className="btn mini danger ult-tirar" onClick={() => { cat.mudarUlt(k, l.nome, ''); setUltAberta(false); }}>Tirar a ult</button>}
+              {ultBase && ultBase !== ult && (
+                <button type="button" className="btn mini ult-base" onClick={() => { cat.mudarUlt(k, l.nome, ultBase); setUltAberta(false); }}>Usar a da base ({ultBase})</button>
+              )}
+              <button type="button" className="btn mini" onClick={() => setUltAberta(false)}>Fechar</button>
+            </div>
+          </div>
+        )}
         {aberto && (
           <div className="cls-opts" role="group" aria-label={`Escolher as classes de ${l.nome}`}>
             {classes.length ? classes.map(c => {

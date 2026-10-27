@@ -1,10 +1,10 @@
 // Peças da aba Catálogo usadas em mais de uma vista (lista, linhas, classes).
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
 import type { Item } from '../../types';
 import { resolve } from '../../sources/resolve';
 import { app, frColor } from '../../state/app';
 import * as cat from '../../catalog/store';
-import type { Linha } from '../../catalog/model';
+import { normalizar, type Linha } from '../../catalog/model';
 
 export const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
 export const style = (k: string) => ({ ['--c' as string]: frColor(k) });
@@ -112,6 +112,93 @@ export function useTextoSalvo(valor: string, salvar: (t: string) => void, atraso
     timer.current = setTimeout(flush, atraso);
   };
   return { txt, mudar, flush };
+}
+
+/** Quantos resultados a busca de personagem mostra. */
+const MAX_RESULTADOS = 8;
+
+/**
+ * Campo de busca na lista de uma franquia, com os resultados embaixo (miniatura, nome e uma nota). Enter escolhe o
+ * primeiro; setas andam entre o campo e os resultados; Esc limpa e, vazio, chama onFechar. Ordem: `prioridade`
+ * (menor primeiro), depois quem começa com o texto, depois a ordem da lista. `children` fica ao lado do campo.
+ */
+export function BuscaPersonagem({ porNome, pronto, inputRef, rotulo, placeholder, vazio, prioridade, nota, onEscolher, onFechar, children }: {
+  porNome: ReadonlyMap<string, Linha>;
+  pronto: boolean;
+  inputRef?: RefObject<HTMLInputElement | null>;
+  rotulo: string;
+  placeholder: string;
+  /** texto quando ninguém tem o nome */
+  vazio: string;
+  prioridade?: (nome: string) => number;
+  nota?: (nome: string) => string;
+  onEscolher: (nome: string) => void;
+  onFechar: () => void;
+  children?: ReactNode;
+}) {
+  const [q, setQ] = useState('');
+  const proprio = useRef<HTMLInputElement>(null);
+  const campo = inputRef ?? proprio;
+  const lista = useRef<HTMLUListElement>(null);
+  const t = normalizar(q.trim());
+  const res: string[] = [];
+  if (t) {
+    const achados: { nome: string; ordem: number }[] = [];
+    let i = 0;
+    for (const nome of porNome.keys()) {
+      const p = normalizar(nome).indexOf(t);
+      if (p >= 0) achados.push({ nome, ordem: (prioridade?.(nome) ?? 0) + (p === 0 ? 0 : 1) + i++ / 1e6 });
+    }
+    res.push(...achados.sort((a, b) => a.ordem - b.ordem).slice(0, MAX_RESULTADOS).map(a => a.nome));
+  }
+
+  function escolher(nome: string) {
+    onEscolher(nome);
+    setQ('');
+    campo.current?.focus();
+  }
+  /** Setas sobem e descem entre o campo e os resultados. */
+  function setas(e: KeyboardEvent, i: number) {
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    const bs = lista.current ? [...lista.current.querySelectorAll('button')] : [];
+    const j = i + (e.key === 'ArrowDown' ? 1 : -1);
+    if (j < 0) campo.current?.focus();
+    else bs[Math.min(j, bs.length - 1)]?.focus();
+  }
+
+  return (
+    <div className="lin-add">
+      <div className="lin-add-campos">
+        <input ref={campo} type="search" className="lin-busca" autoFocus placeholder={placeholder} aria-label={rotulo}
+          value={q} onChange={e => setQ(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && res[0]) { e.preventDefault(); escolher(res[0]); }
+            else if (e.key === 'Escape') { if (q) setQ(''); else onFechar(); }
+            else setas(e, -1);
+          }} />
+        {children}
+      </div>
+      {t && (res.length ? (
+        <ul ref={lista} className="lin-res" aria-label="Resultados">
+          {res.map((nome, i) => {
+            const n = nota?.(nome);
+            return (
+              <li key={nome}>
+                <button type="button" className="lin-res-it" data-nome={nome} onClick={() => escolher(nome)} onKeyDown={e => setas(e, i)}>
+                  <Thumb l={porNome.get(nome)!} pronto={pronto} />
+                  <span className="txt">
+                    <span className="nm">{nome}</span>
+                    {n && <small>{n}</small>}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : <p className="mute lin-res-vazio">{vazio}</p>)}
+    </div>
+  );
 }
 
 /**

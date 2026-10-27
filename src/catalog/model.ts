@@ -135,6 +135,8 @@ export function montarLinhas(lista: readonly Item[], cat: Catalogo | null): Linh
 export const SEM = '__sem__';
 /** Filtro de linha evolutiva: com linha, sem linha, linha confirmada, linha ainda não confirmada. */
 export type FiltroLinha = '' | 'com' | 'sem' | 'confirmada' | 'pendente';
+/** Filtro de ult: com forma de ult, sem. */
+export type FiltroUlt = '' | 'com' | 'sem';
 export interface Filtros {
   /** busca no nome, nos valores, na habilidade e nas classes */
   q: string;
@@ -143,9 +145,10 @@ export interface Filtros {
   /** id da classe do plano ('' = todas; SEM = sem classe) */
   classe: string;
   linha: FiltroLinha;
+  ult: FiltroUlt;
 }
-export const filtrosVazios = (): Filtros => ({ q: '', campos: {}, classe: '', linha: '' });
-export const temFiltro = (f: Filtros) => !!f.q.trim() || !!f.classe || !!f.linha || Object.values(f.campos).some(Boolean);
+export const filtrosVazios = (): Filtros => ({ q: '', campos: {}, classe: '', linha: '', ult: '' });
+export const temFiltro = (f: Filtros) => !!f.q.trim() || !!f.classe || !!f.linha || !!f.ult || Object.values(f.campos).some(Boolean);
 
 /** O que o filtro precisa saber de fora da lista: o grupo e o planejamento de cada personagem. */
 export interface Contexto {
@@ -155,7 +158,9 @@ export interface Contexto {
   classes?: (nome: string) => readonly string[] | undefined;
   /** a linha do personagem (undefined = sem linha) */
   linha?: (nome: string) => { confirmada?: boolean } | undefined;
-  /** texto a mais pra busca (habilidade, nomes das classes), já normalizado */
+  /** a forma da ult do personagem ('' ou undefined = sem) */
+  ult?: (nome: string) => string | undefined;
+  /** texto a mais pra busca (habilidade, nomes das classes, ult), já normalizado */
   texto?: (nome: string) => string;
 }
 /** Sem grupo nem planejamento. */
@@ -163,6 +168,7 @@ export const TODOS: Contexto = { grupo: null };
 /** Ids pro `ignorar` do filtrar: deixam de fora o filtro de classe ou o de linha (pra contar as opções deles). */
 export const F_CLASSE = '#classe';
 export const F_LINHA = '#linha';
+export const F_ULT = '#ult';
 
 /** O personagem tem esse valor no campo (campo com lista: qualquer um dos valores serve). */
 function casaCampo(l: Linha, id: string, v: string): boolean {
@@ -189,6 +195,7 @@ export function filtrar(linhas: readonly Linha[], f: Filtros, ctx: Contexto, ign
   const campos = Object.entries(f.campos).filter(([id, v]) => v && id !== ignorar);
   const classe = ignorar === F_CLASSE ? '' : f.classe;
   const linha = ignorar === F_LINHA ? '' : f.linha;
+  const ult = ignorar === F_ULT ? '' : f.ult;
   return linhas.filter(l => {
     if (ctx.grupo && !ctx.grupo.has(l.nome)) return false;
     if (termos.length) {
@@ -197,7 +204,8 @@ export function filtrar(linhas: readonly Linha[], f: Filtros, ctx: Contexto, ign
     }
     return campos.every(([id, v]) => casaCampo(l, id, v))
       && (!classe || casaClasse(ctx.classes?.(l.nome), classe))
-      && (!linha || casaLinha(ctx.linha?.(l.nome), linha));
+      && (!linha || casaLinha(ctx.linha?.(l.nome), linha))
+      && (!ult || (ult === 'com') === !!ctx.ult?.(l.nome));
   });
 }
 
@@ -276,6 +284,14 @@ export function opcoesLinha(linhas: readonly Linha[], f: Filtros, ctx: Contexto)
   return (['com', 'sem', 'confirmada', 'pendente'] as const).map(valor => ({ valor, n: n[valor] }));
 }
 
+/** Opções do filtro de ult (com, sem), cada uma com quantos passam nos outros filtros. */
+export function opcoesUlt(linhas: readonly Linha[], f: Filtros, ctx: Contexto): { valor: Exclude<FiltroUlt, ''>; n: number }[] {
+  let com = 0;
+  const l = filtrar(linhas, f, ctx, F_ULT);
+  for (const x of l) if (ctx.ult?.(x.nome)) com++;
+  return [{ valor: 'com', n: com }, { valor: 'sem', n: l.length - com }];
+}
+
 // ---------- marcações ----------
 /** Limpa o que veio do localStorage: só listas de textos, sem repetidos e sem franquia vazia. */
 export function limparMarcas(j: unknown): Marcas {
@@ -307,10 +323,11 @@ export function juntarMarcas(atual: Marcas, novas: Marcas): { marcas: Marcas; no
 export interface PersonagemExportado {
   nome: string;
   img: string;
-  /** do planejamento: nomes das classes, habilidade e linha evolutiva */
+  /** do planejamento: nomes das classes, habilidade, linha evolutiva e forma da ult */
   classes?: string[];
   habilidade?: string;
   linha?: LinhaExportada;
+  ult?: string;
   [campo: string]: Valor | LinhaExportada | undefined;
 }
 export interface FranquiaExportada {
@@ -336,7 +353,7 @@ export interface PlanoNaExportacao {
   plano: Plano;
 }
 /** Campos da exportação que não vêm da fonte: informação da fonte com o mesmo id não entra. */
-const RESERVADOS = new Set(['nome', 'img', 'classes', 'habilidade', 'linha']);
+const RESERVADOS = new Set(['nome', 'img', 'classes', 'habilidade', 'linha', 'ult']);
 
 /**
  * Monta o set1.json: só as franquias com alguém marcado, na ordem `ordem`; personagens na ordem da lista do site

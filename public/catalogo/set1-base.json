@@ -1,6 +1,6 @@
 {
  "versao": 1,
- "geradoEm": "2026-10-26",
+ "geradoEm": "2026-10-27",
  "classes": [
   {
    "id": "demoniacos",
@@ -236,7 +236,12 @@
    "Corviknight",
    "Hatenna",
    "Hattrem",
-   "Hatterene"
+   "Hatterene",
+   "Mega Raichu X",
+   "Mega Sharpedo",
+   "Mega Banette",
+   "Mega Lopunny",
+   "Mega Mewtwo X"
   ],
   "digimon": [
    "Agumon",
@@ -748,6 +753,9 @@
      ],
      [
       "Raichu"
+     ],
+     [
+      "Mega Raichu X"
      ]
     ],
     "nome": "Pikachu"
@@ -968,6 +976,9 @@
      ],
      [
       "Sharpedo"
+     ],
+     [
+      "Mega Sharpedo"
      ]
     ],
     "nome": "Carvanha"
@@ -980,6 +991,9 @@
      ],
      [
       "Banette"
+     ],
+     [
+      "Mega Banette"
      ]
     ],
     "nome": "Shuppet"
@@ -1076,6 +1090,9 @@
      ],
      [
       "Lopunny"
+     ],
+     [
+      "Mega Lopunny"
      ]
     ],
     "nome": "Buneary"
@@ -1488,6 +1505,21 @@
      ]
     ],
     "nome": "Hatenna"
+   },
+   {
+    "id": "pokemon:mew",
+    "nome": "Mew",
+    "niveis": [
+     [
+      "Mew"
+     ],
+     [
+      "Mewtwo"
+     ],
+     [
+      "Mega Mewtwo X"
+     ]
+    ]
    }
   ],
   "digimon": [
@@ -2094,6 +2126,38 @@
     ]
    }
   ]
+ },
+ "ults": {
+  "pokemon": {
+   "Venusaur": "Mega Venusaur",
+   "Charizard": "Mega Charizard X",
+   "Blastoise": "Mega Blastoise",
+   "Alakazam": "Mega Alakazam",
+   "Dragonite": "Mega Dragonite",
+   "Meganium": "Mega Meganium",
+   "Feraligatr": "Mega Feraligatr",
+   "Sceptile": "Mega Sceptile",
+   "Blaziken": "Mega Blaziken",
+   "Swampert": "Mega Swampert",
+   "Gardevoir": "Mega Gardevoir",
+   "Gallade": "Mega Gallade",
+   "Aggron": "Mega Aggron",
+   "Garchomp": "Mega Garchomp",
+   "Emboar": "Mega Emboar",
+   "Eelektross": "Mega Eelektross",
+   "Chesnaught": "Mega Chesnaught",
+   "Delphox": "Mega Delphox",
+   "Greninja": "Mega Greninja",
+   "Rayquaza": "Mega Rayquaza",
+   "Darkrai": "Mega Darkrai",
+   "Zygarde": "Mega Zygarde",
+   "Magearna": "Mega Magearna",
+   "Machamp": "Gigantamax Machamp",
+   "Corviknight": "Gigantamax Corviknight",
+   "Hatterene": "Gigantamax Hatterene",
+   "Kyogre": "Primal Kyogre",
+   "Groudon": "Primal Groudon"
+  }
  },
  "itens": {
   "componentes": [
