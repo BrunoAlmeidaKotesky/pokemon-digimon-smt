@@ -9,11 +9,14 @@ test.use({ reducedMotion: 'reduce' });
 
 interface Classe { id: string; nome: string; descricao?: string }
 interface LinhaEvo { id: string; nome: string; niveis: string[][]; confirmada?: boolean }
+/** como o plano guarda uma linha: confirmada só com o id; mexida ou criada inteira, com editada */
+interface LinhaSalva { id: string; nome?: string; niveis?: string[][]; confirmada?: boolean; editada?: boolean }
 interface Plano {
   versao: 1;
   classes?: Classe[];
   unidades: Record<string, Record<string, { classes?: string[]; habilidade?: string }>>;
-  linhas: Record<string, LinhaEvo[]>;
+  linhas: Record<string, LinhaSalva[]>;
+  apagadas?: Record<string, string[]>;
 }
 const BASE = fixture<{ classes: Classe[]; linhas: { pokemon: LinhaEvo[] } }>('catalogo-set1-base.json');
 /** o grupo base do Pokémon que está na lista do site (a fixture tem também "Fora da Lista"), na ordem da lista */
@@ -224,11 +227,19 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     expect(await niveis(page, 'pokemon:pikachu')).toEqual([['Pikachu'], ['Charizard']]);
     expect(await niveis(page, 'pokemon:charmander')).toEqual([['Charmander'], ['Charmeleon']]);
 
-    // salvo: as linhas do Pokémon entraram no plano; as da Persona continuam seguindo a base
+    // salvo linha por linha: a confirmada só com o id; as mexidas inteiras (com "editada" na carta); a do Charmander, que
+    // só perdeu o Charizard pra outra linha, continua seguindo a base; as da Persona nem aparecem
     const p = (await plano(page))!;
     expect(Object.keys(p.linhas)).toEqual(['pokemon']);
-    expect(p.linhas.pokemon!.find(l => l.id === 'pokemon:bulbasaur')).toEqual({ ...BASE.linhas.pokemon[0], confirmada: true });
-    expect(p.linhas.pokemon!.find(l => l.id === 'pokemon:squirtle')!.niveis).toEqual([['Squirtle'], ['Wartortle', 'Caterpie'], ['Blastoise']]);
+    expect(p.linhas.pokemon!.find(l => l.id === 'pokemon:bulbasaur')).toEqual({ id: 'pokemon:bulbasaur', confirmada: true });
+    expect(p.linhas.pokemon!.find(l => l.id === 'pokemon:squirtle')).toEqual({
+      id: 'pokemon:squirtle', nome: 'Squirtle', niveis: [['Squirtle'], ['Wartortle', 'Caterpie'], ['Blastoise']], editada: true,
+    });
+    expect(p.linhas.pokemon!.find(l => l.id === 'pokemon:charmander')).toBeUndefined();
+    await expect(page.locator('#catLinhas .lin-card:has(.lin-tag)')).toHaveCount(2);
+    await expect(sq.locator('.lin-tag')).toHaveText('editada');
+    await expect(carta(page, 'pokemon:charmander').locator('.lin-tag')).toHaveCount(0);
+    await expect(carta(page, 'pokemon:bulbasaur').locator('.lin-tag')).toHaveCount(0);
   });
 
   test('nova linha a partir de um personagem, renomear e apagar; nova linha vazia; voltar pra base', async ({ page }) => {
@@ -385,8 +396,10 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     // o plano inteiro: classes e linhas que valem agora (da base ou mudadas)
     expect(set1.plano.classes).toEqual(BASE.classes);
     expect(set1.plano.unidades).toEqual({ pokemon: { Charizard: { classes: ['dragao'], habilidade: 'Voa alto', ult: 'Mega Charizard X' } } });
-    expect(Object.keys(set1.plano.linhas)).toEqual(['pokemon', 'persona']);
-    expect(set1.plano.linhas.pokemon).toEqual(linhas);
+    // as linhas que valem vão à parte; o plano leva o que o site guarda (aqui, só a confirmação do Charmander)
+    expect(Object.keys(set1.linhas)).toEqual(['pokemon', 'persona']);
+    expect(set1.linhas.pokemon).toEqual(linhas);
+    expect(set1.plano.linhas).toEqual({ pokemon: [{ id: 'pokemon:charmander', confirmada: true }] });
 
     // grupo base: todo mundo do Set 1 (base), sem precisar marcar
     const [dl2] = await Promise.all([page.waitForEvent('download'), page.locator('#catExportBase').click()]);
@@ -409,18 +422,20 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await expect(linha(page, 'Charizard').locator('.lin-selo')).toHaveText('Linha Charmander · nível 3 de 3');
     await page.setInputFiles('#catImportFile', { name: 'set1.json', mimeType: 'application/json', buffer: arqMarcados });
     await expect(page.locator('#catMsg')).toHaveText(
-      'Importado set1.json: 2 personagens em 1 franquia, 2 novos. Planejamento restaurado: 3 classes, 1 personagem com classe, habilidade ou ult e as linhas de 2 franquias.');
+      'Importado set1.json: 2 personagens em 1 franquia, 2 novos. Planejamento restaurado: 3 classes, 1 personagem com classe, habilidade ou ult e mudanças em linhas de 1 franquia.');
     await expect(linha(page, 'Charizard').locator('.cls-chip')).toHaveText(['Dragão×']);
     await expect(linha(page, 'Charizard').locator('textarea.cat-hab')).toHaveValue('Voa alto');
     await expect(linha(page, 'Charizard').locator('.lin-selo')).toHaveText('Linha Charmander · nível 3 de 3 ✓');
     expect(await lerStorage(page, 'pdx-set1')).toEqual({ pokemon: ['Charizard', 'Clefairy'] });
-    // o que é igual à base volta a seguir a base: as classes e as linhas da Persona não ficam no plano
-    expect(await plano(page)).toEqual({ versao: 1, unidades: { pokemon: { Charizard: { classes: ['dragao'], habilidade: 'Voa alto' } } }, linhas: { pokemon: linhas } });
+    // o que é igual à base volta a seguir a base: as classes não ficam no plano; das linhas, só a confirmação
+    expect(await plano(page)).toEqual({
+      versao: 1, unidades: { pokemon: { Charizard: { classes: ['dragao'], habilidade: 'Voa alto' } } }, linhas: { pokemon: [{ id: 'pokemon:charmander', confirmada: true }] },
+    });
 
     // o arquivo do grupo base restaura o planejamento sem marcar ninguém
     await page.setInputFiles('#catImportFile', { name: 'set1-grupo-base.json', mimeType: 'application/json', buffer: arqBase });
     await expect(page.locator('#catMsg')).toHaveText(
-      'Importado set1-grupo-base.json. Planejamento restaurado: 3 classes, 1 personagem com classe, habilidade ou ult e as linhas de 2 franquias.');
+      'Importado set1-grupo-base.json. Planejamento restaurado: 3 classes, 1 personagem com classe, habilidade ou ult e mudanças em linhas de 1 franquia.');
     await expect(page.locator('#catMsg')).not.toHaveClass(/\bbad\b/);
     expect(await lerStorage(page, 'pdx-set1')).toEqual({ pokemon: ['Charizard', 'Clefairy'] });
   });
@@ -488,6 +503,73 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     const pers = set1.franquias.pokemon.personagens as { nome: string; ult?: string }[];
     expect(pers.filter(x => x.ult).map(x => [x.nome, x.ult])).toEqual([['Venusaur', 'Alolan Raichu'], ['Charizard', 'Mega Charizard X']]);
     expect(set1.plano.unidades.pokemon).toEqual({ Charizard: { ult: 'Mega Charizard X' }, Venusaur: { ult: 'Alolan Raichu' } });
+  });
+
+  test('plano antigo (a franquia inteira copiada, sem nada mexido): as linhas novas da base aparecem e as confirmações ficam', async ({ page }) => {
+    const [bulba, charm] = BASE.linhas.pokemon;
+    await inicio(page, {
+      storage: {
+        'pdx-set1-plano': {
+          versao: 1,
+          unidades: {},
+          // cópia antiga: Charmander sem o Charizard (confirmada), Squirtle só com ele, sem a linha do Pikachu; e uma linha própria
+          linhas: {
+            pokemon: [
+              bulba,
+              { ...charm, niveis: [['Charmander'], ['Charmeleon']], confirmada: true },
+              { id: 'pokemon:squirtle', nome: 'Squirtle', niveis: [['Squirtle']] },
+              { id: 'pokemon:minha', nome: 'Minha', niveis: [['Caterpie'], ['Metapod']] },
+            ],
+          },
+        },
+      },
+    });
+    await expect(linha(page, 'Charizard').locator('.lin-selo')).toHaveText('Linha Charmander · nível 3 de 3 ✓');
+    await vista(page, 'linhas').click();
+    await expect(page.locator('#catLinhas .lin-card')).toHaveCount(5);
+    expect(await page.locator('#catLinhas .lin-card').evaluateAll(els => els.map(e => e.getAttribute('data-id')))).toEqual([
+      'pokemon:bulbasaur', 'pokemon:charmander', 'pokemon:squirtle', 'pokemon:pikachu', 'pokemon:minha',
+    ]);
+    expect(await niveis(page, 'pokemon:charmander')).toEqual([['Charmander'], ['Charmeleon'], ['Charizard']]);
+    await expect(carta(page, 'pokemon:charmander')).toHaveClass(/\bok\b/);
+    expect(await niveis(page, 'pokemon:squirtle')).toEqual([['Squirtle'], ['Wartortle']]);
+    expect(await niveis(page, 'pokemon:minha')).toEqual([['Caterpie'], ['Metapod']]);
+    await expect(page.locator('#catLinhas .lin-tag')).toHaveCount(0);
+    await expect(page.locator('#catLinProg')).toHaveText('1 de 5 linhas confirmadas');
+  });
+
+  test('a base muda depois: a linha só confirmada ganha o membro novo; a mexida fica como o usuário deixou até "Voltar à da base"', async ({ page }) => {
+    await inicio(page);
+    await vista(page, 'linhas').click();
+    await carta(page, 'pokemon:squirtle').locator('.lin-ok input').check();
+    const pk = carta(page, 'pokemon:pikachu');
+    await pk.locator('.lin-add-btn').click();
+    await pk.locator('.lin-busca').fill('pidgey');
+    await pk.locator('.lin-busca').press('Enter');
+    expect(await niveis(page, 'pokemon:pikachu')).toEqual([['Pikachu'], ['Raichu'], ['Pidgey']]);
+    await expect(pk.locator('.lin-tag')).toHaveText('editada');
+
+    // a base nova: Squirtle ganha o Blastoise; Pikachu ganha o Clefairy
+    const nova = fixture<{ linhas: { pokemon: LinhaEvo[] } }>('catalogo-set1-base.json');
+    nova.linhas.pokemon = nova.linhas.pokemon.map(l => (l.id === 'pokemon:squirtle' ? { ...l, niveis: [...l.niveis, ['Blastoise']] }
+      : l.id === 'pokemon:pikachu' ? { ...l, niveis: [...l.niveis, ['Clefairy']] } : l));
+    await page.route('**/catalogo/set1-base.json', route => route.fulfill({ json: nova }));
+    await page.reload();
+    await expect(page.locator('#status')).not.toContainText('carregando', { timeout: 15000 });
+    await aba(page, 'Catálogo');
+    await vista(page, 'linhas').click();
+    expect(await niveis(page, 'pokemon:squirtle')).toEqual([['Squirtle'], ['Wartortle'], ['Blastoise']]);
+    await expect(carta(page, 'pokemon:squirtle')).toHaveClass(/\bok\b/);
+    await expect(carta(page, 'pokemon:squirtle').locator('.lin-tag')).toHaveCount(0);
+    // a mexida não muda com a base (e o Clefairy da base nova fica fora dela)
+    expect(await niveis(page, 'pokemon:pikachu')).toEqual([['Pikachu'], ['Raichu'], ['Pidgey']]);
+    // voltar à da base (dois cliques): pega a da base nova
+    await carta(page, 'pokemon:pikachu').locator('.lin-voltar').click();
+    await expect(carta(page, 'pokemon:pikachu').locator('.lin-voltar')).toHaveText('Confirmar: desfazer');
+    await carta(page, 'pokemon:pikachu').locator('.lin-voltar').click();
+    expect(await niveis(page, 'pokemon:pikachu')).toEqual([['Pikachu'], ['Raichu'], ['Clefairy']]);
+    await expect(carta(page, 'pokemon:pikachu').locator('.lin-tag')).toHaveCount(0);
+    expect((await plano(page))!.linhas).toEqual({ pokemon: [{ id: 'pokemon:squirtle', confirmada: true }] });
   });
 
   test('sem o set1-base.json: grupo "Todos", sem classes nem linhas; dá pra criar classe e linha', async ({ page }) => {

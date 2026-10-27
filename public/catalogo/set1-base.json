@@ -237,11 +237,11 @@
    "Hatenna",
    "Hattrem",
    "Hatterene",
-   "Mega Raichu X",
    "Mega Sharpedo",
    "Mega Banette",
    "Mega Lopunny",
-   "Mega Mewtwo X"
+   "Mega Mewtwo X",
+   "Pichu"
   ],
   "digimon": [
    "Agumon",
@@ -749,13 +749,13 @@
     "id": "pokemon:pikachu",
     "niveis": [
      [
+      "Pichu"
+     ],
+     [
       "Pikachu"
      ],
      [
       "Raichu"
-     ],
-     [
-      "Mega Raichu X"
      ]
     ],
     "nome": "Pikachu"
@@ -2131,6 +2131,7 @@
   "pokemon": {
    "Venusaur": "Mega Venusaur",
    "Charizard": "Mega Charizard X",
+   "Raichu": "Mega Raichu X",
    "Blastoise": "Mega Blastoise",
    "Alakazam": "Mega Alakazam",
    "Dragonite": "Mega Dragonite",

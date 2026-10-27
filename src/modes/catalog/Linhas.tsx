@@ -51,7 +51,7 @@ export function VistaLinhas({ k, linhas: lista, pronto }: { k: string; linhas: r
         <button type="button" id="catNovaLinha" className="btn" onClick={nova}>Nova linha</button>
         {cat.linhasMexidas(k) && temBase && (
           <BotaoConfirmar id="catLinBase" rotulo="Voltar pra base" confirmar="Confirmar: desfazer as mudanças"
-            title={`Desfaz todas as mudanças nas linhas de ${nome} e volta pras do set1-base.json`} onConfirm={() => cat.voltarLinhasDaBase(k)} />
+            title={`Desfaz todas as mudanças nas linhas de ${nome} (as confirmações ficam) e volta pras do set1-base.json`} onConfirm={() => cat.voltarLinhasDaBase(k)} />
         )}
       </div>
       {vis.length ? (
@@ -91,7 +91,9 @@ function CartaoLinha({ k, l, porNome, indice, pronto, foco }: {
   // quem estava escolhido pode ter saído da linha (por outra carta, por exemplo)
   const nivelSel = sel ? l.niveis.findIndex(n => n.includes(sel)) : -1;
   const escolhido = nivelSel >= 0 ? sel : null;
-  const editar = (fn: (ls: pl.LinhaEvo[]) => pl.LinhaEvo[]) => cat.editarLinhas(k, fn);
+  // mexer = mudar o conteúdo desta linha (ela deixa de seguir a base); confirmar e apagar não contam
+  const editar = (fn: (ls: pl.LinhaEvo[]) => pl.LinhaEvo[], mexer = false) => cat.editarLinhas(k, fn, mexer ? [l.id] : []);
+  const daBase = cat.linhaNaBase(k, l.id);
 
   useEffect(() => {
     if (!foco) return;
@@ -109,7 +111,7 @@ function CartaoLinha({ k, l, porNome, indice, pronto, foco }: {
 
   function mover(destino: pl.Destino) {
     if (!escolhido) return;
-    editar(ls => pl.moverMembro(ls, l.id, escolhido, destino));
+    editar(ls => pl.moverMembro(ls, l.id, escolhido, destino), true);
   }
 
   return (
@@ -125,12 +127,19 @@ function CartaoLinha({ k, l, porNome, indice, pronto, foco }: {
               if (e.key === 'Enter') e.currentTarget.blur();
               if (e.key === 'Escape') { e.currentTarget.value = l.nome; e.currentTarget.blur(); }
             }}
-            onBlur={e => { editar(ls => pl.renomearLinha(ls, l.id, e.target.value)); setRenomeando(false); }} />
+            onBlur={e => { editar(ls => pl.renomearLinha(ls, l.id, e.target.value), true); setRenomeando(false); }} />
         ) : (
           <h3 className="lin-nome">{l.nome}</h3>
         )}
         <span className="lin-n mute">{plural(l.niveis.length, 'nível', 'níveis')}</span>
+        {l.editada && daBase && (
+          <span className="lin-tag" title="Você mudou esta linha: o que mudar nela no set1-base.json não aparece aqui">editada</span>
+        )}
         <span className="lin-head-acts">
+          {l.editada && daBase && (
+            <BotaoConfirmar className="lin-voltar" rotulo="Voltar à da base" confirmar="Confirmar: desfazer"
+              title="Desfaz as suas mudanças nesta linha (a confirmação fica)" onConfirm={() => cat.voltarLinhaDaBase(k, l.id)} />
+          )}
           <button type="button" className={'btn mini lin-add-btn' + (adicionando ? ' on' : '')} aria-expanded={adicionando}
             onClick={() => setAdicionando(!adicionando)}>{adicionando ? 'Fechar' : '+ Adicionar'}</button>
           {!renomeando && <button type="button" className="btn mini lin-renomear" onClick={() => setRenomeando(true)}>Renomear</button>}
@@ -178,7 +187,7 @@ function CartaoLinha({ k, l, porNome, indice, pronto, foco }: {
           )))}
           <button type="button" className="btn mini" data-destino="inicio" onClick={() => mover('inicio')}>Novo nível no começo</button>
           <button type="button" className="btn mini" data-destino="fim" onClick={() => mover('fim')}>Novo nível no fim</button>
-          <button type="button" className="btn mini danger lin-tirar" onClick={() => { editar(ls => pl.removerMembro(ls, l.id, escolhido)); setSel(null); }}>Tirar da linha</button>
+          <button type="button" className="btn mini danger lin-tirar" onClick={() => { editar(ls => pl.removerMembro(ls, l.id, escolhido), true); setSel(null); }}>Tirar da linha</button>
           <button type="button" className="btn mini" onClick={() => setSel(null)}>Fechar</button>
         </div>
       )}
@@ -214,7 +223,7 @@ function Adicionar({ k, l, porNome, indice, pronto, inputRef, fechar }: {
           !pos ? '' : pos.linha.id === l.id ? `já está aqui (nível ${pos.nivel + 1}): muda de nível` : `sai da linha ${pos.linha.nome}`,
         ].filter(Boolean).join(' · ');
       }}
-      onEscolher={nome => cat.editarLinhas(k, ls => pl.adicionarMembro(ls, l.id, nome, dest === 'inicio' || dest === 'fim' ? dest : Number(dest)))}>
+      onEscolher={nome => cat.editarLinhas(k, ls => pl.adicionarMembro(ls, l.id, nome, dest === 'inicio' || dest === 'fim' ? dest : Number(dest)), [l.id])}>
       <select className="lin-destino" aria-label="Em qual nível" value={dest} onChange={e => setDestino(e.target.value)}>
         {l.niveis.map((_, i) => <option key={i} value={String(i)}>Nível {i + 1} (alternativa)</option>)}
         <option value="fim">{l.niveis.length ? 'Novo nível no fim' : 'Nível 1'}</option>

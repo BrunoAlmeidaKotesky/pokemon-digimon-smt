@@ -2,7 +2,7 @@
 // Junta a lista de personagens do site com as informações que a fonte tem de cada um (public/catalogo/<chave>.json,
 // gerado pelo catalogo.mjs), filtra, conta os valores de cada campo e monta/lê o arquivo exportado (set1.json).
 import type { Item } from '../types';
-import { limparPlano, type ExtrasExportados, type LinhaExportada, type Plano } from './plano';
+import { limparPlano, type ExtrasExportados, type LinhaEvo, type LinhaExportada, type Plano } from './plano';
 
 /** Valor de um campo: texto, número ou lista de textos (ex.: os dois tipos de um Pokémon). */
 export type Valor = string | number | string[];
@@ -343,7 +343,9 @@ export interface Exportacao {
   /** quem foi exportado: os marcados ou o grupo "Set 1 (base)" (importar este não marca ninguém) */
   grupo?: 'marcados' | 'base';
   franquias: Record<string, FranquiaExportada>;
-  /** o planejamento inteiro (classes, unidades e linhas), pra Importar restaurar */
+  /** as linhas evolutivas que valem em cada franquia (base com as mudanças do usuário) */
+  linhas?: Record<string, LinhaEvo[]>;
+  /** o planejamento como o site guarda (classes, unidades, linhas por linha), pra Importar restaurar */
   plano?: Plano;
 }
 /** O planejamento na exportação: os campos a mais de cada personagem e o plano inteiro. */
@@ -351,6 +353,7 @@ export interface PlanoNaExportacao {
   grupo: 'marcados' | 'base';
   extras: (k: string, nome: string) => ExtrasExportados;
   plano: Plano;
+  linhas?: Record<string, LinhaEvo[]>;
 }
 /** Campos da exportação que não vêm da fonte: informação da fonte com o mesmo id não entra. */
 const RESERVADOS = new Set(['nome', 'img', 'classes', 'habilidade', 'linha', 'ult']);
@@ -391,7 +394,7 @@ export function montarExportacao(p: {
     };
   }
   if (!p.plano) return { geradoEm: p.geradoEm, franquias };
-  return { geradoEm: p.geradoEm, grupo: p.plano.grupo, franquias, plano: p.plano.plano };
+  return { geradoEm: p.geradoEm, grupo: p.plano.grupo, franquias, ...(p.plano.linhas ? { linhas: p.plano.linhas } : {}), plano: p.plano.plano };
 }
 
 /**

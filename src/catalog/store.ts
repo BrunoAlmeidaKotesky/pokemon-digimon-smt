@@ -5,7 +5,7 @@
 import { readJSON, writeJSON } from '../core/storage';
 import { filtrosVazios, juntarMarcas, limparMarcas, parseCatalogo, type Catalogo, type Filtros, type Marcas } from './model';
 import * as pl from './plano';
-import type { Base, Classe, LinhaEvo, Plano, Unidades } from './plano';
+import type { Base, Classe, LinhaEvo, LinhaSalva, Plano, Unidades } from './plano';
 
 /** Chave nova, só do Catálogo: { chave: [nomes marcados] }. */
 export const SET1_KEY = 'pdx-set1';
@@ -167,21 +167,57 @@ export function recarregarPlano(): void {
 /** As classes que valem agora (as do plano, senão as da base). Mesmo array enquanto não mudar. */
 export const classes = (): Classe[] => pl.classesEfetivas(lerPlano(), baseOk());
 /** As linhas da franquia que valem agora. Mesmo array enquanto não mudar. */
-export const linhasDe = (k: string): LinhaEvo[] => pl.linhasEfetivas(lerPlano(), baseOk(), k);
-/** As linhas da franquia já foram mexidas (não seguem mais a base)? */
-export const linhasMexidas = (k: string): boolean => k in lerPlano().linhas;
+// a mistura das linhas da base com as do plano, por franquia: refeita só quando um dos três muda
+const linhasCache = new Map<string, { s: LinhaSalva[] | undefined; a: string[] | undefined; b: LinhaEvo[] | undefined; r: LinhaEvo[] }>();
+const SEM_LINHAS: LinhaEvo[] = [];
+export function linhasDe(k: string): LinhaEvo[] {
+  const p = lerPlano();
+  const s = p.linhas[k];
+  const a = p.apagadas?.[k];
+  const b = baseOk()?.linhas[k];
+  const c = linhasCache.get(k);
+  if (c && c.s === s && c.a === a && c.b === b) return c.r;
+  const r = pl.mesclarLinhas(b ?? SEM_LINHAS, s ?? [], a ?? []);
+  linhasCache.set(k, { s, a, b, r });
+  return r;
+}
+/** O usuário mudou alguma linha da franquia (mexeu, criou ou apagou; confirmar não conta)? */
+export const linhasMexidas = (k: string): boolean => {
+  const p = lerPlano();
+  return pl.linhasMudadas(p.linhas[k] ?? [], p.apagadas?.[k] ?? [], baseOk()?.linhas[k] ?? SEM_LINHAS);
+};
+/** A linha existe na base (dá pra voltar pra ela)? */
+export const linhaNaBase = (k: string, id: string): boolean => !!baseOk()?.linhas[k]?.some(l => l.id === id);
 // sem protótipo, como as do plano: unidades["constructor"] não acha nada herdado
 const SEM_UNIDADES: Unidades = Object.freeze(Object.create(null) as Unidades);
 /** Classes e habilidade de cada personagem da franquia. Mesmo objeto enquanto não mudar. */
 export const unidadesDe = (k: string): Unidades => lerPlano().unidades[k] ?? SEM_UNIDADES;
 
-/** Muda as linhas da franquia; na primeira vez, copia as da base pro plano. Função que devolve o mesmo array = nada muda. */
-export function editarLinhas(k: string, fn: (l: LinhaEvo[]) => LinhaEvo[]): void {
+/** Grava o que o plano guarda das linhas da franquia (lista vazia e apagadas vazias saem). */
+function gravarLinhas(k: string, salvas: LinhaSalva[], apag: string[]): void {
+  const p = lerPlano();
+  const linhas = { ...p.linhas };
+  const apagadas = { ...p.apagadas };
+  if (salvas.length) linhas[k] = salvas;
+  else delete linhas[k];
+  if (apag.length) apagadas[k] = apag;
+  else delete apagadas[k];
+  const { apagadas: _, ...resto } = p;
+  gravarPlano({ ...resto, linhas, ...(Object.keys(apagadas).length ? { apagadas } : {}) });
+}
+/**
+ * Muda as linhas da franquia, linha por linha: `fn` recebe as que valem e devolve as novas (mesmo array = nada muda).
+ * `mexidas`: as linhas que o usuário mudou de verdade (nome, membros, níveis); essas passam a valer como estão, sem
+ * seguir a base. Das outras linhas da base só a confirmação vai pro plano; linha da base que sumiu foi apagada.
+ */
+export function editarLinhas(k: string, fn: (l: LinhaEvo[]) => LinhaEvo[], mexidas: readonly string[] = []): void {
   const antes = linhasDe(k);
   const depois = fn(antes);
   if (depois === antes) return;
-  const p = lerPlano();
-  gravarPlano({ ...p, linhas: { ...p.linhas, [k]: depois } });
+  const b = baseOk();
+  const g = pl.guardarLinhas(depois, b?.linhas[k] ?? SEM_LINHAS, new Set(mexidas));
+  // sem base não dá pra saber o que foi apagado: fica o que estava
+  gravarLinhas(k, g.salvas, b ? g.apagadas : lerPlano().apagadas?.[k] ?? []);
 }
 /** Cria uma linha (com o personagem no nível 1, se vier) e devolve o id. */
 export function criarLinha(k: string, nome: string, membro?: string): string {
@@ -196,10 +232,18 @@ export function criarLinha(k: string, nome: string, membro?: string): string {
 /** Joga fora as mudanças nas linhas da franquia: volta a seguir a base. */
 export function voltarLinhasDaBase(k: string): void {
   const p = lerPlano();
-  if (!(k in p.linhas)) return;
-  const linhas = { ...p.linhas };
-  delete linhas[k];
-  gravarPlano({ ...p, linhas });
+  if (!(k in p.linhas) && !p.apagadas?.[k]) return;
+  // as confirmações das linhas da base ficam
+  const naBase = new Set((baseOk()?.linhas[k] ?? SEM_LINHAS).map(l => l.id));
+  gravarLinhas(k, (p.linhas[k] ?? []).filter(s => s.confirmada && naBase.has(s.id)).map(s => ({ id: s.id, confirmada: true })), []);
+}
+/** Joga fora as mudanças numa linha da base (nome, membros, níveis): ela volta a seguir a base; a confirmação fica. */
+export function voltarLinhaDaBase(k: string, id: string): void {
+  const p = lerPlano();
+  const salvas = p.linhas[k] ?? [];
+  const s = salvas.find(x => x.id === id);
+  if (!s || !linhaNaBase(k, id)) return;
+  gravarLinhas(k, salvas.flatMap(x => (x !== s ? [x] : x.confirmada ? [{ id, confirmada: true }] : [])), p.apagadas?.[k] ?? []);
 }
 
 /** Muda a lista de classes; na primeira vez, copia as da base pro plano. */
@@ -256,6 +300,8 @@ export async function importarPlano(arq: Plano, validas: readonly string[]): Pro
 }
 /** O plano completo pro set1.json (classes e linhas que valem agora, das franquias `ks`). */
 export const planoParaExportar = (ks: readonly string[]): Plano => pl.planoCompleto(lerPlano(), baseOk(), ks);
+/** As linhas que valem em cada franquia de `ks` (pro set1.json). */
+export const linhasParaExportar = (ks: readonly string[]): Record<string, LinhaEvo[]> => Object.fromEntries(ks.map(k => [k, linhasDe(k)]).filter(([, l]) => l!.length));
 
 // ---------- o que a aba mostra ----------
 let atual = '';
