@@ -14,7 +14,7 @@ Cada franquia é um arquivo em `src/sources/`, na ordem de `SOURCES` (`src/sourc
 
 | Chave | Rótulo | Lista | Imagem |
 |---|---|---|---|
-| `pokemon` | Pokémon | PokeAPI (`pokemon-species`) | arte oficial do repositório de sprites da PokeAPI |
+| `pokemon` | Pokémon | PokeAPI (`pokemon-species`) e, no fim, as Megas, Primais e formas regionais (`pokemon`) | arte oficial do repositório de sprites da PokeAPI |
 | `digimon` | Digimon | Digi-API, todas as páginas | da própria API (detalhe sob demanda) |
 | `smt` | SMT | `src/sources/smt.json` (pacote npm `megaten`), 297 demônios | `public/smt/*.webp` |
 | `persona` | Persona | `src/sources/persona.json` (mesmo pacote), 95 personas dos personagens | `public/smt/*.webp` |

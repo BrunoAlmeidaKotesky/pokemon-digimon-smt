@@ -40,6 +40,8 @@ export interface MockOpts {
   sujimon?: 'fixture' | 'ausente' | [string, string][];
   /** responde a API da Yakuza Wiki (Sujidex) com a fixture; sem isso ela fica bloqueada */
   sujimonWiki?: boolean;
+  /** responde a lista de variedades da PokéAPI com tests/fixtures/pokemon-forms.json (sem isso, vem vazia) */
+  pokemonFormas?: boolean;
   /** as wikis dos renders (Overwatch, Deadlock) respondem erro 500: fica a imagem da API */
   semRenders?: boolean;
   /** atraso (ms) antes de responder cada franquia */
@@ -94,6 +96,12 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
       return route.continue();
     }
     if (u.hostname === 'pokeapi.co') {
+      // Megas e formas regionais: só com pokemonFormas (os outros testes contam com os 40 da fixture de espécies)
+      if (u.pathname === '/api/v2/pokemon') {
+        count('pokemon-formas');
+        if (falha.has('pokemon')) return route.fulfill({ status: 500, body: 'erro' });
+        return json(route, opts.pokemonFormas ? fixture('pokemon-forms.json') : { count: 0, results: [] });
+      }
       count('pokemon'); await espera('pokemon');
       return falha.has('pokemon') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('pokemon-species.json'));
     }

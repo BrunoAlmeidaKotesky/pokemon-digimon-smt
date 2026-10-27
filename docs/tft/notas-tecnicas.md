@@ -28,6 +28,10 @@ buscar categorias a cada visita.
 - REST: `/pokemon-species/{id}` + `/pokemon/{id}` = ~2050 pedidos; as listas reversas (`/type/{x}`, `/generation`,
   cor, forma, grupo de ovo) somam ~66 pedidos; lendário/mítico não tem lista reversa.
 
+- Megas, Primais e formas regionais (157: 97 Megas, 2 Primais, 58 de Alola, Galar, Hisui e Paldea) vêm da lista
+  `/api/v2/pokemon?limit=2000` (variedades com id acima de 10000), com nome oficial em inglês (`formName` em
+  src/sources/pokemon.ts: "Mega Charizard X", "Alolan Raichu") e arte oficial pelo id. No catálogo têm o campo Variante.
+
 ## Digimon (1488, todos os detalhes buscados)
 
 | Campo | Valores | Cobertura |

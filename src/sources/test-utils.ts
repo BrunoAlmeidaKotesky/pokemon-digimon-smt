@@ -18,7 +18,7 @@ export type Route = (u: URL, raw: string) => Response | Promise<Response> | unde
 function fixtureRoute(u: URL): Response | undefined {
   if (u.hostname === 'localhost' && u.pathname === '/sujimon/list.json') return json(fixture('sujimon-list.json'));
   if (u.hostname === 'localhost' && u.pathname === '/ff/list.json') return json(fixture('ff-list.json'));
-  if (u.hostname === 'pokeapi.co') return json(fixture('pokemon-species.json'));
+  if (u.hostname === 'pokeapi.co') return json(fixture(u.pathname === '/api/v2/pokemon' ? 'pokemon-forms.json' : 'pokemon-species.json'));
   if (u.hostname === 'digi-api.com' && u.pathname.startsWith('/api/v1/digimon')) {
     const id = /\/digimon\/(\d+)$/.exec(u.pathname)?.[1];
     if (id) return json(fixture(`digimon-detail-${id}.json`));

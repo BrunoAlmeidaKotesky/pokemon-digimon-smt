@@ -199,3 +199,18 @@ async function conferirRenders(page: Page, img: Record<'deadlock' | 'lol' | 'ove
     await expect(carta.locator('img')).toHaveCSS('object-fit', fr === 'lol' ? 'cover' : 'contain');
   }
 }
+
+test.describe('Pokémon: Megas e formas regionais', () => {
+  test('entram depois das espécies, com nome oficial e a arte oficial da forma', async ({ page }) => {
+    // o atraso faz a lista do Pokémon chegar depois da do Digimon, como no teste do nice(): o primeiro sorteio já é o do duelo
+    const calls = await prepare(page, { pokemonFormas: true, atraso: { pokemon: 500 }, storage: { 'pdx-bags': { pokemon: ['Alolan Raichu'] } } });
+    await abrir(page);
+    // 40 espécies da fixture + 6 formas (Gigantamax, totem e o Pikachu de boné ficam de fora)
+    await expect(page.locator('#status')).toContainText('Pokémon: 46');
+    const carta = page.locator('#duelRow .card').nth(0);
+    await expect(carta.locator('.name')).toHaveText('Alolan Raichu');
+    await expect(carta.locator('img')).toHaveAttribute('src', /official-artwork\/10100\.png$/);
+    expect(calls['pokemon-formas']).toBe(1);
+    expect(calls.bloqueado ?? 0).toBe(0);
+  });
+});
