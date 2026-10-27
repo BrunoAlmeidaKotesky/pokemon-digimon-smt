@@ -14,14 +14,16 @@ const art = (url: string) =>
 const REGIAO: Record<string, string> = { alola: 'Alolan', galar: 'Galarian', hisui: 'Hisuian', paldea: 'Paldean' };
 
 /**
- * Nome oficial (em inglês) de uma Mega, forma Primal ou forma regional, ou null pras outras variedades (Gigantamax,
- * totem, bonés do Pikachu...): 'charizard-mega-x' -> 'Mega Charizard X', 'raichu-alola' -> 'Alolan Raichu',
- * 'kyogre-primal' -> 'Primal Kyogre', 'tauros-paldea-combat-breed' -> 'Paldean Tauros (Combat Breed)'.
+ * Nome oficial (em inglês) de uma Mega, Gigantamax, forma Primal ou forma regional, ou null pras outras variedades
+ * (totem, bonés do Pikachu...): 'charizard-mega-x' -> 'Mega Charizard X', 'machamp-gmax' -> 'Gigantamax Machamp',
+ * 'raichu-alola' -> 'Alolan Raichu', 'kyogre-primal' -> 'Primal Kyogre',
+ * 'tauros-paldea-combat-breed' -> 'Paldean Tauros (Combat Breed)'.
  * Nome de espécie igual ao do site (nice): 'mr-mime-galar' -> 'Galarian Mr Mime'.
  */
 export function formName(name: string): string | null {
-  if (/totem|gmax|-cap|cosplay|starter|busted|eternamax/.test(name)) return null;
+  if (/totem|-cap|cosplay|starter|busted|eternamax/.test(name)) return null;
   const p = name.split('-');
+  if (p.at(-1) === 'gmax') return `Gigantamax ${nice(p.slice(0, -1).join('-'))}`;
   const mega = p.indexOf('mega');
   if (mega > 0) return `Mega ${nice(p.slice(0, mega).join('-'))}${p.slice(mega + 1).map(s => ' ' + s.toUpperCase()).join('')}`;
   if (p.at(-1) === 'primal') return `Primal ${nice(p.slice(0, -1).join('-'))}`;
@@ -31,8 +33,8 @@ export function formName(name: string): string | null {
   return `${REGIAO[p[r] as string]} ${nice(p.slice(0, r).join('-'))}${extra.length ? ` (${nice(extra.join('-'))})` : ''}`;
 }
 
-// Pokémon: as espécies (com a arte oficial pelo id) e, no fim, as Megas, formas Primais e formas regionais. Se a lista
-// das formas falhar, ficam só as espécies.
+// Pokémon: as espécies (com a arte oficial pelo id) e, no fim, as Megas, Gigantamax, formas Primais e formas regionais.
+// Se a lista das formas falhar, ficam só as espécies.
 async function load(): Promise<Item[]> {
   const [j, formas] = await Promise.all([
     fetch(POKEMON_URL).then(r => r.json() as Promise<SpeciesPage>),

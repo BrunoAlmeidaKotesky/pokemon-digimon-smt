@@ -378,13 +378,13 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     const [cz, cf] = set1.franquias.pokemon.personagens;
     expect(cz).toEqual({
       nome: 'Charizard', img: expect.stringMatching(/official-artwork\/6\.png$/), tipo: ['Fire', 'Flying'], geracao: 'I', habitat: 'mountain',
-      classes: ['Dragão'], habilidade: 'Voa alto', linha: { nome: 'Charmander', nivel: 3, de: 3, confirmada: true },
+      classes: ['Dragão'], habilidade: 'Voa alto', linha: { nome: 'Charmander', nivel: 3, de: 3, confirmada: true }, ult: 'Mega Charizard X',
     });
     // sem planejamento: só nome e imagem (a fixture do catálogo não tem o Clefairy)
     expect(cf).toStrictEqual({ nome: 'Clefairy', img: expect.stringMatching(/official-artwork\/35\.png$/) });
     // o plano inteiro: classes e linhas que valem agora (da base ou mudadas)
     expect(set1.plano.classes).toEqual(BASE.classes);
-    expect(set1.plano.unidades).toEqual({ pokemon: { Charizard: { classes: ['dragao'], habilidade: 'Voa alto' } } });
+    expect(set1.plano.unidades).toEqual({ pokemon: { Charizard: { classes: ['dragao'], habilidade: 'Voa alto', ult: 'Mega Charizard X' } } });
     expect(Object.keys(set1.plano.linhas)).toEqual(['pokemon', 'persona']);
     expect(set1.plano.linhas.pokemon).toEqual(linhas);
 
@@ -409,7 +409,7 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await expect(linha(page, 'Charizard').locator('.lin-selo')).toHaveText('Linha Charmander · nível 3 de 3');
     await page.setInputFiles('#catImportFile', { name: 'set1.json', mimeType: 'application/json', buffer: arqMarcados });
     await expect(page.locator('#catMsg')).toHaveText(
-      'Importado set1.json: 2 personagens em 1 franquia, 2 novos. Planejamento restaurado: 3 classes, 1 personagem com classe ou habilidade e as linhas de 2 franquias.');
+      'Importado set1.json: 2 personagens em 1 franquia, 2 novos. Planejamento restaurado: 3 classes, 1 personagem com classe, habilidade ou ult e as linhas de 2 franquias.');
     await expect(linha(page, 'Charizard').locator('.cls-chip')).toHaveText(['Dragão×']);
     await expect(linha(page, 'Charizard').locator('textarea.cat-hab')).toHaveValue('Voa alto');
     await expect(linha(page, 'Charizard').locator('.lin-selo')).toHaveText('Linha Charmander · nível 3 de 3 ✓');
@@ -420,9 +420,74 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     // o arquivo do grupo base restaura o planejamento sem marcar ninguém
     await page.setInputFiles('#catImportFile', { name: 'set1-grupo-base.json', mimeType: 'application/json', buffer: arqBase });
     await expect(page.locator('#catMsg')).toHaveText(
-      'Importado set1-grupo-base.json. Planejamento restaurado: 3 classes, 1 personagem com classe ou habilidade e as linhas de 2 franquias.');
+      'Importado set1-grupo-base.json. Planejamento restaurado: 3 classes, 1 personagem com classe, habilidade ou ult e as linhas de 2 franquias.');
     await expect(page.locator('#catMsg')).not.toHaveClass(/\bbad\b/);
     expect(await lerStorage(page, 'pdx-set1')).toEqual({ pokemon: ['Charizard', 'Clefairy'] });
+  });
+
+  test('ult: a da base no personagem e na linha; trocar, tirar (continua tirada), voltar pra da base; filtro, busca e set1.json', async ({ page }) => {
+    // com as Megas e formas regionais na lista do Pokémon (tests/fixtures/pokemon-forms.json)
+    await inicio(page, { pokemonFormas: true });
+    const cz = linha(page, 'Charizard');
+    await expect(cz.locator('.ult-selo')).toHaveText('Ult: Mega Charizard X');
+    await expect(cz.locator('.ult-selo .th img')).toHaveAttribute('src', /official-artwork\/10034\.png$/);
+    await expect(linha(page, 'Venusaur').locator('.ult-add')).toHaveText('+ Ult');
+    expect(await opcoes(page, '#catUlt')).toEqual(['Todas', 'Com ult (1)', 'Sem ult (11)']);
+    // na vista Linhas, embaixo de quem tem ult
+    await vista(page, 'linhas').click();
+    await expect(carta(page, 'pokemon:charmander').locator('.lin-ult')).toHaveText(['ult: Mega Charizard X']);
+    await expect(carta(page, 'pokemon:charmander').locator('.lin-ult')).toHaveAttribute('data-de', 'Charizard');
+    await vista(page, 'personagens').click();
+
+    // trocar: busca na lista da franquia; quem tem o nome dele vem primeiro, e a da base vem marcada
+    await cz.locator('.ult-selo').click();
+    const busca = cz.locator('.ult-ed .lin-busca');
+    await expect(busca).toBeFocused();
+    await busca.fill('chari');
+    await expect(cz.locator('.ult-ed .lin-res-it .nm')).toHaveText(['Mega Charizard X', 'Gigantamax Charizard', 'Charizard']);
+    await expect(cz.locator('.ult-ed .lin-res-it[data-nome="Mega Charizard X"] small')).toHaveText('a da base');
+    await cz.locator('.ult-ed .lin-res-it[data-nome="Gigantamax Charizard"]').click();
+    await expect(cz.locator('.ult-ed')).toHaveCount(0);
+    await expect(cz.locator('.ult-selo')).toHaveText('Ult: Gigantamax Charizard');
+    expect((await plano(page))!.unidades.pokemon).toEqual({ Charizard: { ult: 'Gigantamax Charizard' } });
+
+    // tirar: fica tirada mesmo com a base dando uma, inclusive depois de recarregar
+    await cz.locator('.ult-selo').click();
+    await cz.locator('.ult-tirar').click();
+    await expect(cz.locator('.ult-selo')).toHaveCount(0);
+    expect((await plano(page))!.unidades.pokemon).toEqual({ Charizard: { ult: '' } });
+    await page.reload();
+    await expect(page.locator('#status')).not.toContainText('carregando', { timeout: 15000 });
+    await aba(page, 'Catálogo');
+    await expect(linha(page, 'Charizard').locator('.ult-add')).toHaveText('+ Ult');
+    await expect(linha(page, 'Charizard').locator('.ult-selo')).toHaveCount(0);
+    // voltar pra da base: o plano esquece (segue a base de novo)
+    await linha(page, 'Charizard').locator('.ult-add').click();
+    await expect(linha(page, 'Charizard').locator('.ult-base')).toHaveText('Usar a da base (Mega Charizard X)');
+    await linha(page, 'Charizard').locator('.ult-base').click();
+    await expect(linha(page, 'Charizard').locator('.ult-selo')).toHaveText('Ult: Mega Charizard X');
+    expect((await plano(page))!.unidades).toEqual({});
+
+    // dar ult a quem não tem (Enter escolhe o primeiro resultado)
+    await linha(page, 'Venusaur').locator('.ult-add').click();
+    await expect(linha(page, 'Venusaur').locator('.ult-ed .lin-busca')).toBeFocused();
+    await page.keyboard.type('alolan');
+    await page.keyboard.press('Enter');
+    await expect(linha(page, 'Venusaur').locator('.ult-selo')).toHaveText('Ult: Alolan Raichu');
+
+    // filtro e busca pela ult
+    await page.selectOption('#catUlt', 'com');
+    expect(await nomes(page)).toEqual(['Venusaur', 'Charizard']);
+    await page.fill('#catBusca', 'alolan');
+    expect(await nomes(page)).toEqual(['Venusaur']);
+    await page.locator('#catLimparFiltros').click();
+
+    // set1.json: cada personagem com a ult que vale, e o plano com a da base escrita
+    const [dl] = await Promise.all([page.waitForEvent('download'), page.locator('#catExportBase').click()]);
+    const set1 = JSON.parse(fs.readFileSync((await dl.path())!, 'utf8'));
+    const pers = set1.franquias.pokemon.personagens as { nome: string; ult?: string }[];
+    expect(pers.filter(x => x.ult).map(x => [x.nome, x.ult])).toEqual([['Venusaur', 'Alolan Raichu'], ['Charizard', 'Mega Charizard X']]);
+    expect(set1.plano.unidades.pokemon).toEqual({ Charizard: { ult: 'Mega Charizard X' }, Venusaur: { ult: 'Alolan Raichu' } });
   });
 
   test('sem o set1-base.json: grupo "Todos", sem classes nem linhas; dá pra criar classe e linha', async ({ page }) => {

@@ -205,8 +205,8 @@ test.describe('Pokémon: Megas e formas regionais', () => {
     // o atraso faz a lista do Pokémon chegar depois da do Digimon, como no teste do nice(): o primeiro sorteio já é o do duelo
     const calls = await prepare(page, { pokemonFormas: true, atraso: { pokemon: 500 }, storage: { 'pdx-bags': { pokemon: ['Alolan Raichu'] } } });
     await abrir(page);
-    // 40 espécies da fixture + 6 formas (Gigantamax, totem e o Pikachu de boné ficam de fora)
-    await expect(page.locator('#status')).toContainText('Pokémon: 46');
+    // 40 espécies da fixture + 7 formas (a totem e o Pikachu de fantasia ficam de fora)
+    await expect(page.locator('#status')).toContainText('Pokémon: 47');
     const carta = page.locator('#duelRow .card').nth(0);
     await expect(carta.locator('.name')).toHaveText('Alolan Raichu');
     await expect(carta.locator('img')).toHaveAttribute('src', /official-artwork\/10100\.png$/);

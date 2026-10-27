@@ -1,15 +1,13 @@
 // Vista "Linhas" de uma franquia: uma carta por linha evolutiva, com os níveis lado a lado (no celular, um embaixo do
-// outro). Dá pra confirmar, renomear, apagar, mover alguém de nível (ou virar alternativa), tirar e pôr gente.
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react';
+// outro). Dá pra confirmar, renomear, apagar, mover alguém de nível (ou virar alternativa), tirar e pôr gente. Quem
+// tem ult mostra a forma embaixo ("ult: Mega Venusaur").
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { label } from '../../state/app';
 import { Switch } from '../../components/Controls';
 import * as cat from '../../catalog/store';
 import * as pl from '../../catalog/plano';
 import { normalizar, type Linha } from '../../catalog/model';
-import { BotaoConfirmar, Thumb, linhaAvulsa, plural } from './comum';
-
-/** Quantos resultados a busca de "adicionar" mostra. */
-const MAX_RESULTADOS = 8;
+import { BotaoConfirmar, BuscaPersonagem, Thumb, linhaAvulsa, plural } from './comum';
 
 export function VistaLinhas({ k, linhas: lista, pronto }: { k: string; linhas: readonly Linha[]; pronto: boolean }) {
   const linhasEvo = cat.linhasDe(k);
@@ -148,14 +146,18 @@ function CartaoLinha({ k, l, porNome, indice, pronto, foco }: {
               <div className="lin-membros">
                 {n.map(nome => {
                   const row = porNome.get(nome);
+                  const ult = cat.ultDe(k, nome);
                   return (
-                    <button key={nome} type="button" className={'lin-membro' + (escolhido === nome ? ' on' : '') + (row ? '' : ' fora')} data-nome={nome}
-                      aria-pressed={escolhido === nome} title={row ? `${nome}: mover ou tirar` : `${nome} não está na lista do site`}
-                      onClick={() => setSel(escolhido === nome ? null : nome)}>
-                      <Thumb l={row ?? linhaAvulsa(k, nome)} pronto={pronto} />
-                      <span className="nm">{nome}</span>
-                      {!row && <small>fora da lista</small>}
-                    </button>
+                    <div key={nome} className="lin-m">
+                      <button type="button" className={'lin-membro' + (escolhido === nome ? ' on' : '') + (row ? '' : ' fora')} data-nome={nome}
+                        aria-pressed={escolhido === nome} title={row ? `${nome}: mover ou tirar` : `${nome} não está na lista do site`}
+                        onClick={() => setSel(escolhido === nome ? null : nome)}>
+                        <Thumb l={row ?? linhaAvulsa(k, nome)} pronto={pronto} />
+                        <span className="nm">{nome}</span>
+                        {!row && <small>fora da lista</small>}
+                      </button>
+                      {ult && <span className="lin-ult" data-de={nome} title={`Na ult, ${nome} vira ${ult}`}>ult: {ult}</span>}
+                    </div>
                   );
                 })}
               </div>
@@ -197,78 +199,27 @@ function Adicionar({ k, l, porNome, indice, pronto, inputRef, fechar }: {
   /** Esc com o campo vazio fecha */
   fechar: () => void;
 }) {
-  const [q, setQ] = useState('');
   const [destino, setDestino] = useState('fim');
-  const lista = useRef<HTMLUListElement>(null);
   const grupo = cat.grupoDe(k) ?? cat.grupoBase(k);
-  const t = normalizar(q.trim());
-  const res = useMemo(() => {
-    if (!t) return [];
-    const achados: { nome: string; ordem: number }[] = [];
-    let i = 0;
-    for (const nome of porNome.keys()) {
-      const n = normalizar(nome);
-      const p = n.indexOf(t);
-      if (p >= 0) achados.push({ nome, ordem: (grupo.has(nome) ? 0 : 2) + (p === 0 ? 0 : 1) + i++ / 1e6 });
-    }
-    return achados.sort((a, b) => a.ordem - b.ordem).slice(0, MAX_RESULTADOS).map(a => a.nome);
-  }, [t, porNome, grupo]);
   // o nível escolhido pode ter sumido (alguém saiu da linha)
   const dest = destino === 'inicio' || destino === 'fim' || Number(destino) < l.niveis.length ? destino : 'fim';
 
-  function adicionar(nome: string) {
-    cat.editarLinhas(k, ls => pl.adicionarMembro(ls, l.id, nome, dest === 'inicio' || dest === 'fim' ? dest : Number(dest)));
-    setQ('');
-    inputRef.current?.focus();
-  }
-  /** Setas sobem e descem entre o campo e os resultados. */
-  function setas(e: KeyboardEvent, i: number) {
-    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-    e.preventDefault();
-    const bs = lista.current ? [...lista.current.querySelectorAll('button')] : [];
-    const j = i + (e.key === 'ArrowDown' ? 1 : -1);
-    if (j < 0) inputRef.current?.focus();
-    else bs[Math.min(j, bs.length - 1)]?.focus();
-  }
-
   return (
-    <div className="lin-add">
-      <div className="lin-add-campos">
-        <input ref={inputRef} type="search" className="lin-busca" autoFocus placeholder="Adicionar personagem…" aria-label={`Adicionar à linha ${l.nome}`}
-          value={q} onChange={e => setQ(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && res[0]) { e.preventDefault(); adicionar(res[0]); }
-            else if (e.key === 'Escape') { if (q) setQ(''); else fechar(); }
-            else setas(e, -1);
-          }} />
-        <select className="lin-destino" aria-label="Em qual nível" value={dest} onChange={e => setDestino(e.target.value)}>
-          {l.niveis.map((_, i) => <option key={i} value={String(i)}>Nível {i + 1} (alternativa)</option>)}
-          <option value="fim">{l.niveis.length ? 'Novo nível no fim' : 'Nível 1'}</option>
-          {l.niveis.length > 0 && <option value="inicio">Novo nível no começo</option>}
-        </select>
-      </div>
-      {t && (res.length ? (
-        <ul ref={lista} className="lin-res" aria-label="Resultados">
-          {res.map((nome, i) => {
-            const pos = indice.get(nome);
-            const nota = [
-              grupo.has(nome) ? 'no grupo' : '',
-              !pos ? '' : pos.linha.id === l.id ? `já está aqui (nível ${pos.nivel + 1}): muda de nível` : `sai da linha ${pos.linha.nome}`,
-            ].filter(Boolean).join(' · ');
-            return (
-              <li key={nome}>
-                <button type="button" className="lin-res-it" data-nome={nome} onClick={() => adicionar(nome)} onKeyDown={e => setas(e, i)}>
-                  <Thumb l={porNome.get(nome)!} pronto={pronto} />
-                  <span className="txt">
-                    <span className="nm">{nome}</span>
-                    {nota && <small>{nota}</small>}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : <p className="mute lin-res-vazio">Ninguém com esse nome em {label(k)}.</p>)}
-    </div>
+    <BuscaPersonagem porNome={porNome} pronto={pronto} inputRef={inputRef} rotulo={`Adicionar à linha ${l.nome}`} placeholder="Adicionar personagem…"
+      vazio={`Ninguém com esse nome em ${label(k)}.`} prioridade={nome => (grupo.has(nome) ? 0 : 2)} onFechar={fechar}
+      nota={nome => {
+        const pos = indice.get(nome);
+        return [
+          grupo.has(nome) ? 'no grupo' : '',
+          !pos ? '' : pos.linha.id === l.id ? `já está aqui (nível ${pos.nivel + 1}): muda de nível` : `sai da linha ${pos.linha.nome}`,
+        ].filter(Boolean).join(' · ');
+      }}
+      onEscolher={nome => cat.editarLinhas(k, ls => pl.adicionarMembro(ls, l.id, nome, dest === 'inicio' || dest === 'fim' ? dest : Number(dest)))}>
+      <select className="lin-destino" aria-label="Em qual nível" value={dest} onChange={e => setDestino(e.target.value)}>
+        {l.niveis.map((_, i) => <option key={i} value={String(i)}>Nível {i + 1} (alternativa)</option>)}
+        <option value="fim">{l.niveis.length ? 'Novo nível no fim' : 'Nível 1'}</option>
+        {l.niveis.length > 0 && <option value="inicio">Novo nível no começo</option>}
+      </select>
+    </BuscaPersonagem>
   );
 }

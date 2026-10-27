@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   F_CLASSE, SEM, TODOS, compararNatural, distintos, filtrar, filtravel, filtrosVazios, juntarMarcas, lerImportacao, limparMarcas,
-  montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesLinha, parseCatalogo, resumoInfo, temFiltro, valores,
+  montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesLinha, opcoesUlt, parseCatalogo, resumoInfo, temFiltro, valores,
   type Contexto, type Filtros,
 } from './model';
 
@@ -185,6 +185,13 @@ describe('filtros do planejamento (classe, linha, busca na habilidade)', () => {
     // classe que não existe mais na lista não conta (o personagem fica "sem classe")
     expect(opcoesClasse(linhas, ['dragao'], f({ q: 'charmander' }), ctx)).toEqual([{ valor: 'dragao', n: 0 }, { valor: SEM, n: 1 }]);
     expect(filtrar(linhas, f({ classe: 'fogo' }), ctx, F_CLASSE)).toHaveLength(6);
+  });
+  it('ult: com e sem forma de ult; opcoesUlt conta cada um', () => {
+    const c: Contexto = { ...ctx, ult: n => ({ Charizard: 'Mega Charizard X', Pidgey: '' })[n] };
+    expect(nomes(filtrar(linhas, f({ ult: 'com' }), c))).toEqual(['Charizard']);
+    expect(nomes(filtrar(linhas, f({ ult: 'sem' }), c))).toEqual(['Bulbasaur', 'Charmander', 'Pidgey', 'Pikachu', 'Agumon']);
+    expect(opcoesUlt(linhas, f({ ult: 'com', q: 'char' }), c)).toEqual([{ valor: 'com', n: 1 }, { valor: 'sem', n: 1 }]);
+    expect(temFiltro(f({ ult: 'sem' }))).toBe(true);
   });
   it('opcoesLinha conta cada situação', () => {
     expect(opcoesLinha(linhas, f(), ctx)).toEqual([

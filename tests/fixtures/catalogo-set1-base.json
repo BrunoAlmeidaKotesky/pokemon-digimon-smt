@@ -24,6 +24,9 @@
       { "id": "persona:orpheus", "nome": "Protagonista (P3)", "niveis": [["Orpheus", "Orpheus F"], ["Messiah"], ["Orpheus Telos"]] }
     ]
   },
+  "ults": {
+    "pokemon": { "Charizard": "Mega Charizard X" }
+  },
   "itens": {
     "componentes": [{ "id": "pyrus", "nome": "Pyrus", "bonus": "Mais dano de ataque" }],
     "receitas": [{ "a": "pyrus", "b": "pyrus", "bakugan": "Drago" }]

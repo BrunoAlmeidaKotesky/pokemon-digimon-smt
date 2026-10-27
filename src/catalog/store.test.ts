@@ -115,14 +115,14 @@ describe('o que a aba mostra', () => {
     expect(s.quantosMostrar()).toBe(s.PAGINA);
     s.mudarCampo('pokemon', 'tipo', 'Fire');
     s.mudarCampo('pokemon', 'geracao', 'I');
-    expect(s.filtrosDe('pokemon')).toEqual({ q: 'char', campos: { tipo: 'Fire', geracao: 'I' }, classe: '', linha: '' });
-    expect(s.filtrosDe('lol')).toEqual({ q: '', campos: {}, classe: '', linha: '' });
+    expect(s.filtrosDe('pokemon')).toEqual({ q: 'char', campos: { tipo: 'Fire', geracao: 'I' }, classe: '', linha: '', ult: '' });
+    expect(s.filtrosDe('lol')).toEqual({ q: '', campos: {}, classe: '', linha: '', ult: '' });
     s.mostrarMais();
     s.escolherFranquia('lol');
     expect(s.franquiaAtual()).toBe('lol');
     expect(s.quantosMostrar()).toBe(s.PAGINA);
     s.limparFiltros('pokemon');
-    expect(s.filtrosDe('pokemon')).toEqual({ q: '', campos: {}, classe: '', linha: '' });
+    expect(s.filtrosDe('pokemon')).toEqual({ q: '', campos: {}, classe: '', linha: '', ult: '' });
   });
 });
 
@@ -137,6 +137,7 @@ describe('base (catalogo/set1-base.json) e planejamento (pdx-set1-plano)', () =>
       persona: [{ id: 'persona:orpheus', nome: 'P3', niveis: [['Orpheus', 'Orpheus F'], ['Messiah']] }],
     },
     itens: { componentes: [] },
+    ults: { pokemon: { Charizard: 'Mega Charizard X' } },
   };
   const comBase = (corpo: unknown = BASE, status = 200) => {
     const f = vi.fn(async () => new Response(typeof corpo === 'string' ? corpo : JSON.stringify(corpo), { status }));
@@ -272,6 +273,32 @@ describe('base (catalogo/set1-base.json) e planejamento (pdx-set1-plano)', () =>
     const exp = s.planoParaExportar(['pokemon', 'persona', 'lol']);
     expect(exp.classes).toEqual(BASE.classes);
     expect(Object.keys(exp.linhas)).toEqual(['pokemon', 'persona']);
+  });
+  it('ult: a da base até mudar; trocar grava; tirar fica gravado (vazio) e não volta; escolher a da base volta a seguir a base', async () => {
+    const st = installStorage();
+    s.recarregarPlano();
+    comBase();
+    await s.pedirBase();
+    expect(s.ultsBase('pokemon')).toEqual({ Charizard: 'Mega Charizard X' });
+    expect(s.ultsBase('lol')).toEqual({});
+    expect(s.ultDe('pokemon', 'Charizard')).toBe('Mega Charizard X');
+    expect(s.ultDe('pokemon', 'Pidgey')).toBe('');
+    // escolher a mesma não grava nada
+    s.mudarUlt('pokemon', 'Charizard', 'Mega Charizard X');
+    expect(st.getItem('pdx-set1-plano')).toBeNull();
+    s.mudarUlt('pokemon', 'Charizard', 'Gigantamax Charizard');
+    expect(s.unidadesDe('pokemon')).toEqual({ Charizard: { ult: 'Gigantamax Charizard' } });
+    s.mudarUlt('pokemon', 'Charizard', '');
+    expect(s.ultDe('pokemon', 'Charizard')).toBe('');
+    expect(JSON.parse(st.getItem('pdx-set1-plano')!).unidades).toEqual({ pokemon: { Charizard: { ult: '' } } });
+    s.recarregarPlano();
+    expect(s.ultDe('pokemon', 'Charizard')).toBe('');
+    s.mudarUlt('pokemon', 'Charizard', 'Mega Charizard X');
+    expect(s.unidadesDe('pokemon')).toEqual({});
+    s.mudarUlt('pokemon', 'Pidgey', 'Mega Pidgeot');
+    expect(s.ultDe('pokemon', 'Pidgey')).toBe('Mega Pidgeot');
+    s.mudarUlt('pokemon', 'Pidgey', '');
+    expect(s.unidadesDe('pokemon')).toEqual({});
   });
   it('vista, subaba Classes e ir pra uma linha', async () => {
     installStorage();

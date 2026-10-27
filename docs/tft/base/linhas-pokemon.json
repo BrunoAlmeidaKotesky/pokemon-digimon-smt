@@ -1,0 +1,790 @@
+{
+ "linhas": [
+  {
+   "id": "pokemon:bulbasaur",
+   "niveis": [
+    [
+     "Bulbasaur"
+    ],
+    [
+     "Ivysaur"
+    ],
+    [
+     "Venusaur"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:charmander",
+   "niveis": [
+    [
+     "Charmander"
+    ],
+    [
+     "Charmeleon"
+    ],
+    [
+     "Charizard"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:squirtle",
+   "niveis": [
+    [
+     "Squirtle"
+    ],
+    [
+     "Wartortle"
+    ],
+    [
+     "Blastoise"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:ekans",
+   "niveis": [
+    [
+     "Ekans"
+    ],
+    [
+     "Arbok"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:pikachu",
+   "niveis": [
+    [
+     "Pikachu"
+    ],
+    [
+     "Raichu"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:poliwag",
+   "niveis": [
+    [
+     "Poliwag"
+    ],
+    [
+     "Poliwhirl"
+    ],
+    [
+     "Poliwrath"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:abra",
+   "niveis": [
+    [
+     "Abra"
+    ],
+    [
+     "Kadabra"
+    ],
+    [
+     "Alakazam"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:machop",
+   "niveis": [
+    [
+     "Machop"
+    ],
+    [
+     "Machoke"
+    ],
+    [
+     "Machamp"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:shellder",
+   "niveis": [
+    [
+     "Shellder"
+    ],
+    [
+     "Cloyster"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:dratini",
+   "niveis": [
+    [
+     "Dratini"
+    ],
+    [
+     "Dragonair"
+    ],
+    [
+     "Dragonite"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:chikorita",
+   "niveis": [
+    [
+     "Chikorita"
+    ],
+    [
+     "Bayleef"
+    ],
+    [
+     "Meganium"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:cyndaquil",
+   "niveis": [
+    [
+     "Cyndaquil"
+    ],
+    [
+     "Quilava"
+    ],
+    [
+     "Typhlosion"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:totodile",
+   "niveis": [
+    [
+     "Totodile"
+    ],
+    [
+     "Croconaw"
+    ],
+    [
+     "Feraligatr"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:treecko",
+   "niveis": [
+    [
+     "Treecko"
+    ],
+    [
+     "Grovyle"
+    ],
+    [
+     "Sceptile"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:torchic",
+   "niveis": [
+    [
+     "Torchic"
+    ],
+    [
+     "Combusken"
+    ],
+    [
+     "Blaziken"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:mudkip",
+   "niveis": [
+    [
+     "Mudkip"
+    ],
+    [
+     "Marshtomp"
+    ],
+    [
+     "Swampert"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:ralts",
+   "niveis": [
+    [
+     "Ralts"
+    ],
+    [
+     "Kirlia"
+    ],
+    [
+     "Gardevoir",
+     "Gallade"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:whismur",
+   "niveis": [
+    [
+     "Whismur"
+    ],
+    [
+     "Loudred"
+    ],
+    [
+     "Exploud"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:aron",
+   "niveis": [
+    [
+     "Aron"
+    ],
+    [
+     "Lairon"
+    ],
+    [
+     "Aggron"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:carvanha",
+   "niveis": [
+    [
+     "Carvanha"
+    ],
+    [
+     "Sharpedo"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:shuppet",
+   "niveis": [
+    [
+     "Shuppet"
+    ],
+    [
+     "Banette"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:duskull",
+   "niveis": [
+    [
+     "Duskull"
+    ],
+    [
+     "Dusclops"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:turtwig",
+   "niveis": [
+    [
+     "Turtwig"
+    ],
+    [
+     "Grotle"
+    ],
+    [
+     "Torterra"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:chimchar",
+   "niveis": [
+    [
+     "Chimchar"
+    ],
+    [
+     "Monferno"
+    ],
+    [
+     "Infernape"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:piplup",
+   "niveis": [
+    [
+     "Piplup"
+    ],
+    [
+     "Prinplup"
+    ],
+    [
+     "Empoleon"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:shinx",
+   "niveis": [
+    [
+     "Shinx"
+    ],
+    [
+     "Luxio"
+    ],
+    [
+     "Luxray"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:drifloon",
+   "niveis": [
+    [
+     "Drifloon"
+    ],
+    [
+     "Drifblim"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:buneary",
+   "niveis": [
+    [
+     "Buneary"
+    ],
+    [
+     "Lopunny"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:gible",
+   "niveis": [
+    [
+     "Gible"
+    ],
+    [
+     "Gabite"
+    ],
+    [
+     "Garchomp"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:croagunk",
+   "niveis": [
+    [
+     "Croagunk"
+    ],
+    [
+     "Toxicroak"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:snivy",
+   "niveis": [
+    [
+     "Snivy"
+    ],
+    [
+     "Servine"
+    ],
+    [
+     "Serperior"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:tepig",
+   "niveis": [
+    [
+     "Tepig"
+    ],
+    [
+     "Pignite"
+    ],
+    [
+     "Emboar"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:oshawott",
+   "niveis": [
+    [
+     "Oshawott"
+    ],
+    [
+     "Dewott"
+    ],
+    [
+     "Samurott"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:roggenrola",
+   "niveis": [
+    [
+     "Roggenrola"
+    ],
+    [
+     "Boldore"
+    ],
+    [
+     "Gigalith"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:timburr",
+   "niveis": [
+    [
+     "Timburr"
+    ],
+    [
+     "Gurdurr"
+    ],
+    [
+     "Conkeldurr"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:sandile",
+   "niveis": [
+    [
+     "Sandile"
+    ],
+    [
+     "Krokorok"
+    ],
+    [
+     "Krookodile"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:solosis",
+   "niveis": [
+    [
+     "Solosis"
+    ],
+    [
+     "Duosion"
+    ],
+    [
+     "Reuniclus"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:vanillite",
+   "niveis": [
+    [
+     "Vanillite"
+    ],
+    [
+     "Vanillish"
+    ],
+    [
+     "Vanilluxe"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:tynamo",
+   "niveis": [
+    [
+     "Tynamo"
+    ],
+    [
+     "Eelektrik"
+    ],
+    [
+     "Eelektross"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:deino",
+   "niveis": [
+    [
+     "Deino"
+    ],
+    [
+     "Zweilous"
+    ],
+    [
+     "Hydreigon"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:larvesta",
+   "niveis": [
+    [
+     "Larvesta"
+    ],
+    [
+     "Volcarona"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:chespin",
+   "niveis": [
+    [
+     "Chespin"
+    ],
+    [
+     "Quilladin"
+    ],
+    [
+     "Chesnaught"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:fennekin",
+   "niveis": [
+    [
+     "Fennekin"
+    ],
+    [
+     "Braixen"
+    ],
+    [
+     "Delphox"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:froakie",
+   "niveis": [
+    [
+     "Froakie"
+    ],
+    [
+     "Frogadier"
+    ],
+    [
+     "Greninja"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:scatterbug",
+   "niveis": [
+    [
+     "Scatterbug"
+    ],
+    [
+     "Spewpa"
+    ],
+    [
+     "Vivillon"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:honedge",
+   "niveis": [
+    [
+     "Honedge"
+    ],
+    [
+     "Doublade"
+    ],
+    [
+     "Aegislash"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:noibat",
+   "niveis": [
+    [
+     "Noibat"
+    ],
+    [
+     "Noivern"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:rowlet",
+   "niveis": [
+    [
+     "Rowlet"
+    ],
+    [
+     "Dartrix"
+    ],
+    [
+     "Decidueye"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:litten",
+   "niveis": [
+    [
+     "Litten"
+    ],
+    [
+     "Torracat"
+    ],
+    [
+     "Incineroar"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:popplio",
+   "niveis": [
+    [
+     "Popplio"
+    ],
+    [
+     "Brionne"
+    ],
+    [
+     "Primarina"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:grubbin",
+   "niveis": [
+    [
+     "Grubbin"
+    ],
+    [
+     "Charjabug"
+    ],
+    [
+     "Vikavolt"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:salandit",
+   "niveis": [
+    [
+     "Salandit"
+    ],
+    [
+     "Salazzle"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:bounsweet",
+   "niveis": [
+    [
+     "Bounsweet"
+    ],
+    [
+     "Steenee"
+    ],
+    [
+     "Tsareena"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:cosmog",
+   "niveis": [
+    [
+     "Cosmog"
+    ],
+    [
+     "Cosmoem"
+    ],
+    [
+     "Solgaleo",
+     "Lunala"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:rookidee",
+   "niveis": [
+    [
+     "Rookidee"
+    ],
+    [
+     "Corvisquire"
+    ],
+    [
+     "Corviknight"
+    ]
+   ]
+  },
+  {
+   "id": "pokemon:hatenna",
+   "niveis": [
+    [
+     "Hatenna"
+    ],
+    [
+     "Hattrem"
+    ],
+    [
+     "Hatterene"
+    ]
+   ]
+  }
+ ],
+ "soltos": [
+  "Mewtwo",
+  "Mew",
+  "Raikou",
+  "Entei",
+  "Suicune",
+  "Lugia",
+  "Ho Oh",
+  "Celebi",
+  "Zangoose",
+  "Castform",
+  "Regirock",
+  "Regice",
+  "Registeel",
+  "Kyogre",
+  "Groudon",
+  "Rayquaza",
+  "Jirachi",
+  "Deoxys",
+  "Chatot",
+  "Dialga",
+  "Palkia",
+  "Regigigas",
+  "Giratina",
+  "Cresselia",
+  "Darkrai",
+  "Reshiram",
+  "Zekrom",
+  "Kyurem",
+  "Genesect",
+  "Sylveon",
+  "Xerneas",
+  "Yveltal",
+  "Zygarde",
+  "Magearna"
+ ]
+}

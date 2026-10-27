@@ -33,8 +33,9 @@ const VARIANTE = { alola: 'Alola', galar: 'Galar', hisui: 'Hisui', paldea: 'Pald
 
 /** Igual ao formName() de src/sources/pokemon.ts, mais a variante: { nome: 'Mega Charizard X', variante: 'Mega' } ou null. */
 function forma(name) {
-  if (/totem|gmax|-cap|cosplay|starter|busted|eternamax/.test(name)) return null;
+  if (/totem|-cap|cosplay|starter|busted|eternamax/.test(name)) return null;
   const p = name.split('-');
+  if (p.at(-1) === 'gmax') return { nome: `Gigantamax ${nice(p.slice(0, -1).join('-'))}`, variante: 'Gigantamax' };
   const mega = p.indexOf('mega');
   if (mega > 0) return { nome: `Mega ${nice(p.slice(0, mega).join('-'))}${p.slice(mega + 1).map(s => ' ' + s.toUpperCase()).join('')}`, variante: 'Mega' };
   if (p.at(-1) === 'primal') return { nome: `Primal ${nice(p.slice(0, -1).join('-'))}`, variante: 'Primal' };

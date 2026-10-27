@@ -229,6 +229,20 @@ export function alternarClasse(k: string, nome: string, id: string): void {
   const p = lerPlano();
   gravarPlano({ ...p, unidades: pl.alternarClasse(p.unidades, k, nome, id) });
 }
+const SEM_ULTS: Readonly<Record<string, string>> = Object.freeze(Object.create(null) as Record<string, string>);
+/** As ults que a base dá na franquia: nome -> forma. */
+export const ultsBase = (k: string): Readonly<Record<string, string>> => baseOk()?.ults[k] ?? SEM_ULTS;
+/** A forma da ult do personagem que vale agora ('' = sem). */
+export const ultDe = (k: string, nome: string): string => pl.ultEfetiva(lerPlano().unidades[k]?.[nome], ultsBase(k)[nome]);
+/**
+ * Muda a ult do personagem ('' tira). Igual à da base = volta a seguir a base; tirar a que a base dá fica gravado
+ * (vazio), pra não voltar.
+ */
+export function mudarUlt(k: string, nome: string, ult: string): void {
+  if (ult.trim() === ultDe(k, nome)) return;
+  const p = lerPlano();
+  gravarPlano({ ...p, unidades: pl.mudarUnidade(p.unidades, k, nome, { ult: pl.ultPraGravar(ult, ultsBase(k)[nome]) }) });
+}
 /** Habilidade do personagem (texto vazio apaga). */
 export function mudarHabilidade(k: string, nome: string, habilidade: string): void {
   const p = lerPlano();
