@@ -125,7 +125,7 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
   test('habilidade: salva enquanto digita e ao sair do campo, continua depois de recarregar e entra na busca', async ({ page }) => {
     await inicio(page);
     const campo = linha(page, 'Clefairy').locator('textarea.cat-hab');
-    await expect(campo).toHaveAttribute('aria-label', 'Habilidade de Clefairy');
+    await expect(campo).toHaveAttribute('aria-label', 'Ult (habilidade especial) de Clefairy');
     await campo.fill('Choque do trovão:\ndano em linha');
     await expect.poll(async () => (await plano(page))?.unidades.pokemon?.Clefairy).toEqual({ habilidade: 'Choque do trovão:\ndano em linha' });
     // sair do campo salva na hora
@@ -424,7 +424,8 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await expect(page.locator('#catMsg')).toHaveText(
       'Importado set1.json: 2 personagens em 1 franquia, 2 novos. Planejamento restaurado: 3 classes, 1 personagem com classe, habilidade ou ult e mudanças em linhas de 1 franquia.');
     await expect(linha(page, 'Charizard').locator('.cls-chip')).toHaveText(['Dragão×']);
-    await expect(linha(page, 'Charizard').locator('textarea.cat-hab')).toHaveValue('Voa alto');
+    // o texto continua no plano (abaixo), mas não aparece: a ult do Charizard é virar a Mega
+    await expect(linha(page, 'Charizard').locator('textarea.cat-hab')).toHaveCount(0);
     await expect(linha(page, 'Charizard').locator('.lin-selo')).toHaveText('Linha Charmander · nível 3 de 3 ✓');
     expect(await lerStorage(page, 'pdx-set1')).toEqual({ pokemon: ['Charizard', 'Clefairy'] });
     // o que é igual à base volta a seguir a base: as classes não ficam no plano; das linhas, só a confirmação
@@ -447,9 +448,11 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await expect(cz.locator('.ult-selo')).toHaveText('Ult: vira Mega Charizard X (4ª forma) · só melhora todos os atributos');
     await expect(cz.locator('.ult-selo .th img')).toHaveAttribute('src', /official-artwork\/10034\.png$/);
     await expect(linha(page, 'Venusaur').locator('.ult-add')).toHaveText('+ Ult');
-    // Pokémon: a 1ª e a 2ª forma da linha não têm habilidade nem ult; fora de linha conta como forma final
-    await expect(linha(page, 'Squirtle').locator('.cat-sem-hab')).toHaveText('Sem habilidade especial nem ult (1ª forma)');
-    await expect(linha(page, 'Charmeleon').locator('.cat-sem-hab')).toHaveText('Sem habilidade especial nem ult (2ª forma)');
+    // Pokémon: a ult é a habilidade especial. A 1ª e a 2ª forma da linha não têm; fora de linha conta como forma final;
+    // quem vira outra forma na ult não tem texto
+    await expect(cz.locator('textarea.cat-hab')).toHaveCount(0);
+    await expect(linha(page, 'Squirtle').locator('.cat-sem-hab')).toHaveText('Sem ult (1ª forma)');
+    await expect(linha(page, 'Charmeleon').locator('.cat-sem-hab')).toHaveText('Sem ult (2ª forma)');
     await expect(linha(page, 'Squirtle').locator('textarea.cat-hab, .ult-add, .ult-selo')).toHaveCount(0);
     for (const n of ['Wartortle', 'Clefairy']) {
       await expect(linha(page, n).locator('.cat-sem-hab')).toHaveCount(0);
@@ -479,6 +482,8 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await cz.locator('.ult-selo').click();
     await cz.locator('.ult-tirar').click();
     await expect(cz.locator('.ult-selo')).toHaveCount(0);
+    // sem a transformação, volta o campo pra escrever a ult
+    await expect(cz.locator('textarea.cat-hab')).toHaveAttribute('placeholder', 'Ult (habilidade especial)…');
     expect((await plano(page))!.unidades.pokemon).toEqual({ Charizard: { ult: '' } });
     await page.reload();
     await expect(page.locator('#status')).not.toContainText('carregando', { timeout: 15000 });
