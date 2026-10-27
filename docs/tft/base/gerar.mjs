@@ -106,6 +106,17 @@ const ults = {
       ['Hydreigon', 'Iron Jugulis'], ['Suicune', 'Walking Wake'], ['Entei', 'Gouging Fire'], ['Raikou', 'Raging Bolt']])),
 };
 
+// Pokémon (27/10): saem as linhas que ficaram com menos de 3 formas e os soltos (sem evolução) que não ganharam ult.
+// Só a forma final tem ult; virar a ult só melhora todos os atributos.
+{
+  const curtas = linhas.pokemon.filter(l => l.niveis.length < 3);
+  const fora = new Set(curtas.flatMap(l => l.niveis.flat()));
+  const naLinha = new Set(linhas.pokemon.flatMap(l => l.niveis.flat()));
+  selecao.pokemon.filter(n => !naLinha.has(n) && !ults.pokemon[n]).forEach(n => fora.add(n));
+  linhas.pokemon = linhas.pokemon.filter(l => l.niveis.length >= 3);
+  selecao.pokemon = selecao.pokemon.filter(n => !fora.has(n));
+}
+
 const classes = ['Demoníacos', 'Criaturinha Bizarra', 'Fadinhas', 'Safada', 'Atirador', 'Anjo', 'Robô', 'Dragão', 'Temporais', 'Únicos']
   .map(nome => ({ id: nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-'), nome }));
 
