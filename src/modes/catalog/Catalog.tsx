@@ -447,6 +447,10 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
   const nomeNorm = normalizar(l.nome);
   const minhas = pl.classesDaUnidade(unidade, classes);
   const hab = useTextoSalvo(unidade?.habilidade ?? '', t => cat.mudarHabilidade(k, l.nome, t));
+  // Pokémon (decidido em 27/10): a 1ª e a 2ª forma da linha não têm habilidade nem ult; na forma final, a ult é virar
+  // a próxima forma (a Mega, por exemplo), que só melhora os atributos
+  const pokemon = k === 'pokemon';
+  const semNada = pokemon && !!pos && pos.nivel < pos.linha.niveis.length - 1;
   return (
     <li className={'cat-row' + (on ? ' on' : '')} data-nome={l.nome}>
       <label>
@@ -476,9 +480,11 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
             <button type="button" className="ult-selo" aria-expanded={ultAberta} title={`Na ult, ${l.nome} vira ${ult}. Trocar ou tirar`}
               onClick={() => setUltAberta(!ultAberta)}>
               <Thumb l={porNome.get(ult) ?? linhaAvulsa(k, ult)} pronto={pronto} />
-              <span>Ult: {ult}</span>
+              {pokemon ? (
+                <span>Ult: vira {ult} ({(pos ? pos.linha.niveis.length : 1) + 1}ª forma)<small> · só melhora todos os atributos</small></span>
+              ) : <span>Ult: {ult}</span>}
             </button>
-          ) : (
+          ) : !semNada && (
             <button type="button" className="ult-add" aria-expanded={ultAberta} aria-label={`Ult de ${l.nome}`}
               title="A forma em que ele vira na ult (ex.: a Mega)" onClick={() => setUltAberta(!ultAberta)}>{ultAberta ? 'Fechar' : '+ Ult'}</button>
           )}
@@ -511,8 +517,10 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
             }) : <span className="mute">Nenhuma classe ainda: crie na subaba Classes.</span>}
           </div>
         )}
-        <textarea className="cat-hab" rows={1} placeholder="Habilidade…" aria-label={`Habilidade de ${l.nome}`}
-          value={hab.txt} onChange={e => hab.mudar(e.target.value)} onBlur={hab.flush} />
+        {semNada && pos ? <p className="cat-sem-hab">Sem habilidade especial nem ult ({pos.nivel + 1}ª forma)</p> : (
+          <textarea className="cat-hab" rows={1} placeholder="Habilidade…" aria-label={`Habilidade de ${l.nome}`}
+            value={hab.txt} onChange={e => hab.mudar(e.target.value)} onBlur={hab.flush} />
+        )}
       </div>
     </li>
   );

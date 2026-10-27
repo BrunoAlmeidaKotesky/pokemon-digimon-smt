@@ -124,10 +124,10 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
 
   test('habilidade: salva enquanto digita e ao sair do campo, continua depois de recarregar e entra na busca', async ({ page }) => {
     await inicio(page);
-    const campo = linha(page, 'Pikachu').locator('textarea.cat-hab');
-    await expect(campo).toHaveAttribute('aria-label', 'Habilidade de Pikachu');
+    const campo = linha(page, 'Clefairy').locator('textarea.cat-hab');
+    await expect(campo).toHaveAttribute('aria-label', 'Habilidade de Clefairy');
     await campo.fill('Choque do trovão:\ndano em linha');
-    await expect.poll(async () => (await plano(page))?.unidades.pokemon?.Pikachu).toEqual({ habilidade: 'Choque do trovão:\ndano em linha' });
+    await expect.poll(async () => (await plano(page))?.unidades.pokemon?.Clefairy).toEqual({ habilidade: 'Choque do trovão:\ndano em linha' });
     // sair do campo salva na hora
     const outro = linha(page, 'Raichu').locator('textarea.cat-hab');
     await outro.fill('Raio');
@@ -137,10 +137,10 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await page.reload();
     await expect(page.locator('#status')).not.toContainText('carregando', { timeout: 15000 });
     await aba(page, 'Catálogo');
-    await expect(linha(page, 'Pikachu').locator('textarea.cat-hab')).toHaveValue('Choque do trovão:\ndano em linha');
+    await expect(linha(page, 'Clefairy').locator('textarea.cat-hab')).toHaveValue('Choque do trovão:\ndano em linha');
     await expect(linha(page, 'Raichu').locator('textarea.cat-hab')).toHaveValue('Raio');
     await page.fill('#catBusca', 'trovao linha');
-    expect(await nomes(page)).toEqual(['Pikachu']);
+    expect(await nomes(page)).toEqual(['Clefairy']);
     await page.fill('#catBusca', '');
     // texto apagado = sem habilidade
     await linha(page, 'Raichu').locator('textarea.cat-hab').fill('');
@@ -444,9 +444,18 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     // com as Megas e formas regionais na lista do Pokémon (tests/fixtures/pokemon-forms.json)
     await inicio(page, { pokemonFormas: true });
     const cz = linha(page, 'Charizard');
-    await expect(cz.locator('.ult-selo')).toHaveText('Ult: Mega Charizard X');
+    await expect(cz.locator('.ult-selo')).toHaveText('Ult: vira Mega Charizard X (4ª forma) · só melhora todos os atributos');
     await expect(cz.locator('.ult-selo .th img')).toHaveAttribute('src', /official-artwork\/10034\.png$/);
     await expect(linha(page, 'Venusaur').locator('.ult-add')).toHaveText('+ Ult');
+    // Pokémon: a 1ª e a 2ª forma da linha não têm habilidade nem ult; fora de linha conta como forma final
+    await expect(linha(page, 'Squirtle').locator('.cat-sem-hab')).toHaveText('Sem habilidade especial nem ult (1ª forma)');
+    await expect(linha(page, 'Charmeleon').locator('.cat-sem-hab')).toHaveText('Sem habilidade especial nem ult (2ª forma)');
+    await expect(linha(page, 'Squirtle').locator('textarea.cat-hab, .ult-add, .ult-selo')).toHaveCount(0);
+    for (const n of ['Wartortle', 'Clefairy']) {
+      await expect(linha(page, n).locator('.cat-sem-hab')).toHaveCount(0);
+      await expect(linha(page, n).locator('textarea.cat-hab')).toHaveCount(1);
+      await expect(linha(page, n).locator('.ult-add')).toHaveText('+ Ult');
+    }
     expect(await opcoes(page, '#catUlt')).toEqual(['Todas', 'Com ult (1)', 'Sem ult (11)']);
     // na vista Linhas, embaixo de quem tem ult
     await vista(page, 'linhas').click();
@@ -463,7 +472,7 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await expect(cz.locator('.ult-ed .lin-res-it[data-nome="Mega Charizard X"] small')).toHaveText('a da base');
     await cz.locator('.ult-ed .lin-res-it[data-nome="Gigantamax Charizard"]').click();
     await expect(cz.locator('.ult-ed')).toHaveCount(0);
-    await expect(cz.locator('.ult-selo')).toHaveText('Ult: Gigantamax Charizard');
+    await expect(cz.locator('.ult-selo')).toHaveText('Ult: vira Gigantamax Charizard (4ª forma) · só melhora todos os atributos');
     expect((await plano(page))!.unidades.pokemon).toEqual({ Charizard: { ult: 'Gigantamax Charizard' } });
 
     // tirar: fica tirada mesmo com a base dando uma, inclusive depois de recarregar
@@ -480,7 +489,7 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await linha(page, 'Charizard').locator('.ult-add').click();
     await expect(linha(page, 'Charizard').locator('.ult-base')).toHaveText('Usar a da base (Mega Charizard X)');
     await linha(page, 'Charizard').locator('.ult-base').click();
-    await expect(linha(page, 'Charizard').locator('.ult-selo')).toHaveText('Ult: Mega Charizard X');
+    await expect(linha(page, 'Charizard').locator('.ult-selo')).toHaveText('Ult: vira Mega Charizard X (4ª forma) · só melhora todos os atributos');
     expect((await plano(page))!.unidades).toEqual({});
 
     // dar ult a quem não tem (Enter escolhe o primeiro resultado)
@@ -488,7 +497,7 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await expect(linha(page, 'Venusaur').locator('.ult-ed .lin-busca')).toBeFocused();
     await page.keyboard.type('alolan');
     await page.keyboard.press('Enter');
-    await expect(linha(page, 'Venusaur').locator('.ult-selo')).toHaveText('Ult: Alolan Raichu');
+    await expect(linha(page, 'Venusaur').locator('.ult-selo')).toHaveText('Ult: vira Alolan Raichu (4ª forma) · só melhora todos os atributos');
 
     // filtro e busca pela ult
     await page.selectOption('#catUlt', 'com');
