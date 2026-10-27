@@ -1,8 +1,8 @@
 // Planejamento do Set 1 do modo estilo TFT: classes, habilidade de cada personagem e linhas evolutivas. Lógica pura,
 // sem React nem localStorage. O ponto de partida é public/catalogo/set1-base.json (a "base": classes, o grupo
-// "Set 1 (base)" e as linhas propostas); o que o usuário muda fica no plano (pdx-set1-plano). As classes e as linhas
-// de uma franquia só entram no plano quando o usuário mexe nelas: até lá vale a base, e uma base nova aparece sozinha.
-// (sem importar nada do model.ts: ele importa daqui)
+// "Set 1 (base)" e as linhas propostas); o que o usuário muda fica no plano (pdx-set1-plano). As classes só entram no
+// plano quando o usuário mexe nelas; as linhas, uma por uma (ver mesclarLinhas): até lá vale a base, e uma base nova
+// aparece sozinha. (sem importar nada do model.ts: ele importa daqui)
 
 export interface Classe { id: string; nome: string; descricao?: string }
 /** O que o plano guarda de um personagem. */
@@ -22,15 +22,30 @@ export type Unidades = Record<string, Unidade>;
  * Linha evolutiva: niveis[i] = quem fica no nível i + 1. Mais de um no mesmo nível = alternativas (Gardevoir ou
  * Gallade). Nunca tem nível vazio; um personagem fica em uma linha só por franquia.
  */
-export interface LinhaEvo { id: string; nome: string; niveis: string[][]; confirmada?: boolean }
+export interface LinhaEvo {
+  id: string;
+  nome: string;
+  niveis: string[][];
+  confirmada?: boolean;
+  /** na lista que vale: a linha é a do plano (o usuário mexeu nela ou a criou), não a da base */
+  editada?: boolean;
+}
+/**
+ * Como o plano guarda uma linha. Linha da base que o usuário só confirmou: { id, confirmada } (nome e níveis seguem a
+ * base). Linha da base que ele mexeu (nome, membros, níveis) ou que ele criou: inteira, com editada. Formato antigo
+ * (a lista inteira copiada, sem editada): nas linhas da base só a confirmação vale; as outras são do usuário.
+ */
+export interface LinhaSalva { id: string; nome?: string; niveis?: string[][]; confirmada?: boolean; editada?: boolean }
 export interface Plano {
   versao: 1;
   /** ausente = as classes da base */
   classes?: Classe[];
   /** chave da franquia -> nome -> unidade */
   unidades: Record<string, Unidades>;
-  /** chave da franquia -> linhas; franquia ausente = as linhas da base */
-  linhas: Record<string, LinhaEvo[]>;
+  /** chave da franquia -> o que o usuário fez nas linhas (por linha; o resto segue a base) */
+  linhas: Record<string, LinhaSalva[]>;
+  /** chave da franquia -> ids das linhas da base que o usuário apagou */
+  apagadas?: Record<string, string[]>;
 }
 /** public/catalogo/set1-base.json. Chaves que este código não conhece (ex.: itens) são ignoradas. */
 export interface Base {
@@ -174,13 +189,60 @@ export function parseBase(j: unknown): Base | null {
 
 export const planoVazio = (): Plano => ({ versao: 1, unidades: {}, linhas: {} });
 
+/**
+ * Linhas guardadas no plano: id (gerado do nome se faltar ou repetir), nome e níveis só se vierem (níveis sem nível
+ * vazio nem nome repetido na mesma linha), confirmada e editada só quando true.
+ */
+export function limparSalvas(j: unknown, k = ''): LinhaSalva[] {
+  const r: LinhaSalva[] = [];
+  if (!Array.isArray(j)) return r;
+  const ids = new Set<string>();
+  for (const l of j) {
+    if (!isObj(l)) continue;
+    const niveis = Array.isArray(l.niveis) ? limparNiveis(l.niveis) : undefined;
+    const nome = texto(l.nome);
+    let id = texto(l.id);
+    if (!id || ids.has(id)) {
+      if (!niveis) continue;
+      id = idUnico((k ? k + ':' : '') + slug(nome || niveis[0]?.[0] || 'linha'), ids);
+    }
+    ids.add(id);
+    r.push({
+      id,
+      ...(nome ? { nome } : {}),
+      ...(niveis ? { niveis } : {}),
+      ...(l.confirmada === true ? { confirmada: true } : {}),
+      ...(l.editada === true ? { editada: true } : {}),
+    });
+  }
+  return r;
+}
+function limparNiveis(niveis: unknown[]): string[][] {
+  const vistos = new Set<string>();
+  const r: string[][] = [];
+  for (const n of niveis) {
+    const membros = textos(n).filter(x => !vistos.has(x));
+    membros.forEach(x => vistos.add(x));
+    if (membros.length) r.push(membros);
+  }
+  return r;
+}
+
 /** Lê o plano salvo (ou o "plano" de um set1.json), jogando fora o que não estiver no formato. */
 export function limparPlano(j: unknown): Plano {
   const p = planoVazio();
   if (!isObj(j)) return p;
   if (Array.isArray(j.classes)) p.classes = limparClasses(j.classes);
   p.unidades = limparUnidades(j.unidades);
-  if (isObj(j.linhas)) for (const [k, v] of Object.entries(j.linhas)) if (Array.isArray(v)) p.linhas[k] = limparLinhas(v, k);
+  if (isObj(j.linhas)) for (const [k, v] of Object.entries(j.linhas)) if (Array.isArray(v)) p.linhas[k] = limparSalvas(v, k);
+  if (isObj(j.apagadas)) {
+    const apagadas: Record<string, string[]> = {};
+    for (const [k, v] of Object.entries(j.apagadas)) {
+      const ids = textos(v);
+      if (ids.length) apagadas[k] = ids;
+    }
+    if (Object.keys(apagadas).length) p.apagadas = apagadas;
+  }
   return p;
 }
 
@@ -188,7 +250,91 @@ export function limparPlano(j: unknown): Plano {
 const SEM_CLASSES: Classe[] = [];
 const SEM_LINHAS: LinhaEvo[] = [];
 export const classesEfetivas = (p: Plano, base: Base | null): Classe[] => p.classes ?? base?.classes ?? SEM_CLASSES;
-export const linhasEfetivas = (p: Plano, base: Base | null, k: string): LinhaEvo[] => p.linhas[k] ?? base?.linhas[k] ?? SEM_LINHAS;
+
+/**
+ * As linhas que valem numa franquia: as da base, na ordem da base, tirando as apagadas; a linha da base que o usuário
+ * mexeu (editada) vale inteira como está no plano, e as outras seguem a base (levando só a confirmação do plano). No
+ * fim, as linhas que o usuário criou. Um personagem fica numa linha só: quem está numa linha do plano (mexida ou
+ * criada) sai da linha da base em que também estaria. Sem nada guardado, devolve o próprio array da base.
+ */
+export function mesclarLinhas(base: readonly LinhaEvo[], salvas: readonly LinhaSalva[], apagadas: readonly string[] = []): LinhaEvo[] {
+  if (!salvas.length && !apagadas.length) return base as LinhaEvo[];
+  const porId = new Map(salvas.map(s => [s.id, s]));
+  const naBase = new Set(base.map(l => l.id));
+  const fora = new Set(apagadas);
+  // primeiro as do plano (mexidas, na ordem da base; criadas, na ordem guardada): elas ficam com os personagens
+  const vistos = new Set<string>();
+  const inteira = (s: LinhaSalva, nomeBase?: string): LinhaEvo => {
+    const niveis = (s.niveis ?? []).map(n => n.filter(x => !vistos.has(x))).filter(n => n.length);
+    niveis.forEach(n => n.forEach(x => vistos.add(x)));
+    return { id: s.id, nome: s.nome || nomeBase || niveis[0]?.[0] || 'Linha', niveis, ...(s.confirmada ? { confirmada: true } : {}), editada: true };
+  };
+  const mexidas = new Map<string, LinhaEvo>();
+  for (const b of base) {
+    const s = porId.get(b.id);
+    if (!fora.has(b.id) && s?.editada && s.niveis) mexidas.set(b.id, inteira(s, b.nome));
+  }
+  const criadas = salvas.filter(s => !naBase.has(s.id) && s.niveis).map(s => inteira(s));
+  const r: LinhaEvo[] = [];
+  for (const b of base) {
+    if (fora.has(b.id)) continue;
+    const m = mexidas.get(b.id);
+    if (m) {
+      r.push(m);
+      continue;
+    }
+    const s = porId.get(b.id);
+    const confirmada = s ? !!s.confirmada : !!b.confirmada;
+    const niveis = b.niveis.map(n => n.filter(x => !vistos.has(x))).filter(n => n.length);
+    r.push({ id: b.id, nome: b.nome, niveis, ...(confirmada ? { confirmada: true } : {}) });
+  }
+  return [...r, ...criadas];
+}
+
+/** As linhas que valem na franquia (ver mesclarLinhas). */
+export const linhasEfetivas = (p: Plano, base: Base | null, k: string): LinhaEvo[] =>
+  mesclarLinhas(base?.linhas[k] ?? SEM_LINHAS, p.linhas[k] ?? [], p.apagadas?.[k] ?? []);
+
+/**
+ * O que guardar depois de uma mudança, a partir da lista que vale (`depois`): linha criada, linha já mexida e linha
+ * em `mexidas` (a que o usuário acabou de mudar) vão inteiras, com editada; das outras linhas da base, só a
+ * confirmação. A linha da base que sumiu da lista foi apagada.
+ */
+export function guardarLinhas(depois: readonly LinhaEvo[], base: readonly LinhaEvo[], mexidas: ReadonlySet<string> = new Set()): { salvas: LinhaSalva[]; apagadas: string[] } {
+  const naBase = new Set(base.map(l => l.id));
+  const salvas: LinhaSalva[] = [];
+  for (const l of depois) {
+    const conf = l.confirmada ? { confirmada: true } : {};
+    if (!naBase.has(l.id) || l.editada || mexidas.has(l.id)) salvas.push({ id: l.id, nome: l.nome, niveis: l.niveis, ...conf, editada: true });
+    else if (l.confirmada) salvas.push({ id: l.id, confirmada: true });
+  }
+  const ids = new Set(depois.map(l => l.id));
+  return { salvas, apagadas: base.filter(b => !ids.has(b.id)).map(b => b.id) };
+}
+
+/**
+ * Deixa o que está guardado no formato de agora, olhando a base: linha da base mexida fica inteira; não mexida (ou
+ * do formato antigo) fica só com a confirmação, ou sai; linha fora da base fica se tiver níveis (é do usuário);
+ * apagada que não existe mais na base sai.
+ */
+export function compactarLinhas(salvas: readonly LinhaSalva[], apagadas: readonly string[], base: readonly LinhaEvo[]): { salvas: LinhaSalva[]; apagadas: string[] } {
+  const naBase = new Set(base.map(l => l.id));
+  const r: LinhaSalva[] = [];
+  for (const s of salvas) {
+    const conf = s.confirmada ? { confirmada: true } : {};
+    if (naBase.has(s.id)) {
+      if (s.editada && s.niveis) r.push({ id: s.id, ...(s.nome ? { nome: s.nome } : {}), niveis: s.niveis, ...conf, editada: true });
+      else if (s.confirmada) r.push({ id: s.id, confirmada: true });
+    } else if (s.niveis) r.push({ id: s.id, nome: s.nome || s.niveis[0]?.[0] || 'Linha', niveis: s.niveis, ...conf, editada: true });
+  }
+  return { salvas: r, apagadas: apagadas.filter(id => naBase.has(id)) };
+}
+
+/** O usuário mudou alguma linha da franquia (mexeu, criou ou apagou)? Só confirmar não conta. */
+export function linhasMudadas(salvas: readonly LinhaSalva[], apagadas: readonly string[], base: readonly LinhaEvo[]): boolean {
+  const naBase = new Set(base.map(l => l.id));
+  return apagadas.some(id => naBase.has(id)) || salvas.some(s => (naBase.has(s.id) ? !!s.editada && !!s.niveis : !!s.niveis));
+}
 /** A forma da ult que vale: a do plano (mesmo vazia: tirada), senão a da base. '' = sem ult. */
 export const ultEfetiva = (u: Unidade | undefined, daBase: string | undefined): string => (u?.ult !== undefined ? u.ult : daBase ?? '');
 /**
@@ -410,14 +556,17 @@ export function extrasDoPersonagem(nome: string, u: Unidade | undefined, classes
 }
 
 /**
- * O plano inteiro pro set1.json: as classes que valem agora e as linhas de toda franquia de `ks` que tem alguma
- * (da base ou mudadas), além das unidades. Assim o arquivo se explica sozinho.
+ * O plano pro set1.json, das franquias `ks`: as classes que valem agora, as unidades (com a ult da base escrita) e as
+ * linhas como o plano guarda (por linha: mexidas, criadas, confirmações e apagadas), já no formato de agora. As linhas
+ * que valem vão à parte (linhasCompletas).
  */
 export function planoCompleto(p: Plano, base: Base | null, ks: readonly string[]): Plano {
-  const linhas: Record<string, LinhaEvo[]> = {};
+  const linhas: Record<string, LinhaSalva[]> = {};
+  const apagadas: Record<string, string[]> = {};
   for (const k of ks) {
-    const l = linhasEfetivas(p, base, k);
-    if (l.length || p.linhas[k]) linhas[k] = l;
+    const c = base ? compactarLinhas(p.linhas[k] ?? [], p.apagadas?.[k] ?? [], base.linhas[k] ?? []) : { salvas: p.linhas[k] ?? [], apagadas: p.apagadas?.[k] ?? [] };
+    if (c.salvas.length) linhas[k] = c.salvas;
+    if (c.apagadas.length) apagadas[k] = c.apagadas;
   }
   // as unidades das franquias pedidas, com a ult da base escrita em quem não mexeu nela
   const unidades: Record<string, Unidades> = {};
@@ -430,27 +579,44 @@ export function planoCompleto(p: Plano, base: Base | null, ks: readonly string[]
     unidades[k] = fr;
   }
   const classes = classesEfetivas(p, base).map(c => (c.descricao ? { ...c, descricao: c.descricao.trim() } : c));
-  return { versao: 1, classes, unidades, linhas };
+  return { versao: 1, classes, unidades, linhas, ...(Object.keys(apagadas).length ? { apagadas } : {}) };
+}
+
+/** As linhas que valem em cada franquia de `ks` que tem alguma (pro set1.json). */
+export function linhasCompletas(p: Plano, base: Base | null, ks: readonly string[]): Record<string, LinhaEvo[]> {
+  const r: Record<string, LinhaEvo[]> = {};
+  for (const k of ks) {
+    const l = linhasEfetivas(p, base, k);
+    if (l.length) r[k] = l;
+  }
+  return r;
 }
 
 const igual = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
 /**
- * Restaura o plano de um set1.json por cima do atual: as classes do arquivo substituem as atuais, as linhas de cada
- * franquia do arquivo substituem as dela e cada personagem do arquivo substitui o atual (os outros ficam). O que for
- * igual à base (classes, linhas de uma franquia, ult de um personagem) volta a seguir a base. Franquia fora de
- * `validas` é ignorada. Classe que deixou de existir sai das
- * unidades.
+ * Restaura o plano de um set1.json por cima do atual: as classes do arquivo substituem as atuais, o que o arquivo
+ * guarda das linhas de uma franquia substitui o dela e cada personagem do arquivo substitui o atual (os outros
+ * ficam). O que for igual à base (classes, ult de um personagem, linha não mexida) volta a seguir a base: arquivo
+ * antigo, com as linhas inteiras, só traz as confirmações e as linhas criadas. Franquia fora de `validas` é
+ * ignorada. Classe que deixou de existir sai das unidades.
  */
 export function restaurarPlano(atual: Plano, arq: Plano, base: Base | null, validas: readonly string[]): Plano {
   const p: Plano = { versao: 1, unidades: { ...atual.unidades }, linhas: { ...atual.linhas } };
+  const apagadas: Record<string, string[]> = { ...atual.apagadas };
   const classes = arq.classes ?? atual.classes;
   if (classes && !(base && igual(classes, base.classes))) p.classes = classes;
-  for (const [k, l] of Object.entries(arq.linhas)) {
+  for (const k of new Set([...Object.keys(arq.linhas), ...Object.keys(arq.apagadas ?? {})])) {
     if (!validas.includes(k)) continue;
-    if (base && igual(l, base.linhas[k] ?? [])) delete p.linhas[k];
-    else p.linhas[k] = l;
+    const salvas = arq.linhas[k] ?? [];
+    const apag = arq.apagadas?.[k] ?? [];
+    const c = base ? compactarLinhas(salvas, apag, base.linhas[k] ?? []) : { salvas, apagadas: apag };
+    if (c.salvas.length) p.linhas[k] = c.salvas;
+    else delete p.linhas[k];
+    if (c.apagadas.length) apagadas[k] = c.apagadas;
+    else delete apagadas[k];
   }
+  if (Object.keys(apagadas).length) p.apagadas = apagadas;
   for (const [k, us] of Object.entries(arq.unidades)) {
     if (!validas.includes(k)) continue;
     const fr = Object.assign(dic<Unidade>(), p.unidades[k]);
@@ -473,6 +639,6 @@ export function resumoPlano(p: Plano): { classes: number | null; unidades: numbe
   return {
     classes: p.classes ? p.classes.length : null,
     unidades: Object.values(p.unidades).reduce((n, us) => n + Object.keys(us).length, 0),
-    franquiasComLinhas: Object.keys(p.linhas).length,
+    franquiasComLinhas: new Set([...Object.keys(p.linhas).filter(k => p.linhas[k]!.length), ...Object.keys(p.apagadas ?? {})]).size,
   };
 }

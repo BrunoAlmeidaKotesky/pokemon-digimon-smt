@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  adicionarClasse, adicionarMembro, alternarClasse, apagarLinha, classesDaUnidade, classesEfetivas, confirmarLinha, criarLinha,
-  descreverClasse, extrasDoPersonagem, idUnico, indiceLinhas, limparClasses, limparLinhas, limparPlano, limparUnidades,
-  linhasEfetivas, moverClasse, moverMembro, mudarUnidade, parseBase, planoCompleto, planoVazio, removerMembro, renomearClasse,
-  renomearLinha, restaurarPlano, resumoPlano, slug, tirarClasseDeTodos, ultEfetiva, ultPraGravar, type Base, type LinhaEvo, type Plano,
+  adicionarClasse, adicionarMembro, alternarClasse, apagarLinha, classesDaUnidade, classesEfetivas, compactarLinhas, confirmarLinha,
+  criarLinha, descreverClasse, extrasDoPersonagem, guardarLinhas, idUnico, indiceLinhas, limparClasses, limparLinhas, limparPlano,
+  limparSalvas, limparUnidades, linhasCompletas, linhasEfetivas, linhasMudadas, mesclarLinhas, moverClasse, moverMembro, mudarUnidade,
+  parseBase, planoCompleto, planoVazio, removerMembro, renomearClasse, renomearLinha, restaurarPlano, resumoPlano, slug,
+  tirarClasseDeTodos, ultEfetiva, ultPraGravar, type Base, type LinhaEvo, type LinhaSalva, type Plano,
 } from './plano';
 
 const L = (id: string, ...niveis: string[][]): LinhaEvo => ({ id, nome: id, niveis });
@@ -105,18 +106,95 @@ describe('limpeza do que vem de fora', () => {
 });
 
 describe('plano por cima da base', () => {
-  it('sem nada no plano, vale a base; franquia mexida e classes mexidas valem as do plano', () => {
+  it('sem nada no plano, vale a base; classes mexidas valem as do plano; linhas apagadas somem', () => {
     const b = base();
     const p = planoVazio();
     expect(classesEfetivas(p, b)).toBe(b.classes);
     expect(linhasEfetivas(p, b, 'pokemon')).toBe(b.linhas.pokemon);
     expect(linhasEfetivas(p, b, 'lol')).toEqual([]);
-    const mexido: Plano = { ...p, classes: [], linhas: { pokemon: [] } };
+    const mexido: Plano = { ...p, classes: [], apagadas: { pokemon: ['charmander', 'ralts'] } };
     expect(classesEfetivas(mexido, b)).toEqual([]);
     expect(linhasEfetivas(mexido, b, 'pokemon')).toEqual([]);
     expect(linhasEfetivas(mexido, b, 'persona')).toBe(b.linhas.persona);
     expect(classesEfetivas(p, null)).toEqual([]);
     expect(linhasEfetivas(p, null, 'pokemon')).toEqual([]);
+  });
+});
+
+describe('linhas por cima da base, uma por uma (mesclarLinhas, guardarLinhas, compactarLinhas)', () => {
+  // a base mudou depois: a linha do Charmander ganhou a Mega
+  const BASE_NOVA = [L('charmander', ['Charmander'], ['Charmeleon'], ['Charizard'], ['Mega Charizard X']), RALTS, L('pikachu', ['Pikachu'], ['Raichu'])];
+  const ids = (ls: LinhaEvo[]) => ls.map(l => l.id);
+
+  it('confirmação guardada não fixa a linha: nome e níveis seguem a base', () => {
+    const r = mesclarLinhas(BASE_NOVA, [{ id: 'charmander', confirmada: true }]);
+    expect(r[0]).toEqual({ ...BASE_NOVA[0], confirmada: true });
+    expect(r[1]).toEqual(RALTS);
+    expect(ids(r)).toEqual(['charmander', 'ralts', 'pikachu']);
+  });
+  it('formato antigo (a franquia inteira copiada, sem "editada"): nada fica fixo; a base nova aparece', () => {
+    // o plano antigo tinha só Charmander e Ralts (sem a Mega e sem a linha do Pikachu), com o Ralts confirmado
+    const antigo = limparSalvas([CHAR, { ...RALTS, confirmada: true }, { id: 'minha', nome: 'Minha', niveis: [['Pidgey'], ['Pidgeotto']] }], 'pokemon');
+    const r = mesclarLinhas(BASE_NOVA, antigo);
+    expect(ids(r)).toEqual(['charmander', 'ralts', 'pikachu', 'minha']);
+    expect(r[0]!.niveis).toEqual(BASE_NOVA[0]!.niveis);
+    expect(r[1]).toEqual({ ...RALTS, confirmada: true });
+    // a linha que não está na base é do usuário
+    expect(r[3]).toEqual({ id: 'minha', nome: 'Minha', niveis: [['Pidgey'], ['Pidgeotto']], editada: true });
+    expect(linhasMudadas(antigo, [], BASE_NOVA)).toBe(true);
+    expect(linhasMudadas(limparSalvas([CHAR, RALTS]), [], BASE_NOVA)).toBe(false);
+  });
+  it('linha mexida (editada) vale inteira, mesmo com a base mudando; e fica com os personagens dela', () => {
+    const mexida: LinhaSalva = { id: 'pikachu', nome: 'Pikachu', niveis: [['Pikachu'], ['Raichu'], ['Charizard']], editada: true };
+    const r = mesclarLinhas(BASE_NOVA, [mexida]);
+    expect(r[2]).toEqual({ ...mexida, editada: true });
+    // o Charizard saiu da linha do Charmander (que continua seguindo a base no resto)
+    expect(r[0]!.niveis).toEqual([['Charmander'], ['Charmeleon'], ['Mega Charizard X']]);
+    expect(r[0]!.editada).toBeUndefined();
+  });
+  it('apagadas somem; criadas vão pro fim; linha criada também fica com os personagens dela', () => {
+    const r = mesclarLinhas(BASE_NOVA, [{ id: 'nova', nome: 'Nova', niveis: [['Ralts']], editada: true }], ['pikachu']);
+    expect(ids(r)).toEqual(['charmander', 'ralts', 'nova']);
+    expect(r[1]!.niveis).toEqual([['Kirlia'], ['Gardevoir', 'Gallade']]);
+    // apagada que não existe mais na base não atrapalha
+    expect(ids(mesclarLinhas(BASE_NOVA, [], ['sumiu']))).toEqual(['charmander', 'ralts', 'pikachu']);
+  });
+  it('guardarLinhas: só a linha mexida vai inteira; das outras da base, só a confirmação; sumida = apagada', () => {
+    const efetivas = mesclarLinhas(BASE_NOVA, []);
+    // confirmar o Charmander e mexer no Pikachu (tirar o Raichu); apagar o Ralts
+    let depois = confirmarLinha(efetivas, 'charmander', true);
+    depois = removerMembro(depois, 'pikachu', 'Raichu');
+    depois = apagarLinha(depois, 'ralts');
+    const g = guardarLinhas(depois, BASE_NOVA, new Set(['pikachu']));
+    expect(g).toEqual({
+      salvas: [{ id: 'charmander', confirmada: true }, { id: 'pikachu', nome: 'pikachu', niveis: [['Pikachu']], editada: true }],
+      apagadas: ['ralts'],
+    });
+    // ida e volta: a mistura do que foi guardado é a lista que o usuário vê
+    expect(mesclarLinhas(BASE_NOVA, g.salvas, g.apagadas)).toEqual(depois.map(l => (l.id === 'pikachu' ? { ...l, editada: true } : l)));
+    // linha criada vai inteira mesmo sem estar em "mexidas"
+    const criada = criarLinha(efetivas, 'pokemon', 'Nova', 'Pidgey');
+    expect(guardarLinhas(criada.linhas, BASE_NOVA).salvas).toEqual([{ id: 'pokemon:nova', nome: 'Nova', niveis: [['Pidgey']], editada: true }]);
+    // mover alguém de uma linha da base pra outra: só a de destino fica fixa; a de origem segue a base sem ele
+    const movido = adicionarMembro(efetivas, 'pikachu', 'Charizard', 'fim');
+    const gm = guardarLinhas(movido, BASE_NOVA, new Set(['pikachu']));
+    expect(gm.salvas.map(s => s.id)).toEqual(['pikachu']);
+    expect(mesclarLinhas(BASE_NOVA, gm.salvas)[0]!.niveis).toEqual([['Charmander'], ['Charmeleon'], ['Mega Charizard X']]);
+  });
+  it('compactarLinhas: formato antigo vira só confirmações e linhas do usuário; apagada fora da base sai', () => {
+    const antigo = limparSalvas([{ ...CHAR, confirmada: true }, RALTS, { id: 'minha', niveis: [['Pidgey']] }, { id: 'sem-niveis' }]);
+    expect(compactarLinhas(antigo, ['pikachu', 'sumiu'], BASE_NOVA)).toEqual({
+      salvas: [{ id: 'charmander', confirmada: true }, { id: 'minha', nome: 'Pidgey', niveis: [['Pidgey']], editada: true }],
+      apagadas: ['pikachu'],
+    });
+    const mexida: LinhaSalva = { id: 'ralts', niveis: [['Ralts']], editada: true };
+    expect(compactarLinhas([mexida], [], BASE_NOVA).salvas).toEqual([mexida]);
+  });
+  it('limparSalvas: guarda só o que veio (sem inventar nome nem níveis); id que falta sem níveis sai', () => {
+    expect(limparSalvas([{ id: 'a', confirmada: true, editada: false, nome: '' }, { niveis: [['X', 'X'], []], nome: 'Nova' }, { confirmada: true }, 'x'], 'pokemon')).toEqual([
+      { id: 'a', confirmada: true },
+      { id: 'pokemon:nova', nome: 'Nova', niveis: [['X']] },
+    ]);
   });
 });
 
@@ -242,24 +320,37 @@ describe('exportar e restaurar', () => {
     });
     expect(extrasDoPersonagem('Pikachu', undefined, b.classes, undefined)).toEqual({});
   });
-  it('planoCompleto: classes e linhas que valem agora (da base ou mudadas), só das franquias pedidas', () => {
-    const p: Plano = { versao: 1, unidades: { pokemon: { Charizard: { habilidade: 'x' } }, zzz: { A: { habilidade: 'y' } } }, linhas: { lol: [] } };
+  it('planoCompleto: classes que valem, unidades com a ult da base e as linhas como o plano guarda (já compactadas)', () => {
+    const p: Plano = {
+      versao: 1,
+      unidades: { pokemon: { Charizard: { habilidade: 'x' } }, zzz: { A: { habilidade: 'y' } } },
+      // formato antigo no Pokémon (a lista inteira, com o Ralts confirmado); uma linha criada no LoL
+      linhas: { pokemon: [CHAR, { ...RALTS, confirmada: true }], lol: [{ id: 'lol:x', nome: 'X', niveis: [['Ahri']], editada: true }] },
+      apagadas: { persona: ['orpheus'] },
+    };
     expect(planoCompleto(p, b, ['pokemon', 'persona', 'lol', 'smt'])).toEqual({
       versao: 1, classes: b.classes, unidades: { pokemon: { Charizard: { habilidade: 'x', ult: 'Mega Charizard X' } } },
-      linhas: { pokemon: b.linhas.pokemon, persona: b.linhas.persona, lol: [] },
+      linhas: { pokemon: [{ id: 'ralts', confirmada: true }], lol: [{ id: 'lol:x', nome: 'X', niveis: [['Ahri']], editada: true }] },
+      apagadas: { persona: ['orpheus'] },
+    });
+    // as linhas que valem vão à parte
+    expect(linhasCompletas(p, b, ['pokemon', 'persona', 'lol', 'smt'])).toEqual({
+      pokemon: [CHAR, { ...RALTS, confirmada: true }],
+      lol: [{ id: 'lol:x', nome: 'X', niveis: [['Ahri']], editada: true }],
     });
   });
-  it('restaurarPlano: o arquivo substitui classes, linhas da franquia e cada personagem; o resto fica', () => {
+  it('restaurarPlano: o arquivo substitui classes, as linhas guardadas da franquia e cada personagem; o resto fica', () => {
     const atual: Plano = {
       versao: 1,
       unidades: { pokemon: { Charizard: { classes: ['dragao'] }, Pidgey: { habilidade: 'Voa' } }, lol: { Ahri: { habilidade: 'Charme' } } },
-      linhas: { persona: [] },
+      linhas: { persona: [{ id: 'orpheus', confirmada: true }] },
     };
     const arq: Plano = {
       versao: 1,
       classes: [...b.classes, { id: 'robo', nome: 'Robô' }],
       unidades: { pokemon: { Charizard: { classes: ['robo'], habilidade: 'Laser' } }, zzz: { X: { habilidade: 'ignorado' } } },
-      linhas: { pokemon: confirmarLinha(b.linhas.pokemon!, 'ralts', true), zzz: [] },
+      linhas: { pokemon: [{ id: 'ralts', confirmada: true }], zzz: [] },
+      apagadas: { pokemon: ['charmander'] },
     };
     const r = restaurarPlano(atual, arq, b, ['pokemon', 'lol', 'persona']);
     expect(r.classes).toEqual(arq.classes);
@@ -267,22 +358,33 @@ describe('exportar e restaurar', () => {
       pokemon: { Charizard: { classes: ['robo'], habilidade: 'Laser' }, Pidgey: { habilidade: 'Voa' } },
       lol: { Ahri: { habilidade: 'Charme' } },
     });
-    expect(r.linhas).toEqual({ persona: [], pokemon: arq.linhas.pokemon });
+    expect(r.linhas).toEqual({ persona: [{ id: 'orpheus', confirmada: true }], pokemon: [{ id: 'ralts', confirmada: true }] });
+    expect(r.apagadas).toEqual({ pokemon: ['charmander'] });
   });
-  it('restaurarPlano: o que é igual à base volta a seguir a base; classe que sumiu sai das unidades', () => {
+  it('restaurarPlano de arquivo antigo (linhas inteiras): só as confirmações e as linhas do usuário; classe que sumiu sai das unidades', () => {
     const atual: Plano = { versao: 1, classes: [{ id: 'x', nome: 'X' }], unidades: { pokemon: { Mew: { classes: ['x', 'dragao'] } } }, linhas: { pokemon: [] } };
-    const arq = planoCompleto(planoVazio(), b, ['pokemon', 'persona']);
+    const arq: Plano = {
+      versao: 1,
+      classes: b.classes,
+      unidades: {},
+      linhas: { pokemon: [CHAR, RALTS], persona: [...b.linhas.persona!, { id: 'p:minha', nome: 'Minha', niveis: [['Thanatos']] }] },
+    };
     const r = restaurarPlano(atual, arq, b, ['pokemon', 'persona']);
-    expect(r).toEqual({ versao: 1, unidades: { pokemon: { Mew: { classes: ['dragao'] } } }, linhas: {} });
+    expect(r).toEqual({
+      versao: 1,
+      unidades: { pokemon: { Mew: { classes: ['dragao'] } } },
+      linhas: { persona: [{ id: 'p:minha', nome: 'Minha', niveis: [['Thanatos']], editada: true }] },
+    });
     expect(classesEfetivas(r, b)).toBe(b.classes);
+    expect(linhasEfetivas(r, b, 'pokemon')).toBe(b.linhas.pokemon);
   });
   it('restaurarPlano sem base: guarda o que veio; sem classes em lugar nenhum, não tira classe de ninguém', () => {
     const arq: Plano = { versao: 1, unidades: { pokemon: { Mew: { classes: ['q'] } } }, linhas: { pokemon: [CHAR] } };
     expect(restaurarPlano(planoVazio(), arq, null, ['pokemon'])).toEqual(arq);
   });
   it('resumoPlano', () => {
-    expect(resumoPlano({ versao: 1, classes: [], unidades: { a: { X: { habilidade: 'h' }, Y: { habilidade: 'h' } }, b: { Z: { habilidade: 'h' } } }, linhas: { a: [] } }))
-      .toEqual({ classes: 0, unidades: 3, franquiasComLinhas: 1 });
+    expect(resumoPlano({ versao: 1, classes: [], unidades: { a: { X: { habilidade: 'h' }, Y: { habilidade: 'h' } }, b: { Z: { habilidade: 'h' } } }, linhas: { a: [{ id: 'q', confirmada: true }], c: [] }, apagadas: { b: ['z'] } }))
+      .toEqual({ classes: 0, unidades: 3, franquiasComLinhas: 2 });
     expect(resumoPlano(planoVazio()).classes).toBeNull();
   });
 });

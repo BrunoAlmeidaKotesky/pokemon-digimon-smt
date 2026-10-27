@@ -88,6 +88,7 @@ async function gerarExportacao(grupo: 'marcados' | 'base'): Promise<Exportacao> 
     plano: {
       grupo,
       plano: cat.planoParaExportar(KEYS),
+      linhas: cat.linhasParaExportar(KEYS),
       extras: (k, nome) => pl.extrasDoPersonagem(nome, cat.unidadesDe(k)[nome], classes, indices.get(k)?.get(nome), cat.ultDe(k, nome)),
     },
   });
@@ -128,13 +129,13 @@ async function copiarTexto(t: string): Promise<boolean> {
   }
 }
 
-/** "10 classes, 120 personagens com classe, habilidade ou ult e as linhas de 4 franquias" */
+/** "10 classes, 120 personagens com classe, habilidade ou ult e mudanças em linhas de 4 franquias" */
 function resumoDoPlano(p: pl.Plano): string {
   const r = pl.resumoPlano(p);
   const partes = [
     r.classes === null ? 'as classes da base' : plural(r.classes, 'classe', 'classes'),
     `${plural(r.unidades, 'personagem', 'personagens')} com classe, habilidade ou ult`,
-    `as linhas de ${plural(r.franquiasComLinhas, 'franquia', 'franquias')}`,
+    `mudanças em linhas de ${plural(r.franquiasComLinhas, 'franquia', 'franquias')}`,
   ];
   return `${partes.slice(0, -1).join(', ')} e ${partes.at(-1)}`;
 }

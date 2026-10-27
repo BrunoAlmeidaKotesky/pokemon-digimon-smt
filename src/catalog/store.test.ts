@@ -202,31 +202,70 @@ describe('base (catalogo/set1-base.json) e planejamento (pdx-set1-plano)', () =>
     expect(s.grupoDe('pokemon')).toBeNull();
     s.escolherGrupo('base');
   });
-  it('linhas: a franquia segue a base até ser mexida; a primeira mudança copia pro plano', async () => {
+  it('linhas, uma por uma: confirmar não fixa a linha; mexer fixa só ela; criar e apagar; voltar pra base', async () => {
     const st = installStorage();
     s.recarregarPlano();
     comBase();
     await s.pedirBase();
     const antes = s.linhasDe('pokemon');
+    expect(antes).toBe(s.linhasDe('pokemon'));
     expect(s.linhasMexidas('pokemon')).toBe(false);
     // mudança que não muda nada não grava
     s.editarLinhas('pokemon', l => l);
     expect(st.getItem('pdx-set1-plano')).toBeNull();
+    // confirmar: só a confirmação vai pro plano; nome e níveis seguem a base
     s.editarLinhas('pokemon', l => l.map(x => ({ ...x, confirmada: true })));
-    expect(s.linhasMexidas('pokemon')).toBe(true);
-    expect(s.linhasDe('pokemon')).not.toBe(antes);
-    expect(s.linhasDe('pokemon')[0]!.confirmada).toBe(true);
+    expect(s.linhasMexidas('pokemon')).toBe(false);
+    expect(s.linhasDe('pokemon')[0]).toEqual({ ...BASE.linhas.pokemon[0], confirmada: true });
+    // a mesma lista enquanto nada muda (serve de dependência do useMemo)
+    expect(s.linhasDe('pokemon')).toBe(s.linhasDe('pokemon'));
     const salvo = JSON.parse(st.getItem('pdx-set1-plano')!);
-    expect(Object.keys(salvo.linhas)).toEqual(['pokemon']);
+    expect(salvo.linhas).toEqual({ pokemon: [{ id: 'pokemon:charmander', confirmada: true }] });
     expect(salvo.classes).toBeUndefined();
-    // persona continua seguindo a base
     expect(s.linhasMexidas('persona')).toBe(false);
+    // criar uma linha com o Charmeleon: a do Charmander (da base) fica sem ele, sem ser fixada
     const id = s.criarLinha('pokemon', '', 'Charmeleon');
     expect(id).toBe('pokemon:charmeleon');
     expect(s.linhasDe('pokemon').map(l => l.niveis)).toEqual([[['Charmander'], ['Charizard']], [['Charmeleon']]]);
+    expect(s.linhasMexidas('pokemon')).toBe(true);
+    expect(JSON.parse(st.getItem('pdx-set1-plano')!).linhas.pokemon).toEqual([
+      { id: 'pokemon:charmander', confirmada: true },
+      { id: 'pokemon:charmeleon', nome: 'Charmeleon', niveis: [['Charmeleon']], editada: true },
+    ]);
+    // mexer na linha da base (renomear) fixa só ela; voltar à da base desfaz e guarda a confirmação
+    s.editarLinhas('pokemon', l => l.map(x => (x.id === 'pokemon:charmander' ? { ...x, nome: 'Fogo' } : x)), ['pokemon:charmander']);
+    expect(s.linhasDe('pokemon')[0]).toMatchObject({ nome: 'Fogo', editada: true, confirmada: true });
+    expect(s.linhaNaBase('pokemon', 'pokemon:charmander')).toBe(true);
+    expect(s.linhaNaBase('pokemon', 'pokemon:charmeleon')).toBe(false);
+    s.voltarLinhaDaBase('pokemon', 'pokemon:charmander');
+    expect(s.linhasDe('pokemon')[0]).toEqual({ id: 'pokemon:charmander', nome: 'Charmander', niveis: [['Charmander'], ['Charizard']], confirmada: true });
+    // apagar uma linha da base guarda o id
+    s.editarLinhas('pokemon', l => l.filter(x => x.id !== 'pokemon:charmander'));
+    expect(JSON.parse(st.getItem('pdx-set1-plano')!).apagadas).toEqual({ pokemon: ['pokemon:charmander'] });
+    expect(s.linhasDe('pokemon').map(l => l.id)).toEqual(['pokemon:charmeleon']);
+    // voltar pra base: some o que foi criado e apagado (as confirmações ficariam)
     s.voltarLinhasDaBase('pokemon');
-    expect(s.linhasDe('pokemon')).toBe(antes);
-    expect(JSON.parse(st.getItem('pdx-set1-plano')!).linhas).toEqual({});
+    expect(s.linhasDe('pokemon')).toEqual(BASE.linhas.pokemon);
+    const fim = JSON.parse(st.getItem('pdx-set1-plano')!);
+    expect(fim.linhas).toEqual({});
+    expect(fim.apagadas).toBeUndefined();
+  });
+  it('plano no formato antigo (a franquia inteira copiada): a base nova aparece e a confirmação fica', async () => {
+    // o plano guardou as linhas antigas (sem o Charizard e sem a linha da Persona), com o Charmander confirmado
+    installStorage({
+      'pdx-set1-plano': JSON.stringify({
+        versao: 1, unidades: {},
+        linhas: { pokemon: [{ id: 'pokemon:charmander', nome: 'Charmander', niveis: [['Charmander'], ['Charmeleon']], confirmada: true }, { id: 'pokemon:minha', nome: 'Minha', niveis: [['Pidgey']] }] },
+      }),
+    });
+    s.recarregarPlano();
+    comBase();
+    await s.pedirBase();
+    expect(s.linhasDe('pokemon')).toEqual([
+      { ...BASE.linhas.pokemon[0], confirmada: true },
+      { id: 'pokemon:minha', nome: 'Minha', niveis: [['Pidgey']], editada: true },
+    ]);
+    expect(s.linhasDe('persona')).toEqual(BASE.linhas.persona);
   });
   it('classes e unidades: classe nova copia as da base; remover tira de todo mundo; habilidade salva; nada de outras chaves', async () => {
     const st = installStorage({ 'pdx-stats': '{"w":{}}', 'pdx-set1': '{"lol":["Ahri"]}' });
@@ -259,7 +298,7 @@ describe('base (catalogo/set1-base.json) e planejamento (pdx-set1-plano)', () =>
     s.recarregarPlano();
     expect(s.unidadesDe('lol')).toEqual({ Ahri: { classes: ['robo'] } });
   });
-  it('importarPlano espera a base e restaura; planoParaExportar leva classes e linhas que valem agora', async () => {
+  it('importarPlano espera a base e restaura; pra exportar: o plano no formato guardado e as linhas que valem', async () => {
     installStorage();
     s.recarregarPlano();
     comBase();
@@ -269,10 +308,13 @@ describe('base (catalogo/set1-base.json) e planejamento (pdx-set1-plano)', () =>
       unidades: { pokemon: { Charizard: { classes: ['anjo'] } } },
       linhas: { persona: [{ id: 'p', nome: 'P', niveis: [['Orpheus']] }] },
     }, ['pokemon', 'persona']);
-    expect(s.plano()).toEqual({ versao: 1, unidades: { pokemon: { Charizard: { classes: ['anjo'] } } }, linhas: { persona: [{ id: 'p', nome: 'P', niveis: [['Orpheus']] }] } });
+    // linha que não está na base é do usuário (e fica com o Orpheus)
+    expect(s.plano()).toEqual({ versao: 1, unidades: { pokemon: { Charizard: { classes: ['anjo'] } } }, linhas: { persona: [{ id: 'p', nome: 'P', niveis: [['Orpheus']], editada: true }] } });
+    expect(s.linhasDe('persona').map(l => l.niveis)).toEqual([[['Orpheus F'], ['Messiah']], [['Orpheus']]]);
     const exp = s.planoParaExportar(['pokemon', 'persona', 'lol']);
     expect(exp.classes).toEqual(BASE.classes);
-    expect(Object.keys(exp.linhas)).toEqual(['pokemon', 'persona']);
+    expect(Object.keys(exp.linhas)).toEqual(['persona']);
+    expect(Object.keys(s.linhasParaExportar(['pokemon', 'persona', 'lol']))).toEqual(['pokemon', 'persona']);
   });
   it('ult: a da base até mudar; trocar grava; tirar fica gravado (vazio) e não volta; escolher a da base volta a seguir a base', async () => {
     const st = installStorage();

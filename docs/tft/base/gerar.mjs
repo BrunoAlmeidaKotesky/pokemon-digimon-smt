@@ -81,15 +81,18 @@ selecao.bakugan = receitas.map(r => r[2]);
 // começo da linha do Mewtwo; nas outras, a Mega (ou o Gigantamax, ou a forma Primal) é a ult da forma final
 const pk = linhas.pokemon;
 const linhaDe = n => pk.find(l => l.niveis.flat().includes(n));
-for (const [final, forma] of Object.entries({ Raichu: 'Mega Raichu X', Sharpedo: 'Mega Sharpedo', Banette: 'Mega Banette', Lopunny: 'Mega Lopunny' })) {
+for (const [final, forma] of Object.entries({ Sharpedo: 'Mega Sharpedo', Banette: 'Mega Banette', Lopunny: 'Mega Lopunny' })) {
   linhaDe(final).niveis.push([forma]);
   selecao.pokemon.push(forma);
 }
 pk.push({ id: 'pokemon:mew', nome: 'Mew', niveis: [['Mew'], ['Mewtwo'], ['Mega Mewtwo X']] });
 selecao.pokemon.push('Mega Mewtwo X');
+// Pikachu (27/10): o Pichu entra como 1ª forma e a Mega Raichu X é a ult do Raichu (não uma 3ª forma)
+linhaDe('Pikachu').niveis.unshift(['Pichu']);
+selecao.pokemon.push('Pichu');
 const ults = {
   pokemon: Object.fromEntries([
-    'Venusaur', ['Charizard', 'Mega Charizard X'], 'Blastoise', 'Alakazam', 'Dragonite', 'Meganium', 'Feraligatr', 'Sceptile',
+    'Venusaur', ['Charizard', 'Mega Charizard X'], ['Raichu', 'Mega Raichu X'], 'Blastoise', 'Alakazam', 'Dragonite', 'Meganium', 'Feraligatr', 'Sceptile',
     'Blaziken', 'Swampert', 'Gardevoir', 'Gallade', 'Aggron', 'Garchomp', 'Emboar', 'Eelektross', 'Chesnaught', 'Delphox',
     'Greninja', 'Rayquaza', 'Darkrai', 'Zygarde', 'Magearna',
   ].map(x => (Array.isArray(x) ? x : [x, `Mega ${x}`]))

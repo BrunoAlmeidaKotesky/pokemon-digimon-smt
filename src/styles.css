@@ -388,6 +388,7 @@ body.spinning-online #online button.rank-slot{cursor:default}
 .lin-nome{margin:0;font:700 16px/1.2 var(--display);overflow-wrap:anywhere}
 .lin-nome-in{font:700 15px var(--display);color:var(--fg);background:var(--panel);border:1px solid var(--fg);border-radius:6px;padding:3px 8px;min-width:0;flex:1 1 160px}
 .lin-n{font-size:12px}
+.lin-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gold);border:1px solid var(--gold);border-radius:4px;padding:0 5px}
 .lin-head-acts{margin-left:auto;display:inline-flex;gap:6px}
 .lin-niveis{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px}
 .lin-nivel{display:grid;align-content:start;gap:4px;padding:6px;border:1px dashed var(--line);border-radius:8px;min-width:0}
