@@ -241,7 +241,9 @@
    "Mega Banette",
    "Mega Lopunny",
    "Mega Mewtwo X",
-   "Pichu"
+   "Pichu",
+   "Slither Wing",
+   "Iron Moth"
   ],
   "digimon": [
    "Agumon",
@@ -1282,6 +1284,10 @@
      ],
      [
       "Volcarona"
+     ],
+     [
+      "Slither Wing",
+      "Iron Moth"
      ]
     ],
     "nome": "Larvesta"
@@ -2157,7 +2163,14 @@
    "Corviknight": "Gigantamax Corviknight",
    "Hatterene": "Gigantamax Hatterene",
    "Kyogre": "Primal Kyogre",
-   "Groudon": "Primal Groudon"
+   "Groudon": "Primal Groudon",
+   "Typhlosion": "Hisuian Typhlosion",
+   "Samurott": "Hisuian Samurott",
+   "Decidueye": "Hisuian Decidueye",
+   "Hydreigon": "Iron Jugulis",
+   "Suicune": "Walking Wake",
+   "Entei": "Gouging Fire",
+   "Raikou": "Raging Bolt"
   }
  },
  "itens": {

@@ -90,6 +90,9 @@ selecao.pokemon.push('Mega Mewtwo X');
 // Pikachu (27/10): o Pichu entra como 1ª forma e a Mega Raichu X é a ult do Raichu (não uma 3ª forma)
 linhaDe('Pikachu').niveis.unshift(['Pichu']);
 selecao.pokemon.push('Pichu');
+// Paradox (27/10): linha de 2 ganha o Paradox como 3ª forma (Volcarona tem dois: ficam como alternativas)
+linhaDe('Volcarona').niveis.push(['Slither Wing', 'Iron Moth']);
+selecao.pokemon.push('Slither Wing', 'Iron Moth');
 const ults = {
   pokemon: Object.fromEntries([
     'Venusaur', ['Charizard', 'Mega Charizard X'], ['Raichu', 'Mega Raichu X'], 'Blastoise', 'Alakazam', 'Dragonite', 'Meganium', 'Feraligatr', 'Sceptile',
@@ -97,7 +100,10 @@ const ults = {
     'Greninja', 'Rayquaza', 'Darkrai', 'Zygarde', 'Magearna',
   ].map(x => (Array.isArray(x) ? x : [x, `Mega ${x}`]))
     .concat([['Machamp', 'Gigantamax Machamp'], ['Corviknight', 'Gigantamax Corviknight'], ['Hatterene', 'Gigantamax Hatterene'],
-      ['Kyogre', 'Primal Kyogre'], ['Groudon', 'Primal Groudon']])),
+      ['Kyogre', 'Primal Kyogre'], ['Groudon', 'Primal Groudon'],
+      // formas de Hisui e Paradox como ult (27/10); Gardevoir e Gallade ficam com a Mega
+      ['Typhlosion', 'Hisuian Typhlosion'], ['Samurott', 'Hisuian Samurott'], ['Decidueye', 'Hisuian Decidueye'],
+      ['Hydreigon', 'Iron Jugulis'], ['Suicune', 'Walking Wake'], ['Entei', 'Gouging Fire'], ['Raikou', 'Raging Bolt']])),
 };
 
 const classes = ['Demoníacos', 'Criaturinha Bizarra', 'Fadinhas', 'Safada', 'Atirador', 'Anjo', 'Robô', 'Dragão', 'Temporais', 'Únicos']
