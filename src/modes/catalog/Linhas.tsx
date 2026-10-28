@@ -1,7 +1,8 @@
 // Vista "Linhas" de uma franquia: uma carta por linha evolutiva, com os níveis lado a lado (no celular, um embaixo do
-// outro). Dá pra confirmar, renomear, apagar, mover alguém de nível (ou virar alternativa), tirar e pôr gente. Quem
-// tem ult mostra a forma embaixo ("ult: Mega Venusaur").
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+// outro). Dá pra confirmar, renomear, apagar, mover alguém de nível (ou virar alternativa), tirar e pôr gente, clicando
+// nele ou arrastando pra outro nível ou outra linha. Quem tem ult mostra a forma embaixo ("ult: Mega Venusaur"); quando
+// o nível de cima tem alternativas, cada um diz de quem vem.
+import { useEffect, useMemo, useRef, useState, type DragEvent, type RefObject } from 'react';
 import { label } from '../../state/app';
 import { Switch } from '../../components/Controls';
 import * as cat from '../../catalog/store';
@@ -9,11 +10,15 @@ import * as pl from '../../catalog/plano';
 import { normalizar, type Linha } from '../../catalog/model';
 import { BotaoConfirmar, BuscaPersonagem, Thumb, linhaAvulsa, plural } from './comum';
 
+/** Quem está sendo arrastado e de qual linha (toda carta aceita o soltar). */
+interface Arrasto { nome: string; linha: string }
+
 export function VistaLinhas({ k, linhas: lista, pronto }: { k: string; linhas: readonly Linha[]; pronto: boolean }) {
   const linhasEvo = cat.linhasDe(k);
   const soPendentes = cat.soNaoConfirmadas();
   const focoId = cat.focoEm(k);
   const [q, setQ] = useState('');
+  const [arrastando, setArrastando] = useState<Arrasto | null>(null);
   // ir pra uma linha (pelo selo do personagem) limpa a busca, que podia escondê-la
   const [focoVisto, setFocoVisto] = useState<string | null>(null);
   if (focoId && focoId !== focoVisto) {
@@ -54,10 +59,12 @@ export function VistaLinhas({ k, linhas: lista, pronto }: { k: string; linhas: r
             title={`Desfaz todas as mudanças nas linhas de ${nome} (as confirmações ficam) e volta pras do set1-base.json`} onConfirm={() => cat.voltarLinhasDaBase(k)} />
         )}
       </div>
+      {linhasEvo.length > 0 && <p className="mute lin-dica">Arraste alguém pra outro nível ou outra linha, ou clique nele pra mover ou tirar.</p>}
       {vis.length ? (
         <ol id="catLinhas" className="lin-lista">
           {vis.map(l => (
-            <CartaoLinha key={l.id} k={k} l={l} porNome={porNome} indice={indice} pronto={pronto} foco={focoId === l.id} />
+            <CartaoLinha key={l.id} k={k} l={l} porNome={porNome} indice={indice} pronto={pronto} foco={focoId === l.id}
+              arrastando={arrastando} onArrastar={setArrastando} />
           ))}
         </ol>
       ) : (
@@ -69,13 +76,15 @@ export function VistaLinhas({ k, linhas: lista, pronto }: { k: string; linhas: r
   );
 }
 
-function CartaoLinha({ k, l, porNome, indice, pronto, foco }: {
+function CartaoLinha({ k, l, porNome, indice, pronto, foco, arrastando, onArrastar }: {
   k: string;
   l: pl.LinhaEvo;
   porNome: ReadonlyMap<string, Linha>;
   indice: ReadonlyMap<string, pl.PosLinha>;
   pronto: boolean;
   foco: boolean;
+  arrastando: Arrasto | null;
+  onArrastar: (a: Arrasto | null) => void;
 }) {
   const ref = useRef<HTMLLIElement>(null);
   const busca = useRef<HTMLInputElement>(null);
@@ -114,6 +123,31 @@ function CartaoLinha({ k, l, porNome, indice, pronto, foco }: {
     editar(ls => pl.moverMembro(ls, l.id, escolhido, destino), true);
   }
 
+  // arrastar e soltar: um nível (vira alternativa lá) ou um nível novo no começo ou no fim, nesta ou em outra linha
+  const [alvo, setAlvo] = useState<pl.Destino | null>(null);
+  function soltar(destino: pl.Destino) {
+    const a = arrastando;
+    setAlvo(null);
+    onArrastar(null);
+    if (!a || (a.linha === l.id && typeof destino === 'number' && l.niveis[destino]?.includes(a.nome))) return;
+    cat.editarLinhas(k, ls => pl.adicionarMembro(ls, l.id, a.nome, destino), [...new Set([a.linha, l.id])]);
+  }
+  const soltavel = (destino: pl.Destino) => (arrastando ? {
+    onDragOver: (e: DragEvent) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (alvo !== destino) setAlvo(destino);
+    },
+    onDragLeave: (e: DragEvent) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setAlvo(x => (x === destino ? null : x));
+    },
+    onDrop: (e: DragEvent) => {
+      e.preventDefault();
+      soltar(destino);
+    },
+  } : {});
+  const classeAlvo = (destino: pl.Destino) => (arrastando && alvo === destino ? ' alvo' : '');
+
   return (
     <li ref={ref} tabIndex={-1} className={'lin-card' + (l.confirmada ? ' ok' : '')} data-id={l.id} aria-label={`Linha ${l.nome}`}>
       <div className="lin-head">
@@ -149,32 +183,57 @@ function CartaoLinha({ k, l, porNome, indice, pronto, foco }: {
 
       {l.niveis.length ? (
         <div className="lin-niveis" style={{ ['--n' as string]: l.niveis.length }}>
-          {l.niveis.map((n, i) => (
-            <div key={i} className="lin-nivel" data-nivel={i + 1}>
-              <span className="lin-nl">Nível {i + 1}{n.length > 1 ? ' · alternativas' : ''}</span>
-              <div className="lin-membros">
-                {n.map(nome => {
-                  const row = porNome.get(nome);
-                  const ult = cat.ultDe(k, nome);
-                  return (
-                    <div key={nome} className="lin-m">
-                      <button type="button" className={'lin-membro' + (escolhido === nome ? ' on' : '') + (row ? '' : ' fora')} data-nome={nome}
-                        aria-pressed={escolhido === nome} title={row ? `${nome}: mover ou tirar` : `${nome} não está na lista do site`}
-                        onClick={() => setSel(escolhido === nome ? null : nome)}>
-                        <Thumb l={row ?? linhaAvulsa(k, nome)} pronto={pronto} />
-                        <span className="nm">{nome}</span>
-                        {!row && <small>fora da lista</small>}
-                      </button>
-                      {ult && <span className="lin-ult" data-de={nome} title={`Na ult, ${nome} vira ${ult}`}>ult: {ult}</span>}
-                    </div>
-                  );
-                })}
+          {l.niveis.map((n, i) => {
+            // de quem cada um vem, quando o nível de cima tem alternativas
+            const acima = i > 0 && l.niveis[i - 1]!.length > 1 ? l.niveis[i - 1]! : null;
+            return (
+              <div key={i} className={'lin-nivel' + classeAlvo(i)} data-nivel={i + 1} {...soltavel(i)}>
+                <span className="lin-nl">Nível {i + 1}{n.length > 1 ? ' · alternativas' : ''}</span>
+                <div className="lin-membros">
+                  {n.map(nome => {
+                    const row = porNome.get(nome);
+                    const ult = cat.ultDe(k, nome);
+                    return (
+                      <div key={nome} className={'lin-m' + (arrastando?.nome === nome ? ' arrastando' : '')}>
+                        <button type="button" className={'lin-membro' + (escolhido === nome ? ' on' : '') + (row ? '' : ' fora')} data-nome={nome}
+                          aria-pressed={escolhido === nome} title={row ? `${nome}: arraste ou clique pra mover ou tirar` : `${nome} não está na lista do site`}
+                          draggable onClick={() => setSel(escolhido === nome ? null : nome)}
+                          onDragStart={e => {
+                            e.dataTransfer.setData('text/plain', nome);
+                            e.dataTransfer.effectAllowed = 'move';
+                            // mudar a tela no próprio dragstart cancela o arraste no Chrome
+                            const a = { nome, linha: l.id };
+                            setTimeout(() => onArrastar(a), 0);
+                          }}
+                          onDragEnd={() => { setAlvo(null); onArrastar(null); }}>
+                          <Thumb l={row ?? linhaAvulsa(k, nome)} pronto={pronto} />
+                          <span className="nm">{nome}</span>
+                          {!row && <small>fora da lista</small>}
+                        </button>
+                        {ult && <span className="lin-ult" data-de={nome} title={`Na ult, ${nome} vira ${ult}`}>ult: {ult}</span>}
+                        {acima && (
+                          <select className="lin-de" aria-label={`De quem ${nome} vem`} value={l.de?.[nome] ?? ''}
+                            onChange={e => editar(ls => pl.definirDe(ls, l.id, nome, e.target.value), true)}>
+                            <option value="">vem de qualquer um</option>
+                            {acima.map(p => <option key={p} value={p}>vem de {p}</option>)}
+                          </select>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
-        <p className="mute lin-vazia">Linha vazia: adicione alguém abaixo.</p>
+        <p className={'mute lin-vazia' + classeAlvo('fim')} {...soltavel('fim')}>Linha vazia: adicione alguém abaixo{arrastando ? ' ou solte aqui' : ''}.</p>
+      )}
+      {arrastando && l.niveis.length > 0 && (
+        <div className="lin-soltas">
+          <div className={'lin-solta' + classeAlvo('inicio')} data-destino="inicio" {...soltavel('inicio')}>Solte aqui: nível novo no começo</div>
+          <div className={'lin-solta' + classeAlvo('fim')} data-destino="fim" {...soltavel('fim')}>Solte aqui: nível novo no fim</div>
+        </div>
       )}
 
       {escolhido && (

@@ -10,7 +10,7 @@ test.use({ reducedMotion: 'reduce' });
 interface Classe { id: string; nome: string; descricao?: string }
 interface LinhaEvo { id: string; nome: string; niveis: string[][]; confirmada?: boolean }
 /** como o plano guarda uma linha: confirmada só com o id; mexida ou criada inteira, com editada */
-interface LinhaSalva { id: string; nome?: string; niveis?: string[][]; confirmada?: boolean; editada?: boolean }
+interface LinhaSalva { id: string; nome?: string; niveis?: string[][]; de?: Record<string, string>; confirmada?: boolean; editada?: boolean }
 interface Plano {
   versao: 1;
   classes?: Classe[];
@@ -240,6 +240,53 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await expect(sq.locator('.lin-tag')).toHaveText('editada');
     await expect(carta(page, 'pokemon:charmander').locator('.lin-tag')).toHaveCount(0);
     await expect(carta(page, 'pokemon:bulbasaur').locator('.lin-tag')).toHaveCount(0);
+  });
+
+  test('arrastar e soltar: noutro nível (alternativa), noutra linha e num nível novo; de quem vem quando o nível de cima tem alternativas', async ({ page }) => {
+    await inicio(page);
+    await vista(page, 'linhas').click();
+    await expect(page.locator('.lin-dica')).toContainText('Arraste alguém');
+    const ch = carta(page, 'pokemon:charmander');
+    // o Wartortle vai pro nível 3 da linha do Charmander (alternativa) e sai da do Squirtle
+    await carta(page, 'pokemon:squirtle').locator('.lin-membro[data-nome="Wartortle"]').dragTo(ch.locator('.lin-nivel[data-nivel="3"]'));
+    expect(await niveis(page, 'pokemon:charmander')).toEqual([['Charmander'], ['Charmeleon'], ['Charizard', 'Wartortle']]);
+    expect(await niveis(page, 'pokemon:squirtle')).toEqual([['Squirtle']]);
+    await expect(page.locator('.lin-solta')).toHaveCount(0);
+
+    // nível novo no fim: as áreas aparecem enquanto arrasta
+    const bu = carta(page, 'pokemon:bulbasaur');
+    const ivy = bu.locator('.lin-membro[data-nome="Ivysaur"]');
+    await ivy.hover();
+    await page.mouse.down();
+    const box = (await ivy.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2 + 10, box.y + box.height / 2, { steps: 3 });
+    await expect(bu.locator('.lin-solta')).toHaveText(['Solte aqui: nível novo no começo', 'Solte aqui: nível novo no fim']);
+    await bu.locator('.lin-solta[data-destino="fim"]').hover();
+    await page.mouse.up();
+    expect(await niveis(page, 'pokemon:bulbasaur')).toEqual([['Bulbasaur'], ['Venusaur'], ['Ivysaur']]);
+    await expect(page.locator('.lin-solta')).toHaveCount(0);
+
+    // o Raichu vira alternativa do Charmeleon: cada um do nível 3 diz de quem vem
+    await carta(page, 'pokemon:pikachu').locator('.lin-membro[data-nome="Raichu"]').dragTo(ch.locator('.lin-nivel[data-nivel="2"]'));
+    expect(await niveis(page, 'pokemon:charmander')).toEqual([['Charmander'], ['Charmeleon', 'Raichu'], ['Charizard', 'Wartortle']]);
+    await expect(ch.locator('.lin-de')).toHaveCount(2);
+    expect(await opcoes(page, '#catLinhas .lin-card[data-id="pokemon:charmander"] .lin-de[aria-label="De quem Wartortle vem"]'))
+      .toEqual(['vem de qualquer um', 'vem de Charmeleon', 'vem de Raichu']);
+    await ch.locator('.lin-de[aria-label="De quem Wartortle vem"]').selectOption('Raichu');
+    await ch.locator('.lin-de[aria-label="De quem Charizard vem"]').selectOption('Charmeleon');
+    const salva = async () => (await plano(page))!.linhas.pokemon!.find(l => l.id === 'pokemon:charmander');
+    expect((await salva())!.de).toEqual({ Wartortle: 'Raichu', Charizard: 'Charmeleon' });
+    await page.reload();
+    await aba(page, 'Catálogo');
+    await vista(page, 'linhas').click();
+    await expect(ch.locator('.lin-de[aria-label="De quem Wartortle vem"]')).toHaveValue('Raichu');
+    // o Raichu sobe pro nível 1 (o Playwright não rola a tela no meio do arraste: o destino fica à vista): o Wartortle
+    // volta a vir de qualquer um, e o seletor passa pro Charmeleon, que agora tem dois em cima
+    await ch.locator('.lin-membro[data-nome="Raichu"]').dragTo(ch.locator('.lin-nivel[data-nivel="1"]'));
+    expect(await niveis(page, 'pokemon:charmander')).toEqual([['Charmander', 'Raichu'], ['Charmeleon'], ['Charizard', 'Wartortle']]);
+    await expect(ch.locator('.lin-de')).toHaveCount(1);
+    await expect(ch.locator('.lin-de')).toHaveAttribute('aria-label', 'De quem Charmeleon vem');
+    expect((await salva())!.de).toEqual({ Charizard: 'Charmeleon' });
   });
 
   test('nova linha a partir de um personagem, renomear e apagar; nova linha vazia; voltar pra base', async ({ page }) => {

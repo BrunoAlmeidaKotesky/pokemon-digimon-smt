@@ -289,6 +289,7 @@ describe('base (catalogo/set1-base.json) e planejamento (pdx-set1-plano)', () =>
     expect(salvo).toEqual({
       versao: 1,
       classes: [{ id: 'anjo', nome: 'Anjo' }, { id: 'robo', nome: 'Robô', descricao: 'Máquinas' }],
+      classesVistas: ['dragao', 'anjo'],
       unidades: { lol: { Ahri: { classes: ['robo'] } } },
       linhas: {},
     });
@@ -297,6 +298,19 @@ describe('base (catalogo/set1-base.json) e planejamento (pdx-set1-plano)', () =>
     // relê do localStorage
     s.recarregarPlano();
     expect(s.unidadesDe('lol')).toEqual({ Ahri: { classes: ['robo'] } });
+  });
+  it('classe nova na base aparece no fim pra quem já mexeu nas classes; a removida não volta', async () => {
+    // plano gravado antes das classes vistas: só o Dragão (o Anjo, que a base antiga já tinha, foi removido)
+    const st = installStorage({ 'pdx-set1-plano': JSON.stringify({ versao: 1, classes: [{ id: 'dragao', nome: 'Dragão' }], unidades: {}, linhas: {} }) });
+    s.recarregarPlano();
+    comBase({ ...BASE, classes: [...BASE.classes, { id: 'tanque', nome: 'Tanque' }, { id: 'fogo', nome: 'Fogo' }] });
+    await s.pedirBase();
+    expect(s.classes().map(c => c.id)).toEqual(['dragao', 'tanque', 'fogo']);
+    expect(s.classes()).toBe(s.classes());
+    s.removerClasse('tanque');
+    expect(JSON.parse(st.getItem('pdx-set1-plano')!).classesVistas).toEqual(['dragao', 'anjo', 'tanque', 'fogo']);
+    s.recarregarPlano();
+    expect(s.classes().map(c => c.id)).toEqual(['dragao', 'fogo']);
   });
   it('importarPlano espera a base e restaura; pra exportar: o plano no formato guardado e as linhas que valem', async () => {
     installStorage();

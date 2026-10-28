@@ -26,6 +26,11 @@ export interface LinhaEvo {
   id: string;
   nome: string;
   niveis: string[][];
+  /**
+   * Quem vem de quem: nome -> alguém do nível anterior (pra quando ele tem alternativas: Loup-garou vira Moloch,
+   * Siegfried vira Fionn). Quem não está aqui vem de qualquer um do nível anterior.
+   */
+  de?: Record<string, string>;
   confirmada?: boolean;
   /** na lista que vale: a linha é a do plano (o usuário mexeu nela ou a criou), não a da base */
   editada?: boolean;
@@ -35,11 +40,16 @@ export interface LinhaEvo {
  * base). Linha da base que ele mexeu (nome, membros, níveis) ou que ele criou: inteira, com editada. Formato antigo
  * (a lista inteira copiada, sem editada): nas linhas da base só a confirmação vale; as outras são do usuário.
  */
-export interface LinhaSalva { id: string; nome?: string; niveis?: string[][]; confirmada?: boolean; editada?: boolean }
+export interface LinhaSalva { id: string; nome?: string; niveis?: string[][]; de?: Record<string, string>; confirmada?: boolean; editada?: boolean }
 export interface Plano {
   versao: 1;
   /** ausente = as classes da base */
   classes?: Classe[];
+  /**
+   * ids das classes que a base tinha quando o plano gravou as classes dele. Classe da base fora desta lista e fora de
+   * `classes` é nova e aparece no fim; a que está aqui e não em `classes` foi removida. Ausente = CLASSES_ANTIGAS.
+   */
+  classesVistas?: string[];
   /** chave da franquia -> nome -> unidade */
   unidades: Record<string, Unidades>;
   /** chave da franquia -> o que o usuário fez nas linhas (por linha; o resto segue a base) */
@@ -94,6 +104,28 @@ export function limparClasses(j: unknown): Classe[] {
   return r;
 }
 
+/** Os pares de `de` que valem nestes níveis (quem está do nível 2 em diante, vindo de alguém do nível anterior), ou undefined. */
+function deValido(de: unknown, niveis: readonly (readonly string[])[]): Record<string, string> | undefined {
+  if (!isObj(de)) return undefined;
+  const nivel = new Map<string, number>();
+  niveis.forEach((n, i) => n.forEach(x => nivel.set(x, i)));
+  const r = dic<string>();
+  for (const [filho, pai] of Object.entries(de)) {
+    const i = nivel.get(filho);
+    if (typeof pai === 'string' && i && niveis[i - 1]!.includes(pai)) r[filho] = pai;
+  }
+  return Object.keys(r).length ? r : undefined;
+}
+/** A linha sem os pares de `de` que deixaram de valer (alguém mudou de nível ou saiu). Nada sobrando = o próprio objeto. */
+function ajustarDe(l: LinhaEvo): LinhaEvo {
+  if (!l.de) return l;
+  const de = deValido(l.de, l.niveis);
+  if (de && Object.keys(de).length === Object.keys(l.de).length) return l;
+  const { de: _, ...resto } = l;
+  return de ? { ...resto, de } : resto;
+}
+const comDe = (de: Record<string, string> | undefined) => (de ? { de } : {});
+
 /**
  * Linhas válidas de uma franquia: níveis como listas de nomes, sem nível vazio, sem repetir personagem (fica na
  * primeira linha em que aparece) e com id único (gera um a partir do nome quando falta ou repete).
@@ -115,7 +147,7 @@ export function limparLinhas(j: unknown, k = ''): LinhaEvo[] {
     let id = texto(l.id);
     if (!id || ids.has(id)) id = idUnico((k ? k + ':' : '') + slug(nome), ids);
     ids.add(id);
-    r.push({ id, nome, niveis, ...(l.confirmada === true ? { confirmada: true } : {}) });
+    r.push({ id, nome, niveis, ...comDe(deValido(l.de, niveis)), ...(l.confirmada === true ? { confirmada: true } : {}) });
   }
   return r;
 }
@@ -210,7 +242,7 @@ export function limparSalvas(j: unknown, k = ''): LinhaSalva[] {
     r.push({
       id,
       ...(nome ? { nome } : {}),
-      ...(niveis ? { niveis } : {}),
+      ...(niveis ? { niveis, ...comDe(deValido(l.de, niveis)) } : {}),
       ...(l.confirmada === true ? { confirmada: true } : {}),
       ...(l.editada === true ? { editada: true } : {}),
     });
@@ -233,6 +265,7 @@ export function limparPlano(j: unknown): Plano {
   const p = planoVazio();
   if (!isObj(j)) return p;
   if (Array.isArray(j.classes)) p.classes = limparClasses(j.classes);
+  if (Array.isArray(j.classesVistas)) p.classesVistas = textos(j.classesVistas);
   p.unidades = limparUnidades(j.unidades);
   if (isObj(j.linhas)) for (const [k, v] of Object.entries(j.linhas)) if (Array.isArray(v)) p.linhas[k] = limparSalvas(v, k);
   if (isObj(j.apagadas)) {
@@ -249,7 +282,21 @@ export function limparPlano(j: unknown): Plano {
 // ---------- o que vale agora (plano por cima da base) ----------
 const SEM_CLASSES: Classe[] = [];
 const SEM_LINHAS: LinhaEvo[] = [];
-export const classesEfetivas = (p: Plano, base: Base | null): Classe[] => p.classes ?? base?.classes ?? SEM_CLASSES;
+/** As classes que a base tinha antes de ganhar Tanque, Porradeiro, Assassino e os elementos (27/10): as que um plano sem classesVistas já viu. */
+const CLASSES_ANTIGAS = ['demoniacos', 'criaturinha-bizarra', 'fadinhas', 'safada', 'atirador', 'anjo', 'robo', 'dragao', 'temporais', 'unicos'];
+
+/**
+ * As classes que valem: as da base enquanto o plano não mexe nelas; depois, as do plano e, no fim, as que a base
+ * ganhou desde então (ver classesVistas). Sem classe nova, devolve o próprio array.
+ */
+export function classesEfetivas(p: Plano, base: Base | null): Classe[] {
+  if (!p.classes) return base?.classes ?? SEM_CLASSES;
+  const conhecidas = new Set([...p.classes.map(c => c.id), ...(p.classesVistas ?? CLASSES_ANTIGAS)]);
+  const novas = base?.classes.filter(c => !conhecidas.has(c.id)) ?? [];
+  return novas.length ? [...p.classes, ...novas] : p.classes;
+}
+/** O que gravar em classesVistas junto com as classes do plano: os ids da base de agora (sem base, o que já estava). */
+export const classesVistasAgora = (p: Plano, base: Base | null): string[] | undefined => (base ? base.classes.map(c => c.id) : p.classesVistas);
 
 /**
  * As linhas que valem numa franquia: as da base, na ordem da base, tirando as apagadas; a linha da base que o usuário
@@ -267,7 +314,7 @@ export function mesclarLinhas(base: readonly LinhaEvo[], salvas: readonly LinhaS
   const inteira = (s: LinhaSalva, nomeBase?: string): LinhaEvo => {
     const niveis = (s.niveis ?? []).map(n => n.filter(x => !vistos.has(x))).filter(n => n.length);
     niveis.forEach(n => n.forEach(x => vistos.add(x)));
-    return { id: s.id, nome: s.nome || nomeBase || niveis[0]?.[0] || 'Linha', niveis, ...(s.confirmada ? { confirmada: true } : {}), editada: true };
+    return { id: s.id, nome: s.nome || nomeBase || niveis[0]?.[0] || 'Linha', niveis, ...comDe(deValido(s.de, niveis)), ...(s.confirmada ? { confirmada: true } : {}), editada: true };
   };
   const mexidas = new Map<string, LinhaEvo>();
   for (const b of base) {
@@ -286,7 +333,7 @@ export function mesclarLinhas(base: readonly LinhaEvo[], salvas: readonly LinhaS
     const s = porId.get(b.id);
     const confirmada = s ? !!s.confirmada : !!b.confirmada;
     const niveis = b.niveis.map(n => n.filter(x => !vistos.has(x))).filter(n => n.length);
-    r.push({ id: b.id, nome: b.nome, niveis, ...(confirmada ? { confirmada: true } : {}) });
+    r.push({ id: b.id, nome: b.nome, niveis, ...comDe(deValido(b.de, niveis)), ...(confirmada ? { confirmada: true } : {}) });
   }
   return [...r, ...criadas];
 }
@@ -305,7 +352,7 @@ export function guardarLinhas(depois: readonly LinhaEvo[], base: readonly LinhaE
   const salvas: LinhaSalva[] = [];
   for (const l of depois) {
     const conf = l.confirmada ? { confirmada: true } : {};
-    if (!naBase.has(l.id) || l.editada || mexidas.has(l.id)) salvas.push({ id: l.id, nome: l.nome, niveis: l.niveis, ...conf, editada: true });
+    if (!naBase.has(l.id) || l.editada || mexidas.has(l.id)) salvas.push({ id: l.id, nome: l.nome, niveis: l.niveis, ...comDe(l.de), ...conf, editada: true });
     else if (l.confirmada) salvas.push({ id: l.id, confirmada: true });
   }
   const ids = new Set(depois.map(l => l.id));
@@ -323,9 +370,9 @@ export function compactarLinhas(salvas: readonly LinhaSalva[], apagadas: readonl
   for (const s of salvas) {
     const conf = s.confirmada ? { confirmada: true } : {};
     if (naBase.has(s.id)) {
-      if (s.editada && s.niveis) r.push({ id: s.id, ...(s.nome ? { nome: s.nome } : {}), niveis: s.niveis, ...conf, editada: true });
+      if (s.editada && s.niveis) r.push({ id: s.id, ...(s.nome ? { nome: s.nome } : {}), niveis: s.niveis, ...comDe(s.de), ...conf, editada: true });
       else if (s.confirmada) r.push({ id: s.id, confirmada: true });
-    } else if (s.niveis) r.push({ id: s.id, nome: s.nome || s.niveis[0]?.[0] || 'Linha', niveis: s.niveis, ...conf, editada: true });
+    } else if (s.niveis) r.push({ id: s.id, nome: s.nome || s.niveis[0]?.[0] || 'Linha', niveis: s.niveis, ...comDe(s.de), ...conf, editada: true });
   }
   return { salvas: r, apagadas: apagadas.filter(id => naBase.has(id)) };
 }
@@ -359,7 +406,7 @@ export type Destino = number | 'inicio' | 'fim';
 
 const tirar = (l: LinhaEvo, nome: string): LinhaEvo => {
   if (!l.niveis.some(n => n.includes(nome))) return l;
-  return { ...l, niveis: l.niveis.map(n => n.filter(x => x !== nome)).filter(n => n.length) };
+  return ajustarDe({ ...l, niveis: l.niveis.map(n => n.filter(x => x !== nome)).filter(n => n.length) });
 };
 
 /**
@@ -375,11 +422,24 @@ export function adicionarMembro(linhas: readonly LinhaEvo[], id: string, nome: s
     if (typeof destino === 'number' && destino >= 0 && destino < niveis.length) niveis[destino]!.push(nome);
     else if (destino === 'inicio') niveis.unshift([nome]);
     else niveis.push([nome]);
-    return { ...l, niveis: niveis.filter(n => n.length) };
+    return ajustarDe({ ...l, niveis: niveis.filter(n => n.length) });
   });
 }
 /** Mudar de nível é pôr de novo na mesma linha. */
 export const moverMembro = adicionarMembro;
+
+/** De quem `nome` vem (alguém do nível anterior), ou '' = de qualquer um. Quem não está no nível de cima não vale. */
+export function definirDe(linhas: readonly LinhaEvo[], id: string, nome: string, pai: string): LinhaEvo[] {
+  const l = linhas.find(x => x.id === id);
+  if (!l || (l.de?.[nome] ?? '') === pai) return linhas as LinhaEvo[];
+  const de = Object.assign(dic<string>(), l.de);
+  if (pai) de[nome] = pai;
+  else delete de[nome];
+  const { de: _, ...resto } = l;
+  const nova = ajustarDe(Object.keys(de).length ? { ...resto, de } : resto);
+  if ((nova.de?.[nome] ?? '') !== pai) return linhas as LinhaEvo[];
+  return linhas.map(x => (x === l ? nova : x));
+}
 
 /** Tira o personagem da linha (nível que fica vazio some). */
 export function removerMembro(linhas: readonly LinhaEvo[], id: string, nome: string): LinhaEvo[] {
@@ -537,6 +597,8 @@ export interface LinhaExportada {
   confirmada: boolean;
   /** os outros do mesmo nível (alternativas) */
   alternativas?: string[];
+  /** de quem do nível anterior ele vem (ausente = de qualquer um) */
+  vemDe?: string;
 }
 /** Campos que o planejamento acrescenta a cada personagem do set1.json. */
 export interface ExtrasExportados { classes?: string[]; habilidade?: string; linha?: LinhaExportada; ult?: string }
@@ -550,7 +612,11 @@ export function extrasDoPersonagem(nome: string, u: Unidade | undefined, classes
   if (ult) r.ult = ult;
   if (pos) {
     const alt = pos.linha.niveis[pos.nivel]!.filter(x => x !== nome);
-    r.linha = { nome: pos.linha.nome, nivel: pos.nivel + 1, de: pos.linha.niveis.length, confirmada: !!pos.linha.confirmada, ...(alt.length ? { alternativas: alt } : {}) };
+    const de = pos.linha.de?.[nome];
+    r.linha = {
+      nome: pos.linha.nome, nivel: pos.nivel + 1, de: pos.linha.niveis.length, confirmada: !!pos.linha.confirmada,
+      ...(alt.length ? { alternativas: alt } : {}), ...(de ? { vemDe: de } : {}),
+    };
   }
   return r;
 }
@@ -579,7 +645,8 @@ export function planoCompleto(p: Plano, base: Base | null, ks: readonly string[]
     unidades[k] = fr;
   }
   const classes = classesEfetivas(p, base).map(c => (c.descricao ? { ...c, descricao: c.descricao.trim() } : c));
-  return { versao: 1, classes, unidades, linhas, ...(Object.keys(apagadas).length ? { apagadas } : {}) };
+  const vistas = classesVistasAgora(p, base);
+  return { versao: 1, classes, ...(vistas ? { classesVistas: vistas } : {}), unidades, linhas, ...(Object.keys(apagadas).length ? { apagadas } : {}) };
 }
 
 /** As linhas que valem em cada franquia de `ks` que tem alguma (pro set1.json). */
@@ -605,7 +672,11 @@ export function restaurarPlano(atual: Plano, arq: Plano, base: Base | null, vali
   const p: Plano = { versao: 1, unidades: { ...atual.unidades }, linhas: { ...atual.linhas } };
   const apagadas: Record<string, string[]> = { ...atual.apagadas };
   const classes = arq.classes ?? atual.classes;
-  if (classes && !(base && igual(classes, base.classes))) p.classes = classes;
+  const vistas = arq.classes ? arq.classesVistas : atual.classesVistas;
+  if (classes && !(base && igual(classes, base.classes))) {
+    p.classes = classes;
+    if (vistas) p.classesVistas = vistas;
+  }
   for (const k of new Set([...Object.keys(arq.linhas), ...Object.keys(arq.apagadas ?? {})])) {
     if (!validas.includes(k)) continue;
     const salvas = arq.linhas[k] ?? [];
@@ -629,8 +700,7 @@ export function restaurarPlano(atual: Plano, arq: Plano, base: Base | null, vali
     if (Object.keys(fr).length) p.unidades[k] = fr;
     else delete p.unidades[k];
   }
-  const valem = p.classes ?? base?.classes;
-  if (valem) p.unidades = soClassesValidas(p.unidades, valem);
+  if (p.classes || base) p.unidades = soClassesValidas(p.unidades, classesEfetivas(p, base));
   return p;
 }
 

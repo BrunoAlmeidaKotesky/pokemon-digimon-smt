@@ -148,7 +148,7 @@ export function esquecerBase(): void {
 }
 
 // ---------- planejamento (pdx-set1-plano) ----------
-/** Chave nova, só do planejamento: { versao, classes?, unidades, linhas }. */
+/** Chave nova, só do planejamento: { versao, classes?, classesVistas?, unidades, linhas }. */
 export const PLANO_KEY = 'pdx-set1-plano';
 let planoAtual: Plano | null = null;
 const lerPlano = (): Plano => (planoAtual ??= pl.limparPlano(readJSON(PLANO_KEY)));
@@ -164,8 +164,22 @@ export function recarregarPlano(): void {
   planoAtual = null;
   mudou();
 }
-/** As classes que valem agora (as do plano, senão as da base). Mesmo array enquanto não mudar. */
-export const classes = (): Classe[] => pl.classesEfetivas(lerPlano(), baseOk());
+/** As classes que valem agora (as do plano, senão as da base; ver classesEfetivas). Mesmo array enquanto não mudar. */
+let classesCache: { c: Classe[] | undefined; v: string[] | undefined; b: Base | null; r: Classe[] } | null = null;
+export function classes(): Classe[] {
+  const p = lerPlano();
+  const b = baseOk();
+  const m = classesCache;
+  if (m && m.c === p.classes && m.v === p.classesVistas && m.b === b) return m.r;
+  const r = pl.classesEfetivas(p, b);
+  classesCache = { c: p.classes, v: p.classesVistas, b, r };
+  return r;
+}
+/** Grava as classes do plano lembrando quais a base tem agora: as que ela ganhar depois aparecem sozinhas no fim. */
+function gravarClasses(p: Plano, classes: Classe[], unidades = p.unidades): void {
+  const vistas = pl.classesVistasAgora(p, baseOk());
+  gravarPlano({ ...p, classes, ...(vistas ? { classesVistas: vistas } : {}), unidades });
+}
 /** As linhas da franquia que valem agora. Mesmo array enquanto não mudar. */
 // a mistura das linhas da base com as do plano, por franquia: refeita só quando um dos três muda
 const linhasCache = new Map<string, { s: LinhaSalva[] | undefined; a: string[] | undefined; b: LinhaEvo[] | undefined; r: LinhaEvo[] }>();
@@ -251,7 +265,7 @@ export function editarClasses(fn: (c: Classe[]) => Classe[]): void {
   const antes = classes();
   const depois = fn(antes);
   if (depois === antes) return;
-  gravarPlano({ ...lerPlano(), classes: depois });
+  gravarClasses(lerPlano(), depois);
 }
 /** Cria uma classe e devolve o id ('' = nome vazio; nome repetido devolve a que já existe). */
 export function adicionarClasse(nome: string, descricao = ''): string {
@@ -266,7 +280,7 @@ export function adicionarClasse(nome: string, descricao = ''): string {
 /** Tira a classe da lista e de todo personagem que a tinha. */
 export function removerClasse(id: string): void {
   const p = lerPlano();
-  gravarPlano({ ...p, classes: classes().filter(c => c.id !== id), unidades: pl.tirarClasseDeTodos(p.unidades, id) });
+  gravarClasses(p, classes().filter(c => c.id !== id), pl.tirarClasseDeTodos(p.unidades, id));
 }
 /** Liga ou desliga uma classe do personagem. */
 export function alternarClasse(k: string, nome: string, id: string): void {
