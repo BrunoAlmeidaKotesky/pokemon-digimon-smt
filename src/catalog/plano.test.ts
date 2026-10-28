@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  adicionarClasse, adicionarMembro, alternarClasse, apagarLinha, classesDaUnidade, classesEfetivas, compactarLinhas, confirmarLinha,
-  criarLinha, descreverClasse, extrasDoPersonagem, guardarLinhas, idUnico, indiceLinhas, limparClasses, limparLinhas, limparPlano,
+  adicionarClasse, adicionarMembro, alternarClasse, apagarLinha, classesDaUnidade, classesEfetivas, classesVistasAgora, compactarLinhas, confirmarLinha,
+  criarLinha, definirDe, descreverClasse, extrasDoPersonagem, guardarLinhas, idUnico, indiceLinhas, limparClasses, limparLinhas, limparPlano,
   limparSalvas, limparUnidades, linhasCompletas, linhasEfetivas, linhasMudadas, mesclarLinhas, moverClasse, moverMembro, mudarUnidade,
   parseBase, planoCompleto, planoVazio, removerMembro, renomearClasse, renomearLinha, restaurarPlano, resumoPlano, slug,
   tirarClasseDeTodos, ultEfetiva, ultPraGravar, type Base, type LinhaEvo, type LinhaSalva, type Plano,
@@ -97,6 +97,8 @@ describe('limpeza do que vem de fora', () => {
     expect('classes' in p).toBe(false);
     // lista de linhas vazia é uma escolha do usuário (apagou todas): fica
     expect(limparPlano({ linhas: { pokemon: [] }, classes: [] })).toEqual({ versao: 1, classes: [], unidades: {}, linhas: { pokemon: [] } });
+    expect(limparPlano({ classes: [], classesVistas: ['a', 'a', 3, ''] }).classesVistas).toEqual(['a']);
+    expect('classesVistas' in limparPlano({ classesVistas: 'a' })).toBe(false);
   });
   it('personagem chamado "constructor" não esbarra no protótipo', () => {
     const u = limparUnidades({ pokemon: { constructor: { habilidade: 'x' } } });
@@ -118,6 +120,21 @@ describe('plano por cima da base', () => {
     expect(linhasEfetivas(mexido, b, 'persona')).toBe(b.linhas.persona);
     expect(classesEfetivas(p, null)).toEqual([]);
     expect(linhasEfetivas(p, null, 'pokemon')).toEqual([]);
+  });
+  it('classes: as que a base ganhou depois entram no fim; as que o usuário removeu não voltam', () => {
+    const b: Base = { ...base(), classes: [{ id: 'dragao', nome: 'Dragão' }, { id: 'anjo', nome: 'Anjo' }, { id: 'tanque', nome: 'Tanque' }, { id: 'fogo', nome: 'Fogo' }] };
+    // plano de antes das classes vistas: tirou o Anjo (que a base já tinha) e criou o Robô
+    const antigo: Plano = { ...planoVazio(), classes: [{ id: 'dragao', nome: 'Dragão' }, { id: 'robo', nome: 'Robô' }] };
+    expect(classesEfetivas(antigo, b).map(c => c.id)).toEqual(['dragao', 'robo', 'tanque', 'fogo']);
+    // já viu o Tanque e tirou: só o Fogo é novo
+    const viu: Plano = { ...antigo, classesVistas: ['dragao', 'anjo', 'tanque'] };
+    expect(classesEfetivas(viu, b).map(c => c.id)).toEqual(['dragao', 'robo', 'fogo']);
+    // nada novo: o próprio array do plano
+    const tudo: Plano = { ...antigo, classesVistas: ['dragao', 'anjo', 'tanque', 'fogo'] };
+    expect(classesEfetivas(tudo, b)).toBe(tudo.classes);
+    expect(classesEfetivas(antigo, null)).toBe(antigo.classes);
+    expect(classesVistasAgora(antigo, b)).toEqual(['dragao', 'anjo', 'tanque', 'fogo']);
+    expect(classesVistasAgora(viu, null)).toBe(viu.classesVistas);
   });
 });
 
@@ -258,6 +275,43 @@ describe('linhas', () => {
     expect(confirmarLinha(c, 'ralts', false)[1]).toEqual(RALTS);
     expect('confirmada' in confirmarLinha(c, 'ralts', false)[1]!).toBe(false);
   });
+  // Mothman: dois no nível 2 e dois no nível 3
+  const MOTH = L('mothman', ['Mothman'], ['Loup-garou', 'Siegfried'], ['Moloch', 'Fionn']);
+  it('de quem vem: só alguém do nível de cima; vazio = de qualquer um; sem mudança = mesmo array', () => {
+    let l = definirDe([MOTH], 'mothman', 'Moloch', 'Loup-garou');
+    l = definirDe(l, 'mothman', 'Fionn', 'Siegfried');
+    expect(l[0]!.de).toEqual({ Moloch: 'Loup-garou', Fionn: 'Siegfried' });
+    expect(definirDe(l, 'mothman', 'Fionn', 'Siegfried')).toBe(l);
+    // pai que não está no nível de cima, ou quem está no nível 1: nada muda
+    expect(definirDe(l, 'mothman', 'Moloch', 'Mothman')).toBe(l);
+    expect(definirDe(l, 'mothman', 'Mothman', 'Moloch')).toBe(l);
+    expect(definirDe(l, 'nada', 'Moloch', 'Loup-garou')).toBe(l);
+    const q = definirDe(definirDe(l, 'mothman', 'Moloch', ''), 'mothman', 'Fionn', '');
+    expect('de' in q[0]!).toBe(false);
+    expect(MOTH.de).toBeUndefined();
+  });
+  it('de quem vem: mover ou tirar alguém tira os pares que deixaram de valer', () => {
+    const l = definirDe(definirDe([MOTH], 'mothman', 'Moloch', 'Loup-garou'), 'mothman', 'Fionn', 'Siegfried');
+    // o Siegfried sai: o Fionn volta a vir de qualquer um
+    expect(removerMembro(l, 'mothman', 'Siegfried')[0]!.de).toEqual({ Moloch: 'Loup-garou' });
+    // o Moloch vira nível próprio no fim: o pai dele não está mais no nível de cima
+    expect(moverMembro(l, 'mothman', 'Moloch', 'fim')[0]!.de).toEqual({ Fionn: 'Siegfried' });
+    // o Loup-garou vai pra outra linha
+    expect(adicionarMembro([...l, CHAR], 'charmander', 'Loup-garou', 'fim')[0]!.de).toEqual({ Fionn: 'Siegfried' });
+  });
+  it('de quem vem: a limpeza da base e do plano joga fora o que não vale; vai pro plano e pra exportação', () => {
+    const de = { Moloch: 'Loup-garou', Fionn: 'Mothman', Mothman: 'X', Loup: 3 };
+    expect(limparLinhas([{ ...MOTH, de }])[0]!.de).toEqual({ Moloch: 'Loup-garou' });
+    expect(limparSalvas([{ ...MOTH, de, editada: true }, { id: 'x', de }])).toEqual([{ ...MOTH, de: { Moloch: 'Loup-garou' }, editada: true }, { id: 'x' }]);
+    const com = { ...MOTH, de: { Moloch: 'Loup-garou' } };
+    expect(guardarLinhas([com], [MOTH], new Set(['mothman'])).salvas).toEqual([{ ...com, editada: true }]);
+    expect(mesclarLinhas([com], [])[0]!.de).toEqual({ Moloch: 'Loup-garou' });
+    expect(mesclarLinhas([MOTH], [{ ...com, editada: true }])[0]!.de).toEqual({ Moloch: 'Loup-garou' });
+    expect(compactarLinhas([{ ...com, editada: true }], [], [MOTH]).salvas[0]!.de).toEqual({ Moloch: 'Loup-garou' });
+    const i = indiceLinhas([com]);
+    expect(extrasDoPersonagem('Moloch', undefined, [], i.get('Moloch')).linha).toEqual({ nome: 'mothman', nivel: 3, de: 3, confirmada: false, alternativas: ['Fionn'], vemDe: 'Loup-garou' });
+    expect(extrasDoPersonagem('Fionn', undefined, [], i.get('Fionn')).linha!.vemDe).toBeUndefined();
+  });
 });
 
 describe('classes e unidades', () => {
@@ -329,7 +383,7 @@ describe('exportar e restaurar', () => {
       apagadas: { persona: ['orpheus'] },
     };
     expect(planoCompleto(p, b, ['pokemon', 'persona', 'lol', 'smt'])).toEqual({
-      versao: 1, classes: b.classes, unidades: { pokemon: { Charizard: { habilidade: 'x', ult: 'Mega Charizard X' } } },
+      versao: 1, classes: b.classes, classesVistas: ['dragao', 'anjo'], unidades: { pokemon: { Charizard: { habilidade: 'x', ult: 'Mega Charizard X' } } },
       linhas: { pokemon: [{ id: 'ralts', confirmada: true }], lol: [{ id: 'lol:x', nome: 'X', niveis: [['Ahri']], editada: true }] },
       apagadas: { persona: ['orpheus'] },
     });
@@ -377,6 +431,17 @@ describe('exportar e restaurar', () => {
     });
     expect(classesEfetivas(r, b)).toBe(b.classes);
     expect(linhasEfetivas(r, b, 'pokemon')).toBe(b.linhas.pokemon);
+  });
+  it('restaurarPlano: as classes vistas vêm com as classes do arquivo; classe nova da base continua valendo nas unidades', () => {
+    const nova = { ...b, classes: [...b.classes, { id: 'fogo', nome: 'Fogo' }] };
+    const arq: Plano = { versao: 1, classes: [{ id: 'dragao', nome: 'Dragão' }], classesVistas: ['dragao', 'anjo'], unidades: { pokemon: { Charizard: { classes: ['fogo', 'anjo'] } } }, linhas: {} };
+    const r = restaurarPlano(planoVazio(), arq, nova, ['pokemon']);
+    expect(r.classesVistas).toEqual(['dragao', 'anjo']);
+    // o Anjo foi tirado no arquivo; o Fogo é novo na base e vale
+    expect(classesEfetivas(r, nova).map(c => c.id)).toEqual(['dragao', 'fogo']);
+    expect(r.unidades).toEqual({ pokemon: { Charizard: { classes: ['fogo'] } } });
+    // arquivo sem classes: ficam as atuais, com as vistas delas
+    expect(restaurarPlano(r, planoVazio(), nova, ['pokemon']).classesVistas).toEqual(['dragao', 'anjo']);
   });
   it('restaurarPlano sem base: guarda o que veio; sem classes em lugar nenhum, não tira classe de ninguém', () => {
     const arq: Plano = { versao: 1, unidades: { pokemon: { Mew: { classes: ['q'] } } }, linhas: { pokemon: [CHAR] } };

@@ -2,7 +2,8 @@
 // Seleção = exportação v1 do usuário, menos o que ele tirou no doc, mais as sugestões aceitas; linhas propostas no doc.
 // Uso (na pasta do repositório): node docs/tft/base/gerar.mjs
 // Entradas: docs/tft/set1-escolhas-v1.json, docs/tft/sugestoes-catalogo.json, docs/tft/base/linhas-pokemon.json (cadeias
-// evolutivas da PokéAPI dos Pokémon escolhidos), docs/tft/base/receitas-bakugan.json e public/catalogo/*.json (nomes).
+// evolutivas da PokéAPI dos Pokémon escolhidos), docs/tft/base/receitas-bakugan.json, docs/tft/set1-escolhas-v2.json
+// (classes e linhas que o usuário montou na aba Catálogo) e public/catalogo/*.json (nomes).
 // O planejamento que o usuário faz na aba Catálogo fica no navegador dele e passa por cima da base.
 import fs from 'node:fs';
 const cat = k => JSON.parse(fs.readFileSync(`public/catalogo/${k}.json`, 'utf8')).itens;
@@ -117,8 +118,50 @@ const ults = {
   selecao.pokemon = selecao.pokemon.filter(n => !fora.has(n));
 }
 
-const classes = ['Demoníacos', 'Criaturinha Bizarra', 'Fadinhas', 'Safada', 'Atirador', 'Anjo', 'Robô', 'Dragão', 'Temporais', 'Únicos']
-  .map(nome => ({ id: nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-'), nome }));
+// Exportação v2 do usuário (27/10): ele deu as classes e montou as linhas na aba Catálogo. As linhas e as ults que
+// valiam no navegador dele viram as da base. Entra quem ele pôs numa linha ou deu classe fora da base; em Pokémon,
+// Digimon e SMT sai quem estava na base e ficou sem nada (sem linha, classe, habilidade nem ult). Nas outras franquias
+// quem ficou sem nada continua: ele só não achou a classe ainda. A classe e a habilidade de cada um ficam no plano
+// dele (navegador) e no arquivo da v2.
+{
+  const v2 = JSON.parse(fs.readFileSync('docs/tft/set1-escolhas-v2.json', 'utf8'));
+  const unidades = v2.plano.unidades;
+  for (const [k, ls] of Object.entries(v2.linhas)) linhas[k] = ls.map(({ id, nome, niveis, de, confirmada }) => ({ id, nome, niveis, ...(de ? { de } : {}), ...(confirmada ? { confirmada } : {}) }));
+  for (const k of Object.keys(selecao)) {
+    const us = unidades[k] ?? {};
+    const naLinha = new Set((linhas[k] ?? []).flatMap(l => l.niveis.flat()));
+    const temAlgo = n => naLinha.has(n) || !!us[n]?.classes?.length || !!us[n]?.habilidade?.trim() || !!us[n]?.ult;
+    const ficam = ['pokemon', 'digimon', 'smt'].includes(k) ? selecao[k].filter(temAlgo) : selecao[k];
+    selecao[k] = [...new Set([...ficam, ...naLinha, ...Object.keys(us).filter(temAlgo)])];
+  }
+  for (const [k, us] of Object.entries(unidades)) {
+    const fr = Object.fromEntries(Object.entries(us).filter(([, u]) => u.ult).map(([n, u]) => [n, u.ult]));
+    if (Object.keys(fr).length) ults[k] = fr;
+    else delete ults[k];
+  }
+}
+
+// Tanque, Porradeiro, Assassino e os elementos (27/10): o efeito é proposta, em % porque os atributos ainda não têm escala. Os
+// elementos são a classe reserva, pra quem não tem outra que encaixe.
+const ELEMENTO = 'Elemento, classe reserva (um por unidade).';
+const classes = [
+  'Demoníacos', 'Criaturinha Bizarra', 'Fadinhas', 'Safada', 'Atirador', 'Anjo', 'Robô', 'Dragão', 'Temporais', 'Únicos',
+  ['Tanque', 'Linha de frente que segura o dano pelo time. (2) +20% de armadura e resistência mágica; (4) +40%, e começam a luta com escudo de 15% da vida; (6) +70%, e no começo da luta provocam: os inimigos em volta atacam o Tanque por 3 segundos.'],
+  ['Porradeiro', 'Briga corpo a corpo: muita vida e bate mais forte quando apanha. (2) +15% de vida máxima; (4) +30%, e abaixo de metade da vida causam 20% a mais de dano; (6) +50%, e o resto do time ganha +10% de vida.'],
+  ['Assassino', 'No começo da luta saltam pra trás da linha inimiga e vão atrás de quem tem menos vida. (2) +15% de chance e +15% de dano de crítico; (4) +30% e +30%; (6) +45% e +45%, e cada abate deixa o Assassino 1 segundo sem poder ser alvo.'],
+  ['Fogo', `${ELEMENTO} Os ataques queimam: o alvo perde vida aos poucos e recebe menos cura. (2) queimadura fraca; (4) média; (6) forte, e quem morre queimando passa o fogo pro inimigo mais perto.`],
+  ['Água', `${ELEMENTO} Recuperam vida durante a luta. (2) 1% da vida por segundo; (4) 2%; (6) 3%, e a cada 4 segundos se livram de queimadura, lentidão e outros efeitos ruins.`],
+  ['Terra', `${ELEMENTO} Pele de pedra. (2) +15% de armadura; (4) +30%; (6) +50%, e a cada 6 segundos um tremor atordoa por meio segundo os inimigos em volta.`],
+  ['Vento', `${ELEMENTO} Rápidos e difíceis de acertar. (2) +15% de velocidade de ataque; (4) +30%, e desviam de 10% dos ataques; (6) +50%, e desviam de 20%.`],
+  ['Raio', `${ELEMENTO} A cada 3 ataques, um raio pula do alvo pra outros inimigos. (2) pula pra 1; (4) pra 2; (6) pra 3, e atordoa por meio segundo quem leva.`],
+  ['Gelo', `${ELEMENTO} Os ataques deixam o alvo mais lento. (2) ele ataca 15% mais devagar; (4) 25%; (6) 35%, e o 5º ataque seguido no mesmo alvo congela ele por 1 segundo.`],
+  ['Planta', `${ELEMENTO} O primeiro ataque em cada inimigo planta uma semente que suga a vida dele e cura quem plantou. (2) semente fraca; (4) média; (6) forte, e a cura vai também pro aliado mais perto.`],
+  ['Luz', `${ELEMENTO} Os ataques ofuscam: por 2 segundos o alvo erra parte dos ataques. (2) erra 15%; (4) 25%; (6) 40%.`],
+  ['Trevas', `${ELEMENTO} Batem mais forte em quem está ferido. (2) +10% de dano em inimigos abaixo de metade da vida; (4) +20%; (6) +30%, e acabam com quem fica abaixo de 10% da vida.`],
+].map(c => {
+  const [nome, descricao] = Array.isArray(c) ? c : [c];
+  return { id: nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-'), nome, ...(descricao ? { descricao } : {}) };
+});
 
 // conferência: todo nome existe no catálogo da franquia, e todo membro de linha está na seleção
 const erros = [];

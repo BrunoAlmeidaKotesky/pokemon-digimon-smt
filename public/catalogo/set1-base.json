@@ -1,6 +1,6 @@
 {
  "versao": 1,
- "geradoEm": "2026-10-27",
+ "geradoEm": "2026-10-28",
  "classes": [
   {
    "id": "demoniacos",
@@ -41,6 +41,66 @@
   {
    "id": "unicos",
    "nome": "Únicos"
+  },
+  {
+   "id": "tanque",
+   "nome": "Tanque",
+   "descricao": "Linha de frente que segura o dano pelo time. (2) +20% de armadura e resistência mágica; (4) +40%, e começam a luta com escudo de 15% da vida; (6) +70%, e no começo da luta provocam: os inimigos em volta atacam o Tanque por 3 segundos."
+  },
+  {
+   "id": "porradeiro",
+   "nome": "Porradeiro",
+   "descricao": "Briga corpo a corpo: muita vida e bate mais forte quando apanha. (2) +15% de vida máxima; (4) +30%, e abaixo de metade da vida causam 20% a mais de dano; (6) +50%, e o resto do time ganha +10% de vida."
+  },
+  {
+   "id": "assassino",
+   "nome": "Assassino",
+   "descricao": "No começo da luta saltam pra trás da linha inimiga e vão atrás de quem tem menos vida. (2) +15% de chance e +15% de dano de crítico; (4) +30% e +30%; (6) +45% e +45%, e cada abate deixa o Assassino 1 segundo sem poder ser alvo."
+  },
+  {
+   "id": "fogo",
+   "nome": "Fogo",
+   "descricao": "Elemento, classe reserva (um por unidade). Os ataques queimam: o alvo perde vida aos poucos e recebe menos cura. (2) queimadura fraca; (4) média; (6) forte, e quem morre queimando passa o fogo pro inimigo mais perto."
+  },
+  {
+   "id": "agua",
+   "nome": "Água",
+   "descricao": "Elemento, classe reserva (um por unidade). Recuperam vida durante a luta. (2) 1% da vida por segundo; (4) 2%; (6) 3%, e a cada 4 segundos se livram de queimadura, lentidão e outros efeitos ruins."
+  },
+  {
+   "id": "terra",
+   "nome": "Terra",
+   "descricao": "Elemento, classe reserva (um por unidade). Pele de pedra. (2) +15% de armadura; (4) +30%; (6) +50%, e a cada 6 segundos um tremor atordoa por meio segundo os inimigos em volta."
+  },
+  {
+   "id": "vento",
+   "nome": "Vento",
+   "descricao": "Elemento, classe reserva (um por unidade). Rápidos e difíceis de acertar. (2) +15% de velocidade de ataque; (4) +30%, e desviam de 10% dos ataques; (6) +50%, e desviam de 20%."
+  },
+  {
+   "id": "raio",
+   "nome": "Raio",
+   "descricao": "Elemento, classe reserva (um por unidade). A cada 3 ataques, um raio pula do alvo pra outros inimigos. (2) pula pra 1; (4) pra 2; (6) pra 3, e atordoa por meio segundo quem leva."
+  },
+  {
+   "id": "gelo",
+   "nome": "Gelo",
+   "descricao": "Elemento, classe reserva (um por unidade). Os ataques deixam o alvo mais lento. (2) ele ataca 15% mais devagar; (4) 25%; (6) 35%, e o 5º ataque seguido no mesmo alvo congela ele por 1 segundo."
+  },
+  {
+   "id": "planta",
+   "nome": "Planta",
+   "descricao": "Elemento, classe reserva (um por unidade). O primeiro ataque em cada inimigo planta uma semente que suga a vida dele e cura quem plantou. (2) semente fraca; (4) média; (6) forte, e a cura vai também pro aliado mais perto."
+  },
+  {
+   "id": "luz",
+   "nome": "Luz",
+   "descricao": "Elemento, classe reserva (um por unidade). Os ataques ofuscam: por 2 segundos o alvo erra parte dos ataques. (2) erra 15%; (4) 25%; (6) 40%."
+  },
+  {
+   "id": "trevas",
+   "nome": "Trevas",
+   "descricao": "Elemento, classe reserva (um por unidade). Batem mais forte em quem está ferido. (2) +10% de dano em inimigos abaixo de metade da vida; (4) +20%; (6) +30%, e acabam com quem fica abaixo de 10% da vida."
   }
  ],
  "selecao": {
@@ -56,9 +116,6 @@
    "Blastoise",
    "Pikachu",
    "Raichu",
-   "Poliwag",
-   "Poliwhirl",
-   "Poliwrath",
    "Abra",
    "Kadabra",
    "Alakazam",
@@ -167,9 +224,6 @@
    "Froakie",
    "Frogadier",
    "Greninja",
-   "Scatterbug",
-   "Spewpa",
-   "Vivillon",
    "Honedge",
    "Doublade",
    "Aegislash",
@@ -239,7 +293,6 @@
    "Revolmon",
    "Rosemon",
    "Mermaimon",
-   "Shakkoumon",
    "Lucemon",
    "Lilithmon",
    "Lucemon(Falldown Mode)",
@@ -263,7 +316,36 @@
    "Metal Etemon",
    "Bakemon",
    "Fantomon",
-   "Necromon"
+   "Necromon",
+   "Cupimon",
+   "Guardromon",
+   "Hagurumon",
+   "Punimon",
+   "Vegimon",
+   "EBEmon",
+   "EBEmon (X-Antibody)",
+   "Impmon",
+   "Wisemon",
+   "Ancient Wisemon",
+   "Toy Agumon",
+   "Superstarmon",
+   "Justimon(Blitz Arm)",
+   "Justimon(Critical Arm)",
+   "Lalamon",
+   "Sunflowmon",
+   "Noble Pumpmon",
+   "Shakomon",
+   "Shellmon",
+   "Marin Angemon",
+   "Terriermon",
+   "Galgomon",
+   "Rapidmon Perfect",
+   "Saint Galgomon",
+   "Rapidmon Armor",
+   "Agumon Hakase",
+   "Numemon",
+   "Black King Numemon",
+   "Gold Numemon"
   ],
   "smt": [
    "Abdiel",
@@ -291,7 +373,6 @@
    "Chernobog",
    "Cironnup",
    "Cleopatra",
-   "Cu Sith",
    "Cybele",
    "Daemon",
    "Demeter",
@@ -338,7 +419,22 @@
    "Ukobach",
    "Yamata-no-Orochi",
    "Yoshitsune",
-   "Zeus"
+   "Zeus",
+   "Abaddon",
+   "Arioch",
+   "Mother Harlot",
+   "Sudama",
+   "Kodama",
+   "Shiki-Ouji",
+   "Niddhoggr",
+   "Kohryu",
+   "Neko Shogun",
+   "Nekomata",
+   "Hanuman",
+   "Siegfried",
+   "Fionn mac Cumhaill",
+   "Mot",
+   "Inanna"
   ],
   "persona": [
    "Arsène",
@@ -416,7 +512,10 @@
    "Whitesnake",
    "California King Bed",
    "Soft & Wet",
-   "Wonder of U"
+   "Wonder of U",
+   "Mr.President",
+   "The World Over Heaven",
+   "Strength"
   ],
   "lol": [
    "Aatrox",
@@ -655,6 +754,7 @@
   "pokemon": [
    {
     "id": "pokemon:bulbasaur",
+    "nome": "Bulbasaur",
     "niveis": [
      [
       "Bulbasaur"
@@ -666,10 +766,11 @@
       "Venusaur"
      ]
     ],
-    "nome": "Bulbasaur"
+    "confirmada": true
    },
    {
     "id": "pokemon:charmander",
+    "nome": "Charmander",
     "niveis": [
      [
       "Charmander"
@@ -681,10 +782,11 @@
       "Charizard"
      ]
     ],
-    "nome": "Charmander"
+    "confirmada": true
    },
    {
     "id": "pokemon:squirtle",
+    "nome": "Squirtle",
     "niveis": [
      [
       "Squirtle"
@@ -696,10 +798,11 @@
       "Blastoise"
      ]
     ],
-    "nome": "Squirtle"
+    "confirmada": true
    },
    {
     "id": "pokemon:pikachu",
+    "nome": "Pikachu",
     "niveis": [
      [
       "Pichu"
@@ -711,25 +814,11 @@
       "Raichu"
      ]
     ],
-    "nome": "Pikachu"
-   },
-   {
-    "id": "pokemon:poliwag",
-    "niveis": [
-     [
-      "Poliwag"
-     ],
-     [
-      "Poliwhirl"
-     ],
-     [
-      "Poliwrath"
-     ]
-    ],
-    "nome": "Poliwag"
+    "confirmada": true
    },
    {
     "id": "pokemon:abra",
+    "nome": "Abra",
     "niveis": [
      [
       "Abra"
@@ -741,10 +830,11 @@
       "Alakazam"
      ]
     ],
-    "nome": "Abra"
+    "confirmada": true
    },
    {
     "id": "pokemon:machop",
+    "nome": "Machop",
     "niveis": [
      [
       "Machop"
@@ -756,10 +846,11 @@
       "Machamp"
      ]
     ],
-    "nome": "Machop"
+    "confirmada": true
    },
    {
     "id": "pokemon:dratini",
+    "nome": "Dratini",
     "niveis": [
      [
       "Dratini"
@@ -771,10 +862,11 @@
       "Dragonite"
      ]
     ],
-    "nome": "Dratini"
+    "confirmada": true
    },
    {
     "id": "pokemon:chikorita",
+    "nome": "Chikorita",
     "niveis": [
      [
       "Chikorita"
@@ -786,10 +878,11 @@
       "Meganium"
      ]
     ],
-    "nome": "Chikorita"
+    "confirmada": true
    },
    {
     "id": "pokemon:cyndaquil",
+    "nome": "Cyndaquil",
     "niveis": [
      [
       "Cyndaquil"
@@ -801,10 +894,11 @@
       "Typhlosion"
      ]
     ],
-    "nome": "Cyndaquil"
+    "confirmada": true
    },
    {
     "id": "pokemon:totodile",
+    "nome": "Totodile",
     "niveis": [
      [
       "Totodile"
@@ -816,10 +910,11 @@
       "Feraligatr"
      ]
     ],
-    "nome": "Totodile"
+    "confirmada": true
    },
    {
     "id": "pokemon:treecko",
+    "nome": "Treecko",
     "niveis": [
      [
       "Treecko"
@@ -831,10 +926,11 @@
       "Sceptile"
      ]
     ],
-    "nome": "Treecko"
+    "confirmada": true
    },
    {
     "id": "pokemon:torchic",
+    "nome": "Torchic",
     "niveis": [
      [
       "Torchic"
@@ -846,10 +942,11 @@
       "Blaziken"
      ]
     ],
-    "nome": "Torchic"
+    "confirmada": true
    },
    {
     "id": "pokemon:mudkip",
+    "nome": "Mudkip",
     "niveis": [
      [
       "Mudkip"
@@ -861,10 +958,11 @@
       "Swampert"
      ]
     ],
-    "nome": "Mudkip"
+    "confirmada": true
    },
    {
     "id": "pokemon:ralts",
+    "nome": "Ralts",
     "niveis": [
      [
       "Ralts"
@@ -877,10 +975,11 @@
       "Gallade"
      ]
     ],
-    "nome": "Ralts"
+    "confirmada": true
    },
    {
     "id": "pokemon:whismur",
+    "nome": "Whismur",
     "niveis": [
      [
       "Whismur"
@@ -892,10 +991,11 @@
       "Exploud"
      ]
     ],
-    "nome": "Whismur"
+    "confirmada": true
    },
    {
     "id": "pokemon:aron",
+    "nome": "Aron",
     "niveis": [
      [
       "Aron"
@@ -907,10 +1007,11 @@
       "Aggron"
      ]
     ],
-    "nome": "Aron"
+    "confirmada": true
    },
    {
     "id": "pokemon:carvanha",
+    "nome": "Carvanha",
     "niveis": [
      [
       "Carvanha"
@@ -922,10 +1023,11 @@
       "Mega Sharpedo"
      ]
     ],
-    "nome": "Carvanha"
+    "confirmada": true
    },
    {
     "id": "pokemon:shuppet",
+    "nome": "Shuppet",
     "niveis": [
      [
       "Shuppet"
@@ -937,10 +1039,11 @@
       "Mega Banette"
      ]
     ],
-    "nome": "Shuppet"
+    "confirmada": true
    },
    {
     "id": "pokemon:turtwig",
+    "nome": "Turtwig",
     "niveis": [
      [
       "Turtwig"
@@ -952,10 +1055,11 @@
       "Torterra"
      ]
     ],
-    "nome": "Turtwig"
+    "confirmada": true
    },
    {
     "id": "pokemon:chimchar",
+    "nome": "Chimchar",
     "niveis": [
      [
       "Chimchar"
@@ -967,10 +1071,11 @@
       "Infernape"
      ]
     ],
-    "nome": "Chimchar"
+    "confirmada": true
    },
    {
     "id": "pokemon:piplup",
+    "nome": "Piplup",
     "niveis": [
      [
       "Piplup"
@@ -982,10 +1087,11 @@
       "Empoleon"
      ]
     ],
-    "nome": "Piplup"
+    "confirmada": true
    },
    {
     "id": "pokemon:shinx",
+    "nome": "Shinx",
     "niveis": [
      [
       "Shinx"
@@ -997,10 +1103,11 @@
       "Luxray"
      ]
     ],
-    "nome": "Shinx"
+    "confirmada": true
    },
    {
     "id": "pokemon:buneary",
+    "nome": "Buneary",
     "niveis": [
      [
       "Buneary"
@@ -1012,10 +1119,11 @@
       "Mega Lopunny"
      ]
     ],
-    "nome": "Buneary"
+    "confirmada": true
    },
    {
     "id": "pokemon:gible",
+    "nome": "Gible",
     "niveis": [
      [
       "Gible"
@@ -1027,10 +1135,11 @@
       "Garchomp"
      ]
     ],
-    "nome": "Gible"
+    "confirmada": true
    },
    {
     "id": "pokemon:snivy",
+    "nome": "Snivy",
     "niveis": [
      [
       "Snivy"
@@ -1042,10 +1151,11 @@
       "Serperior"
      ]
     ],
-    "nome": "Snivy"
+    "confirmada": true
    },
    {
     "id": "pokemon:tepig",
+    "nome": "Tepig",
     "niveis": [
      [
       "Tepig"
@@ -1057,10 +1167,11 @@
       "Emboar"
      ]
     ],
-    "nome": "Tepig"
+    "confirmada": true
    },
    {
     "id": "pokemon:oshawott",
+    "nome": "Oshawott",
     "niveis": [
      [
       "Oshawott"
@@ -1072,10 +1183,11 @@
       "Samurott"
      ]
     ],
-    "nome": "Oshawott"
+    "confirmada": true
    },
    {
     "id": "pokemon:roggenrola",
+    "nome": "Roggenrola",
     "niveis": [
      [
       "Roggenrola"
@@ -1087,10 +1199,11 @@
       "Gigalith"
      ]
     ],
-    "nome": "Roggenrola"
+    "confirmada": true
    },
    {
     "id": "pokemon:timburr",
+    "nome": "Timburr",
     "niveis": [
      [
       "Timburr"
@@ -1102,10 +1215,11 @@
       "Conkeldurr"
      ]
     ],
-    "nome": "Timburr"
+    "confirmada": true
    },
    {
     "id": "pokemon:sandile",
+    "nome": "Sandile",
     "niveis": [
      [
       "Sandile"
@@ -1117,10 +1231,11 @@
       "Krookodile"
      ]
     ],
-    "nome": "Sandile"
+    "confirmada": true
    },
    {
     "id": "pokemon:solosis",
+    "nome": "Solosis",
     "niveis": [
      [
       "Solosis"
@@ -1132,10 +1247,11 @@
       "Reuniclus"
      ]
     ],
-    "nome": "Solosis"
+    "confirmada": true
    },
    {
     "id": "pokemon:vanillite",
+    "nome": "Vanillite",
     "niveis": [
      [
       "Vanillite"
@@ -1147,10 +1263,11 @@
       "Vanilluxe"
      ]
     ],
-    "nome": "Vanillite"
+    "confirmada": true
    },
    {
     "id": "pokemon:tynamo",
+    "nome": "Tynamo",
     "niveis": [
      [
       "Tynamo"
@@ -1162,10 +1279,11 @@
       "Eelektross"
      ]
     ],
-    "nome": "Tynamo"
+    "confirmada": true
    },
    {
     "id": "pokemon:deino",
+    "nome": "Deino",
     "niveis": [
      [
       "Deino"
@@ -1177,10 +1295,11 @@
       "Hydreigon"
      ]
     ],
-    "nome": "Deino"
+    "confirmada": true
    },
    {
     "id": "pokemon:larvesta",
+    "nome": "Larvesta",
     "niveis": [
      [
       "Larvesta"
@@ -1193,10 +1312,11 @@
       "Iron Moth"
      ]
     ],
-    "nome": "Larvesta"
+    "confirmada": true
    },
    {
     "id": "pokemon:chespin",
+    "nome": "Chespin",
     "niveis": [
      [
       "Chespin"
@@ -1208,10 +1328,11 @@
       "Chesnaught"
      ]
     ],
-    "nome": "Chespin"
+    "confirmada": true
    },
    {
     "id": "pokemon:fennekin",
+    "nome": "Fennekin",
     "niveis": [
      [
       "Fennekin"
@@ -1223,10 +1344,11 @@
       "Delphox"
      ]
     ],
-    "nome": "Fennekin"
+    "confirmada": true
    },
    {
     "id": "pokemon:froakie",
+    "nome": "Froakie",
     "niveis": [
      [
       "Froakie"
@@ -1238,25 +1360,11 @@
       "Greninja"
      ]
     ],
-    "nome": "Froakie"
-   },
-   {
-    "id": "pokemon:scatterbug",
-    "niveis": [
-     [
-      "Scatterbug"
-     ],
-     [
-      "Spewpa"
-     ],
-     [
-      "Vivillon"
-     ]
-    ],
-    "nome": "Scatterbug"
+    "confirmada": true
    },
    {
     "id": "pokemon:honedge",
+    "nome": "Honedge",
     "niveis": [
      [
       "Honedge"
@@ -1268,10 +1376,11 @@
       "Aegislash"
      ]
     ],
-    "nome": "Honedge"
+    "confirmada": true
    },
    {
     "id": "pokemon:rowlet",
+    "nome": "Rowlet",
     "niveis": [
      [
       "Rowlet"
@@ -1283,10 +1392,11 @@
       "Decidueye"
      ]
     ],
-    "nome": "Rowlet"
+    "confirmada": true
    },
    {
     "id": "pokemon:litten",
+    "nome": "Litten",
     "niveis": [
      [
       "Litten"
@@ -1298,10 +1408,11 @@
       "Incineroar"
      ]
     ],
-    "nome": "Litten"
+    "confirmada": true
    },
    {
     "id": "pokemon:popplio",
+    "nome": "Popplio",
     "niveis": [
      [
       "Popplio"
@@ -1313,10 +1424,11 @@
       "Primarina"
      ]
     ],
-    "nome": "Popplio"
+    "confirmada": true
    },
    {
     "id": "pokemon:grubbin",
+    "nome": "Grubbin",
     "niveis": [
      [
       "Grubbin"
@@ -1328,10 +1440,11 @@
       "Vikavolt"
      ]
     ],
-    "nome": "Grubbin"
+    "confirmada": true
    },
    {
     "id": "pokemon:bounsweet",
+    "nome": "Bounsweet",
     "niveis": [
      [
       "Bounsweet"
@@ -1343,10 +1456,11 @@
       "Tsareena"
      ]
     ],
-    "nome": "Bounsweet"
+    "confirmada": true
    },
    {
     "id": "pokemon:cosmog",
+    "nome": "Cosmog",
     "niveis": [
      [
       "Cosmog"
@@ -1359,10 +1473,11 @@
       "Lunala"
      ]
     ],
-    "nome": "Cosmog"
+    "confirmada": true
    },
    {
     "id": "pokemon:rookidee",
+    "nome": "Rookidee",
     "niveis": [
      [
       "Rookidee"
@@ -1374,10 +1489,11 @@
       "Corviknight"
      ]
     ],
-    "nome": "Rookidee"
+    "confirmada": true
    },
    {
     "id": "pokemon:hatenna",
+    "nome": "Hatenna",
     "niveis": [
      [
       "Hatenna"
@@ -1389,7 +1505,7 @@
       "Hatterene"
      ]
     ],
-    "nome": "Hatenna"
+    "confirmada": true
    },
    {
     "id": "pokemon:mew",
@@ -1404,7 +1520,8 @@
      [
       "Mega Mewtwo X"
      ]
-    ]
+    ],
+    "confirmada": true
    }
   ],
   "digimon": [
@@ -1424,7 +1541,8 @@
      [
       "War Greymon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:gabumon",
@@ -1442,7 +1560,8 @@
      [
       "Metal Garurumon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:tentomon",
@@ -1460,7 +1579,8 @@
      [
       "Herakle Kabuterimon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:palmon",
@@ -1478,7 +1598,8 @@
      [
       "Rosemon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:patamon",
@@ -1496,7 +1617,8 @@
      [
       "Seraphimon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:plotmon",
@@ -1514,12 +1636,16 @@
      [
       "Ofanimon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:lucemon",
     "nome": "Lucemon",
     "niveis": [
+     [
+      "Cupimon"
+     ],
      [
       "Lucemon"
      ],
@@ -1528,11 +1654,9 @@
      ],
      [
       "Lucemon(Satan Mode)"
-     ],
-     [
-      "Lucemon(Larva)"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:pico-devimon",
@@ -1550,7 +1674,8 @@
      [
       "Demon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:elecmon",
@@ -1568,17 +1693,18 @@
      [
       "Saber Leomon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:clear-agumon",
     "nome": "Clear Agumon",
     "niveis": [
      [
-      "Clear Agumon"
+      "Guardromon"
      ],
      [
-      "Clockmon"
+      "Hagurumon"
      ],
      [
       "Andromon"
@@ -1586,7 +1712,8 @@
      [
       "Hi Andromon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:candmon",
@@ -1604,7 +1731,8 @@
      [
       "Necromon"
      ]
-    ]
+    ],
+    "confirmada": true
    },
    {
     "id": "digimon:tyumon",
@@ -1622,7 +1750,144 @@
      [
       "Metal Etemon"
      ]
-    ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "digimon:vademon",
+    "nome": "Vademon",
+    "niveis": [
+     [
+      "Punimon"
+     ],
+     [
+      "Vegimon"
+     ],
+     [
+      "Vademon"
+     ],
+     [
+      "EBEmon",
+      "EBEmon (X-Antibody)"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "digimon:wizarmon",
+    "nome": "Wizarmon",
+    "niveis": [
+     [
+      "Impmon"
+     ],
+     [
+      "Wizarmon"
+     ],
+     [
+      "Wisemon"
+     ],
+     [
+      "Ancient Wisemon"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "digimon:revolmon",
+    "nome": "Revolmon",
+    "niveis": [
+     [
+      "Toy Agumon"
+     ],
+     [
+      "Revolmon"
+     ],
+     [
+      "Superstarmon"
+     ],
+     [
+      "Justimon(Blitz Arm)",
+      "Justimon(Critical Arm)"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "digimon:pumpmon",
+    "nome": "Pumpmon",
+    "niveis": [
+     [
+      "Lalamon"
+     ],
+     [
+      "Sunflowmon"
+     ],
+     [
+      "Pumpmon"
+     ],
+     [
+      "Noble Pumpmon"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "digimon:mermaimon",
+    "nome": "Mermaimon",
+    "niveis": [
+     [
+      "Shakomon"
+     ],
+     [
+      "Shellmon"
+     ],
+     [
+      "Mermaimon"
+     ],
+     [
+      "Marin Angemon"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "digimon:terriermon",
+    "nome": "Terriermon",
+    "niveis": [
+     [
+      "Terriermon"
+     ],
+     [
+      "Galgomon"
+     ],
+     [
+      "Rapidmon Perfect"
+     ],
+     [
+      "Saint Galgomon",
+      "Rapidmon Armor"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "digimon:nova-linha",
+    "nome": "Nova linha",
+    "niveis": [
+     [
+      "Agumon Hakase"
+     ],
+     [
+      "Numemon"
+     ],
+     [
+      "Black King Numemon"
+     ],
+     [
+      "Gold Numemon"
+     ]
+    ],
+    "confirmada": true
    }
   ],
   "persona": [
@@ -2010,46 +2275,507 @@
      ]
     ]
    }
+  ],
+  "smt": [
+   {
+    "id": "smt:abdiel",
+    "nome": "Abdiel",
+    "niveis": [
+     [
+      "Abaddon"
+     ],
+     [
+      "Abdiel"
+     ],
+     [
+      "Abdiel -Fallen-"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:adramelech",
+    "nome": "Adramelech",
+    "niveis": [
+     [
+      "Mara"
+     ],
+     [
+      "Arioch"
+     ],
+     [
+      "Adramelech"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:alice",
+    "nome": "Alice",
+    "niveis": [
+     [
+      "Demeter"
+     ],
+     [
+      "Mother Harlot"
+     ],
+     [
+      "Alice"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:kodama",
+    "nome": "Kodama",
+    "niveis": [
+     [
+      "Sudama"
+     ],
+     [
+      "Kodama"
+     ],
+     [
+      "Ame-no-Uzume",
+      "Shiki-Ouji"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:angel",
+    "nome": "Angel",
+    "niveis": [
+     [
+      "Angel"
+     ],
+     [
+      "Sandalphon"
+     ],
+     [
+      "Metatron"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:amanozako",
+    "nome": "Amanozako",
+    "niveis": [
+     [
+      "Pixie"
+     ],
+     [
+      "Hua Po"
+     ],
+     [
+      "High Pixie",
+      "Amanozako"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:baal",
+    "nome": "Baal",
+    "niveis": [
+     [
+      "Baal Zebul"
+     ],
+     [
+      "Baal"
+     ],
+     [
+      "Beelzebub"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:belial",
+    "nome": "Belial",
+    "niveis": [
+     [
+      "Incubus"
+     ],
+     [
+      "Belial"
+     ],
+     [
+      "Belphegor",
+      "Baphomet"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:black-frost",
+    "nome": "Black Frost",
+    "niveis": [
+     [
+      "Jack Frost",
+      "Jack-o'-Lantern"
+     ],
+     [
+      "Black Frost"
+     ],
+     [
+      "King Frost"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:black-ooze",
+    "nome": "Black Ooze",
+    "niveis": [
+     [
+      "Black Ooze"
+     ],
+     [
+      "Bugs"
+     ],
+     [
+      "Yamata-no-Orochi"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:camael",
+    "nome": "Camael",
+    "niveis": [
+     [
+      "Dominion"
+     ],
+     [
+      "Camael"
+     ],
+     [
+      "Helel"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:nuwa",
+    "nome": "Nuwa",
+    "niveis": [
+     [
+      "Hydra"
+     ],
+     [
+      "Nuwa"
+     ],
+     [
+      "Nuwa -Snake-"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:cleopatra",
+    "nome": "Cleopatra",
+    "niveis": [
+     [
+      "Lamia"
+     ],
+     [
+      "Cybele"
+     ],
+     [
+      "Cleopatra"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:gurr",
+    "nome": "Gurr",
+    "niveis": [
+     [
+      "Gurr"
+     ],
+     [
+      "Hecatoncheires"
+     ],
+     [
+      "Futsunushi"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:idun",
+    "nome": "Idun",
+    "niveis": [
+     [
+      "Idun"
+     ],
+     [
+      "Ishtar"
+     ],
+     [
+      "Isis"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:mandrake",
+    "nome": "Mandrake",
+    "niveis": [
+     [
+      "Mandrake"
+     ],
+     [
+      "Koropokguru"
+     ],
+     [
+      "Cironnup"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:odin",
+    "nome": "Odin",
+    "niveis": [
+     [
+      "Niddhoggr"
+     ],
+     [
+      "Kohryu"
+     ],
+     [
+      "Thor",
+      "Odin",
+      "Zeus"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:mothman",
+    "nome": "Mothman",
+    "niveis": [
+     [
+      "Cait Sith"
+     ],
+     [
+      "Neko Shogun"
+     ],
+     [
+      "Nekomata"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:hanuman",
+    "nome": "Hanuman",
+    "niveis": [
+     [
+      "Hanuman"
+     ],
+     [
+      "Seiten Taisei"
+     ],
+     [
+      "Yoshitsune"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:mothman-2",
+    "nome": "Mothman",
+    "niveis": [
+     [
+      "Mothman"
+     ],
+     [
+      "Loup-garou",
+      "Siegfried"
+     ],
+     [
+      "Moloch",
+      "Fionn mac Cumhaill"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:agathion",
+    "nome": "Agathion",
+    "niveis": [
+     [
+      "Ukobach"
+     ],
+     [
+      "Agathion"
+     ],
+     [
+      "Mot"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:daemon",
+    "nome": "Daemon",
+    "niveis": [
+     [
+      "Daemon",
+      "Succubus"
+     ],
+     [
+      "Lucifer"
+     ],
+     [
+      "Satan"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:flauros",
+    "nome": "Flauros",
+    "niveis": [
+     [
+      "Barong"
+     ],
+     [
+      "Flauros"
+     ],
+     [
+      "Melchizedek"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "smt:anubis",
+    "nome": "Anubis",
+    "niveis": [
+     [
+      "Chernobog"
+     ],
+     [
+      "Anubis"
+     ],
+     [
+      "Arahabaki"
+     ]
+    ],
+    "confirmada": true
+   }
+  ],
+  "jojo": [
+   {
+    "id": "jojo:c-moon",
+    "nome": "C-MOON",
+    "niveis": [
+     [
+      "Whitesnake"
+     ],
+     [
+      "C-MOON"
+     ],
+     [
+      "Made in Heaven"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "jojo:gold-experience-requiem",
+    "nome": "Gold Experience Requiem",
+    "niveis": [
+     [
+      "Gold Experience"
+     ],
+     [
+      "Gold Experience Requiem"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "jojo:chariot-requiem",
+    "nome": "Chariot Requiem",
+    "niveis": [
+     [
+      "Silver Chariot"
+     ],
+     [
+      "Chariot Requiem"
+     ],
+     [
+      "Mr.President"
+     ]
+    ],
+    "confirmada": true
+   },
+   {
+    "id": "jojo:nova-linha",
+    "nome": "Nova linha",
+    "niveis": [
+     [
+      "Scary Monsters"
+     ],
+     [
+      "The World (Steel Ball Run)"
+     ],
+     [
+      "The World Over Heaven"
+     ]
+    ],
+    "confirmada": true
+   }
   ]
  },
  "ults": {
   "pokemon": {
-   "Venusaur": "Mega Venusaur",
    "Charizard": "Mega Charizard X",
-   "Raichu": "Mega Raichu X",
    "Blastoise": "Mega Blastoise",
+   "Raichu": "Mega Raichu X",
    "Alakazam": "Mega Alakazam",
    "Dragonite": "Mega Dragonite",
    "Meganium": "Mega Meganium",
-   "Feraligatr": "Mega Feraligatr",
    "Sceptile": "Mega Sceptile",
-   "Blaziken": "Mega Blaziken",
-   "Swampert": "Mega Swampert",
    "Gardevoir": "Mega Gardevoir",
    "Gallade": "Mega Gallade",
+   "Darkrai": "Mega Darkrai",
+   "Eelektross": "Mega Eelektross",
+   "Hydreigon": "Iron Jugulis",
+   "Delphox": "Mega Delphox",
+   "Zygarde": "Mega Zygarde",
+   "Decidueye": "Hisuian Decidueye",
+   "Magearna": "Mega Magearna",
+   "Corviknight": "Gigantamax Corviknight",
+   "Hatterene": "Gigantamax Hatterene",
+   "Venusaur": "Mega Venusaur",
+   "Feraligatr": "Mega Feraligatr",
+   "Blaziken": "Mega Blaziken",
+   "Swampert": "Mega Swampert",
    "Aggron": "Mega Aggron",
    "Garchomp": "Mega Garchomp",
    "Emboar": "Mega Emboar",
-   "Eelektross": "Mega Eelektross",
    "Chesnaught": "Mega Chesnaught",
-   "Delphox": "Mega Delphox",
    "Greninja": "Mega Greninja",
    "Rayquaza": "Mega Rayquaza",
-   "Darkrai": "Mega Darkrai",
-   "Zygarde": "Mega Zygarde",
-   "Magearna": "Mega Magearna",
    "Machamp": "Gigantamax Machamp",
-   "Corviknight": "Gigantamax Corviknight",
-   "Hatterene": "Gigantamax Hatterene",
    "Kyogre": "Primal Kyogre",
    "Groudon": "Primal Groudon",
    "Typhlosion": "Hisuian Typhlosion",
    "Samurott": "Hisuian Samurott",
-   "Decidueye": "Hisuian Decidueye",
-   "Hydreigon": "Iron Jugulis",
    "Suicune": "Walking Wake",
    "Entei": "Gouging Fire",
    "Raikou": "Raging Bolt"
+  },
+  "digimon": {
+   "War Greymon": "Omegamon"
   }
  },
  "itens": {
