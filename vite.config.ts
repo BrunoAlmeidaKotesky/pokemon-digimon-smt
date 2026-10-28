@@ -9,7 +9,7 @@ export default defineConfig({
   build: { outDir: 'dist', emptyOutDir: true },
   preview: { port: 4173, strictPort: true },
   test: {
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'docs/**/*.test.mjs'],
     environment: 'node',
   },
 });

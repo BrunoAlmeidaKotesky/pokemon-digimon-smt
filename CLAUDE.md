@@ -27,6 +27,9 @@ testes e publicação: [README.md](README.md).
   (https://claude.ai/artifact/YZWHvKZY5tyVaJSqgz8Hx7). Já decidido: set fixo e curado, origem = franquia, classes
   gerais que cruzam franquias.
 - Detalhes técnicos de cada fonte (campos, cobertura, custo): [docs/tft/notas-tecnicas.md](docs/tft/notas-tecnicas.md).
+- Contas do jogo (equilíbrio dos traços, loja, economia), sobre o nosso set e não copiadas do TFT da Riot (o usuário
+  não quer o LoL como régua): [docs/tft/matematica/](docs/tft/matematica/README.md). Conta nova vai pra lá (função em
+  `lib.mjs` com teste, saída em `resultado.md`), não em chute.
 - `node catalogo.mjs` gera `public/catalogo/<chave>.json` (informações de cada personagem) pra aba Catálogo, onde o
   usuário marca e exporta os personagens do Set 1.
 
