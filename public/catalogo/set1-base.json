@@ -91,16 +91,6 @@
    "id": "planta",
    "nome": "Planta",
    "descricao": "Elemento, classe reserva (um por unidade). O primeiro ataque em cada inimigo planta uma semente que suga a vida dele e cura quem plantou. (2) semente fraca; (4) média; (6) forte, e a cura vai também pro aliado mais perto."
-  },
-  {
-   "id": "luz",
-   "nome": "Luz",
-   "descricao": "Elemento, classe reserva (um por unidade). Os ataques ofuscam: por 2 segundos o alvo erra parte dos ataques. (2) erra 15%; (4) 25%; (6) 40%."
-  },
-  {
-   "id": "trevas",
-   "nome": "Trevas",
-   "descricao": "Elemento, classe reserva (um por unidade). Batem mais forte em quem está ferido. (2) +10% de dano em inimigos abaixo de metade da vida; (4) +20%; (6) +30%, e acabam com quem fica abaixo de 10% da vida."
   }
  ],
  "selecao": {

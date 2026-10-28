@@ -91,8 +91,15 @@ describe('formName', () => {
     expect(formName('toxtricity-low-key-gmax')).toBe('Gigantamax Toxtricity Low Key');
   });
 
+  it('outras formas que mudam de verdade, pela lista', () => {
+    expect(formName('giratina-origin')).toBe('Giratina (Origin)');
+    expect(formName('zygarde-10')).toBe('Zygarde (10%)');
+    expect(formName('rotom-wash')).toBe('Rotom (Wash)');
+    expect(formName('necrozma-dusk')).toBe('Necrozma (Dusk Mane)');
+  });
+
   it('o resto das variedades fica de fora', () => {
-    for (const n of ['bulbasaur', 'eternatus-eternamax', 'raticate-totem-alola', 'pikachu-alola-cap', 'pikachu-rock-star', 'eevee-starter', 'zygarde-10'])
+    for (const n of ['bulbasaur', 'eternatus-eternamax', 'raticate-totem-alola', 'pikachu-alola-cap', 'pikachu-rock-star', 'eevee-starter', 'zygarde-10-power-construct', 'minior-red', 'squawkabilly-blue-plumage'])
       expect(formName(n), n).toBeNull();
   });
 });

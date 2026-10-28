@@ -6,11 +6,13 @@ TFT da Riot). Cada número do resultado sai de um script, e as funções têm te
 
 ## Arquivos
 
-- `lib.mjs`: as funções, sem ler arquivo. Inclui o custo de fechar um breakpoint, a escada de breakpoints que
-  iguala esse custo, a hipergeométrica, a loja como cadeia de Markov e as simulações que conferem as contas.
+- `lib.mjs`: as funções, sem ler arquivo. Inclui o custo de fechar um breakpoint, a faixa de tamanho aceitável, a
+  escada de breakpoints que iguala esse custo, a divisão de vagas novas entre traços, a hipergeométrica, a loja como
+  cadeia de Markov e as simulações que conferem as contas.
 - `lib.test.mjs`: testes das funções. Rodam com o Vitest do site, e o CI roda junto.
-- `analise.mjs`: lê a base do Set 1 e as classes da exportação do Catálogo e grava `resultado.md`. As escolhas de
-  design que entram na conta ficam no topo: breakpoints, tamanho do tabuleiro e vagas da loja.
+- `analise.mjs`: lê a exportação do Catálogo (os marcados, com linhas e classes) e grava `resultado.md`. As
+  escolhas de design que entram na conta ficam no topo: breakpoints, tamanho do tabuleiro, vagas da loja, tolerância,
+  a franquia que ainda falta escolher e os elementos que ficaram de fora.
 - `resultado.md`: a última saída da análise.
 
 ## Como rodar
@@ -20,7 +22,8 @@ node docs/tft/matematica/analise.mjs          # refaz o resultado.md
 node node_modules/vitest/vitest.mjs run docs  # testes das contas
 ```
 
-Quando chegar uma exportação nova do Catálogo, troque o caminho da v2 no `analise.mjs`.
+Quando chegar uma exportação nova do Catálogo (grupo "marcados"), salve como `docs/tft/set1-escolhas-vN.json` e troque
+o caminho em `EXPORTACAO` no `analise.mjs`.
 
 ## Definições
 
@@ -43,7 +46,13 @@ Quando chegar uma exportação nova do Catálogo, troque o caminho da v2 no `ana
    Σn = U·(1 + c + e). Com todo traço do tamanho n*: **classes = O·c** e **elementos = O·e**.
 5. **Origem fora do tamanho.** A origem não muda de tamanho, então muda a escada. Cada degrau vira o b, até o
    tamanho do tabuleiro, cujo custo fica mais perto do degrau correspondente de uma origem média.
-6. **Comps que fecham dois traços.** Pra fechar a de um traço e b de outro em L vagas, pelo menos a + b − L
+6. **Faixa aceitável.** O tamanho de traço em que fechar o último breakpoint custa no máximo (1 + tolerância) vezes
+   o de um traço de n* e no mínimo 1/(1 + tolerância) vezes. Com tolerância 0,25: até 25% mais caro ou 20% mais barato.
+7. **Cota da franquia que falta.** Ela entra com n* campeões, que dão n*·c vagas de classe e n*·e de elemento. Cada
+   vaga vai pra classe (ou elemento) menor no momento: como o custo cai quando n sobe, é a divisão que deixa o traço
+   mais caro o mais barato possível. Classe que já passa da faixa não se resolve com carta nova, só tirando a classe
+   de quem tem outra.
+8. **Comps que fecham dois traços.** Pra fechar a de um traço e b de outro em L vagas, pelo menos a + b − L
    campeões precisam ter os dois. Com os traços espalhados, a média em comum é n₁·n₂/U.
 
 ## Premissas (mudar alguma muda o resultado)
@@ -52,7 +61,9 @@ Quando chegar uma exportação nova do Catálogo, troque o caminho da v2 no `ana
   fechar pesa mais nos traços de campeões caros.
 - **JoJo:** os Stands entram como campeões. Eles entram presos a outra unidade: se não forem vendidos na loja como
   campeão, saem da conta.
-- **Yu-Gi-Oh!:** entram os 70 candidatos, ainda sem classe. O resultado também mostra a conta sem eles.
+- **Yu-Gi-Oh!:** ainda sem ninguém marcado; entra com o tamanho de uma origem média (campeões ÷ franquias).
+- **Elementos:** Luz e Trevas ficaram de fora (o usuário não quer). Únicos não conta como classe.
+- **Tolerância:** 25% no custo de fechar o último breakpoint.
 - **Tabuleiro:** 9 campeões. O doc ainda não decide esse número.
 
 ## Contas que ainda dá pra fazer aqui

@@ -1,113 +1,129 @@
 # Resultado: equilíbrio do Set 1
 
-Gerado por `node docs/tft/matematica/analise.mjs` em 2026-10-28. Método e fórmulas: [README.md](README.md). Escolhas que entram na conta: breakpoints 2/4/6, tabuleiro de 9, loja de 5 vagas.
+Gerado por `node docs/tft/matematica/analise.mjs` em 2026-10-28, com a exportação do Catálogo de 2026-10-28. Método e fórmulas: [README.md](README.md). Escolhas que entram na conta: breakpoints 2/4/6, tabuleiro de 9, loja de 5 vagas, tolerância de 25% no custo.
 
 ## Resumo
 
-- **Classes:** 12 é o número certo (a conta pede 14,0; 12,6 sem o Yu-Gi-Oh!). Falta equilibrar o tamanho: cada uma com 38 campeões (30 sem o Yu-Gi-Oh!). Hoje vão de 0 a 42 (seção 4).
-- **Elementos:** 9 é o número certo **se forem o 3º traço de todo mundo** (a conta pede 10; 9 sem o Yu-Gi-Oh!), com 36 campeões cada. Como classe reserva, não: as classes ficariam com 22 campeões e custariam 1,57× uma origem pra fechar 6 (seção 3).
-- **Origens:** a média é 32,2 campeões. Fechar 6 custa mais de 1,35× ou menos de 0,75× o da média em Pokémon (57), Digimon (23), Persona (12), Overwatch (24), Deadlock (21), Sujimon (20) e Yu-Gi-Oh! (70). Ou a escada de cada uma muda, ou o tamanho (seção 5).
+- **Tamanho certo de um traço:** 27,2 campeões; aceitável de 23 a 33 (custo de fechar 6 até 25% longe).
+- **Yu-Gi-Oh!:** 27 cartas (23 a 33), com 34 vagas de classe: Temporais 11, Dragão 9, Assassino 8, Robô 3 e Tanque 3; nada nas outras. E 11 de elemento: Terra 5, Gelo 4 e Vento 2 (seção 3).
+- **Classes depois disso:** de 23 a 39. Acima da faixa: Criaturinha Bizarra (35, sobram 2), Fadinhas (36, sobram 3) e Safada (39, sobram 6); só tirando a classe de quem tem outra.
+- **Elementos:** uns 16 cada; com 2/4/6 custam 1,85× pra fechar 6. Escada própria 2/3/4, ou 4 elementos.
+- **Origens fora da faixa:** Pokémon (55), Persona (12), Deadlock (21) e Sujimon (20): escada própria ou mudar o tamanho (seção 5).
 
 ## 1. O que temos
-Campeão = uma linha evolutiva (cada forma é um nível: o Ivysaur é o nível 2 do Bulbasaur) ou um personagem solto. As 595 formas do grupo "Set 1 (base)" dão **322 campeões** (252 sem os 70 candidatos do Yu-Gi-Oh!, que ainda não têm classe). Bakugan (itens) e Final Fantasy (monstros) não são campeões.
+Campeão = uma linha evolutiva (cada forma é um nível: o Ivysaur é o nível 2 do Bulbasaur) ou um personagem solto. As 530 formas marcadas dão **245 campeões** em 9 franquias. Yu-Gi-Oh! ainda não tem ninguém marcado; nas contas entra com 27 (seção 3).
 
-| Origem | Formas | Linhas | Soltos | Campeões | Sem classe |
-|---|---|---|---|---|---|
-| Pokémon | 156 | 48 | 9 | 57 | 31 |
-| Digimon | 83 | 19 | 4 | 23 | 5 |
-| SMT | 87 | 24 | 6 | 30 | 2 |
-| Persona | 37 | 12 | 0 | 12 | 3 |
-| JoJo | 40 | 4 | 29 | 33 | 12 |
-| LoL | 32 | 0 | 32 | 32 | 8 |
-| Overwatch | 24 | 0 | 24 | 24 | 7 |
-| Deadlock | 21 | 0 | 21 | 21 | 3 |
-| Sujimon | 45 | 14 | 6 | 20 | 13 |
-| Yu-Gi-Oh! | 70 | 0 | 70 | 70 | 70 |
-| **Total** | 595 | 121 | 201 | **322** | 154 |
+| Origem | Formas | Linhas | Soltos | Campeões | Só com elemento | Só Únicos | Sem nada |
+|---|---|---|---|---|---|---|---|
+| Pokémon | 166 | 52 | 3 | 55 | 15 | 1 | 0 |
+| Digimon | 83 | 19 | 4 | 23 | 1 | 0 | 0 |
+| SMT | 85 | 24 | 4 | 28 | 1 | 0 | 0 |
+| Persona | 37 | 12 | 0 | 12 | 0 | 0 | 0 |
+| JoJo | 38 | 4 | 27 | 31 | 2 | 3 | 0 |
+| LoL | 31 | 0 | 31 | 31 | 0 | 1 | 0 |
+| Overwatch | 24 | 0 | 24 | 24 | 0 | 0 | 0 |
+| Deadlock | 21 | 0 | 21 | 21 | 0 | 1 | 0 |
+| Sujimon | 45 | 14 | 6 | 20 | 2 | 1 | 0 |
+| **Total** | 530 | 125 | 120 | **245** | 21 | 7 | 0 |
 
-Traços: 10 origens, 12 classes (Demoníacos, Criaturinha Bizarra, Fadinhas, Safada, Atirador, Anjo, Robô, Dragão, Temporais, Tanque, Porradeiro, Assassino), 9 elementos e Únicos (que não junta ninguém: cada um é um traço próprio). Quem tem classe tem em média **1,40 classes** (113 com 1, 48 com 2, 6 com 3, 1 com 9). Baba (Deadlock) tem 9: provavelmente marcado por engano, e puxa a média pra cima.
+Traços: 9 origens (10 com Yu-Gi-Oh!), 12 classes, 7 elementos (Fogo, Água, Terra, Vento, Raio, Gelo, Planta; 2 ficaram de fora) e Únicos, que não junta ninguém. Por campeão: **1,24 classes** (28 com 0, 146 com 1, 55 com 2, 15 com 3, 1 com 4) e **0,40 elementos**.
 
 ## 2. A régua: quanto custa fechar um breakpoint
-Pra ter b campeões diferentes de um traço que tem n, num pool de 322, esperam-se (322/5)·Σ_{j<b} 1/(n − j) lojas (cada vaga mostra um campeão qualquer; a conta está no README e a simulação loja a loja confere). O custo só depende de n: **equilíbrio é todo traço com a mesma escada ter o mesmo n**. Lojas pra fechar cada breakpoint, por tamanho do traço:
+Pra ter b campeões diferentes de um traço que tem n, num pool de 272, esperam-se (272/5)·Σ_{j<b} 1/(n − j) lojas (cada vaga mostra um campeão qualquer; a conta está no README e a simulação loja a loja confere). O custo só depende de n: **equilíbrio é todo traço com a mesma escada ter o mesmo n**. O tamanho certo é o de uma origem média, n* = 272 ÷ 10 = **27,2**. Lojas pra fechar cada breakpoint, por tamanho do traço:
 
-| Campeões no traço | Fechar 2 | Fechar 4 | Fechar 6 |
-|---|---|---|---|
-| 12 | 11,2 | 24,8 | 42,1 |
-| 20 | 6,6 | 14,0 | 22,3 |
-| 32 | 4,1 | 8,5 | 13,1 |
-| 40 | 3,3 | 6,7 | 10,3 |
-| 57 | 2,3 | 4,6 | 7,1 |
-| 70 | 1,9 | 3,8 | 5,7 |
-
-## 3. Quantas classes e quantos elementos
-As origens são fixas (uma por franquia), então o tamanho certo de um traço é o tamanho médio de uma origem: n* = campeões ÷ origens = 322 ÷ 10 = **32,2**. Cada campeão entra em 1 origem, c classes e e elementos, então as vagas somam 322·(1 + c + e). Com todo traço do tamanho n*: **classes = origens × c** e **elementos = origens × e**.
-
-|  | Com o Yu-Gi-Oh! (322) | Sem o Yu-Gi-Oh! (252) |
-|---|---|---|
-| Origens | 10 | 9 |
-| n* (campeões por traço) | 32,2 | 28,0 |
-| Classes ideais, 1 classe por campeão | 10 | 9 |
-| Classes ideais, 1,40 por campeão (como hoje) | 14,0 | 12,6 |
-| Campeões por classe, com as 12 de hoje | 37,7 | 29,5 |
-| Elementos ideais, 1 por campeão (3º traço de todo mundo) | 10 | 9 |
-| Campeões por elemento, com os 9 de hoje | 35,8 | 28,0 |
-
-**12 classes estão certas**: a conta pede 14,0 (12,6 sem o Yu-Gi-Oh!). **9 elementos também**, se forem o 3º traço de todo mundo: a conta pede 10 (9 sem o Yu-Gi-Oh!), e cada um fica com 36 campeões, custando 0,89× uma origem média pra fechar 6.
-
-Como **classe reserva** (só pra quem não tem classe), os elementos dividem com as classes as mesmas 452 vagas: 21 traços de 21,5 campeões, e fechar 6 custa 1,57× o de uma origem. Fica desequilibrado contra as origens; pra caber como reserva, a soma de classes e elementos teria de ficar em 14.
-
-## 4. Cada classe hoje contra o tamanho certo
-Com 1,40 classes por campeão e 12 classes, cada uma deveria ter **38 campeões** (quando todos os 322 tiverem classe). A coluna da direita diz quantas vezes mais caro (ou mais barato, abaixo de 1) é fechar 6 nela do que numa classe do tamanho certo.
-
-| Classe | Campeões hoje | Tamanho certo | Falta (+) ou sobra (−) | Custo de fechar 6 |
+| Campeões no traço | Fechar 2 | Fechar 4 | Fechar 6 | Custo de fechar 6 (1 = tamanho certo) |
 |---|---|---|---|---|
-| Demoníacos | 31 | 38 | +7 | 1,24× |
-| Criaturinha Bizarra | 36 | 38 | +2 | 1,05× |
-| Fadinhas | 35 | 38 | +3 | 1,08× |
-| Safada | 42 | 38 | -4 | 0,89× |
-| Atirador | 26 | 38 | +12 | 1,50× |
-| Anjo | 23 | 38 | +15 | 1,72× |
-| Robô | 19 | 38 | +19 | 2,15× |
-| Dragão | 12 | 38 | +26 | 3,82× |
-| Temporais | 12 | 38 | +26 | 3,82× |
-| Tanque | 0 | 38 | +38 | não fecha |
-| Porradeiro | 0 | 38 | +38 | não fecha |
-| Assassino | 0 | 38 | +38 | não fecha |
+| 12 | 9,5 | 21,0 | 35,5 | 2,68× |
+| 16 | 7,0 | 15,1 | 24,6 | 1,85× |
+| 23 | 4,8 | 10,1 | 16,0 | 1,21× |
+| 27 | 4,1 | 8,5 | 13,4 | 1,01× |
+| 33 | 3,3 | 6,9 | 10,7 | 0,81× |
+| 40 | 2,8 | 5,7 | 8,7 | 0,66× |
+| 55 | 2,0 | 4,1 | 6,2 | 0,47× |
 
-Hoje 154 campeões estão sem classe: são eles que completam as classes que faltam (as 11 com "+" somam 224 vagas). Elementos: nenhum dado ainda; o tamanho certo de cada um é 36.
+**Faixa aceitável: de 23 a 33 campeões por traço.** Abaixo de 23, fechar 6 custa mais de 1,25× o de um traço do tamanho certo; acima de 33, menos de 0,80×. Traço grande demais não obriga breakpoint maior (o tabuleiro tem 9): ele só fica barato, e a comp dele fica forte demais.
+
+## 3. Yu-Gi-Oh!: quantas cartas e que classes
+**Cartas:** 27 campeões (tamanho de uma origem média, 245 ÷ 9); qualquer número de 23 a 33 fica na faixa. Carta com evolução (uma linha) conta como um.
+**Classes:** com 1,24 classes por campeão, como o resto do set, as 27 cartas dão **34 vagas de classe** (quase todas com 1 classe, uma em cada 4 com 2). A conta dá cada vaga pra classe que estiver menor no momento: é a divisão que deixa a classe mais cara de fechar o mais barata possível.
+
+| Classe | Hoje | Yu-Gi-Oh! recebe | Depois | Custo de fechar 6 | Situação |
+|---|---|---|---|---|---|
+| Temporais | 12 | 11 | 23 | 1,21× | na faixa |
+| Dragão | 14 | 9 | 23 | 1,21× | na faixa |
+| Assassino | 15 | 8 | 23 | 1,21× | na faixa |
+| Robô | 20 | 3 | 23 | 1,21× | na faixa |
+| Tanque | 20 | 3 | 23 | 1,21× | na faixa |
+| Anjo | 23 | — | 23 | 1,21× | na faixa |
+| Atirador | 26 | — | 26 | 1,05× | na faixa |
+| Demoníacos | 32 | — | 32 | 0,84× | na faixa |
+| Porradeiro | 33 | — | 33 | 0,81× | na faixa |
+| Criaturinha Bizarra | 35 | — | 35 | 0,76× | acima da faixa: sobram 2 (17 têm outra classe) |
+| Fadinhas | 36 | — | 36 | 0,74× | acima da faixa: sobram 3 (22 têm outra classe) |
+| Safada | 39 | — | 39 | 0,67× | acima da faixa: sobram 6 (22 têm outra classe) |
+
+Pra todas as classes entrarem na faixa só com Yu-Gi-Oh!, são 34 vagas; pra todas chegarem a 27 (o centro), 59, ou 2,2 classes por carta. Criaturinha Bizarra, Fadinhas e Safada já passam da faixa sem o Yu-Gi-Oh!: carta nova não resolve, só tirar a classe de quem tem outra (a coluna diz quantos).
+
+Uma classe que fica quase toda numa franquia vira uma segunda origem e não cruza com as outras (seção 6). Se a cota de uma classe pequena ficar grande demais pro Yu-Gi-Oh!, o resto dela pode vir dos campeões das outras franquias que hoje só têm elemento (21).
+
+**Elementos:** com 0,40 elemento por campeão, as 27 cartas dão **11 vagas de elemento**, divididas do mesmo jeito.
+
+| Elemento | Hoje | Yu-Gi-Oh! recebe | Depois |
+|---|---|---|---|
+| Terra | 10 | 5 | 15 |
+| Gelo | 10 | 4 | 14 |
+| Vento | 13 | 2 | 15 |
+| Raio | 14 | — | 14 |
+| Planta | 16 | — | 16 |
+| Fogo | 18 | — | 18 |
+| Água | 18 | — | 18 |
+
+Mesmo assim cada elemento fica com uns 16 campeões, abaixo da faixa: com 2/4/6, fechar 6 custa 1,85× o de uma classe. Duas saídas: (a) elementos com escada própria, **2/3/4** (custo de cada degrau: 1,72× · 1,29× · 1,14×); ou (b) menos elementos: com as vagas de hoje, o número que deixa cada um do tamanho certo é 4,0.
+
+## 4. Quantas classes e quantos elementos
+Cada campeão entra em 1 origem, c classes e e elementos, então as vagas somam U·(1 + c + e). Com todo traço do tamanho n*: **classes = origens × c** e **elementos = origens × e**.
+
+|  | Valor |
+|---|---|
+| Origens | 10 |
+| n* (campeões por traço) | 27,2 |
+| Classes ideais (1,24 por campeão) | 12,4 |
+| Elementos ideais (0,40 por campeão) | 4,0 |
+| Elementos ideais se todo campeão tiver 1 | 10 |
+
+**12 classes estão certas** (a conta pede 12,4). Os 7 elementos pedem mais campeões com elemento (0,70 por campeão, hoje 0,40) ou a escada própria da seção 3.
 
 ## 5. Origens: o tamanho é fixo, então a escada muda
-Uma franquia com mais campeões fecha 2/4/6 mais barato. Pra igualar, a escada de cada origem sobe ou desce até o custo de cada degrau ficar o mais perto do de uma origem média (32,2 campeões com 2/4/6), sem passar do tabuleiro (9).
+Uma franquia com mais campeões fecha 2/4/6 mais barato. Pra igualar, a escada de cada origem sobe ou desce até o custo de cada degrau ficar o mais perto do de uma origem média (27,2 campeões com 2/4/6), sem passar do tabuleiro (9).
 
 | Origem | Campeões | Custo de fechar 6 com 2/4/6 | Escada que iguala | Custo de cada degrau (1 = igual) |
 |---|---|---|---|---|
-| Pokémon | 57 | 0,54× | 4/7/9 | 1,14× · 0,99× · 0,84× |
-| Digimon | 23 | 1,45× | 2/3/4 | 1,41× · 1,05× · 0,92× |
-| SMT | 30 | 1,08× | 2/4/6 | 1,07× · 1,08× · 1,08× |
-| Persona | 12 | 3,22× | 1/2/3 | 1,32× · 1,34× · 1,35× |
-| JoJo | 33 | 0,97× | 2/4/6 | 0,98× · 0,97× · 0,97× |
-| LoL | 32 | 1,01× | 2/4/6 | 1,01× · 1,01× · 1,01× |
-| Overwatch | 24 | 1,39× | 2/3/5 | 1,35× · 1,00× · 1,13× |
-| Deadlock | 21 | 1,61× | 1/3/4 | 0,75× · 1,15× · 1,02× |
-| Sujimon | 20 | 1,71× | 1/3/4 | 0,79× · 1,21× · 1,07× |
-| Yu-Gi-Oh! | 70 | 0,44× | 4/9 | 0,93× · 1,05× |
+| Pokémon | 55 | 0,47× | 4/8/9 | 1,00× · 1,00× · 0,72× |
+| Digimon | 23 | 1,21× | 2/3/5 | 1,19× · 0,88× · 0,98× |
+| SMT | 28 | 0,97× | 2/4/6 | 0,97× · 0,97× · 0,97× |
+| Persona | 12 | 2,68× | 1/2/3 | 1,11× · 1,12× · 1,12× |
+| JoJo | 31 | 0,87× | 2/5/7 | 0,88× · 1,11× · 1,03× |
+| LoL | 31 | 0,87× | 2/5/7 | 0,88× · 1,11× · 1,03× |
+| Overwatch | 24 | 1,15× | 2/4/5 | 1,14× · 1,14× · 0,93× |
+| Deadlock | 21 | 1,34× | 2/3/5 | 1,30× · 0,96× · 1,08× |
+| Sujimon | 20 | 1,42× | 2/3/4 | 1,37× · 1,01× · 0,89× |
+| Yu-Gi-Oh! (a escolher) | 27 | 1,01× | 2/4/6 | 1,01× · 1,01× · 1,01× |
 
-Pokémon e Yu-Gi-Oh! não se igualam nem com a escada no limite do tabuleiro: o último degrau fica mais barato, ou falta degrau. Persona, Deadlock e Sujimon só se igualam com um degrau 1 (ativo com um campeão só). Nesses casos, a alternativa à escada é mexer no tamanho: com 32 campeões por franquia, todas usam 2/4/6.
+Pokémon não se iguala nem com a escada no limite do tabuleiro. Persona só se iguala com um degrau 1 (ativo com um campeão só). A alternativa à escada é mexer no tamanho: de 23 a 33 campeões, a origem usa 2/4/6.
 
 ## 6. Comps que fecham origem e classe juntas
-Pra fechar 6 de uma origem e 4 de uma classe em 9 vagas, pelo menos 1 campeão precisa ter as duas; pra 6 e 6, 3. Com as classes de hoje, em quantas das 12 classes cada origem consegue isso:
+Pra fechar 6 de uma origem e 4 de uma classe em 9 vagas, pelo menos 1 campeão precisa ter as duas; pra 6 e 6, 3. Com as classes de hoje (sem o Yu-Gi-Oh!), em quantas das 12 classes cada origem consegue isso:
 
-| Origem | 6 + 4 (≥ 1 em comum) | 6 + 6 (≥ 3 em comum) | Em comum por classe, em média |
+| Origem | 6 + 4 (≥ 1 em comum) | 6 + 6 (≥ 3 em comum) | Classe mais concentrada nela |
 |---|---|---|---|
-| Pokémon | 8 | 6 | 3,5 |
-| Digimon | 9 | 4 | 1,4 |
-| SMT | 9 | 6 | 1,8 |
-| Persona | 6 | 1 | 0,7 |
-| JoJo | 6 | 4 | 2,0 |
-| LoL | 8 | 3 | 2,0 |
-| Overwatch | 7 | 5 | 1,5 |
-| Deadlock | 9 | 8 | 1,3 |
-| Sujimon | 4 | 2 | 1,2 |
-| Yu-Gi-Oh! | 0 | 0 | 4,3 |
+| Pokémon | 11 | 8 | Dragão: 7 de 14 |
+| Digimon | 10 | 7 | Anjo: 5 de 23 |
+| SMT | 12 | 8 | Demoníacos: 10 de 32 |
+| Persona | 9 | 1 | Assassino: 2 de 15 |
+| JoJo | 8 | 5 | Temporais: 4 de 12 |
+| LoL | 11 | 4 | Fadinhas: 11 de 36 |
+| Overwatch | 10 | 6 | Robô: 6 de 20 |
+| Deadlock | 11 | 6 | Assassino: 3 de 15 |
+| Sujimon | 9 | 3 | Dragão: 3 de 14 |
 
-Com tudo do tamanho certo e as classes espalhadas pelas franquias, uma origem e uma classe têm em média n*·n_classe/322 = 3,8 campeões em comum: dá 6 + 6 em 9 vagas com quase qualquer par. Classe concentrada numa franquia só vira uma "sub-origem" e não cruza.
+Com tudo do tamanho certo e as classes espalhadas, uma origem e uma classe têm em média n*·n*/272 = 2,7 campeões em comum. Dá 6 + 4 com quase qualquer par; 6 + 6 (3 em comum) fica no limite: sai quando a classe tem um pouco mais daquela origem que a média.

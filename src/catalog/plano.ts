@@ -47,7 +47,8 @@ export interface Plano {
   classes?: Classe[];
   /**
    * ids das classes que a base tinha quando o plano gravou as classes dele. Classe da base fora desta lista e fora de
-   * `classes` é nova e aparece no fim; a que está aqui e não em `classes` foi removida. Ausente = CLASSES_ANTIGAS.
+   * `classes` é nova e aparece no fim; a que está aqui e não em `classes` foi removida; a que está aqui e saiu da base
+   * foi tirada da base e sai do plano também. Ausente = CLASSES_ANTIGAS.
    */
   classesVistas?: string[];
   /** chave da franquia -> nome -> unidade */
@@ -287,13 +288,17 @@ const CLASSES_ANTIGAS = ['demoniacos', 'criaturinha-bizarra', 'fadinhas', 'safad
 
 /**
  * As classes que valem: as da base enquanto o plano não mexe nelas; depois, as do plano e, no fim, as que a base
- * ganhou desde então (ver classesVistas). Sem classe nova, devolve o próprio array.
+ * ganhou desde então (ver classesVistas), sem as que a base tirou depois que o plano viu (Luz e Trevas, 28/10). Sem
+ * mudança, devolve o próprio array.
  */
 export function classesEfetivas(p: Plano, base: Base | null): Classe[] {
   if (!p.classes) return base?.classes ?? SEM_CLASSES;
+  const daBase = new Set(base?.classes.map(c => c.id));
+  const tiradas = base && p.classesVistas ? new Set(p.classesVistas.filter(id => !daBase.has(id))) : null;
+  const ficam = tiradas?.size ? p.classes.filter(c => !tiradas.has(c.id)) : p.classes;
   const conhecidas = new Set([...p.classes.map(c => c.id), ...(p.classesVistas ?? CLASSES_ANTIGAS)]);
   const novas = base?.classes.filter(c => !conhecidas.has(c.id)) ?? [];
-  return novas.length ? [...p.classes, ...novas] : p.classes;
+  return novas.length || ficam.length !== p.classes.length ? [...ficam, ...novas] : p.classes;
 }
 /** O que gravar em classesVistas junto com as classes do plano: os ids da base de agora (sem base, o que já estava). */
 export const classesVistasAgora = (p: Plano, base: Base | null): string[] | undefined => (base ? base.classes.map(c => c.id) : p.classesVistas);

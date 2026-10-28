@@ -63,12 +63,13 @@ export function simularFechar(b, n, u, vagas = 5, vezes = 20000, semente = 1) {
 /**
  * Escada de breakpoints pra um traço de `n` campeões custar o mesmo que a escada `alvo` (ex.: [2, 4, 6]) num traço de
  * `nAlvo`: pra cada degrau, o b (maior que o degrau anterior e até `max`, o tamanho do tabuleiro) cujo custo de fechar
- * fica mais perto, em razão, do custo do degrau alvo. Devolve os degraus e a razão de custo de cada um (1 = igual).
+ * fica mais perto, em razão, do custo do degrau alvo. `inicio` é o menor 1º degrau aceito (2 = nada de traço que
+ * ativa com um campeão só). Devolve os degraus e a razão de custo de cada um (1 = igual).
  */
-export function escadaEquivalente(n, nAlvo, alvo, u, max) {
+export function escadaEquivalente(n, nAlvo, alvo, u, max, inicio = 1) {
   const degraus = [];
   const razoes = [];
-  let antes = 0;
+  let antes = inicio - 1;
   for (const t of alvo) {
     const k = custoFechar(t, nAlvo, u);
     let melhor = null;
@@ -82,6 +83,35 @@ export function escadaEquivalente(n, nAlvo, alvo, u, max) {
     antes = melhor.b;
   }
   return { degraus, razoes };
+}
+
+/**
+ * Faixa de tamanhos de traço em que fechar o breakpoint `b` custa entre 1/(1 + tol) e (1 + tol) vezes o de um traço
+ * de `nAlvo` campeões (tol = 0,25: até 25% mais caro ou 20% mais barato). Devolve { min, max }, inteiros.
+ */
+export function faixa(nAlvo, b, u, tol, vagas = 5) {
+  const k = custoFechar(b, nAlvo, u, vagas);
+  let min = b;
+  while (custoFechar(b, min, u, vagas) / k > 1 + tol + 1e-12) min++;
+  let max = min;
+  while (custoFechar(b, max + 1, u, vagas) / k >= 1 / (1 + tol) - 1e-12) max++;
+  return { min, max };
+}
+
+/**
+ * Divide `vagas` novas entre os traços de `contagens` ({ nome: n }), uma por vez, sempre pro menor (empate: o primeiro
+ * da lista). Como o custo de fechar cai quando n sobe, é a divisão que deixa o traço mais caro o mais barato possível.
+ * Devolve { nome: quantas recebeu }.
+ */
+export function encher(contagens, vagas) {
+  const n = { ...contagens };
+  const ganho = Object.fromEntries(Object.keys(n).map(k => [k, 0]));
+  for (let i = 0; i < vagas; i++) {
+    const k = Object.keys(n).reduce((a, b) => (n[b] < n[a] ? b : a));
+    n[k]++;
+    ganho[k]++;
+  }
+  return ganho;
 }
 
 /**

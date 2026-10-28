@@ -31,6 +31,10 @@ buscar categorias a cada visita.
 - Megas, Primais e formas regionais (157: 97 Megas, 2 Primais, 58 de Alola, Galar, Hisui e Paldea) vêm da lista
   `/api/v2/pokemon?limit=2000` (variedades com id acima de 10000), com nome oficial em inglês (`formName` em
   src/sources/pokemon.ts: "Mega Charizard X", "Alolan Raichu") e arte oficial pelo id. No catálogo têm o campo Variante.
+- Outras formas: a mesma lista tem mais 110 (Giratina Origin, Rotom, Deoxys, Zygarde 10% e Completo...). Entram só as
+  54 que mudam de verdade, listadas em src/sources/pokemon-formas.json ("Giratina (Origin)"), lida pelo site e pelo
+  catálogo (Variante "Forma alternativa"). As que só trocam de cor, tamanho, gênero ou roupa (Minior, Squawkabilly,
+  Pumpkaboo, Pikachu de fantasia) ficam de fora.
 
 ## Digimon (1488, todos os detalhes buscados)
 

@@ -1,4 +1,5 @@
 import type { Item, Source } from '../types';
+import formas from './pokemon-formas.json';
 import { nice } from './text';
 
 interface Species { name: string; url: string }
@@ -12,15 +13,23 @@ const art = (url: string) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${url.split('/').filter(Boolean).pop()}.png`;
 
 const REGIAO: Record<string, string> = { alola: 'Alolan', galar: 'Galarian', hisui: 'Hisuian', paldea: 'Paldean' };
+/**
+ * As outras formas que mudam de verdade (aparência e quase sempre tipo), com o nome no site: 'giratina-origin' ->
+ * 'Giratina (Origin)'. As que só trocam de cor, tamanho, gênero ou roupa (Minior, Squawkabilly, Pumpkaboo, Pikachu de
+ * fantasia...) ficam de fora. O catálogo (catalogo/pokemon.mjs) lê a mesma lista.
+ */
+const OUTRAS = new Map(Object.entries(formas));
 
 /**
- * Nome oficial (em inglês) de uma Mega, Gigantamax, forma Primal ou forma regional, ou null pras outras variedades
- * (totem, bonés do Pikachu...): 'charizard-mega-x' -> 'Mega Charizard X', 'machamp-gmax' -> 'Gigantamax Machamp',
- * 'raichu-alola' -> 'Alolan Raichu', 'kyogre-primal' -> 'Primal Kyogre',
- * 'tauros-paldea-combat-breed' -> 'Paldean Tauros (Combat Breed)'.
+ * Nome oficial (em inglês) de uma Mega, Gigantamax, forma Primal, forma regional ou outra forma da lista OUTRAS, ou
+ * null pras outras variedades (totem, bonés do Pikachu, cores do Minior...): 'charizard-mega-x' -> 'Mega Charizard X',
+ * 'machamp-gmax' -> 'Gigantamax Machamp', 'raichu-alola' -> 'Alolan Raichu', 'kyogre-primal' -> 'Primal Kyogre',
+ * 'tauros-paldea-combat-breed' -> 'Paldean Tauros (Combat Breed)', 'rotom-wash' -> 'Rotom (Wash)'.
  * Nome de espécie igual ao do site (nice): 'mr-mime-galar' -> 'Galarian Mr Mime'.
  */
 export function formName(name: string): string | null {
+  const outra = OUTRAS.get(name);
+  if (outra) return outra;
   if (/totem|-cap|cosplay|starter|busted|eternamax/.test(name)) return null;
   const p = name.split('-');
   if (p.at(-1) === 'gmax') return `Gigantamax ${nice(p.slice(0, -1).join('-'))}`;
@@ -33,7 +42,8 @@ export function formName(name: string): string | null {
   return `${REGIAO[p[r] as string]} ${nice(p.slice(0, r).join('-'))}${extra.length ? ` (${nice(extra.join('-'))})` : ''}`;
 }
 
-// Pokémon: as espécies (com a arte oficial pelo id) e, no fim, as Megas, Gigantamax, formas Primais e formas regionais.
+// Pokémon: as espécies (com a arte oficial pelo id) e, no fim, as Megas, Gigantamax, formas Primais, formas regionais e
+// as outras formas da lista OUTRAS.
 // Se a lista das formas falhar, ficam só as espécies.
 async function load(): Promise<Item[]> {
   const [j, formas] = await Promise.all([

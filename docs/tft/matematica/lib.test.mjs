@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  chanceAoMenos, comb, custoFechar, escadaEquivalente, media, mediana, porCusto, resumoSet, rolagensEsperadas, simularFechar,
-  simularRolagens, tabuleiroAleatorio, tracosDoSet,
+  chanceAoMenos, comb, custoFechar, encher, escadaEquivalente, faixa, media, mediana, porCusto, resumoSet, rolagensEsperadas,
+  simularFechar, simularRolagens, tabuleiroAleatorio, tracosDoSet,
 } from './lib.mjs';
 
 describe('custo de fechar um breakpoint', () => {
@@ -25,6 +25,22 @@ describe('custo de fechar um breakpoint', () => {
     expect(Math.max(...grande.degraus)).toBeLessThanOrEqual(9);
     const pequeno = escadaEquivalente(12, 28, [2, 4, 6], 252, 9).degraus;
     expect(pequeno.at(-1)).toBeLessThan(6);
+    expect(escadaEquivalente(12, 28, [2, 4, 6], 252, 9, 2).degraus[0]).toBe(2);
+  });
+  it('faixa: sem tolerância é só o próprio alvo; com tolerância, as pontas ficam dentro e o vizinho de fora não', () => {
+    expect(faixa(28, 6, 252, 0)).toEqual({ min: 28, max: 28 });
+    const { min, max } = faixa(27.2, 6, 272, 0.25);
+    const r = n => custoFechar(6, n, 272) / custoFechar(6, 27.2, 272);
+    expect(min).toBeLessThan(27.2);
+    expect(max).toBeGreaterThan(27.2);
+    expect(r(min)).toBeLessThanOrEqual(1.25);
+    expect(r(min - 1)).toBeGreaterThan(1.25);
+    expect(r(max)).toBeGreaterThanOrEqual(0.8);
+    expect(r(max + 1)).toBeLessThan(0.8);
+  });
+  it('encher: cada vaga vai pro menor; empate fica com o primeiro', () => {
+    expect(encher({ a: 1, b: 5, c: 3 }, 4)).toEqual({ a: 3, b: 0, c: 1 });
+    expect(encher({ a: 2, b: 2 }, 0)).toEqual({ a: 0, b: 0 });
   });
 });
 
