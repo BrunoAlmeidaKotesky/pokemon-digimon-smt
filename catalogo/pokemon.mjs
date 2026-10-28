@@ -1,7 +1,9 @@
 // Pokémon: todas as espécies num pedido só à API GraphQL da PokéAPI (que limita a 100 pedidos por hora: nada de laço).
 // O nome passa pelo mesmo nice() do site (src/core/text.ts): 'mr-mime' -> 'Mr Mime'. As Megas, Primais e formas
-// regionais entram com o nome do formName() de src/sources/pokemon.ts ('Mega Charizard X', 'Alolan Raichu').
+// regionais entram com o nome do formName() de src/sources/pokemon.ts ('Mega Charizard X', 'Alolan Raichu'), e as
+// outras formas, com o nome de src/sources/pokemon-formas.json ('Giratina (Origin)').
 
+import fs from 'node:fs';
 import { getJson } from './util.mjs';
 
 const API = 'https://graphql.pokeapi.co/v1beta2';
@@ -30,9 +32,12 @@ const nome = s => NOMES[s] ?? nice(s);
 
 const REGIAO = { alola: 'Alolan', galar: 'Galarian', hisui: 'Hisuian', paldea: 'Paldean' };
 const VARIANTE = { alola: 'Alola', galar: 'Galar', hisui: 'Hisui', paldea: 'Paldea' };
+/** As outras formas que o site aceita (a mesma lista do formName): nome da API -> nome no site. */
+const OUTRAS = JSON.parse(fs.readFileSync('src/sources/pokemon-formas.json', 'utf8'));
 
 /** Igual ao formName() de src/sources/pokemon.ts, mais a variante: { nome: 'Mega Charizard X', variante: 'Mega' } ou null. */
 function forma(name) {
+  if (OUTRAS[name]) return { nome: OUTRAS[name], variante: 'Forma alternativa' };
   if (/totem|-cap|cosplay|starter|busted|eternamax/.test(name)) return null;
   const p = name.split('-');
   if (p.at(-1) === 'gmax') return { nome: `Gigantamax ${nice(p.slice(0, -1).join('-'))}`, variante: 'Gigantamax' };
@@ -90,7 +95,7 @@ export default {
       };
       const limpo = o => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && v !== null));
       itens[nice(s.name)] = limpo(info);
-      // Megas, Primais e formas regionais: o resto da espécie, com o tipo da forma e a variante
+      // Megas, Primais, formas regionais e as outras formas: o resto da espécie, com o tipo da forma e a variante
       for (const p of s.pokemons) {
         const f = !p.is_default && forma(p.name);
         if (!f || itens[f.nome]) continue;

@@ -136,6 +136,17 @@ describe('plano por cima da base', () => {
     expect(classesVistasAgora(antigo, b)).toEqual(['dragao', 'anjo', 'tanque', 'fogo']);
     expect(classesVistasAgora(viu, null)).toBe(viu.classesVistas);
   });
+  it('classes: a que a base tirou depois que o plano viu sai do plano também; a criada pelo usuário fica', () => {
+    const b: Base = { ...base(), classes: [{ id: 'dragao', nome: 'Dragão' }, { id: 'fogo', nome: 'Fogo' }] };
+    const p: Plano = {
+      ...planoVazio(),
+      classes: [{ id: 'dragao', nome: 'Dragão' }, { id: 'luz', nome: 'Luz' }, { id: 'minha', nome: 'Minha' }, { id: 'fogo', nome: 'Fogo' }],
+      classesVistas: ['dragao', 'luz', 'fogo'],
+    };
+    expect(classesEfetivas(p, b).map(c => c.id)).toEqual(['dragao', 'minha', 'fogo']);
+    // sem a base não dá pra saber o que saiu
+    expect(classesEfetivas(p, null)).toBe(p.classes);
+  });
 });
 
 describe('linhas por cima da base, uma por uma (mesclarLinhas, guardarLinhas, compactarLinhas)', () => {

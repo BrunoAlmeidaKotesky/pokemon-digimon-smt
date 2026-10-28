@@ -156,8 +156,6 @@ const classes = [
   ['Raio', `${ELEMENTO} A cada 3 ataques, um raio pula do alvo pra outros inimigos. (2) pula pra 1; (4) pra 2; (6) pra 3, e atordoa por meio segundo quem leva.`],
   ['Gelo', `${ELEMENTO} Os ataques deixam o alvo mais lento. (2) ele ataca 15% mais devagar; (4) 25%; (6) 35%, e o 5º ataque seguido no mesmo alvo congela ele por 1 segundo.`],
   ['Planta', `${ELEMENTO} O primeiro ataque em cada inimigo planta uma semente que suga a vida dele e cura quem plantou. (2) semente fraca; (4) média; (6) forte, e a cura vai também pro aliado mais perto.`],
-  ['Luz', `${ELEMENTO} Os ataques ofuscam: por 2 segundos o alvo erra parte dos ataques. (2) erra 15%; (4) 25%; (6) 40%.`],
-  ['Trevas', `${ELEMENTO} Batem mais forte em quem está ferido. (2) +10% de dano em inimigos abaixo de metade da vida; (4) +20%; (6) +30%, e acabam com quem fica abaixo de 10% da vida.`],
 ].map(c => {
   const [nome, descricao] = Array.isArray(c) ? c : [c];
   return { id: nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-'), nome, ...(descricao ? { descricao } : {}) };
