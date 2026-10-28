@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  chanceAoMenos, comb, custoFechar, encher, escadaEquivalente, faixa, media, mediana, porCusto, resumoSet, rolagensEsperadas,
-  simularFechar, simularRolagens, tabuleiroAleatorio, tracosDoSet,
+  aleatorio, amostra, campeoesComPeso, chanceAoMenos, comb, custoFechar, encher, escadaEquivalente, faixa, mecanicas, media, mediana,
+  melhorDesenho, porCusto, resumoSet, rolagensEsperadas, simularFechar, simularLoja, simularRolagens, tabuleiroAleatorio, tracosDoSet,
 } from './lib.mjs';
 
 describe('custo de fechar um breakpoint', () => {
@@ -96,6 +96,16 @@ describe('loja', () => {
     // cinco vagas: E = 1/(1 − (1 − q)^5)
     expect(rolagensEsperadas({ chance: 0.5, campeoes: 10, copias: 5, alvo: 1 })).toBeCloseTo(1 / (1 - 0.95 ** 5), 9);
   });
+  it('peso pro que o jogador tem: peso 1 não muda nada; com peso, a chance por vaga bate com a do pool equivalente', () => {
+    expect(campeoesComPeso(56, 1)).toBe(56);
+    const n = 56;
+    const w = 3;
+    expect(1 / campeoesComPeso(n, w)).toBeCloseTo(w / (n - 1 + w), 12);
+    // peso 3 com 56 campeões fica entre o pool de 19 e o de 20
+    const r = rolagensEsperadas({ chance: 0.55, campeoes: campeoesComPeso(n, w), copias: 30, alvo: 3 });
+    expect(r).toBeGreaterThan(rolagensEsperadas({ chance: 0.55, campeoes: 19, copias: 30, alvo: 3 }));
+    expect(r).toBeLessThan(rolagensEsperadas({ chance: 0.55, campeoes: 20, copias: 30, alvo: 3 }));
+  });
   it('sem cópia suficiente: Infinity', () => {
     expect(rolagensEsperadas({ chance: 0.3, campeoes: 10, copias: 9, alvo: 9, tomadas: 1 })).toBe(Infinity);
   });
@@ -118,5 +128,50 @@ describe('loja', () => {
     expect(b / a).toBeLessThan(2.1);
     expect(c / a).toBeGreaterThan(0.9);
     expect(c / a).toBeLessThan(1);
+  });
+});
+
+describe('desenho da loja com o set', () => {
+  // 250 campeões, 10 origens de 25 e 12 classes: os 5 custos têm 50 cada
+  const set = Array.from({ length: 250 }, (_, i) => ({ tracos: [`O${i % 10}`, `C${(i * 7) % 12}`] }));
+  const op = { chance: 0.55, rodadas: 20000, semente: 5 };
+  it('amostra: k itens diferentes do conjunto', () => {
+    const a = amostra([1, 2, 3, 4, 5, 6], 4, aleatorio(3));
+    expect(new Set(a).size).toBe(4);
+    expect(a.every(x => x >= 1 && x <= 6)).toBe(true);
+  });
+  it('loja normal: m1 bate com a cadeia de Markov de um campeão num custo de 50 (alvo 2, cópias infinitas)', () => {
+    for (const vagas of [5, 6, 7]) {
+      const sim = simularLoja(set, { vagas }, op).m1;
+      const conta = rolagensEsperadas({ chance: 0.55, campeoes: 50, copias: 1e9, alvo: 2, vagas });
+      expect(Math.abs(sim - conta) / conta).toBeLessThan(0.03);
+    }
+  });
+  it('loja normal: m3 bate com a conta, (50 − donos)·(1 − (1 − chance/50)^vagas), com 7·50/250 donos em média', () => {
+    const conta = (50 - (7 * 50) / 250) * (1 - (1 - 0.55 / 50) ** 5);
+    expect(Math.abs(simularLoja(set, {}, op).m3 - conta) / conta).toBeLessThan(0.01);
+  });
+  it('peso do dono acelera m1; vaga do time acelera m1 e m2; as rodadas são as mesmas em qualquer desenho', () => {
+    const normal = simularLoja(set, {}, op);
+    const peso = simularLoja(set, { pesoDono: 3 }, op);
+    const time = simularLoja(set, { vagaDoTime: 1 }, op);
+    expect(peso.m1).toBeLessThan(normal.m1 / 2);
+    expect(time.m1).toBeLessThan(normal.m1);
+    expect(time.m2).toBeLessThan(normal.m2);
+    expect([peso.rodadasM1, time.rodadasM1]).toEqual([normal.rodadasM1, normal.rodadasM1]);
+    expect([peso.rodadasM2, time.rodadasM2]).toEqual([normal.rodadasM2, normal.rodadasM2]);
+  });
+  it('melhor desenho: menor m1 + m2 entre os que mantêm a variedade; empate fica com o de menos mecânicas', () => {
+    const base = { m1: 40, m2: 7, m3: 2.6, pesoDono: 1, vagaDoTime: 0, pesoTime: 1 };
+    // a menor soma, mas com m3 abaixo de 75% do da base
+    const semVariedade = { m1: 10, m2: 5, m3: 1.5, pesoDono: 4, vagaDoTime: 0, pesoTime: 1 };
+    const duas = { m1: 12, m2: 6, m3: 2.5, pesoDono: 3, vagaDoTime: 1, pesoTime: 1 };
+    // 0,6% acima de `duas`, com uma mecânica a menos
+    const uma = { m1: 12.1, m2: 6, m3: 2.5, pesoDono: 3, vagaDoTime: 0, pesoTime: 1 };
+    expect(mecanicas(base)).toBe(0);
+    expect(mecanicas(duas)).toBe(2);
+    expect(melhorDesenho([base, semVariedade, duas, uma], base)).toBe(uma);
+    expect(melhorDesenho([base, semVariedade, duas, uma], base, { empate: 0 })).toBe(duas);
+    expect(melhorDesenho([base, semVariedade, duas, uma], base, { variedade: 0.5, empate: 0 })).toBe(semVariedade);
   });
 });

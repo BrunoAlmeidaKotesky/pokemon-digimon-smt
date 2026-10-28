@@ -146,9 +146,11 @@ export interface Filtros {
   classe: string;
   linha: FiltroLinha;
   ult: FiltroUlt;
+  /** custo do campeão, '1' a '5' ('' = todos; SEM = sem custo) */
+  custo: string;
 }
-export const filtrosVazios = (): Filtros => ({ q: '', campos: {}, classe: '', linha: '', ult: '' });
-export const temFiltro = (f: Filtros) => !!f.q.trim() || !!f.classe || !!f.linha || !!f.ult || Object.values(f.campos).some(Boolean);
+export const filtrosVazios = (): Filtros => ({ q: '', campos: {}, classe: '', linha: '', ult: '', custo: '' });
+export const temFiltro = (f: Filtros) => !!f.q.trim() || !!f.classe || !!f.linha || !!f.ult || !!f.custo || Object.values(f.campos).some(Boolean);
 
 /** O que o filtro precisa saber de fora da lista: o grupo e o planejamento de cada personagem. */
 export interface Contexto {
@@ -162,6 +164,8 @@ export interface Contexto {
   ult?: (nome: string) => string | undefined;
   /** texto a mais pra busca (habilidade, nomes das classes, ult), já normalizado */
   texto?: (nome: string) => string;
+  /** custo do campeão do personagem (o da linha, se estiver numa); undefined = sem */
+  custo?: (nome: string) => number | undefined;
 }
 /** Sem grupo nem planejamento. */
 export const TODOS: Contexto = { grupo: null };
@@ -169,6 +173,7 @@ export const TODOS: Contexto = { grupo: null };
 export const F_CLASSE = '#classe';
 export const F_LINHA = '#linha';
 export const F_ULT = '#ult';
+export const F_CUSTO = '#custo';
 
 /** O personagem tem esse valor no campo (campo com lista: qualquer um dos valores serve). */
 function casaCampo(l: Linha, id: string, v: string): boolean {
@@ -196,6 +201,7 @@ export function filtrar(linhas: readonly Linha[], f: Filtros, ctx: Contexto, ign
   const classe = ignorar === F_CLASSE ? '' : f.classe;
   const linha = ignorar === F_LINHA ? '' : f.linha;
   const ult = ignorar === F_ULT ? '' : f.ult;
+  const custo = ignorar === F_CUSTO ? '' : f.custo ?? '';
   return linhas.filter(l => {
     if (ctx.grupo && !ctx.grupo.has(l.nome)) return false;
     if (termos.length) {
@@ -205,7 +211,8 @@ export function filtrar(linhas: readonly Linha[], f: Filtros, ctx: Contexto, ign
     return campos.every(([id, v]) => casaCampo(l, id, v))
       && (!classe || casaClasse(ctx.classes?.(l.nome), classe))
       && (!linha || casaLinha(ctx.linha?.(l.nome), linha))
-      && (!ult || (ult === 'com') === !!ctx.ult?.(l.nome));
+      && (!ult || (ult === 'com') === !!ctx.ult?.(l.nome))
+      && (!custo || (custo === SEM ? !ctx.custo?.(l.nome) : ctx.custo?.(l.nome) === Number(custo)));
   });
 }
 
@@ -290,6 +297,17 @@ export function opcoesUlt(linhas: readonly Linha[], f: Filtros, ctx: Contexto): 
   const l = filtrar(linhas, f, ctx, F_ULT);
   for (const x of l) if (ctx.ult?.(x.nome)) com++;
   return [{ valor: 'com', n: com }, { valor: 'sem', n: l.length - com }];
+}
+
+/** Opções do filtro de custo: cada custo de 1 a 5 e "sem custo", com quantos personagens (acompanhando os outros filtros). */
+export function opcoesCusto(linhas: readonly Linha[], f: Filtros, ctx: Contexto): Opcao[] {
+  const n = new Map<string, number>();
+  for (const l of filtrar(linhas, f, ctx, F_CUSTO)) {
+    const c = ctx.custo?.(l.nome);
+    const v = c ? String(c) : SEM;
+    n.set(v, (n.get(v) ?? 0) + 1);
+  }
+  return [...['1', '2', '3', '4', '5'].map(v => ({ valor: v, n: n.get(v) ?? 0 })), { valor: SEM, n: n.get(SEM) ?? 0 }];
 }
 
 // ---------- marcações ----------

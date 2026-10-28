@@ -1,0 +1,81 @@
+{
+  "classes": {
+    "demoniacos": "Pacto Sombrio: gasta 10% da própria vida e lança chamas negras no alvo e nos inimigos em volta (1 casa): 200/300/450% do dano de ataque. Ganha 15% de roubo de vida até o fim da luta, e isso acumula a cada vez.",
+    "criaturinha-bizarra": "Coisa Esquisita: faz uma de três coisas, ao acaso: cospe gosma no alvo (180/270/400% do dano de ataque e lentidão de 30% por 3 s), se cura em 25/35/50% da vida máxima ou dá um berro que atordoa os inimigos em volta (1 casa) por 1,5 s.",
+    "fadinhas": "Pó de Fada: cura o aliado com menos vida em 20/30/45% da vida máxima dele e dá a ele escudo de 15% da vida máxima por 4 s.",
+    "safada": "Charme: manda um beijo no inimigo mais próximo: 150/225/340% do dano de ataque. Ele fica encantado por 2 s: anda na direção de quem lançou e não ataca (vale como atordoar).",
+    "atirador": "Tiro Perfurante: dispara um tiro em linha que atravessa todos os inimigos no caminho: 220/330/500% do dano de ataque. Esse tiro sempre dá crítico.",
+    "anjo": "Luz Divina: desce uma coluna de luz numa área de 2 casas em volta do alvo. Inimigos ali levam 160/240/360% do dano de ataque; aliados ali curam 15/20/30% da vida máxima.",
+    "robo": "Bateria de Mísseis: dispara 4 mísseis em inimigos ao acaso, cada um com 100/150/225% do dano de ataque. Depois liga a blindagem: escudo de 20% da vida máxima por 4 s.",
+    "dragao": "Sopro de Dragão: cospe um sopro em leque que acerta uma área de 3 casas à frente, na direção do alvo: 200/300/450% do dano de ataque. Quem for atingido leva 20% a mais de dano desse Dragão por 4 s.",
+    "temporais": "Parar o Tempo: para o tempo numa área de 2 casas em volta do alvo. Os inimigos ali ficam atordoados por 1,5/2/2,5 s e levam 20% a mais de dano enquanto isso.",
+    "tanque": "Muralha: ganha escudo de 30/45/70% da vida máxima por 4 s e provoca os inimigos em volta (1 casa) por 2 s.",
+    "porradeiro": "Pancadão: soca o alvo, causando 180/270/400% do dano de ataque mais 8% da própria vida máxima, e atordoa por 1 s. Abaixo de metade da vida, o soco tem 30% de roubo de vida.",
+    "assassino": "Golpe Fatal: salta no inimigo com menos vida e golpeia: 250/375/560% do dano de ataque, que pode dar crítico. Se matar, recupera 50% da mana.",
+    "fogo": "Bola de Fogo: lança uma bola de fogo que explode no alvo e nos inimigos em volta (1 casa): 170/255/380% do dano de ataque. Todos ficam queimando por 4 s: perdem vida aos poucos e recebem menos cura.",
+    "agua": "Jato d'Água: dispara um jato em linha: 160/240/360% do dano de ataque nos inimigos no caminho. Depois cura 15% da própria vida máxima e se livra de queimadura, lentidão e outros efeitos ruins.",
+    "terra": "Terremoto: bate no chão. Os inimigos numa área de 2 casas em volta levam 140/210/320% do dano de ataque e ficam atordoados por 1 s; quem lançou ganha 30% de armadura por 4 s.",
+    "vento": "Tornado: solta um tornado em linha que causa 150/225/340% do dano de ataque e empurra os inimigos 1 casa pra trás. Depois ganha 40% de velocidade de ataque por 3 s.",
+    "raio": "Corrente Elétrica: lança um raio no alvo que pula pra mais 3 inimigos. Cada um leva 130/195/290% do dano de ataque e fica atordoado por 0,5 s.",
+    "gelo": "Nevasca: cai uma nevasca numa área de 2 casas em volta do alvo por 3 s: 180/270/400% do dano de ataque no total e lentidão de 30% em quem está dentro. Quem ficar os 3 s inteiros congela: atordoado por 1,5 s.",
+    "planta": "Raízes: prendem o alvo e os inimigos em volta (1 casa) por 1,5 s (atordoados) e sugam 140/210/320% do dano de ataque deles. Quem lançou cura o mesmo tanto."
+  },
+  "unidades": {
+    "jojo": {
+      "Bad Company": "Batalhão: soldadinhos, tanques e um helicóptero Apache disparam 10 tiros divididos entre os inimigos numa área de 2 casas em volta do alvo, cada um com 40/60/90% do dano de ataque.",
+      "Boy II Man": "Jokenpô: desafia o alvo e vence em 70/85/100% das vezes. Cada vitória rouba 1/3 da habilidade dele: ele passa a precisar de 33% a mais de mana. Na 3ª vitória a habilidade é toda roubada: o alvo não lança mais, e a unidade do Stand passa a lançar ela quando encher a mana.",
+      "Crazy Diamond": "Dora Dora Dora: soca o alvo, 180/270/400% do dano de ataque. Depois conserta o aliado com menos vida, curando 25/35/50% da vida máxima dele. Como o Josuke, não pode curar a si mesmo.",
+      "Echoes": "Muda de Act a cada nível, e cada Act soma ao anterior. Nível 1 (Act 1): gruda um som no alvo: 120% do dano de ataque, e ele perde 30% da mana. Nível 2 (Act 2): o som explode e acerta também os inimigos em volta (1 casa): 180%. Nível 3 (Act 3, 3 Freeze): 270%, e o alvo fica pesadíssimo, com lentidão de 60% por 3 s.",
+      "Harvest": "Enxame: centenas de Harvests picam os inimigos numa área de 2 casas em volta do alvo por 4 s: 40/60/90% do dano de ataque por segundo e lentidão de 20%. Uma vez por luta, eles ainda acham 1 de ouro no chão.",
+      "Pearl Jam": "Antipasto: serve um prato pro aliado com menos vida e outro pra unidade do Stand. Os dois curam 22/33/50% da vida máxima e se livram de queimadura, lentidão e outros efeitos ruins.",
+      "Red Hot Chili Pepper": "Fio Desencapado: vira eletricidade e salta entre 4 inimigos: 130/195/290% do dano de ataque e rouba 15% da mana de cada um. Cada vez que lança, fica 10% mais forte até o fim da luta.",
+      "Star Platinum": "Star Platinum: The World: para o tempo por 1/1,5/2 s (todos os inimigos atordoados) e solta um ORA ORA no alvo: 250/375/560% do dano de ataque.",
+      "Stray Cat": "Bolhas de Ar: dispara 3 bolhas de ar invisíveis em inimigos ao acaso, cada uma com 140/210/310% do dano de ataque. Também envolve a unidade do Stand numa bolha que bloqueia o próximo ataque de longe.",
+      "The Hand": "Raspada: apaga o espaço e puxa o inimigo mais longe (até 4 casas) pra frente dele. Depois apaga um pedaço do alvo com a mão direita: 200/300/450% do dano de ataque, que ignora escudo e armadura.",
+      "C-MOON": "Gravidade ao Contrário: soca o alvo e vira ele do avesso: 220/330/500% do dano de ataque, ele perde 50% da mana e fica atordoado por 1 s. A gravidade inverte em volta: os inimigos a até 2 casas da unidade do Stand são empurrados 1 casa pra longe.",
+      "Chariot Requiem": "Réquiem: todos os inimigos numa área de 2 casas em volta caem no sono, atordoados por 1,5/2/2,5 s. Depois troca as almas: se a unidade do Stand estiver com menos % de vida que o inimigo com mais vida, os dois trocam de % de vida.",
+      "Gold Experience Requiem": "Retorno a Zero: zera tudo o que o alvo faz por 3/4/5 s. Os ataques dele não causam dano, ele não ganha mana e, se lançar a habilidade, ela volta a zero e não acontece. Ao fim, MUDA MUDA: 250/375/560% do dano de ataque.",
+      "Made in Heaven": "Tempo Acelerado: acelera o tempo por 4 s. O Stand e a unidade dele ganham 60/90/150% de velocidade de ataque; os inimigos ficam com lentidão de 30% e não ganham mana (o tempo passa rápido demais pra eles).",
+      "The World Over Heaven": "Sobrescrever a Realidade: para o tempo por 2/2,5/3 s e soca o alvo: 300/450/700% do dano de ataque. O soco reescreve a realidade: o alvo perde todos os escudos e efeitos bons, e se ficar abaixo de 20% da vida, morre.",
+      "Tusk": "Muda de Act a cada nível. Nível 1 (Act 1): dispara as 10 unhas giratórias no alvo, cada uma com 30% do dano de ataque. Nível 2 (Act 2): 45% cada, e o buraco da bala persegue o alvo e acerta de novo depois de 2 s. Nível 3 (Act 4, Rotação Infinita): 70% cada, e o alvo perde 5% da vida máxima por segundo por 6 s, sem poder ser curado.",
+      "Foo Fighters (Stand)": "Rajada de Plâncton: dispara 3 balas de plâncton no alvo, cada uma com 60/90/135% do dano de ataque. Depois tapa as feridas da unidade do Stand com plâncton: cura 15/22/33% da vida máxima dela.",
+      "Whitesnake": "Roubar Disco: arranca o disco do alvo: 150/225/340% do dano de ataque, ele perde toda a mana e não ganha mana por 2/3/4 s.",
+      "Ball Breaker": "Rotação Dourada: arremessa a bola de aço; o Ball Breaker sai dela e envelhece o alvo: 220/330/500% do dano de ataque, e por 4 s ele causa 30% menos dano e ataca 30% mais devagar.",
+      "Civil War": "Culpa: as coisas que o alvo abandonou no passado surgem e soterram ele: 180/270/400% do dano de ataque e atordoa por 1,5 s. Se o alvo já matou alguém nesta luta, leva o dobro.",
+      "Dirty Deeds Done Dirt Cheap": "Entre Mundos: traz o alvo de um mundo paralelo; os dois se encostam e se desmancham: 200/300/450% do dano de ataque e atordoa por 1 s. Uma vez por luta, se a unidade do Stand cair abaixo de 30% da vida, troca de lugar com a versão dela de outro mundo e volta com 60% da vida.",
+      "Hey Ya!": "Torcida: grita incentivo pra unidade do Stand. Por 5 s ela ganha 30/45/70% de chance de crítico e desvia de 20% dos ataques, por pura sorte.",
+      "Scary Monsters": "Mordida Jurássica: a unidade do Stand vira dinossauro por 5 s (+30% de vida máxima e de dano de ataque) e morde o alvo: 160/240/360% do dano de ataque. Se o alvo morrer em até 4 s, volta como dinossaurinho do seu time até o fim da luta.",
+      "The World (Steel Ball Run)": "THE WORLD: para o tempo por 1,5/2/2,5 s (todos os inimigos atordoados). Com os sentidos de dinossauro que sobraram do Scary Monsters, atira facas no alvo e nos inimigos em volta (1 casa): 200/300/450% do dano de ataque.",
+      "Tubular Bells": "Bichos de Balão: transforma pregos em 3 bichinhos de balão que correm até inimigos ao acaso e estouram: 150/225/340% do dano de ataque cada, e lentidão de 20% por 3 s.",
+      "Baby Face": "Filho Desmontador: um Baby Face filho pula no alvo e desmonta ele em cubinhos: 180/270/400% do dano de ataque, e ele fica atordoado por 1,5 s enquanto se monta de novo. O filho aprende: cada vez que lança, causa 10% a mais.",
+      "Gold Experience": "MUDA MUDA: soca o alvo, 160/240/360% do dano de ataque, e acelera os sentidos dele: por 3 s ele vive em câmera lenta (lentidão de 40%). Também transforma uma pedra num sapo do lado da unidade do Stand: o próximo ataque nela volta pra quem atacou.",
+      "Metallica": "Navalhas no Sangue: puxa o ferro do sangue dos inimigos numa área de 2 casas em volta e faz navalhas brotarem de dentro deles: 120/180/270% do dano de ataque, e lentidão de 30% por 3 s (falta de ferro). A unidade do Stand se cobre de ferro e fica 1,5 s sem poder ser alvo.",
+      "Mr.President": "Quarto da Tartaruga: guarda dentro do casco o aliado com menos vida e a unidade do Stand por 2/3/4 s: não podem ser alvo e curam 10% da vida máxima por segundo. O fantasma do Polnareff mora lá: quem sai ganha 30% de velocidade de ataque por 4 s.",
+      "Sex Pistols": "Chutem as Balas: dispara 6 tiros, e os Pistols chutam cada bala pros inimigos com menos vida: 70/105/160% do dano de ataque cada. O 4º tiro dá azar e não sai, mas o 5º e o 6º são crítico garantido.",
+      "Silver Chariot": "Estocadas: dá 6 estocadas rápidas no alvo, cada uma com 40/60/90% do dano de ataque. Na 1ª vez que lança na luta, tira a armadura: perde 20% de armadura e ganha 50% de velocidade de ataque até o fim.",
+      "Talking Head": "Língua Mentirosa: gruda a língua nos inimigos em volta (1 casa), provoca por 2/2,5/3 s e ganha escudo de 20% da vida máxima. Enquanto dura, tudo neles sai ao contrário: a cura que recebem vira dano.",
+      "Strength": "Navio do Orangotango: o casco do navio se fecha sobre os inimigos numa área de 2 casas em volta do alvo: ficam presos (atordoados) por 1,5/2/2,5 s e levam 150/225/340% do dano de ataque de canos e correntes.",
+      "November Rain": "Chuva Pesada: faz chover gotas pesadíssimas numa área de 2 casas em volta do alvo por 3 s: 60/90/135% do dano de ataque por segundo e lentidão de 30%.",
+      "Light Rod Stand": "Bastões de Luz: crava bastões de luz em 3 inimigos ao acaso. Depois de 1 s eles explodem em feixes em linha: 150/225/340% do dano de ataque em quem estiver no caminho, e os atingidos ficam 2 s com lentidão de 30% (ofuscados).",
+      "Soft & Wet": "Bolhas Ladras: solta 3 bolhas no alvo, cada uma com 60/90/135% do dano de ataque. Cada bolha rouba uma coisa dele e passa pra unidade do Stand: 10% da armadura, 10% da velocidade de ataque e 20% da mana.",
+      "Wonder of U": "Calamidade: por 5 s, quem persegue sofre. Cada inimigo que atacar a unidade do Stand ou o Wonder of U leva 80/120/180% do dano de ataque de volta, de uma desgraça do nada, e fica 2 s com lentidão de 30%."
+    },
+    "pokemon": {
+      "Exploud": "Estrondo: solta um grito que acerta todos os inimigos numa área de 2 casas em volta: 150/225/340% do dano de ataque, e eles perdem 30% da mana. Os inimigos em volta (1 casa) ainda ficam atordoados por 1 s."
+    },
+    "smt": {
+      "Arahabaki": "Tetrakarn e Makarakarn: por 2/2,5/3 s não perde vida e devolve todo dano que recebe pra quem atacou. Ao fim, provoca os inimigos em volta (1 casa) por 2 s.",
+      "Mot": "Bocarra da Morte: abre a boca do chão ao céu e engole o inimigo com menos vida a até 3 casas: 250/375/560% do dano de ataque. Se isso matar, Mot cura 30% da vida máxima e recupera 50% da mana."
+    },
+    "lol": {
+      "Vel'Koz": "Raio de Desintegração: canaliza por 2,5 s um raio em linha que segue o alvo: 300/450/700% do dano de ataque no total em todos no caminho. Esse dano ignora armadura e resistência mágica (Desconstrução)."
+    },
+    "deadlock": {
+      "Baba": "Bombardeio da Bruxa: lança 3 bombas de artilharia que caem espalhadas numa área de 2 casas em volta do alvo, cada uma com 120/180/270% do dano de ataque. Onde cai fica uma poça de feitiço por 3 s, com lentidão de 25% em quem estiver nela."
+    },
+    "sujimon": {
+      "Twisted Mind": "Surto: some e reaparece atrás do inimigo com menos vida, dando 3 facadas de 90/135/200% do dano de ataque cada. O alvo fica paralisado de medo: atordoado por 1,5 s.",
+      "Massacre Mascot": "Home Run: gira o taco no alvo e manda ele voando 2 casas pra trás: 200/300/450% do dano de ataque e atordoa por 1,5 s. Quem estiver onde ele cair leva metade do dano."
+    }
+  }
+}

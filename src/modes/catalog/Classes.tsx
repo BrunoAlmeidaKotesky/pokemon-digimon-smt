@@ -1,4 +1,4 @@
-// Subaba "Classes": a lista de classes do Set 1 (nome, descrição, ordem; criar e remover) e, em cada uma, quem já
+// Subaba "Classes": a lista de classes do Set 1 (nome, descrição, ult padrão, ordem; criar e remover) e, em cada uma, quem já
 // a recebeu em todas as franquias. É aqui que se vê "o que vai receber cada classe".
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { label } from '../../state/app';
@@ -75,7 +75,8 @@ export function PainelClasses({ frs }: { frs: readonly string[] }) {
         <h2 style={{ margin: 0 }}>Classes do Set 1</h2>
         <p className="mute" style={{ margin: 0 }}>
           Classes gerais, que cruzam franquias. Dê a classe a cada personagem na lista da franquia (botão Classes de cada
-          um); aqui fica a lista de classes e quem já recebeu cada uma.
+          um); aqui fica a lista de classes, a ult padrão de cada uma (a de quem não tem habilidade própria: só JoJo e
+          Únicos têm) e quem já recebeu cada classe.
         </p>
       </div>
       {totalBase > 0 && (
@@ -120,6 +121,8 @@ function CartaoClasse({ c, primeira, ultima, porFr }: { c: pl.Classe; primeira: 
     setNome(c.nome);
   }
   const desc = useTextoSalvo(c.descricao ?? '', t => cat.editarClasses(cs => pl.descreverClasse(cs, c.id, t)));
+  // a ult padrão: a de quem tem a classe e não tem habilidade própria (a base traz um rascunho)
+  const ult = useTextoSalvo(cat.ultDaClasse(c), t => cat.mudarUltDaClasse(c.id, t));
   const salvarNome = () => {
     if (nome.trim()) cat.editarClasses(cs => pl.renomearClasse(cs, c.id, nome));
     setNome(c.nome);
@@ -145,6 +148,13 @@ function CartaoClasse({ c, primeira, ultima, porFr }: { c: pl.Classe; primeira: 
       </div>
       <textarea className="cls-desc" rows={1} placeholder="Descrição (opcional): o que a classe faz, bônus por quantidade…"
         aria-label={`Descrição da classe ${c.nome}`} value={desc.txt} onChange={e => desc.mudar(e.target.value)} onBlur={desc.flush} />
+      {c.id !== 'unicos' && (
+        <label className="cls-ult">
+          <span>Ult padrão</span>
+          <textarea className="cls-ult-txt" rows={1} placeholder="O que faz quem tem esta classe e não tem habilidade própria…"
+            aria-label={`Ult padrão da classe ${c.nome}`} value={ult.txt} onChange={e => ult.mudar(e.target.value)} onBlur={ult.flush} />
+        </label>
+      )}
       {n ? (
         <div className="cls-resumo">
           {[...porFr].map(([k, nomes]) => (

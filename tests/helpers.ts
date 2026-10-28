@@ -48,6 +48,8 @@ export interface MockOpts {
   atraso?: Partial<Record<Franquia, number>>;
   /** catalogo/set1-base.json responde 404 (sem o grupo base, as classes e as linhas da base) */
   semBase?: boolean;
+  /** chaves trocadas na fixture da base (ex.: classes com ult, habilidades) */
+  baseExtra?: Record<string, unknown>;
 }
 export interface Chamadas { [k: string]: number }
 
@@ -84,7 +86,7 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
       if (u.pathname.endsWith('/catalogo/set1-base.json')) {
         count('set1-base');
         const nome = 'catalogo-set1-base.json';
-        return !opts.semBase && fs.existsSync(new URL(nome, FIX)) ? json(route, fixture(nome)) : route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' });
+        return !opts.semBase && fs.existsSync(new URL(nome, FIX)) ? json(route, { ...fixture<Record<string, unknown>>(nome), ...opts.baseExtra }) : route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' });
       }
       // Catálogo do Set 1: public/catalogo/<chave>.json vira a fixture catalogo-<chave>.json; sem fixture, 404
       const cat = u.pathname.match(/\/catalogo\/([\w-]+)\.json$/);

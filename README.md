@@ -90,9 +90,10 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
 - `node catalogo.mjs [chaves]`: gera `public/catalogo/<chave>.json` com o que a fonte informa de cada personagem (um
   coletor por franquia em `catalogo/`). A aba **Catálogo** lista cada franquia com essas informações, filtros e marcações
   do Set 1 do modo estilo TFT (salvas em `pdx-set1`), e exporta/importa um `set1.json`.
-- Planejamento do Set 1 na mesma aba: grupo "Set 1 (base)", classes e linhas propostas vêm de
-  `public/catalogo/set1-base.json`; classes, habilidade e linha evolutiva de cada personagem (vista Linhas, subaba
-  Classes) ficam em `pdx-set1-plano` e vão no `set1.json` (Importar restaura).
+- Planejamento do Set 1 na mesma aba: grupo "Set 1 (base)", classes (com a ult padrão), linhas e rascunhos de
+  habilidade vêm de `public/catalogo/set1-base.json` (gerado por `node docs/tft/base/gerar.mjs`); classes, habilidade,
+  custo (1 a 5) e linha evolutiva de cada personagem (vista Linhas, subabas Classes e Custos, que conta quantos cabem em
+  cada custo e avisa quem passou do limite) ficam em `pdx-set1-plano` e vão no `set1.json` (Importar restaura).
 
 ## Publicação
 
