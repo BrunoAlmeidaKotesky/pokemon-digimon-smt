@@ -4,7 +4,7 @@ import {
   criarLinha, definirDe, descreverClasse, extrasDoPersonagem, guardarLinhas, idUnico, indiceLinhas, limparClasses, limparLinhas, limparPlano,
   limparSalvas, limparUnidades, linhasCompletas, linhasEfetivas, linhasMudadas, mesclarLinhas, moverClasse, moverMembro, mudarUnidade,
   parseBase, planoCompleto, planoVazio, removerMembro, renomearClasse, renomearLinha, restaurarPlano, resumoPlano, slug,
-  tirarClasseDeTodos, ultEfetiva, ultPraGravar, type Base, type LinhaEvo, type LinhaSalva, type Plano,
+  custoDaLinha, custoDoCampeao, habilidadeEfetiva, mudarUltDaClasse, tirarClasseDeTodos, ultDaClasse, ultEfetiva, ultPraGravar, type Base, type LinhaEvo, type LinhaSalva, type Plano,
 } from './plano';
 
 const L = (id: string, ...niveis: string[][]): LinhaEvo => ({ id, nome: id, niveis });
@@ -46,7 +46,7 @@ describe('parseBase', () => {
     expect(b.selecao).toEqual({ pokemon: ['Charmander', 'Charizard', 'Ralts'], lol: ['Ahri'] });
     expect(b.linhas.pokemon).toEqual([CHAR, RALTS]);
     expect(b.linhas.persona![0]!.niveis).toEqual([['Orpheus', 'Orpheus F'], ['Messiah']]);
-    expect(Object.keys(b)).toEqual(['versao', 'geradoEm', 'classes', 'selecao', 'linhas', 'ults']);
+    expect(Object.keys(b)).toEqual(['versao', 'geradoEm', 'classes', 'selecao', 'linhas', 'ults', 'habilidades']);
     // ult sem texto (ou que não é texto) e franquia que não é objeto ficam de fora
     expect(b.ults).toEqual({ pokemon: { Charizard: 'Mega Charizard X' } });
   });
@@ -57,7 +57,7 @@ describe('parseBase', () => {
     expect(parseBase({ campos: [], itens: {} })).toBeNull();
   });
   it('só com parte dos campos: o resto fica vazio', () => {
-    expect(parseBase({ selecao: { lol: ['Ahri', 'Ahri', 3] } })).toEqual({ versao: 1, geradoEm: '', classes: [], selecao: { lol: ['Ahri'] }, linhas: {}, ults: {} });
+    expect(parseBase({ selecao: { lol: ['Ahri', 'Ahri', 3] } })).toEqual({ versao: 1, geradoEm: '', classes: [], selecao: { lol: ['Ahri'] }, linhas: {}, ults: {}, habilidades: {} });
   });
 });
 
@@ -513,5 +513,44 @@ describe('ult (forma em que a unidade vira)', () => {
     expect(restaurarPlano(planoVazio(), tirou, b, ['pokemon']).unidades).toEqual({ pokemon: { Charizard: { ult: '' } } });
     // sem base: guarda como veio
     expect(restaurarPlano(planoVazio(), so, null, ['pokemon']).unidades).toEqual(so.unidades);
+  });
+});
+
+describe('custo, habilidade da base e ult padrão da classe (28/10)', () => {
+  it('custo: só de 1 a 5; numa linha vale o da 1ª forma', () => {
+    expect(limparUnidades({ pokemon: { Pikachu: { custo: 2 }, Raichu: { custo: 9 }, Mew: { custo: '3' } } })).toEqual({ pokemon: { Pikachu: { custo: 2 } } });
+    expect(mudarUnidade({ pokemon: { Pikachu: { custo: 2 } } }, 'pokemon', 'Pikachu', { custo: undefined })).toEqual({});
+    const l: LinhaEvo = { id: 'p:x', nome: 'X', niveis: [['A', 'B'], ['C']] };
+    expect(custoDaLinha(l, { B: { custo: 3 }, C: { custo: 5 } })).toBe(3);
+    expect(custoDaLinha(l, { C: { custo: 5 } })).toBeUndefined();
+    expect(custoDoCampeao('C', { linha: l, nivel: 1 }, { A: { custo: 1 }, C: { custo: 5 } })).toBe(1);
+    expect(custoDoCampeao('Solto', undefined, { Solto: { custo: 4 } })).toBe(4);
+  });
+  it('habilidade: a do plano passa por cima do rascunho da base; vazia volta a ele', () => {
+    expect(habilidadeEfetiva({ habilidade: 'Minha' }, 'Da base')).toBe('Minha');
+    expect(habilidadeEfetiva(undefined, 'Da base')).toBe('Da base');
+    expect(habilidadeEfetiva({ habilidade: '  ' }, 'Da base')).toBe('Da base');
+    expect(parseBase({ classes: [], habilidades: { jojo: { 'Star Platinum': ' Para o tempo ', Vazio: ' ' }, x: 3 } })!.habilidades).toEqual({ jojo: { 'Star Platinum': 'Para o tempo' } });
+  });
+  it('ult padrão da classe: a do plano (vazia = tirada), senão a da base; igual à da base volta a seguir a base', () => {
+    const b: Base = { ...base(), classes: [{ id: 'tanque', nome: 'Tanque', ult: 'Muralha' }] };
+    expect(ultDaClasse({ id: 'tanque', nome: 'Tanque' }, b)).toBe('Muralha');
+    expect(ultDaClasse({ id: 'tanque', nome: 'Tanque', ult: '' }, b)).toBe('');
+    expect(ultDaClasse({ id: 'minha', nome: 'Minha' }, b)).toBe('');
+    expect(limparClasses([{ id: 'a', nome: 'A', ult: ' Soco ' }, { id: 'b', nome: 'B', ult: 3 }])).toEqual([{ id: 'a', nome: 'A', ult: 'Soco' }, { id: 'b', nome: 'B' }]);
+    const cs = [{ id: 'tanque', nome: 'Tanque' }, { id: 'minha', nome: 'Minha' }];
+    expect(mudarUltDaClasse(cs, 'tanque', 'Outra', 'Muralha')[0]).toEqual({ id: 'tanque', nome: 'Tanque', ult: 'Outra' });
+    expect(mudarUltDaClasse(cs, 'tanque', 'Muralha', 'Muralha')).toBe(cs);
+    expect(mudarUltDaClasse([{ id: 'tanque', nome: 'Tanque', ult: 'Outra' }], 'tanque', 'Muralha ', 'Muralha')).toEqual([{ id: 'tanque', nome: 'Tanque' }]);
+    expect(mudarUltDaClasse(cs, 'tanque', '', 'Muralha')[0]).toEqual({ id: 'tanque', nome: 'Tanque', ult: '' });
+    expect(mudarUltDaClasse(cs, 'minha', '', undefined)).toBe(cs);
+  });
+  it('exportação: habilidade e ult padrão da base escritas em quem não mexeu; custo do campeão nos extras', () => {
+    const b: Base = { ...base(), classes: [{ id: 'tanque', nome: 'Tanque', ult: 'Muralha' }], habilidades: { jojo: { 'Star Platinum': 'Para o tempo' } } };
+    const p: Plano = { versao: 1, unidades: { jojo: { 'Crazy Diamond': { habilidade: 'Conserta' } } }, linhas: {} };
+    const c = planoCompleto(p, b, ['jojo']);
+    expect(c.classes).toEqual([{ id: 'tanque', nome: 'Tanque', ult: 'Muralha' }]);
+    expect(c.unidades.jojo).toEqual({ 'Crazy Diamond': { habilidade: 'Conserta' }, 'Star Platinum': { habilidade: 'Para o tempo' } });
+    expect(extrasDoPersonagem('Star Platinum', undefined, [], undefined, '', { habilidade: 'Para o tempo', custo: 3 })).toEqual({ habilidade: 'Para o tempo', custo: 3 });
   });
 });

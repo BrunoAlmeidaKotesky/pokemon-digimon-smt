@@ -7,14 +7,14 @@ import { prepare, abrir, aba, fixture, lerStorage, type MockOpts } from './helpe
 
 test.use({ reducedMotion: 'reduce' });
 
-interface Classe { id: string; nome: string; descricao?: string }
+interface Classe { id: string; nome: string; descricao?: string; ult?: string }
 interface LinhaEvo { id: string; nome: string; niveis: string[][]; confirmada?: boolean }
 /** como o plano guarda uma linha: confirmada só com o id; mexida ou criada inteira, com editada */
 interface LinhaSalva { id: string; nome?: string; niveis?: string[][]; de?: Record<string, string>; confirmada?: boolean; editada?: boolean }
 interface Plano {
   versao: 1;
   classes?: Classe[];
-  unidades: Record<string, Record<string, { classes?: string[]; habilidade?: string }>>;
+  unidades: Record<string, Record<string, { classes?: string[]; habilidade?: string; custo?: number }>>;
   linhas: Record<string, LinhaSalva[]>;
   apagadas?: Record<string, string[]>;
 }
@@ -704,5 +704,93 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     await page.locator('#catAbaClasses').click();
     await expect(page.locator('.cls-card[data-classe="atirador"] .cls-pers li')).toHaveText(['Pikachu']);
     expect(await semRolagemLateral(page)).toBe(true);
+  });
+});
+
+test.describe('custos, ult padrão e habilidade da base (28/10)', () => {
+  const BASE_TODA = fixture<{ selecao: Record<string, string[]>; linhas: Record<string, LinhaEvo[]> }>('catalogo-set1-base.json');
+
+  test('custo na 1ª forma da linha, filtro de custo, subaba Custos com metas e avisos', async ({ page }) => {
+    await inicio(page, { storage: { 'pdx-set1': { pokemon: ['Charizard', 'Pikachu', 'Clefairy'] } } });
+    const custo = (nome: string, c: number) => linha(page, nome).locator('.cat-custo .custo-b', { hasText: String(c) });
+    // a linha tem um custo só: na 1ª forma; as outras formas mostram o da linha
+    await expect(linha(page, 'Charmeleon').locator('.cat-custo')).toHaveCount(0);
+    await expect(linha(page, 'Charizard').locator('.cat-custo-linha')).toHaveText('Custo: na 1ª forma');
+    await custo('Charmander', 2).click();
+    await expect(custo('Charmander', 2)).toHaveAttribute('aria-pressed', 'true');
+    await expect(linha(page, 'Charizard').locator('.cat-custo-linha')).toHaveText('Custo 2 (da linha)');
+    await custo('Pikachu', 1).click();
+    await custo('Clefairy', 2).click();
+    await expect.poll(async () => (await plano(page))?.unidades.pokemon).toEqual({ Charmander: { custo: 2 }, Pikachu: { custo: 1 }, Clefairy: { custo: 2 } });
+    // clicar no custo marcado tira
+    await custo('Pikachu', 1).click();
+    await expect(custo('Pikachu', 1)).toHaveAttribute('aria-pressed', 'false');
+    await custo('Pikachu', 1).click();
+
+    // filtro: a linha inteira tem o custo da 1ª forma
+    expect(await opcoes(page, '#catCusto')).toEqual(['Todos', 'Custo 1 (2)', 'Custo 2 (4)', 'Custo 3 (0)', 'Custo 4 (0)', 'Custo 5 (0)', 'Sem custo (6)']);
+    await page.locator('#catCusto').selectOption('2');
+    expect(await nomes(page)).toEqual(['Charmander', 'Charmeleon', 'Charizard', 'Clefairy']);
+
+    // subaba Custos: conta os campeões marcados (3: a linha do Charmander, a do Pikachu e o Clefairy)
+    await page.locator('#catAbaCustos').click();
+    await expect(page.locator('#catCustosResumo')).toHaveText('3 de 3 campeões com custo.');
+    // metas de 3 na proporção 14/13/14/14/10: 1/0/1/1/0, folga de 1
+    await expect(page.locator('#catCustosTotal tbody tr').nth(1).locator('td')).toHaveText(['2', '0', '0 a 1']);
+    await expect(page.locator('#catCustosAvisos li')).toHaveText([
+      'Custo 2: 2 campeões, 1 acima do limite de 1 (meta 0).',
+      'Pokémon: custo 2 com 2, limite 1 (meta 0). Dá pra passar pra custo 3 (0 de 1), custo 4 (0 de 1).',
+    ]);
+    // a célula leva pra lista com o filtro do custo, nos marcados
+    await page.locator('#catCustosOrigens tr[data-fr="pokemon"] td.custo-cel').nth(1).locator('button').click();
+    await expect(page.locator('#catCusto')).toHaveValue('2');
+    await expect(grupo(page, 'marcados')).toHaveAttribute('aria-checked', 'true');
+    expect(await nomes(page)).toEqual(['Charizard', 'Clefairy']);
+    expect(await semRolagemLateral(page)).toBe(true);
+  });
+
+  test('ult padrão da classe e habilidade própria vêm da base; editar passa por cima; igual à base volta a seguir a base', async ({ page }) => {
+    await inicio(page, {
+      baseExtra: {
+        classes: [{ id: 'dragao', nome: 'Dragão', ult: 'Sopro: dano em cone' }, { id: 'fadinhas', nome: 'Fadinhas', descricao: 'Fofas e mágicas' }, { id: 'atirador', nome: 'Atirador' }],
+        habilidades: { pokemon: { Clefairy: 'Metrônomo' } },
+      },
+    });
+    const hab = linha(page, 'Clefairy').locator('textarea.cat-hab');
+    await expect(hab).toHaveValue('Metrônomo');
+    await hab.fill('Dedo mágico');
+    await hab.blur();
+    await expect.poll(async () => (await plano(page))?.unidades.pokemon?.Clefairy).toEqual({ habilidade: 'Dedo mágico' });
+    await hab.fill('Metrônomo');
+    await hab.blur();
+    await expect.poll(async () => (await plano(page))?.unidades.pokemon?.Clefairy).toBeUndefined();
+
+    await page.locator('#catAbaClasses').click();
+    const ult = page.getByRole('textbox', { name: 'Ult padrão da classe Dragão' });
+    await expect(ult).toHaveValue('Sopro: dano em cone');
+    await expect(page.getByRole('textbox', { name: 'Ult padrão da classe Fadinhas' })).toHaveValue('');
+    await ult.fill('Sopro forte');
+    await ult.blur();
+    await expect.poll(async () => (await plano(page))?.classes?.find(c => c.id === 'dragao')).toEqual({ id: 'dragao', nome: 'Dragão', ult: 'Sopro forte' });
+    // a classe copiada da base não leva a ult igual à da base
+    await ult.fill('Sopro: dano em cone');
+    await ult.blur();
+    await expect.poll(async () => (await plano(page))?.classes?.find(c => c.id === 'dragao')).toEqual({ id: 'dragao', nome: 'Dragão' });
+  });
+
+  test('Digimon: a 4ª forma da linha é a ult do 3º nível; 1ª e 2ª forma sem ult', async ({ page }) => {
+    await inicio(page, {
+      baseExtra: {
+        selecao: { ...BASE_TODA.selecao, digimon: ['Botamon', 'Agumon', 'Airdramon', 'Angemon'] },
+        linhas: { ...BASE_TODA.linhas, digimon: [{ id: 'digimon:botamon', nome: 'Agumon', niveis: [['Botamon'], ['Agumon'], ['Airdramon'], ['Angemon']] }] },
+      },
+    });
+    await chip(page, 'digimon').click();
+    await expect(linha(page, 'Botamon').locator('.cat-custo')).toHaveCount(1);
+    await expect(linha(page, 'Agumon').locator('.cat-sem-hab')).toHaveText('Sem ult (2ª forma)');
+    await expect(linha(page, 'Airdramon').locator('.ult-selo.fixa')).toContainText('Ult: vira Angemon (4ª forma)');
+    await expect(linha(page, 'Airdramon').locator('textarea.cat-hab')).toHaveCount(0);
+    await expect(linha(page, 'Angemon').locator('.cat-sem-hab')).toHaveText('4ª forma: é a ult de Airdramon');
+    await expect(linha(page, 'Angemon').locator('textarea.cat-hab, .ult-add')).toHaveCount(0);
   });
 });

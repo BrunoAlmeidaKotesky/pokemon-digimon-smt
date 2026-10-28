@@ -191,6 +191,14 @@ export function rolagensEsperadas({ chance, campeoes, copias, alvo, vagas = 5, t
   return e[0];
 }
 
+/**
+ * Loja que mostra mais o que o jogador já tem: dentro do custo, o campeão que ele tem pesa `peso` e os outros pesam 1.
+ * A chance de uma vaga trazer esse campeão vira chance·peso/(campeoes − 1 + peso), a mesma de uma loja sem peso com
+ * (campeoes − 1 + peso)/peso campeões no custo: é esse número que vai em rolagensEsperadas (sem contar o pool
+ * esvaziando, que mexe pouco; ver o teste das cópias).
+ */
+export const campeoesComPeso = (campeoes, peso) => (campeoes - 1 + peso) / peso;
+
 /** Gerador pseudoaleatório com semente (mulberry32), pra simulação repetível. */
 export function aleatorio(semente) {
   let a = semente >>> 0;
@@ -243,4 +251,122 @@ export function porCusto(u, referencia) {
   const ordem = bruto.map((x, i) => [x - Math.floor(x), i]).sort((a, b) => b[0] - a[0]);
   for (let i = 0; soma(r) < u; i++) r[ordem[i][1]]++;
   return r;
+}
+
+/** `k` itens diferentes de `xs` ao acaso (Fisher-Yates parcial). Gasta sempre `k` números de `r`. */
+export function amostra(xs, k, r) {
+  const a = [...xs];
+  for (let i = 0; i < k; i++) {
+    const j = i + Math.floor(r() * (a.length - i));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, k);
+}
+
+/**
+ * Um desenho de loja testado com o set de verdade, simulado rodada a rodada, com cópias infinitas (o pool não
+ * esvazia). campeoes: [{ tracos: [origem, ...classes] }]. Em cada rodada sai um jogador: um traço T com pelo menos
+ * `minTraco` campeões e um tabuleiro de `tabuleiro` campeões de T ao acaso. Os custos ainda não existem, então os
+ * campeões se dividem ao acaso em `custos` custos de tamanho igual e a conta olha um deles, sorteado. Cada vaga cai
+ * nesse custo com chance `chance` e aí sorteia um campeão dele pelo peso: quem está no tabuleiro (o "dono") pesa
+ * `pesoDono`, quem divide origem ou classe com o tabuleiro pesa `pesoTime`, o resto 1. As `vagaDoTime` primeiras vagas
+ * (vagas do time) também caem no custo com chance `chance`, mas sorteiam só entre os donos e quem divide traço com o
+ * tabuleiro, com os mesmos pesos (sem ninguém assim no custo, sorteiam como as outras). Médias:
+ * - m1: lojas pra juntar `alvo` cópias de um dono do custo (sorteado entre eles); só rodadas com dono no custo;
+ * - m2: lojas até aparecer um campeão de T fora do tabuleiro; só rodadas com algum deles no custo;
+ * - m3: campeões diferentes fora do tabuleiro por loja nesse custo, nas `lojasVariedade` primeiras lojas da rodada.
+ * Devolve também quantas rodadas entram em m1 e em m2 e a fração do custo que divide traço com o tabuleiro (fracaoTime).
+ * As rodadas saem de `semente` e são as mesmas em qualquer desenho; as lojas saem de outra sequência.
+ */
+export function simularLoja(campeoes, { vagas = 5, pesoDono = 1, vagaDoTime = 0, pesoTime = 1 } = {}, {
+  chance, custos = 5, tabuleiro = 7, minTraco = 8, alvo = 2, rodadas = 20000, lojasVariedade = 10, semente = 1,
+} = {}) {
+  const membros = new Map();
+  campeoes.forEach((c, i) => {
+    for (const t of new Set(c.tracos)) {
+      if (!membros.has(t)) membros.set(t, []);
+      membros.get(t).push(i);
+    }
+  });
+  const sorteaveis = [...membros].filter(([, ids]) => ids.length >= minTraco);
+  const tamanhos = porCusto(campeoes.length, new Array(custos).fill(1));
+  const todos = campeoes.map((_, i) => i);
+  const rRodada = aleatorio(semente);
+  const rLoja = aleatorio(semente + 0x9e3779b9);
+  const naLoja = new Int32Array(vagas);
+  // marcas por campeão (0/1), ligadas e desligadas a cada rodada: está no tabuleiro; é de T e está fora dele
+  const noTab = new Uint8Array(campeoes.length);
+  const ehNovo = new Uint8Array(campeoes.length);
+  let s1 = 0, n1 = 0, s2 = 0, n2 = 0, s3 = 0, sTime = 0;
+  for (let rodada = 0; rodada < rodadas; rodada++) {
+    const [traco, doTraco] = sorteaveis[Math.floor(rRodada() * sorteaveis.length)];
+    const tab = amostra(doTraco, tabuleiro, rRodada);
+    const tracosTab = new Set(tab.flatMap(i => campeoes[i].tracos));
+    const custo = amostra(todos, tamanhos[Math.floor(rRodada() * custos)], rRodada);
+    for (const i of tab) noTab[i] = 1;
+    const doTime = custo.filter(i => !noTab[i] && campeoes[i].tracos.some(t => tracosTab.has(t)));
+    const donos = custo.filter(i => noTab[i]);
+    const outros = custo.filter(i => !noTab[i] && !campeoes[i].tracos.some(t => tracosTab.has(t)));
+    const quer = donos.length ? donos[Math.floor(rRodada() * donos.length)] : -1;
+    const novos = doTime.filter(i => campeoes[i].tracos.includes(traco));
+    for (const i of novos) ehNovo[i] = 1;
+    // um número só escolhe o grupo (pelo peso total dele) e o campeão dentro do grupo
+    const wD = donos.length * pesoDono;
+    const wT = doTime.length * pesoTime;
+    const sorteia = total => {
+      let y = rLoja() * total;
+      if (y < wD) return donos[Math.min(donos.length - 1, Math.floor(y / pesoDono))];
+      y -= wD;
+      if (y < wT) return doTime[Math.min(doTime.length - 1, Math.floor(y / pesoTime))];
+      return outros[Math.min(outros.length - 1, Math.floor(y - wT))];
+    };
+    const total = wD + wT + outros.length;
+    // vaga do time sem ninguém do time no custo: sorteia como uma vaga normal
+    const totalTime = wD + wT > 0 ? wD + wT : total;
+    let copias = 0, l1 = 0, l2 = 0, lojas = 0, vistos = 0;
+    while (lojas < lojasVariedade || (quer >= 0 && !l1) || (novos.length && !l2)) {
+      lojas++;
+      let k = 0;
+      for (let s = 0; s < vagas; s++) if (rLoja() < chance) naLoja[k++] = sorteia(s < vagaDoTime ? totalTime : total);
+      let achou = false;
+      for (let a = 0; a < k; a++) {
+        const i = naLoja[a];
+        if (i === quer) copias++;
+        if (ehNovo[i]) achou = true;
+        // campeão fora do tabuleiro que ainda não tinha saído nesta loja (a 1ª vez dele na loja é a vaga a)
+        if (lojas <= lojasVariedade && !noTab[i] && naLoja.indexOf(i) === a) vistos++;
+      }
+      if (quer >= 0 && !l1 && copias >= alvo) l1 = lojas;
+      if (novos.length && !l2 && achou) l2 = lojas;
+    }
+    if (quer >= 0) {
+      s1 += l1;
+      n1++;
+    }
+    if (novos.length) {
+      s2 += l2;
+      n2++;
+    }
+    s3 += vistos / lojasVariedade;
+    sTime += (donos.length + doTime.length) / custo.length;
+    for (const i of tab) noTab[i] = 0;
+    for (const i of novos) ehNovo[i] = 0;
+  }
+  return { m1: s1 / n1, m2: s2 / n2, m3: s3 / rodadas, rodadasM1: n1, rodadasM2: n2, fracaoTime: sTime / rodadas };
+}
+
+/** Quantas mecânicas um desenho de loja junta à loja normal (peso pro dono, vaga do time, peso pro time). */
+export const mecanicas = d => (d.pesoDono > 1) + (d.vagaDoTime > 0) + (d.pesoTime > 1);
+
+/**
+ * O melhor desenho: a menor soma m1 + m2 entre os que mantêm m3 em pelo menos `variedade` vezes o m3 de `base` (a
+ * loja normal). Quem fica a menos de `empate` (fração) da menor soma empata, e aí ganha o com menos mecânicas (depois,
+ * a menor soma). desenhos: [{ m1, m2, m3, pesoDono, vagaDoTime, pesoTime }].
+ */
+export function melhorDesenho(desenhos, base, { variedade = 0.75, empate = 0.01 } = {}) {
+  const passam = desenhos.filter(d => d.m3 >= variedade * base.m3);
+  const menor = Math.min(...passam.map(d => d.m1 + d.m2));
+  return passam
+    .filter(d => d.m1 + d.m2 <= menor * (1 + empate))
+    .sort((a, b) => mecanicas(a) - mecanicas(b) || a.m1 + a.m2 - (b.m1 + b.m2))[0];
 }

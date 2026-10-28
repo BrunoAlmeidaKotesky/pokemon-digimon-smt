@@ -115,14 +115,14 @@ describe('o que a aba mostra', () => {
     expect(s.quantosMostrar()).toBe(s.PAGINA);
     s.mudarCampo('pokemon', 'tipo', 'Fire');
     s.mudarCampo('pokemon', 'geracao', 'I');
-    expect(s.filtrosDe('pokemon')).toEqual({ q: 'char', campos: { tipo: 'Fire', geracao: 'I' }, classe: '', linha: '', ult: '' });
-    expect(s.filtrosDe('lol')).toEqual({ q: '', campos: {}, classe: '', linha: '', ult: '' });
+    expect(s.filtrosDe('pokemon')).toEqual({ q: 'char', campos: { tipo: 'Fire', geracao: 'I' }, classe: '', linha: '', ult: '', custo: '' });
+    expect(s.filtrosDe('lol')).toEqual({ q: '', campos: {}, classe: '', linha: '', ult: '', custo: '' });
     s.mostrarMais();
     s.escolherFranquia('lol');
     expect(s.franquiaAtual()).toBe('lol');
     expect(s.quantosMostrar()).toBe(s.PAGINA);
     s.limparFiltros('pokemon');
-    expect(s.filtrosDe('pokemon')).toEqual({ q: '', campos: {}, classe: '', linha: '', ult: '' });
+    expect(s.filtrosDe('pokemon')).toEqual({ q: '', campos: {}, classe: '', linha: '', ult: '', custo: '' });
   });
 });
 

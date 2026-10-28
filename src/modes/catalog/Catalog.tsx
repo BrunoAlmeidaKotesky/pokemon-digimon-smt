@@ -6,12 +6,13 @@ import { Segmented } from '../../components/Controls';
 import * as cat from '../../catalog/store';
 import * as pl from '../../catalog/plano';
 import {
-  SEM, filtrar, filtravel, lerImportacao, montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesLinha, opcoesUlt,
+  SEM, filtrar, filtravel, lerImportacao, montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesCusto, opcoesLinha, opcoesUlt,
   resumoInfo, temFiltro, type Campo, type Contexto, type Exportacao, type FiltroLinha, type FiltroUlt, type Linha,
 } from '../../catalog/model';
 import { BotaoConfirmar, BuscaPersonagem, Thumb, linhaAvulsa, plural, style, useCatalogo, useTextoSalvo } from './comum';
 import { VistaLinhas } from './Linhas';
 import { PainelClasses } from './Classes';
+import { PainelCustos } from './Custos';
 
 const quantos = (pers: number, frs: number) => `${plural(pers, 'personagem', 'personagens')} em ${plural(frs, 'franquia', 'franquias')}`;
 /** "2026-10-25" -> "25/10/2026" */
@@ -37,9 +38,10 @@ function Conteudo() {
   // as fixas que continuam no site (Sujimon some se a lista faltar)
   const frs = KEYS.filter(k => app.st[k] != null);
   const naClasses = cat.classesAbertas();
+  const naCustos = cat.custosAbertos();
   const k = frs.includes(cat.franquiaAtual()) ? cat.franquiaAtual() : frs[0]!;
   useEffect(() => { void cat.pedirBase(); }, []);
-  useEffect(() => { if (!naClasses) void cat.pedirCatalogo(k); }, [k, naClasses]);
+  useEffect(() => { if (!naClasses && !naCustos) void cat.pedirCatalogo(k); }, [k, naClasses, naCustos]);
   // no grupo base a subaba conta quem está nele; nos outros, os marcados
   const noBase = cat.grupoAtual() === 'base';
   return (
@@ -48,7 +50,7 @@ function Conteudo() {
       <div id="catFr" className="cat-frs" role="tablist" aria-label="Franquia">
         {frs.map(f => {
           const n = noBase ? cat.grupoBase(f).size : cat.marcados(f).size;
-          const on = !naClasses && f === k;
+          const on = !naClasses && !naCustos && f === k;
           return (
             <button key={f} type="button" role="tab" aria-selected={on} data-fr={f} style={style(f)}
               title={noBase ? `${n} no Set 1 (base)` : plural(n, 'marcado', 'marcados')}
@@ -60,8 +62,11 @@ function Conteudo() {
         <button type="button" role="tab" id="catAbaClasses" aria-selected={naClasses} className={'cat-aba-cls' + (naClasses ? ' on' : '')} onClick={cat.abrirClasses}>
           Classes <span className="n">· {cat.classes().length}</span>
         </button>
+        <button type="button" role="tab" id="catAbaCustos" aria-selected={naCustos} className={'cat-aba-cls' + (naCustos ? ' on' : '')} onClick={cat.abrirCustos}>
+          Custos
+        </button>
       </div>
-      {naClasses ? <PainelClasses frs={frs} /> : <Franquia key={k} k={k} />}
+      {naClasses ? <PainelClasses frs={frs} /> : naCustos ? <PainelCustos frs={frs} /> : <Franquia key={k} k={k} />}
     </>
   );
 }
@@ -89,7 +94,12 @@ async function gerarExportacao(grupo: 'marcados' | 'base'): Promise<Exportacao> 
       grupo,
       plano: cat.planoParaExportar(KEYS),
       linhas: cat.linhasParaExportar(KEYS),
-      extras: (k, nome) => pl.extrasDoPersonagem(nome, cat.unidadesDe(k)[nome], classes, indices.get(k)?.get(nome), cat.ultDe(k, nome)),
+      extras: (k, nome) => {
+        const pos = indices.get(k)?.get(nome);
+        return pl.extrasDoPersonagem(nome, cat.unidadesDe(k)[nome], classes, pos, cat.ultDe(k, nome), {
+          habilidade: cat.habilidadeDe(k, nome), custo: pl.custoDoCampeao(nome, pos, cat.unidadesDe(k)),
+        });
+      },
     },
   });
 }
@@ -283,23 +293,26 @@ function VistaPersonagens({ k, linhas, campos: camposCat, pronto }: { k: string;
   const linhasEvo = cat.linhasDe(k);
   const indice = useMemo(() => pl.indiceLinhas(linhasEvo), [linhasEvo]);
   const ultsBase = cat.ultsBase(k);
+  const habsBase = cat.habilidadesBase(k);
   const porNome = useMemo(() => new Map(linhas.map(l => [l.nome, l])), [linhas]);
   // habilidade, nomes das classes e ult, pra busca
   const textos = useMemo(() => {
     const nomes = new Map(classes.map(x => [x.id, x.nome]));
-    return new Map([...new Set([...Object.keys(unidades), ...Object.keys(ultsBase)])].map(n => {
+    return new Map([...new Set([...Object.keys(unidades), ...Object.keys(ultsBase), ...Object.keys(habsBase)])].map(n => {
       const u = unidades[n];
-      return [n, normalizar([u?.habilidade ?? '', ...(u?.classes ?? []).map(id => nomes.get(id) ?? ''), pl.ultEfetiva(u, ultsBase[n])].join('\n'))];
+      return [n, normalizar([pl.habilidadeEfetiva(u, habsBase[n]), ...(u?.classes ?? []).map(id => nomes.get(id) ?? ''), pl.ultEfetiva(u, ultsBase[n])].join('\n'))];
     }));
-  }, [unidades, classes, ultsBase]);
+  }, [unidades, classes, ultsBase, habsBase]);
   const ctx = useMemo<Contexto>(() => ({
     grupo,
     classes: n => unidades[n]?.classes,
     linha: n => indice.get(n)?.linha,
     ult: n => pl.ultEfetiva(unidades[n], ultsBase[n]),
     texto: n => textos.get(n) ?? '',
+    custo: n => pl.custoDoCampeao(n, indice.get(n), unidades),
   }), [grupo, unidades, indice, ultsBase, textos]);
   const opsUlt = useMemo(() => opcoesUlt(linhas, f, ctx), [linhas, f, ctx]);
+  const opsCusto = useMemo(() => opcoesCusto(linhas, f, ctx), [linhas, f, ctx]);
   // o filtro de ult só aparece na franquia em que alguém tem ult
   const temUlt = !!f.ult || Object.keys(ultsBase).length > 0 || Object.values(unidades).some(u => u.ult);
   const filtradas = useMemo(() => filtrar(linhas, f, ctx), [linhas, f, ctx]);
@@ -362,6 +375,13 @@ function VistaPersonagens({ k, linhas, campos: camposCat, pronto }: { k: string;
             </select>
           </label>
         )}
+        <label className="cat-field cat-pf">
+          <span>Custo</span>
+          <select id="catCusto" value={f.custo} onChange={e => cat.mudarFiltros(k, { custo: e.target.value })}>
+            <option value="">Todos</option>
+            {opsCusto.map(o => <option key={o.valor} value={o.valor}>{o.valor === SEM ? 'Sem custo' : `Custo ${o.valor}`} ({o.n})</option>)}
+          </select>
+        </label>
         {campos.length > 0 && (
           <button type="button" id="catCamposBtn" className="btn mini cat-campos-btn" aria-expanded={abertos} onClick={() => setAbertos(!abertos)}>
             {abertos ? 'Esconder os filtros por campo' : `Filtros por campo (${campos.length})`}{ativos ? ` · ${plural(ativos, 'ativo', 'ativos')}` : ''}
@@ -387,7 +407,9 @@ function VistaPersonagens({ k, linhas, campos: camposCat, pronto }: { k: string;
           {vis.map(l => (
             <LinhaCat key={l.nome} k={k} l={l} on={marc.has(l.nome)} campos={camposCat} pronto={pronto}
               unidade={unidades[l.nome]} pos={indice.get(l.nome)} classes={classes}
-              ult={pl.ultEfetiva(unidades[l.nome], ultsBase[l.nome])} ultBase={ultsBase[l.nome] ?? ''} porNome={porNome} />
+              ult={pl.ultEfetiva(unidades[l.nome], ultsBase[l.nome])} ultBase={ultsBase[l.nome] ?? ''} porNome={porNome}
+              habilidade={pl.habilidadeEfetiva(unidades[l.nome], habsBase[l.nome])}
+              custo={pl.custoDoCampeao(l.nome, indice.get(l.nome), unidades)} />
           ))}
         </ul>
       ) : (
@@ -427,8 +449,9 @@ function CampoFiltro({ k, campo, valor, ops }: { k: string; campo: Campo; valor:
  * embaixo, o planejamento: classes (com o seletor), linha evolutiva, ult e habilidade.
  * `pronto`: o catálogo já chegou (ou não existe), então já dá pra saber se ele tem a imagem.
  * `ult`: a forma da ult que vale ('' = sem); `ultBase`: a que a base dá; `porNome`: a lista da franquia (pra buscar a ult).
+ * `habilidade`: a que vale (a do plano ou o rascunho da base); `custo`: o do campeão (numa linha, o da 1ª forma).
  */
-const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos, classes, ult, ultBase, porNome }: {
+const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos, classes, ult, ultBase, porNome, habilidade, custo }: {
   k: string;
   l: Linha;
   on: boolean;
@@ -440,18 +463,30 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
   ult: string;
   ultBase: string;
   porNome: ReadonlyMap<string, Linha>;
+  habilidade: string;
+  custo: number | undefined;
 }) {
   const info = campos ? resumoInfo(campos, l.info) : '';
   const [aberto, setAberto] = useState(false);
   const [ultAberta, setUltAberta] = useState(false);
   const nomeNorm = normalizar(l.nome);
   const minhas = pl.classesDaUnidade(unidade, classes);
-  const hab = useTextoSalvo(unidade?.habilidade ?? '', t => cat.mudarHabilidade(k, l.nome, t));
-  // Pokémon (decidido em 27/10): a habilidade especial é a ult. A 1ª e a 2ª forma da linha não têm; na forma final, ou a
-  // ult é virar a próxima forma (a Mega, por exemplo), que só melhora os atributos e dispensa o texto, ou é o texto
+  const hab = useTextoSalvo(habilidade, t => cat.mudarHabilidade(k, l.nome, t));
+  // Pokémon (decidido em 27/10) e Digimon (28/10): a habilidade especial é a ult. A 1ª e a 2ª forma da linha não têm;
+  // na forma final, ou a ult é virar a próxima forma (a Mega, por exemplo), que só melhora os atributos e dispensa o
+  // texto, ou é o texto. No Digimon a 4ª forma é o 4º nível da linha: a ult de quem está no 3º
   const pokemon = k === 'pokemon';
-  const semNada = pokemon && !!pos && pos.nivel < pos.linha.niveis.length - 1;
-  const semTexto = semNada || (pokemon && !!ult);
+  const digimon = k === 'digimon';
+  const quarta = digimon && pos && pos.linha.niveis.length > 3 ? pos.linha : null;
+  const ehQuarta = !!quarta && pos!.nivel === 3;
+  // a 4ª forma de quem está no 3º nível (a que vem dele, se a linha diz)
+  const viraDigi = quarta && pos!.nivel === 2 ? quarta.niveis[3]!.filter(n => !quarta.de?.[n] || quarta.de[n] === l.nome) : [];
+  const ultimo = pos ? Math.min(pos.linha.niveis.length, digimon ? 3 : Infinity) - 1 : 0;
+  const semNada = (pokemon || digimon) && !!pos && pos.nivel < ultimo;
+  const semTexto = semNada || ehQuarta || viraDigi.length > 0 || (pokemon && !!ult);
+  // o custo fica na 1ª forma da linha (ou no personagem solto)
+  const podeCusto = !pos || pos.nivel === 0;
+  const outrosDoNivel1 = pos ? pos.linha.niveis[0]!.filter(n => n !== l.nome) : [];
   return (
     <li className={'cat-row' + (on ? ' on' : '')} data-nome={l.nome}>
       <label>
@@ -477,7 +512,21 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
             <button type="button" className="lin-nova-row" title={`Criar uma linha evolutiva começando por ${l.nome}`}
               onClick={() => cat.irParaLinha(k, cat.criarLinha(k, '', l.nome))}>+ Linha</button>
           )}
-          {ult ? (
+          {podeCusto ? (
+            <span className="cat-custo" role="group" aria-label={`Custo de ${l.nome}${pos ? ' (a linha toda)' : ''}`}>
+              <span className="mute">Custo</span>
+              {pl.CUSTOS.map(c => (
+                <button key={c} type="button" className={'custo-b' + (custo === c ? ' on' : '')} aria-pressed={custo === c}
+                  title={custo === c ? 'Tirar o custo' : `Custo ${c}`} onClick={() => cat.mudarCusto(k, l.nome, custo === c ? undefined : c, outrosDoNivel1)}>{c}</button>
+              ))}
+            </span>
+          ) : <span className="cat-custo-linha mute">{custo ? `Custo ${custo} (da linha)` : 'Custo: na 1ª forma'}</span>}
+          {viraDigi.length ? (
+            <span className="ult-selo fixa" title={`Na ult, ${l.nome} vira a 4ª forma da linha`}>
+              <Thumb l={porNome.get(viraDigi[0]!) ?? linhaAvulsa(k, viraDigi[0]!)} pronto={pronto} />
+              <span>Ult: vira {viraDigi.join(' ou ')} (4ª forma)<small> · só melhora todos os atributos</small></span>
+            </span>
+          ) : ehQuarta ? null : ult ? (
             <button type="button" className="ult-selo" aria-expanded={ultAberta} title={`Na ult, ${l.nome} vira ${ult}. Trocar ou tirar`}
               onClick={() => setUltAberta(!ultAberta)}>
               <Thumb l={porNome.get(ult) ?? linhaAvulsa(k, ult)} pronto={pronto} />
@@ -519,8 +568,9 @@ const LinhaCat = memo(function LinhaCat({ k, l, on, campos, pronto, unidade, pos
           </div>
         )}
         {semNada && pos && <p className="cat-sem-hab">Sem ult ({pos.nivel + 1}ª forma)</p>}
+        {ehQuarta && <p className="cat-sem-hab">4ª forma: é a ult de {quarta!.niveis[2]!.join(' ou ')}</p>}
         {!semTexto && (
-          <textarea className="cat-hab" rows={1} placeholder={pokemon ? 'Ult (habilidade especial)…' : 'Habilidade…'}
+          <textarea className="cat-hab" rows={1} placeholder={pokemon ? 'Ult (habilidade especial)…' : 'Habilidade própria (vazio = a ult da classe)…'}
             aria-label={`${pokemon ? 'Ult (habilidade especial)' : 'Habilidade'} de ${l.nome}`}
             value={hab.txt} onChange={e => hab.mudar(e.target.value)} onBlur={hab.flush} />
         )}

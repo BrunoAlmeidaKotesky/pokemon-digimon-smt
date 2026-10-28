@@ -260,13 +260,26 @@ export function voltarLinhaDaBase(k: string, id: string): void {
   gravarLinhas(k, salvas.flatMap(x => (x !== s ? [x] : x.confirmada ? [{ id, confirmada: true }] : [])), p.apagadas?.[k] ?? []);
 }
 
-/** Muda a lista de classes; na primeira vez, copia as da base pro plano. */
+/**
+ * Muda a lista de classes; na primeira vez, copia as da base pro plano. A ult padrão igual à da base não é copiada:
+ * a classe segue a base (e o rascunho novo dela aparece sozinho).
+ */
 export function editarClasses(fn: (c: Classe[]) => Classe[]): void {
   const antes = classes();
   const depois = fn(antes);
   if (depois === antes) return;
-  gravarClasses(lerPlano(), depois);
+  const b = baseOk();
+  gravarClasses(lerPlano(), depois.map(c => {
+    if (c.ult === undefined || c.ult !== b?.classes.find(x => x.id === c.id)?.ult) return c;
+    const { ult: _, ...resto } = c;
+    return resto;
+  }));
 }
+/** A ult padrão que vale na classe (ver ultDaClasse). */
+export const ultDaClasse = (c: Classe): string => pl.ultDaClasse(c, baseOk());
+/** Muda a ult padrão da classe (igual à da base = volta a seguir a base). */
+export const mudarUltDaClasse = (id: string, ult: string) =>
+  editarClasses(cs => pl.mudarUltDaClasse(cs, id, ult, baseOk()?.classes.find(c => c.id === id)?.ult));
 /** Cria uma classe e devolve o id ('' = nome vazio; nome repetido devolve a que já existe). */
 export function adicionarClasse(nome: string, descricao = ''): string {
   let id = '';
@@ -301,11 +314,28 @@ export function mudarUlt(k: string, nome: string, ult: string): void {
   const p = lerPlano();
   gravarPlano({ ...p, unidades: pl.mudarUnidade(p.unidades, k, nome, { ult: pl.ultPraGravar(ult, ultsBase(k)[nome]) }) });
 }
-/** Habilidade do personagem (texto vazio apaga). */
+/** Os rascunhos de habilidade que a base dá na franquia: nome -> texto. */
+export const habilidadesBase = (k: string): Readonly<Record<string, string>> => baseOk()?.habilidades?.[k] ?? SEM_ULTS;
+/** A habilidade do personagem que vale agora: a do plano, senão a da base. */
+export const habilidadeDe = (k: string, nome: string): string => pl.habilidadeEfetiva(lerPlano().unidades[k]?.[nome], habilidadesBase(k)[nome]);
+/** Habilidade do personagem. Texto vazio, ou igual ao da base, apaga a do plano (volta a valer a da base). */
 export function mudarHabilidade(k: string, nome: string, habilidade: string): void {
   const p = lerPlano();
-  if ((p.unidades[k]?.[nome]?.habilidade ?? '') === (habilidade.trim() ? habilidade : '')) return;
-  gravarPlano({ ...p, unidades: pl.mudarUnidade(p.unidades, k, nome, { habilidade }) });
+  const t = habilidade.trim() && habilidade.trim() !== (habilidadesBase(k)[nome] ?? '').trim() ? habilidade : '';
+  if ((p.unidades[k]?.[nome]?.habilidade ?? '') === t) return;
+  gravarPlano({ ...p, unidades: pl.mudarUnidade(p.unidades, k, nome, { habilidade: t }) });
+}
+/**
+ * Custo do personagem na loja (1 a 5; undefined tira). Numa linha vale o da 1ª forma: `outros` são as alternativas
+ * do nível 1, que perdem o custo delas (a linha tem um só).
+ */
+export function mudarCusto(k: string, nome: string, custo: number | undefined, outros: readonly string[] = []): void {
+  const p = lerPlano();
+  const us = p.unidades[k];
+  if (us?.[nome]?.custo === custo && outros.every(n => !us?.[n]?.custo)) return;
+  let unidades = pl.mudarUnidade(p.unidades, k, nome, { custo });
+  for (const n of outros) if (unidades[k]?.[n]?.custo) unidades = pl.mudarUnidade(unidades, k, n, { custo: undefined });
+  gravarPlano({ ...p, unidades });
 }
 /** Restaura o plano de um set1.json (ver restaurarPlano). Espera a base, pra saber o que é igual a ela. */
 export async function importarPlano(arq: Plano, validas: readonly string[]): Promise<void> {
@@ -328,23 +358,30 @@ let grupo: Grupo | null = null;
 /** Personagens (lista com filtros) ou Linhas (linhas evolutivas da franquia). */
 export type Vista = 'personagens' | 'linhas';
 let vista: Vista = 'personagens';
-let naClasses = false;
+/** Subaba aberta no lugar da franquia: Classes ou Custos ('' = a franquia). */
+let painel: '' | 'classes' | 'custos' = '';
 let soPendentes = false;
 let foco: { k: string; id: string } | null = null;
 
 /** Franquia escolhida ('' = nenhuma ainda: a aba usa a primeira). */
 export const franquiaAtual = () => atual;
 export function escolherFranquia(k: string): void {
-  if (k === atual && !naClasses) return;
+  if (k === atual && !painel) return;
   atual = k;
-  naClasses = false;
+  painel = '';
   quantos = PAGINA;
   mudou();
 }
 /** A subaba Classes (o painel de todas as classes) está aberta? */
-export const classesAbertas = () => naClasses;
+export const classesAbertas = () => painel === 'classes';
 export function abrirClasses(): void {
-  naClasses = true;
+  painel = 'classes';
+  mudou();
+}
+/** A subaba Custos (quantos campeões em cada custo, no total e por origem) está aberta? */
+export const custosAbertos = () => painel === 'custos';
+export function abrirCustos(): void {
+  painel = 'custos';
   mudou();
 }
 /**
@@ -381,7 +418,7 @@ export function mudarSoNaoConfirmadas(on: boolean): void {
 /** Abre a franquia na vista Linhas, rolando até a linha `id` (a vista avisa com focoFeito quando chega lá). */
 export function irParaLinha(k: string, id: string): void {
   atual = k;
-  naClasses = false;
+  painel = '';
   vista = 'linhas';
   foco = { k, id };
   // a linha procurada pode estar escondida pelo "só não confirmadas"

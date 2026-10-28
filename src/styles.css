@@ -367,10 +367,29 @@ body.spinning-online #online button.rank-slot{cursor:default}
 .cls-opt.on{background:color-mix(in srgb,var(--gold) 26%,var(--panel));border-color:var(--gold);font-weight:600}
 .cls-opt.on::before{content:"✓ "}
 .cls-opt:focus-visible{outline:2px solid var(--fg);outline-offset:1px}
-.cat-hab,.cls-desc{width:100%;min-width:0;font:13px/1.4 var(--body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px;resize:vertical;min-height:30px;max-height:240px;field-sizing:content}
-.cat-hab:focus,.cls-desc:focus{border-color:var(--fg);outline:none}
+.cat-hab,.cls-desc,.cls-ult-txt{width:100%;min-width:0;font:13px/1.4 var(--body);color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px;resize:vertical;min-height:30px;max-height:240px;field-sizing:content}
+.cat-hab:focus,.cls-desc:focus,.cls-ult-txt:focus{border-color:var(--fg);outline:none}
 .cat-sem-hab{margin:0;font-size:13px;color:var(--mute);font-style:italic}
-.cat-hab::placeholder,.cls-desc::placeholder{color:var(--mute)}
+.cat-hab::placeholder,.cls-desc::placeholder,.cls-ult-txt::placeholder{color:var(--mute)}
+.cls-ult{display:grid;gap:2px;font-size:12px;color:var(--mute)}
+.cat-custo{display:inline-flex;align-items:center;gap:2px;font-size:12px}
+.cat-custo>.mute{margin-right:2px}
+.custo-b{width:24px;height:24px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg);font:600 12px var(--body);cursor:pointer;padding:0}
+.custo-b.on{background:var(--gold);border-color:var(--gold);color:#000}
+.custo-b:focus-visible{outline:2px solid var(--fg);outline-offset:1px}
+@media (hover:hover){.custo-b:hover{border-color:var(--fg)}}
+.cat-custo-linha{font-size:12px}
+.ult-selo.fixa{cursor:default}
+.custos-scroll{overflow-x:auto;max-width:100%}
+.custos-tab{border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.custos-tab th,.custos-tab td{border:1px solid var(--line);padding:4px 8px;text-align:center}
+.custos-tab tbody th{text-align:left;white-space:nowrap}
+.custos-tab .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:6px}
+.custo-cel.acima{background:color-mix(in srgb,var(--bad) 18%,var(--panel));font-weight:700}
+.custo-cel.ok{background:color-mix(in srgb,var(--ok) 12%,var(--panel))}
+.custo-ir{border:0;background:none;color:var(--fg);font:inherit;cursor:pointer;padding:0;text-decoration:underline dotted}
+.custos-avisos{margin:0;padding-left:20px;display:grid;gap:4px;font-size:13px}
+.custos-avisos li::marker{color:var(--bad)}
 /* vista Linhas */
 .lin-vista{gap:10px}
 .lin-topo{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}

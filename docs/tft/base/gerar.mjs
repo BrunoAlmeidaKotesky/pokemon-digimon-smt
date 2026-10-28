@@ -2,8 +2,9 @@
 // Seleção = exportação v1 do usuário, menos o que ele tirou no doc, mais as sugestões aceitas; linhas propostas no doc.
 // Uso (na pasta do repositório): node docs/tft/base/gerar.mjs
 // Entradas: docs/tft/set1-escolhas-v1.json, docs/tft/sugestoes-catalogo.json, docs/tft/base/linhas-pokemon.json (cadeias
-// evolutivas da PokéAPI dos Pokémon escolhidos), docs/tft/base/receitas-bakugan.json, docs/tft/set1-escolhas-v2.json
-// (classes e linhas que o usuário montou na aba Catálogo) e public/catalogo/*.json (nomes).
+// evolutivas da PokéAPI dos Pokémon escolhidos), docs/tft/base/receitas-bakugan.json, docs/tft/set1-escolhas-v4.json
+// (o Set 1 que o usuário fechou na aba Catálogo: marcados, linhas e ults), docs/tft/base/habilidades.json (rascunhos da
+// ult padrão de cada classe e das habilidades próprias) e public/catalogo/*.json (nomes).
 // O planejamento que o usuário faz na aba Catálogo fica no navegador dele e passa por cima da base.
 import fs from 'node:fs';
 const cat = k => JSON.parse(fs.readFileSync(`public/catalogo/${k}.json`, 'utf8')).itens;
@@ -118,28 +119,36 @@ const ults = {
   selecao.pokemon = selecao.pokemon.filter(n => !fora.has(n));
 }
 
-// Exportação v2 do usuário (27/10): ele deu as classes e montou as linhas na aba Catálogo. As linhas e as ults que
-// valiam no navegador dele viram as da base. Entra quem ele pôs numa linha ou deu classe fora da base; em Pokémon,
-// Digimon e SMT sai quem estava na base e ficou sem nada (sem linha, classe, habilidade nem ult). Nas outras franquias
-// quem ficou sem nada continua: ele só não achou a classe ainda. A classe e a habilidade de cada um ficam no plano
-// dele (navegador) e no arquivo da v2.
+// Exportação v4 do usuário (28/10), o Set 1 fechado: os marcados de cada franquia viram a seleção da base, e as linhas
+// e as ults que valiam no navegador dele viram as da base. Franquia fora da exportação (Bakugan, os itens) fica como
+// estava. A classe e a habilidade de cada um ficam no plano dele (navegador) e no arquivo da v4. As cartas do
+// Yu-Gi-Oh! não têm linha: sobem de estrela, como os campeões do LoL.
 {
-  const v2 = JSON.parse(fs.readFileSync('docs/tft/set1-escolhas-v2.json', 'utf8'));
-  const unidades = v2.plano.unidades;
-  for (const [k, ls] of Object.entries(v2.linhas)) linhas[k] = ls.map(({ id, nome, niveis, de, confirmada }) => ({ id, nome, niveis, ...(de ? { de } : {}), ...(confirmada ? { confirmada } : {}) }));
-  for (const k of Object.keys(selecao)) {
-    const us = unidades[k] ?? {};
-    const naLinha = new Set((linhas[k] ?? []).flatMap(l => l.niveis.flat()));
-    const temAlgo = n => naLinha.has(n) || !!us[n]?.classes?.length || !!us[n]?.habilidade?.trim() || !!us[n]?.ult;
-    const ficam = ['pokemon', 'digimon', 'smt'].includes(k) ? selecao[k].filter(temAlgo) : selecao[k];
-    selecao[k] = [...new Set([...ficam, ...naLinha, ...Object.keys(us).filter(temAlgo)])];
-  }
-  for (const [k, us] of Object.entries(unidades)) {
-    const fr = Object.fromEntries(Object.entries(us).filter(([, u]) => u.ult).map(([n, u]) => [n, u.ult]));
-    if (Object.keys(fr).length) ults[k] = fr;
+  const v4 = JSON.parse(fs.readFileSync('docs/tft/set1-escolhas-v4.json', 'utf8'));
+  for (const [k, fr] of Object.entries(v4.franquias)) {
+    if (v4.linhas[k]) linhas[k] = v4.linhas[k].map(({ id, nome, niveis, de, confirmada }) => ({ id, nome, niveis, ...(de ? { de } : {}), ...(confirmada ? { confirmada } : {}) }));
+    else delete linhas[k];
+    selecao[k] = [...new Set([...fr.personagens.map(p => p.nome), ...(linhas[k] ?? []).flatMap(l => l.niveis.flat())])];
+    const u = Object.fromEntries(Object.entries(v4.plano.unidades[k] ?? {}).filter(([, x]) => x.ult).map(([n, x]) => [n, x.ult]));
+    if (Object.keys(u).length) ults[k] = u;
     else delete ults[k];
   }
 }
+// só a forma final de uma linha tem ult; no Digimon (28/10) a ult é a 4ª forma, o 4º nível da linha, então nenhum
+// membro de linha guarda ult (o Omegamon, que era a ult do War Greymon, sai)
+for (const [k, m] of Object.entries(ults)) {
+  for (const l of linhas[k] ?? []) (k === 'digimon' ? l.niveis : l.niveis.slice(0, -1)).flat().forEach(n => delete m[n]);
+  if (!Object.keys(m).length) delete ults[k];
+}
+// Zygarde (28/10): 10% → 50% → Completo, e a ult é virar a Mega (a 4ª forma), como nos outros Pokémon
+linhas.pokemon.push({ id: 'pokemon:zygarde', nome: 'Zygarde', niveis: [['Zygarde (10%)'], ['Zygarde'], ['Zygarde (Complete)']] });
+selecao.pokemon = [...new Set([...selecao.pokemon, 'Zygarde (10%)', 'Zygarde (Complete)'])];
+ults.pokemon['Zygarde (Complete)'] = 'Mega Zygarde';
+
+// Rascunhos de 28/10 (docs/tft/base/habilidades.json): a ult padrão de cada classe (quem não tem habilidade própria
+// usa a da classe) e a habilidade própria de quem tem (os Stands de JoJo e a classe Únicos). O usuário edita no Catálogo.
+const rascunhos = JSON.parse(fs.readFileSync('docs/tft/base/habilidades.json', 'utf8'));
+const habilidades = rascunhos.unidades;
 
 // Tanque, Porradeiro, Assassino e os elementos (27/10): o efeito é proposta, em % porque os atributos ainda não têm escala. Os
 // elementos são a classe reserva, pra quem não tem outra que encaixe.
@@ -158,7 +167,9 @@ const classes = [
   ['Planta', `${ELEMENTO} O primeiro ataque em cada inimigo planta uma semente que suga a vida dele e cura quem plantou. (2) semente fraca; (4) média; (6) forte, e a cura vai também pro aliado mais perto.`],
 ].map(c => {
   const [nome, descricao] = Array.isArray(c) ? c : [c];
-  return { id: nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-'), nome, ...(descricao ? { descricao } : {}) };
+  const id = nome.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const ult = rascunhos.classes[id];
+  return { id, nome, ...(descricao ? { descricao } : {}), ...(ult ? { ult } : {}) };
 });
 
 // conferência: todo nome existe no catálogo da franquia, e todo membro de linha está na seleção
@@ -175,9 +186,14 @@ for (const [k, m] of Object.entries(ults)) {
     if (!c[f]) erros.push(`${k}: ult ${f} não existe`);
   }
 }
+for (const id of Object.keys(rascunhos.classes)) if (!classes.some(c => c.id === id)) erros.push(`ult da classe ${id}, que não existe`);
+for (const [k, m] of Object.entries(habilidades)) {
+  const s = new Set(selecao[k]);
+  for (const n of Object.keys(m)) if (!s.has(n)) erros.push(`${k}: ${n} tem habilidade mas não está na seleção`);
+}
 if (erros.length) { console.error(erros.join('\n')); process.exit(1); }
 
-const out = { versao: 1, geradoEm: new Date().toISOString().slice(0, 10), classes, selecao, linhas, ults, itens };
+const out = { versao: 1, geradoEm: new Date().toISOString().slice(0, 10), classes, selecao, linhas, ults, habilidades, itens };
 fs.writeFileSync('public/catalogo/set1-base.json', JSON.stringify(out, null, 1) + '\n');
 console.log('seleção:', Object.entries(selecao).map(([k, v]) => `${k} ${v.length}`).join(', '));
 console.log('linhas:', Object.entries(linhas).map(([k, v]) => `${k} ${v.length}`).join(', '));

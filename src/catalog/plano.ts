@@ -4,12 +4,17 @@
 // plano quando o usuário mexe nelas; as linhas, uma por uma (ver mesclarLinhas): até lá vale a base, e uma base nova
 // aparece sozinha. (sem importar nada do model.ts: ele importa daqui)
 
-export interface Classe { id: string; nome: string; descricao?: string }
+/** `ult`: a ult padrão da classe, que usa quem não tem habilidade própria. Ausente = a da base (classe da base). */
+export interface Classe { id: string; nome: string; descricao?: string; ult?: string }
+/** Custos da loja: 1 a 5. */
+export const CUSTOS = [1, 2, 3, 4, 5] as const;
 /** O que o plano guarda de um personagem. */
 export interface Unidade {
   /** ids das classes */
   classes?: string[];
   habilidade?: string;
+  /** custo na loja (1 a 5); numa linha evolutiva, vale o da 1ª forma (ver custoDaLinha) */
+  custo?: number;
   /**
    * Forma em que a unidade vira na ult (nome de outro personagem da franquia, ex.: "Mega Venusaur"); não é uma
    * unidade à parte. Ausente = a da base; '' = sem ult, mesmo que a base tenha uma.
@@ -68,6 +73,8 @@ export interface Base {
   linhas: Record<string, LinhaEvo[]>;
   /** chave da franquia -> nome da unidade -> forma da ult */
   ults: Record<string, Record<string, string>>;
+  /** chave da franquia -> nome da unidade -> habilidade própria (rascunho; a do plano passa por cima) */
+  habilidades?: Record<string, Record<string, string>>;
 }
 
 const isObj = (x: unknown): x is Record<string, unknown> => typeof x === 'object' && x !== null && !Array.isArray(x);
@@ -100,7 +107,8 @@ export function limparClasses(j: unknown): Classe[] {
     const id = texto(c.id);
     if (!id || r.some(x => x.id === id)) continue;
     const descricao = texto(c.descricao);
-    r.push({ id, nome: texto(c.nome) || id, ...(descricao ? { descricao } : {}) });
+    // ult vazia também conta: é "sem ult" por cima da base
+    r.push({ id, nome: texto(c.nome) || id, ...(descricao ? { descricao } : {}), ...(typeof c.ult === 'string' ? { ult: c.ult.trim() } : {}) });
   }
   return r;
 }
@@ -166,6 +174,7 @@ export function limparUnidades(j: unknown): Record<string, Unidades> {
         classes: textos(u.classes),
         habilidade: typeof u.habilidade === 'string' ? u.habilidade : '',
         ...(typeof u.ult === 'string' ? { ult: u.ult } : {}),
+        ...(typeof u.custo === 'number' ? { custo: u.custo } : {}),
       });
       if (limpa) fr[nome] = limpa;
     }
@@ -181,7 +190,8 @@ function unidadeLimpa(u: Unidade): Unidade | null {
   if (u.habilidade?.trim()) out.habilidade = u.habilidade;
   // ult vazia também conta: é "sem ult" por cima da base
   if (typeof u.ult === 'string') out.ult = u.ult.trim();
-  return out.classes || out.habilidade || out.ult !== undefined ? out : null;
+  if (u.custo !== undefined && (CUSTOS as readonly number[]).includes(u.custo)) out.custo = u.custo;
+  return out.classes || out.habilidade || out.ult !== undefined || out.custo ? out : null;
 }
 
 /** Lê o set1-base.json. Não é objeto, ou não tem classes, seleção nem linhas -> null. */
@@ -201,23 +211,27 @@ export function parseBase(j: unknown): Base | null {
       if (l.length) linhas[k] = l;
     }
   }
-  const ults: Record<string, Record<string, string>> = {};
-  if (isObj(j.ults)) {
-    for (const [k, v] of Object.entries(j.ults)) {
-      if (!isObj(v)) continue;
-      const fr = dic<string>();
-      for (const [nome, ult] of Object.entries(v)) if (nome && texto(ult)) fr[nome] = texto(ult);
-      if (Object.keys(fr).length) ults[k] = fr;
-    }
-  }
   return {
     versao: typeof j.versao === 'number' ? j.versao : 1,
     geradoEm: texto(j.geradoEm),
     classes: limparClasses(j.classes),
     selecao,
     linhas,
-    ults,
+    ults: textosPorNome(j.ults),
+    habilidades: textosPorNome(j.habilidades),
   };
+}
+/** { franquia: { nome: texto } }, sem texto vazio nem franquia vazia. */
+function textosPorNome(j: unknown): Record<string, Record<string, string>> {
+  const r: Record<string, Record<string, string>> = {};
+  if (!isObj(j)) return r;
+  for (const [k, v] of Object.entries(j)) {
+    if (!isObj(v)) continue;
+    const fr = dic<string>();
+    for (const [nome, t] of Object.entries(v)) if (nome && texto(t)) fr[nome] = texto(t);
+    if (Object.keys(fr).length) r[k] = fr;
+  }
+  return r;
 }
 
 export const planoVazio = (): Plano => ({ versao: 1, unidades: {}, linhas: {} });
@@ -389,6 +403,37 @@ export function linhasMudadas(salvas: readonly LinhaSalva[], apagadas: readonly 
 }
 /** A forma da ult que vale: a do plano (mesmo vazia: tirada), senão a da base. '' = sem ult. */
 export const ultEfetiva = (u: Unidade | undefined, daBase: string | undefined): string => (u?.ult !== undefined ? u.ult : daBase ?? '');
+/** A habilidade que vale: a do plano, senão o rascunho da base. */
+export const habilidadeEfetiva = (u: Unidade | undefined, daBase: string | undefined): string => (u?.habilidade?.trim() ? u.habilidade : daBase ?? '');
+/** A ult padrão que vale na classe: a do plano (mesmo vazia: tirada), senão a da classe da base com o mesmo id. */
+export function ultDaClasse(c: Classe, base: Base | null): string {
+  if (c.ult !== undefined) return c.ult;
+  return base?.classes.find(b => b.id === c.id)?.ult ?? '';
+}
+/**
+ * Muda a ult padrão da classe. Igual à da base (`daBase`) = volta a seguir a base; numa classe que a base não tem,
+ * vazio apaga. O texto fica como foi digitado (salva enquanto digita).
+ */
+export function mudarUltDaClasse(classes: readonly Classe[], id: string, ult: string, daBase: string | undefined): Classe[] {
+  const c = classes.find(x => x.id === id);
+  if (!c) return classes as Classe[];
+  const t = ult.trim() ? ult : '';
+  const novo = daBase === undefined ? t || undefined : t.trim() === daBase.trim() ? undefined : t;
+  if (c.ult === novo) return classes as Classe[];
+  return classes.map(x => {
+    if (x !== c) return x;
+    const { ult: _, ...resto } = x;
+    return novo === undefined ? resto : { ...resto, ult: novo };
+  });
+}
+/** O custo de uma linha evolutiva: o da 1ª forma (o primeiro do nível 1 que tem custo). */
+export function custoDaLinha(l: LinhaEvo, unidades: Unidades): number | undefined {
+  for (const n of l.niveis[0] ?? []) if (unidades[n]?.custo) return unidades[n]!.custo;
+  return undefined;
+}
+/** O custo do campeão de quem tem esse nome: o da linha, se estiver numa; senão o dele. */
+export const custoDoCampeao = (nome: string, pos: PosLinha | undefined, unidades: Unidades): number | undefined =>
+  (pos ? custoDaLinha(pos.linha, unidades) : unidades[nome]?.custo);
 /**
  * O que gravar como ult do personagem: igual à da base = nada (volta a seguir a base); diferente = o nome, ou ''
  * pra tirar a ult que a base dá.
@@ -606,15 +651,21 @@ export interface LinhaExportada {
   vemDe?: string;
 }
 /** Campos que o planejamento acrescenta a cada personagem do set1.json. */
-export interface ExtrasExportados { classes?: string[]; habilidade?: string; linha?: LinhaExportada; ult?: string }
+export interface ExtrasExportados { classes?: string[]; habilidade?: string; linha?: LinhaExportada; ult?: string; custo?: number }
 
-/** `ult`: a forma da ult que vale (ultEfetiva); '' = sem. */
-export function extrasDoPersonagem(nome: string, u: Unidade | undefined, classes: readonly Classe[], pos: PosLinha | undefined, ult = ''): ExtrasExportados {
+/**
+ * `ult`: a forma da ult que vale (ultEfetiva); '' = sem. `habilidade`: a que vale (habilidadeEfetiva), se não for a
+ * do plano. `custo`: o do campeão (custoDoCampeao).
+ */
+export function extrasDoPersonagem(nome: string, u: Unidade | undefined, classes: readonly Classe[], pos: PosLinha | undefined, ult = '',
+  extra: { habilidade?: string; custo?: number } = {}): ExtrasExportados {
   const r: ExtrasExportados = {};
   const cs = classesDaUnidade(u, classes);
   if (cs.length) r.classes = cs.map(c => c.nome);
-  if (u?.habilidade?.trim()) r.habilidade = u.habilidade.trim();
+  const hab = extra.habilidade ?? u?.habilidade ?? '';
+  if (hab.trim()) r.habilidade = hab.trim();
   if (ult) r.ult = ult;
+  if (extra.custo) r.custo = extra.custo;
   if (pos) {
     const alt = pos.linha.niveis[pos.nivel]!.filter(x => x !== nome);
     const de = pos.linha.de?.[nome];
@@ -639,17 +690,23 @@ export function planoCompleto(p: Plano, base: Base | null, ks: readonly string[]
     if (c.salvas.length) linhas[k] = c.salvas;
     if (c.apagadas.length) apagadas[k] = c.apagadas;
   }
-  // as unidades das franquias pedidas, com a ult da base escrita em quem não mexeu nela
+  // as unidades das franquias pedidas, com a ult e a habilidade da base escritas em quem não mexeu nelas
   const unidades: Record<string, Unidades> = {};
   for (const k of ks) {
     const us = p.unidades[k];
     const daBase = base?.ults[k];
-    if (!us && !daBase) continue;
+    const habs = base?.habilidades?.[k];
+    if (!us && !daBase && !habs) continue;
     const fr = Object.assign(dic<Unidade>(), us);
     for (const [nome, ult] of Object.entries(daBase ?? {})) if (fr[nome]?.ult === undefined) fr[nome] = { ...fr[nome], ult };
+    for (const [nome, habilidade] of Object.entries(habs ?? {})) if (!fr[nome]?.habilidade?.trim()) fr[nome] = { ...fr[nome], habilidade };
     unidades[k] = fr;
   }
-  const classes = classesEfetivas(p, base).map(c => (c.descricao ? { ...c, descricao: c.descricao.trim() } : c));
+  // a ult padrão da base escrita nas classes que não mexeram nela
+  const classes = classesEfetivas(p, base).map(c => {
+    const ult = ultDaClasse(c, base).trim();
+    return { ...c, ...(c.descricao ? { descricao: c.descricao.trim() } : {}), ...(c.ult !== undefined || ult ? { ult } : {}) };
+  });
   const vistas = classesVistasAgora(p, base);
   return { versao: 1, classes, ...(vistas ? { classesVistas: vistas } : {}), unidades, linhas, ...(Object.keys(apagadas).length ? { apagadas } : {}) };
 }
