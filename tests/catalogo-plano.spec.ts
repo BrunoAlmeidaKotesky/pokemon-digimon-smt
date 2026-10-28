@@ -786,6 +786,8 @@ test.describe('custos, ult padrão e habilidade da base (28/10)', () => {
       },
     });
     await chip(page, 'digimon').click();
+    // a lista junta a linha na ordem dos níveis (na lista do site o Botamon vem depois dos outros três)
+    expect(await nomes(page)).toEqual(['Botamon', 'Agumon', 'Airdramon', 'Angemon']);
     await expect(linha(page, 'Botamon').locator('.cat-custo')).toHaveCount(1);
     await expect(linha(page, 'Agumon').locator('.cat-sem-hab')).toHaveText('Sem ult (2ª forma)');
     await expect(linha(page, 'Airdramon').locator('.ult-selo.fixa')).toContainText('Ult: vira Angemon (4ª forma)');

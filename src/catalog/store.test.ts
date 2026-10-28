@@ -87,7 +87,7 @@ describe('pedirCatalogo', () => {
     expect(s.catalogo('lol')).toBe(c);
     await s.pedirCatalogo('lol');
     expect(f).toHaveBeenCalledTimes(1);
-    expect(f).toHaveBeenCalledWith('catalogo/lol.json');
+    expect(f).toHaveBeenCalledWith('catalogo/lol.json', { cache: 'no-cache' });
   });
   it('404, a página do site no lugar do JSON, JSON inválido ou erro de rede -> null', async () => {
     const respostas: Record<string, () => Promise<Response>> = {
@@ -162,7 +162,7 @@ describe('base (catalogo/set1-base.json) e planejamento (pdx-set1-plano)', () =>
     await p;
     await s.pedirBase();
     expect(f).toHaveBeenCalledTimes(1);
-    expect(f).toHaveBeenCalledWith('catalogo/set1-base.json');
+    expect(f).toHaveBeenCalledWith('catalogo/set1-base.json', { cache: 'no-cache' });
     expect([...s.grupoBase('pokemon')]).toEqual(['Charmander', 'Charizard']);
     expect([...s.grupoBase('bakugan')]).toEqual(['Drago']);
     expect(s.grupoBase('lol').size).toBe(0);

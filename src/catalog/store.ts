@@ -91,7 +91,7 @@ export function pedirCatalogo(k: string): Promise<Catalogo | null> {
   let p = pedidos.get(k);
   if (!p) {
     catalogos.set(k, 'carregando');
-    p = fetch(catalogoUrl(k))
+    p = fetch(catalogoUrl(k), { cache: 'no-cache' })
       .then(r => (r.ok ? r.json() : null))
       .then(j => parseCatalogo(j))
       .catch(() => null)
@@ -125,7 +125,7 @@ const baseOk = (): Base | null => (baseEstado && baseEstado !== 'carregando' ? b
 export function pedirBase(): Promise<Base | null> {
   if (!basePedido) {
     baseEstado = 'carregando';
-    basePedido = fetch(BASE_URL)
+    basePedido = fetch(BASE_URL, { cache: 'no-cache' })
       .then(r => (r.ok ? r.json() : null))
       .then(j => pl.parseBase(j))
       .catch(() => null)

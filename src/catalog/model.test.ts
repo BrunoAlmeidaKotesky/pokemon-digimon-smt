@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   F_CLASSE, SEM, TODOS, compararNatural, distintos, filtrar, filtravel, filtrosVazios, juntarMarcas, lerImportacao, limparMarcas,
-  montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesLinha, opcoesUlt, parseCatalogo, resumoInfo, temFiltro, valores,
+  montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesCusto, opcoesLinha, opcoesUlt, ordenarPorLinha, parseCatalogo, resumoInfo, temFiltro, valores,
   type Contexto, type Filtros,
 } from './model';
 
@@ -338,5 +338,33 @@ describe('exportar e importar', () => {
     expect(lerImportacao([['pokemon']], ['pokemon'])).toBeNull();
     expect(lerImportacao({ pokemon: 'A' }, ['pokemon'])).toBeNull();
     expect(lerImportacao('texto', ['pokemon'])).toBeNull();
+  });
+});
+
+describe('ordem por linha e filtro de custo', () => {
+  const xs = ['Agumon', 'Gabumon', 'Greymon', 'Botamon', 'Zubat', 'Metal Greymon', 'Garurumon', 'Golbat'].map(nome => ({ nome }));
+  const L = {
+    agumon: { id: 'agumon', niveis: [['Botamon'], ['Agumon'], ['Greymon'], ['Metal Greymon']] },
+    gabumon: { id: 'gabumon', niveis: [['Gabumon'], ['Garurumon']] },
+    zubat: { id: 'zubat', niveis: [['Zubat'], ['Golbat']] },
+  };
+  const linhaDe = (n: string) => Object.values(L).find(l => l.niveis.flat().includes(n));
+  it('cada linha vai pro lugar do primeiro membro que aparece, na ordem dos níveis; solto fica onde estava', () => {
+    expect(ordenarPorLinha([...xs, { nome: 'Solto' }], linhaDe).map(x => x.nome)).toEqual([
+      'Botamon', 'Agumon', 'Greymon', 'Metal Greymon', 'Gabumon', 'Garurumon', 'Zubat', 'Golbat', 'Solto',
+    ]);
+    expect(ordenarPorLinha(xs, () => undefined)).toEqual(xs);
+  });
+  it('custo: cada custo e "sem custo", contando os outros filtros', () => {
+    const linhas = montarLinhas(['A', 'B', 'C'].map(name => ({ name, img: '' })), null);
+    const custos: Record<string, number> = { A: 1, B: 1 };
+    const ctx: Contexto = { grupo: null, custo: n => custos[n] };
+    const f = { ...filtrosVazios(), custo: '1' };
+    expect(filtrar(linhas, f, ctx).map(l => l.nome)).toEqual(['A', 'B']);
+    expect(filtrar(linhas, { ...f, custo: SEM }, ctx).map(l => l.nome)).toEqual(['C']);
+    expect(opcoesCusto(linhas, f, ctx)).toEqual([
+      { valor: '1', n: 2 }, { valor: '2', n: 0 }, { valor: '3', n: 0 }, { valor: '4', n: 0 }, { valor: '5', n: 0 }, { valor: SEM, n: 1 },
+    ]);
+    expect(temFiltro(f)).toBe(true);
   });
 });

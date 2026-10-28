@@ -6,7 +6,7 @@ import { Segmented } from '../../components/Controls';
 import * as cat from '../../catalog/store';
 import * as pl from '../../catalog/plano';
 import {
-  SEM, filtrar, filtravel, lerImportacao, montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesCusto, opcoesLinha, opcoesUlt,
+  SEM, filtrar, filtravel, lerImportacao, montarExportacao, montarLinhas, normalizar, opcoes, opcoesClasse, opcoesCusto, opcoesLinha, opcoesUlt, ordenarPorLinha,
   resumoInfo, temFiltro, type Campo, type Contexto, type Exportacao, type FiltroLinha, type FiltroUlt, type Linha,
 } from '../../catalog/model';
 import { BotaoConfirmar, BuscaPersonagem, Thumb, linhaAvulsa, plural, style, useCatalogo, useTextoSalvo } from './comum';
@@ -315,7 +315,8 @@ function VistaPersonagens({ k, linhas, campos: camposCat, pronto }: { k: string;
   const opsCusto = useMemo(() => opcoesCusto(linhas, f, ctx), [linhas, f, ctx]);
   // o filtro de ult só aparece na franquia em que alguém tem ult
   const temUlt = !!f.ult || Object.keys(ultsBase).length > 0 || Object.values(unidades).some(u => u.ult);
-  const filtradas = useMemo(() => filtrar(linhas, f, ctx), [linhas, f, ctx]);
+  // cada linha evolutiva junta, na ordem dos níveis, no lugar do primeiro membro dela na lista
+  const filtradas = useMemo(() => ordenarPorLinha(filtrar(linhas, f, ctx), n => indice.get(n)?.linha), [linhas, f, ctx, indice]);
   const campos = useMemo(() => (camposCat ? camposCat.filter(x => filtravel(linhas, x.id)) : []), [camposCat, linhas]);
   const ops = useMemo(() => campos.map(x => opcoes(linhas, x.id, f, ctx)), [campos, linhas, f, ctx]);
   const opsClasse = useMemo(() => opcoesClasse(linhas, classes.map(x => x.id), f, ctx), [linhas, classes, f, ctx]);

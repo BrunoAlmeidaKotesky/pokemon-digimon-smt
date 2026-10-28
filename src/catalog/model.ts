@@ -131,6 +131,34 @@ export function montarLinhas(lista: readonly Item[], cat: Catalogo | null): Linh
   });
 }
 
+/**
+ * Junta cada linha evolutiva no lugar do primeiro membro dela que aparece, com os membros na ordem da linha (nível 1,
+ * 2, 3; alternativas na ordem do nível). Quem não está em linha fica onde estava. `linhaDe`: a linha do personagem.
+ */
+export function ordenarPorLinha<T extends { nome: string }>(xs: readonly T[], linhaDe: (nome: string) => { id: string; niveis: readonly (readonly string[])[] } | undefined): T[] {
+  const grupos = new Map<string, { ordem: string[]; membros: T[] }>();
+  const saida: ({ solto: T } | { linha: string })[] = [];
+  for (const x of xs) {
+    const l = linhaDe(x.nome);
+    if (!l) {
+      saida.push({ solto: x });
+      continue;
+    }
+    let g = grupos.get(l.id);
+    if (!g) {
+      g = { ordem: l.niveis.flat(), membros: [] };
+      grupos.set(l.id, g);
+      saida.push({ linha: l.id });
+    }
+    g.membros.push(x);
+  }
+  return saida.flatMap(s => {
+    if ('solto' in s) return [s.solto];
+    const g = grupos.get(s.linha)!;
+    return [...g.membros].sort((a, b) => g.ordem.indexOf(a.nome) - g.ordem.indexOf(b.nome));
+  });
+}
+
 /** Valor do filtro de campo que pega quem não tem informação nesse campo (e, no filtro de classe, quem não tem classe). */
 export const SEM = '__sem__';
 /** Filtro de linha evolutiva: com linha, sem linha, linha confirmada, linha ainda não confirmada. */
