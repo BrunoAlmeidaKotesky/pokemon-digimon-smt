@@ -1,7 +1,7 @@
 // Partida nova: 8 jogadores (você e 7 bots), 100 de vida, 1 de ouro, nível 1, pool cheio, um campeão de custo 1
 // de graça pra cada um e a primeira loja. Começa no planejamento da 1-1.
 import { S } from '../dados';
-import type { Jogador, Partida } from '../tipos';
+import type { Dificuldade, Jogador, Partida } from '../tipos';
 import { ID_HUMANO, NOMES_BOTS, OURO_INICIAL, VAGAS_BANCO, VIDA_INICIAL } from './constantes';
 import { montarRodada } from './luta';
 import { darUnidade, poolCheio, sortearLoja } from './loja';
@@ -16,9 +16,9 @@ function jogadorNovo(id: string, nome: string, bot: boolean, avatar: string): Jo
   };
 }
 
-export function novaPartida(semente: number, nomeHumano = 'Você'): Partida {
+export function novaPartida(semente: number, nomeHumano = 'Você', dificuldade: Dificuldade = 'normal'): Partida {
   const p: Partida = {
-    versao: 1, semente: semente >>> 0, jogadores: [], voce: ID_HUMANO, estagio: 1, rodada: 1, tipo: 'monstros',
+    versao: 1, semente: semente >>> 0, dificuldade, jogadores: [], voce: ID_HUMANO, estagio: 1, rodada: 1, tipo: 'monstros',
     fase: 'planejamento', pool: poolCheio(), confrontos: [], monstros: [], historico: {}, proximoUid: 1, sorteios: 0,
   };
   const rng = rngDa(p);

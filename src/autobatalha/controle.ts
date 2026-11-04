@@ -22,7 +22,7 @@ P.definirMotor({ simularLuta, atributosDaUnidade, contarTracos, combinar, ehComp
 // ---------- configuração ----------
 
 export const CHAVE_CONFIG = 'pdx-autobatalha-config';
-export const CONFIG_PADRAO: Config = { relogio: true, segundos: 35, velocidade: 1 };
+export const CONFIG_PADRAO: Config = { relogio: true, segundos: 35, velocidade: 1, dificuldade: 'facil', volume: 0.6 };
 /** tempo da tela de resultado entre a luta e o próximo planejamento */
 export const MS_RESULTADO = 1500;
 /** tick da reprodução da luta */
@@ -43,7 +43,9 @@ function lerConfig(): Config {
 function normalizarConfig(c: Config): Config {
   const v: Velocidade = c.velocidade === 2 || c.velocidade === 4 ? c.velocidade : 1;
   const segundos = Number.isFinite(c.segundos) ? Math.min(300, Math.max(5, Math.round(c.segundos))) : CONFIG_PADRAO.segundos;
-  return { relogio: c.relogio !== false, segundos, velocidade: v };
+  const dificuldade = c.dificuldade === 'normal' || c.dificuldade === 'dificil' ? c.dificuldade : 'facil';
+  const volume = Number.isFinite(c.volume) ? Math.min(1, Math.max(0, c.volume)) : CONFIG_PADRAO.volume;
+  return { relogio: c.relogio !== false, segundos, velocidade: v, dificuldade, volume };
 }
 function gravarConfig(c: Config): void {
   try { globalThis.localStorage?.setItem(CHAVE_CONFIG, JSON.stringify(c)); } catch { /* sem localStorage */ }
@@ -338,7 +340,7 @@ export const acoes: Acoes = {
   novaPartida(semente) {
     pararTudo();
     try {
-      partida = P.novaPartida(semente ?? (Date.now() >>> 0));
+      partida = P.novaPartida(semente ?? (Date.now() >>> 0), undefined, estado.config.dificuldade);
     } catch (e) {
       partida = null;
       mudar({ erro: `Não deu pra começar a partida (${e instanceof Error ? e.message : String(e)})` });

@@ -409,9 +409,14 @@ export type Fase = 'carrossel' | 'planejamento' | 'luta' | 'resultado' | 'fim';
 
 export interface Rodada { estagio: number; rodada: number; tipo: TipoRodada }
 
+/** Força dos bots: no fácil compram e posicionam pior e sobem de nível mais tarde. */
+export type Dificuldade = 'facil' | 'normal' | 'dificil';
+
 export interface Partida {
   versao: 1;
   semente: number;
+  /** força dos bots (partida salva antes disto = 'normal') */
+  dificuldade?: Dificuldade;
   jogadores: Jogador[];
   /** id do jogador humano */
   voce: string;

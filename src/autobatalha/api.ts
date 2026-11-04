@@ -1,7 +1,7 @@
 // Interface entre a tela (src/modes/autobatalha) e o controle da partida (src/autobatalha/controle.ts).
 // O controle guarda a partida em andamento, roda o relógio, os bots e as lutas, e avisa a tela a cada mudança
 // (useSyncExternalStore, como src/state/app.ts). A tela só lê EstadoTela e chama Acoes.
-import type { OpcaoCarrossel, Onde, Partida, ResultadoLuta } from './tipos';
+import type { Dificuldade, OpcaoCarrossel, Onde, Partida, ResultadoLuta } from './tipos';
 
 export type Velocidade = 1 | 2 | 4;
 
@@ -11,6 +11,10 @@ export interface Config {
   /** segundos de planejamento (estágio 1 usa 2/3 disso) */
   segundos: number;
   velocidade: Velocidade;
+  /** força dos bots nas partidas novas */
+  dificuldade: Dificuldade;
+  /** volume dos sons, 0 (mudo) a 1 */
+  volume: number;
 }
 
 export interface Reproducao {
