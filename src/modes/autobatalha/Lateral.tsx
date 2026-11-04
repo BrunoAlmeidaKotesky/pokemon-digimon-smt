@@ -1,4 +1,5 @@
-// Laterais da partida: traços do tabuleiro (esquerda) e os 8 jogadores com a vida (direita).
+// Laterais da partida: traços do tabuleiro (esquerda) e os 8 jogadores com a vida (direita; no planejamento, um ✓ em
+// quem já votou "Pronto").
 // Traço: hexágono na forma do degrau (bronze, prata, ouro, prisma) com a cor do traço, os degraus com o atual em
 // destaque e a barra até o próximo. Passar o mouse destaca no tabuleiro as unidades do traço; o botão ao lado abre a
 // lista dos campeões dele (os seus destacados).
@@ -137,6 +138,8 @@ export function Jogadores({ partida, olhando, children }: { partida: Partida; ol
   const conf = partida.confrontos.find(c => c.includes(partida.voce));
   const adv = conf ? (conf[0] === partida.voce ? conf[1] : conf[0]).replace(/^fantasma:/, '') : null;
   const vendo = olhando ?? partida.voce;
+  // votação do "Pronto": marca em quem já votou (só no planejamento)
+  const votando = partida.fase === 'planejamento';
   return (
     <aside id="abJogadores" className="ab-lado ab-jogadores" aria-label="Jogadores">
       <h3>Jogadores</h3>
@@ -144,11 +147,18 @@ export function Jogadores({ partida, olhando, children }: { partida: Partida; ol
         {ordem.map(j => {
           const eu = j.id === partida.voce;
           const fora = !vivo(j);
+          const pronto = votando && !fora && !!j.pronto;
           return (
             <li key={j.id}>
-              <button type="button" className={'ab-jog' + (eu ? ' eu' : '') + (fora ? ' fora' : '') + (j.id === vendo ? ' vendo' : '') + (j.id === adv ? ' adv' : '')}
-                data-jogador={j.id} aria-pressed={j.id === vendo} title={eu ? 'Seu tabuleiro' : `Ver o tabuleiro de ${j.nome}`}
+              <button type="button" className={'ab-jog' + (eu ? ' eu' : '') + (fora ? ' fora' : '') + (j.id === vendo ? ' vendo' : '') + (j.id === adv ? ' adv' : '') + (pronto ? ' pronto' : '')}
+                data-jogador={j.id} aria-pressed={j.id === vendo} title={(eu ? 'Seu tabuleiro' : `Ver o tabuleiro de ${j.nome}`) + (pronto ? ' (pronto pra luta)' : '')}
                 onClick={() => acoes.olhar(eu ? null : j.id)}>
+                {pronto && (
+                  <span className="ab-jog-pronto" title="Votou pronto">
+                    <span className="ab-sr">pronto</span>
+                    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.3 4.7-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </span>
+                )}
                 <Foto src={avatarDe(j)} nome={j.nome} className="redonda" />
                 <span className="txt">
                   <span className="nm">{j.nome}{eu && <small> (você)</small>}</span>

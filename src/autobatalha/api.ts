@@ -7,7 +7,7 @@ export type Velocidade = 1 | 2 | 4;
 
 /** Regras da sala: valem pra partida inteira e só o anfitrião muda (num modo online, valeriam pra todos). */
 export interface RegrasSala {
-  /** relógio da fase de planejamento ligado (senão espera o "Pronto") */
+  /** relógio da fase de planejamento ligado (senão espera todos votarem "Pronto") */
   relogio: boolean;
   /** segundos de planejamento (estágio 1 usa 2/3 disso) */
   segundos: number;
@@ -69,6 +69,17 @@ export interface EstadoCarrossel {
   podePegar: boolean;
 }
 
+/** A votação do "Pronto" no planejamento, pra tela (o voto de cada um fica em Jogador.pronto, na partida). Quando
+ *  todos os vivos votam, o planejamento acaba na hora. Os bots votam assim que jogam (no solo, logo no começo). */
+export interface EstadoVotacao {
+  /** ids dos jogadores vivos que já votaram pronto */
+  prontos: string[];
+  /** jogadores vivos (quem vota) */
+  total: number;
+  /** você já votou */
+  voce: boolean;
+}
+
 export interface EstadoTela {
   /** set ainda baixando */
   carregando: boolean;
@@ -84,6 +95,8 @@ export interface EstadoTela {
   temSalva: boolean;
   /** carrossel do começo do estágio (null = fora da fase 'carrossel') */
   carrossel: EstadoCarrossel | null;
+  /** votação do "Pronto" (null = fora do planejamento) */
+  votacao: EstadoVotacao | null;
   /** jogador cujo tabuleiro a tela está mostrando (olhar o adversário); null = o próprio */
   olhando: string | null;
   /** última mensagem curta pro jogador ("Banco cheio", "Ouro insuficiente") */
@@ -120,7 +133,9 @@ export interface Acoes {
   escolherUlt(uid: number, ult: string): void;
   /** Yu-Gi-Oh!: alterna ataque/defesa */
   alternarPosicao(uid: number): void;
-  /** termina o planejamento agora */
+  /** vota pronto (ou desfaz o voto, se já votou): com todos os vivos prontos, o planejamento acaba na hora */
+  votarPronto(): void;
+  /** vota pronto (sem alternar; já votado, não muda nada). No solo os bots já votaram: termina o planejamento */
   pronto(): void;
   velocidade(v: Velocidade): void;
   /** mostra o fim da luta direto */

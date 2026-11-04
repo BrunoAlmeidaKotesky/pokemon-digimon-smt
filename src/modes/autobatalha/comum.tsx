@@ -37,6 +37,16 @@ export const estiloDe = (j: Pick<Jogador, 'estilo'> | null | undefined): string 
 export const NOME_UNICOS = 'Únicos';
 export const ehOrigem = (id: string) => ['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'lol', 'overwatch', 'deadlock', 'sujimon'].includes(id);
 export const nomeTraco = (id: string) => (id === 'unicos' ? NOME_UNICOS : S().nomeTraco(id));
+/** nome com mais letras que isto é comprido: na carta da loja vai pro fim das etiquetas e pode virar o curto */
+export const LETRAS_NOME_COMPRIDO = 12;
+/** Nome curto do traço, pra etiqueta apertada: nome comprido de mais de uma palavra abrevia a primeira em 5 letras
+ *  ("Criaturinha Bizarra" → "Criat. Bizarra"); o resto fica igual. */
+export function nomeCurtoTraco(id: string): string {
+  const nome = nomeTraco(id);
+  const [primeira, ...resto] = nome.split(' ');
+  if (nome.length <= LETRAS_NOME_COMPRIDO || !resto.length || !primeira || primeira.length <= 6) return nome;
+  return `${primeira.slice(0, 5)}. ${resto.join(' ')}`;
+}
 /** Cor própria de cada classe e elemento (as origens usam a cor da franquia, a mesma do resto do site). */
 const COR_TRACO: Record<string, string> = {
   tanque: '#8394a8', porradeiro: '#d26a2c', assassino: '#8e44c9', demoniacos: '#b02a43', 'criaturinha-bizarra': '#9bb32a',

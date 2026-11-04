@@ -268,11 +268,11 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   Tudo escala com a janela: a tela põe `--k` no `#autobatalha` (1 = 1280×720, até 2,4) e o CSS mede tudo em
   `calc(N * var(--u))` (`--u` = 1px × k); o tabuleiro mede o espaço que sobra (ResizeObserver) e escolhe o maior
   tamanho de casa que cabe. As casas são um pouco achatadas (altura = largura; na luta, 0,8), como uma câmera inclinada.
-- Em cima: estágio e rodada (ícones das rodadas do estágio), fase, relógio, Pronto, **Informações**, Planejador, mudo,
-  **configuração** (engrenagem) e Sair. À esquerda: os traços. Depois, a **bolsa** (itens soltos) numa coluna à
-  esquerda do tabuleiro. No meio: o tabuleiro (só a sua metade no planejamento; o inteiro na luta) e o banco embaixo
-  (encolhe na luta). À direita: os 8 jogadores com vida (clique pra olhar o tabuleiro de outro) e, depois de cada
-  luta, o **dano por unidade** (causado, do motor, e recebido, somado dos eventos; seu lado ou o deles). Embaixo: ouro
+- Em cima: estágio e rodada (ícones das rodadas do estágio), fase, relógio, a **votação do Pronto** (placar e
+  botão), **Informações**, Planejador, mudo, **configuração** (engrenagem) e Sair. À esquerda: os traços. Depois, a
+  **bolsa** (itens soltos) numa coluna à esquerda do tabuleiro. No meio: o tabuleiro (só a sua metade no
+  planejamento; o inteiro na luta) e o banco embaixo (encolhe na luta). À direita: os 8 jogadores com vida (clique pra
+  olhar o tabuleiro de outro; no planejamento, um ✓ verde no ícone de quem já votou Pronto) e, depois de cada luta, o **dano por unidade** (causado, do motor, e recebido, somado dos eventos; seu lado ou o deles). Embaixo: ouro
   com **juros** (+1 a cada 10) e **sequência** de vitórias ou derrotas, nível e XP, chances da loja, XP, Atualizar,
   travar e as 7 cartas.
 - **Tabuleiro:** no estilo padrão, um gramado (faixas de grama, vinheta) com casas hexagonais de grama de aro claro;
@@ -286,9 +286,20 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   longe). Ao lançar a habilidade, a foto dá um pulinho com tremida.
 - **Imagens inteiras:** retratos, cartas, carrossel, planejador e dica com `object-fit: contain` sobre um fundo da cor
   do custo (o redondo ainda pode cortar a pontinha de uma arte quadrada cheia).
-- **Cartas da loja:** retrato inteiro, nome e custo, traços em **etiquetas coloridas** (origem na cor da franquia;
-  cada classe e elemento com a sua cor, `COR_TRACO` em comum.tsx), as **cópias que você já tem** (bolinhas até 3,
-  e ★★ se já tem estrela 2), a marca **★★/★★★ que brilha quando a compra evolui**, o alcance, "plano" e "time".
+- **Cartas da loja:** retrato inteiro, nome e custo, **todos os traços em etiquetas coloridas** (origem na cor da
+  franquia; cada classe e elemento com a sua cor, `COR_TRACO` em comum.tsx), as **cópias que você já tem** (bolinhas
+  até 3, e ★★/★★★ se já tem estrela 2 ou 3), a marca **★★/★★★ que brilha quando a compra evolui**, o alcance, "plano"
+  e "time". As etiquetas ficam numa área de **duas linhas** (a mesma altura em toda carta, pra elas ficarem
+  alinhadas; a carta cresceu um pouco pra isso): a origem primeiro e os nomes compridos (mais de 12 letras, hoje só
+  Criaturinha Bizarra) no fim, que sozinhos numa linha quebram melhor. Medido com o CSS de verdade: toda forma de
+  nível 1 do set cabe em duas linhas. Se um dia não couber, a carta troca os compridos pelo nome curto
+  (`nomeCurtoTraco`: "Criat. Bizarra"), com o inteiro no title. Só a loja usa essas etiquetas (o carrossel e o
+  planejador mostram foto e nome; a dica lista os traços sem limite de altura).
+- **Campeão que você já tem na loja** (banco ou tabuleiro, qualquer estrela): um **anel dourado pulsando** em volta
+  da carta (atrás dela, `data-destaque="tem"` no item da lista). Se a compra **fecha uma evolução** (já tem 2 cópias
+  da mesma estrela), o destaque fica mais forte: um anel que gira com brilho intenso (★★: dourado, branco e laranja;
+  ★★★: prisma; `data-destaque="evolui2"` ou `"evolui3"`) e o ★★/★★★ no meio da arte. Com
+  `prefers-reduced-motion` o anel fica parado, com o brilho aceso. Visual próprio (anel em CSS, sem arte do TFT).
 - **Traços:** hexágono com a forma do degrau (bronze, prata, ouro e prisma no último degrau das escadas longas) e a
   cor do traço no meio, nome, contagem e próximo degrau, a escada com o atual em destaque e uma barra até o próximo.
   Passar o mouse destaca no tabuleiro e no banco as unidades do traço (as outras apagam); o botão de lista abre os
@@ -323,6 +334,16 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   comprar, vender, atualizar, XP, nível, evoluir (★2 e ★3), posicionar, equipar, juntar, apresentação, começo da luta,
   golpe (baixinho, com limite por segundo), crítico, habilidade (pelo efeito), morte, vitória, derrota, carrossel,
   relógio nos últimos segundos, moeda, aviso e clique. O áudio só começa no primeiro gesto; volume 0 não toca nada.
+- **Votação do "Pronto"** (pedido do usuário): o "Pronto" do planejamento é um voto. Cada jogador vivo vota que
+  está pronto e, quando **todos** votam, o planejamento acaba na hora (com ou sem relógio; sem todos, o relógio fecha
+  como sempre). Os bots votam assim que jogam o planejamento deles (no solo, logo no começo), então no solo o seu voto
+  fecha a votação. No topo, o placar **"Prontos 7/8"** com um ponto por jogador vivo; o botão vira **"✓ Pronto"**
+  (verde) depois do seu voto e clicar de novo **desfaz** enquanto o planejamento corre; na lista de jogadores, um ✓
+  em quem já votou. Pensando no online, o voto fica na partida: `Jogador.pronto` (tipos.ts; regras em
+  `partida/votacao.ts`: `votarPronto`, `votarBots`, `todosProntos`, `limparVotos`; o fim do planejamento limpa
+  tudo) e vai junto no salvo; a tela lê `EstadoTela.votacao` (`prontos`, ids de quem votou; `total`, os vivos;
+  `voce`) e chama `acoes.votarPronto()` (alterna) ou `acoes.pronto()` (vota, sem alternar). Partida salva antes da
+  votação: os bots votam ao carregar.
 - Escolha da forma da evolução em janelinha (fica pra depois do carrossel); sem resposta no fim do relógio, sorteia.
 - **Carrossel** no lugar do tabuleiro: as 9 opções num círculo que gira devagar (para com o mouse em cima), cada uma
   com a foto redonda da cor do custo e o ícone do item; a dica mostra o campeão e o item que vem junto. Quem pegou

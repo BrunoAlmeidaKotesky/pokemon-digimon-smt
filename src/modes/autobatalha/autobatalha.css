@@ -8,11 +8,13 @@
   --custo1:#8a919c; --custo2:#2e9c55; --custo3:#2c7fd8; --custo4:#9a4ed6; --custo5:#c99100;
   --ab-vida:#2fae55; --ab-vida-ini:#d8433b; --ab-mana:#3a7ff0; --ab-xp:#2aa7bd;
   --ab-sombra:0 2px 6px rgba(0,0,0,.35);
+  --ab-tem:#f0a800;
   --campo-texto:#fff;
 }
 @media (prefers-color-scheme:dark){#autobatalha{
   --custo1:#a3aab5; --custo2:#47c874; --custo3:#55a0ff; --custo4:#bd7cff; --custo5:#ffc23d;
   --ab-vida:#3fd06b; --ab-vida-ini:#ff5a4f; --ab-mana:#5b9bff; --ab-xp:#3cc8e6;
+  --ab-tem:#ffc21f;
 }}
 
 /* ---------- estilos do tabuleiro (src/autobatalha/estilos.ts): só cores e fundo ---------- */
@@ -312,6 +314,15 @@ body:has(#autobatalha .ab-jogo) nav button{padding:8px 11px;font-size:12px;white
 .ab-topo .seg button{padding:calc(5 * var(--u)) calc(10 * var(--u));font-size:calc(12 * var(--u))}
 .ab-topo .btn{font:600 calc(13 * var(--u)) var(--display);padding:calc(6 * var(--u)) calc(12 * var(--u))}
 .ab-topo .ab-ico{width:calc(32 * var(--u));height:calc(32 * var(--u))}
+/* votação do "Pronto": placar (um ponto por jogador vivo) e o botão que vota ou desfaz */
+.ab-votacao{display:inline-flex;align-items:center;gap:calc(8 * var(--u))}
+.ab-votos{display:inline-flex;align-items:center;gap:calc(5 * var(--u));font:600 calc(12 * var(--u)) var(--display);color:var(--mute);white-space:nowrap}
+.ab-votos b{color:var(--fg);font-variant-numeric:tabular-nums}
+.ab-votos .pontos{display:inline-flex;gap:calc(2 * var(--u))}
+.ab-votos .pontos i{display:block;width:calc(7 * var(--u));height:calc(7 * var(--u));border-radius:50%;border:1px solid var(--mute)}
+.ab-votos .pontos i.on{background:var(--ok);border-color:var(--ok)}
+.ab-topo .btn.ab-pronto{min-width:calc(84 * var(--u))}
+.ab-topo .btn.ab-pronto.on{background:var(--ok);border-color:var(--ok);color:var(--bg)}
 
 /* ---------- bolsa (itens soltos), à esquerda do tabuleiro ---------- */
 .ab-itens{grid-area:itens;display:flex;flex-direction:column;min-height:0;width:calc(96 * var(--u));padding:calc(8 * var(--u)) calc(6 * var(--u));background:linear-gradient(180deg, color-mix(in srgb, #8a5a2b 16%, var(--panel)), var(--panel));border:1px solid var(--line);border-radius:calc(10 * var(--u))}
@@ -475,6 +486,8 @@ body.ab-arrastando .ab-vaga[data-solta]{border-color:color-mix(in srgb, var(--go
 .ab-jog.eu .ab-foto{border-color:var(--gold)}
 .ab-jog.vendo{border-color:var(--fg)}
 .ab-jog.fora{opacity:.4;filter:grayscale(1)}
+.ab-jog .ab-jog-pronto{position:absolute;left:calc(24 * var(--u));top:calc(18 * var(--u));z-index:1;display:grid;place-items:center;width:calc(14 * var(--u));height:calc(14 * var(--u));border-radius:50%;background:var(--ok);color:var(--bg);border:2px solid var(--panel)}
+.ab-jog .ab-jog-pronto svg{width:80%;height:80%}
 .ab-jog .ab-tag.adv{position:absolute;left:2px;top:2px;padding:0 4px;font-size:calc(9 * var(--u));background:var(--bad);border-color:var(--bad);color:#fff}
 .ab-dano{margin-top:calc(10 * var(--u));padding-top:calc(8 * var(--u));border-top:1px solid var(--line);display:grid;gap:calc(5 * var(--u))}
 .ab-dano .cab{display:flex;align-items:center;justify-content:space-between;gap:6px}
@@ -518,15 +531,18 @@ body.ab-arrastando .ab-vaga[data-solta]{border-color:color-mix(in srgb, var(--go
 .ab-botoes .preco{display:inline-flex;align-items:center;gap:2px;color:var(--gold)}
 .ab-travar.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .ab-cartas{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:calc(7 * var(--u))}
-.ab-carta{--cc:var(--custo1);position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto auto;width:100%;height:calc(136 * var(--u));padding:0;overflow:hidden;text-align:left;cursor:pointer;background:var(--panel);border:2px solid var(--cc);border-radius:calc(9 * var(--u));transition:transform .1s, box-shadow .1s}
+.ab-carta{--cc:var(--custo1);position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto auto;width:100%;height:calc(144 * var(--u));padding:0;overflow:hidden;text-align:left;cursor:pointer;background:var(--panel);border:2px solid var(--cc);border-radius:calc(9 * var(--u));transition:transform .1s, box-shadow .1s}
 .ab-carta:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 8px 18px -8px var(--cc)}
 .ab-carta:disabled{cursor:default}
-.ab-carta .retrato{display:block;min-height:0;overflow:hidden;background:radial-gradient(circle at 50% 62%, color-mix(in srgb, var(--cc) 36%, transparent), transparent 70%), color-mix(in srgb, var(--cc) 10%, var(--panel))}
+.ab-carta .retrato{position:relative;display:block;min-height:0;overflow:hidden;background:radial-gradient(circle at 50% 62%, color-mix(in srgb, var(--cc) 36%, transparent), transparent 70%), color-mix(in srgb, var(--cc) 10%, var(--panel))}
 .ab-carta .retrato img{display:block;width:100%;height:100%;object-fit:contain;object-position:50% 50%;padding:calc(3 * var(--u)) 0 0}
 .ab-carta .faixa{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:calc(2 * var(--u)) calc(6 * var(--u));background:var(--cc);color:var(--cc-txt,#fff);font:700 calc(13 * var(--u)) var(--display)}
 .ab-carta .faixa .nome{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ab-carta .faixa .custo{display:inline-flex;align-items:center;gap:3px;flex:none}
-.ab-carta .tracos{display:flex;flex-wrap:wrap;align-content:flex-start;gap:calc(3 * var(--u));padding:calc(4 * var(--u)) calc(5 * var(--u));height:calc(25 * var(--u));overflow:hidden;font-size:calc(10.5 * var(--u))}
+/* traços: todas as etiquetas, em até duas linhas (a área tem sempre a altura das duas, pra as cartas ficarem alinhadas);
+   nome comprido vai pro fim e, se ainda não couber, vira o curto (Loja.tsx) */
+.ab-carta .tracos{display:flex;flex-wrap:wrap;align-content:center;align-content:safe center;gap:calc(2 * var(--u)) calc(3 * var(--u));padding:calc(3 * var(--u)) calc(4 * var(--u));height:calc(39 * var(--u));overflow:hidden;font-size:calc(9.5 * var(--u))}
+.ab-carta .tracos .ab-etq{line-height:1.4;padding:0 .45em}
 .ab-carta .marcas{position:absolute;top:calc(4 * var(--u));left:calc(4 * var(--u));right:calc(4 * var(--u));display:flex;flex-wrap:wrap;gap:3px;pointer-events:none}
 .ab-carta .marca{font:700 calc(10 * var(--u)) var(--display);text-transform:uppercase;letter-spacing:.4px;padding:1px 6px;border-radius:999px;background:rgba(0,0,0,.62);color:#fff}
 .ab-carta .marca.plano{background:var(--gold);color:#1a1300}
@@ -535,13 +551,25 @@ body.ab-arrastando .ab-vaga[data-solta]{border-color:color-mix(in srgb, var(--go
 .ab-carta .marca.copias i{display:block;width:calc(7 * var(--u));height:calc(7 * var(--u));border-radius:50%;border:1px solid rgba(255,255,255,.7)}
 .ab-carta .marca.copias i.on{background:#ffd54a;border-color:#ffd54a}
 .ab-carta .marca.copias small{font-size:calc(9 * var(--u));color:#ffd54a;margin-left:2px}
-.ab-evolui{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);padding:calc(2 * var(--u)) calc(10 * var(--u));border-radius:999px;background:linear-gradient(180deg,#fff7d1,#ffd54a);color:#8a5a00;font:800 calc(15 * var(--u)) var(--display);box-shadow:0 0 0 2px #fff,0 0 calc(16 * var(--u)) calc(4 * var(--u)) #ffd54a;pointer-events:none;animation:ab-chama 1.2s ease-in-out infinite}
-.ab-carta.evolui{box-shadow:0 0 0 2px #ffd54a,0 0 calc(14 * var(--u)) #ffd54a}
-.ab-carta>.ab-alcance{position:absolute;right:calc(5 * var(--u));top:calc(70 * var(--u));font-size:calc(14 * var(--u));pointer-events:none}
+.ab-evolui{position:absolute;left:50%;top:calc(44 * var(--u));transform:translate(-50%,-50%);padding:calc(2 * var(--u)) calc(10 * var(--u));border-radius:999px;background:linear-gradient(180deg,#fff7d1,#ffd54a);color:#8a5a00;font:800 calc(15 * var(--u)) var(--display);box-shadow:0 0 0 2px #fff,0 0 calc(16 * var(--u)) calc(4 * var(--u)) #ffd54a;pointer-events:none;animation:ab-chama 1.2s ease-in-out infinite}
+.ab-carta .retrato>.ab-alcance{position:absolute;right:calc(4 * var(--u));bottom:calc(3 * var(--u));font-size:calc(14 * var(--u));pointer-events:none}
 .ab-carta.no-plano{box-shadow:0 0 0 2px var(--gold)}
-.ab-carta.vazia{height:calc(136 * var(--u));border:2px dashed var(--line);background:transparent;cursor:default}
+.ab-carta.vazia{height:calc(144 * var(--u));border:2px dashed var(--line);background:transparent;cursor:default}
 .ab-carta.vazia.do-time{border-style:dotted}
 .ab-loja.vender .ab-cartas{opacity:.25;filter:blur(1px)}
+/* anel em volta da carta (data-destaque no item da lista, Loja.tsx), atrás dela: campeão que você já tem (banco ou
+   tabuleiro) = dourado pulsando; a compra fecha uma evolução = anel girando com brilho mais forte (★★ fogo, ★★★
+   prisma). Sem movimento (prefers-reduced-motion): o anel fica parado, com o brilho aceso. */
+@property --ab-ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+.ab-cartas>li{position:relative;isolation:isolate;min-width:0}
+.ab-cartas>li[data-destaque]{z-index:1}
+.ab-cartas>li[data-destaque]::before{content:'';position:absolute;inset:calc(-4 * var(--u));z-index:-1;border-radius:calc(12 * var(--u));pointer-events:none;transition:translate .1s}
+.ab-cartas>li[data-destaque]:has(>.ab-carta:hover:not(:disabled))::before{translate:0 -3px}
+.ab-cartas>li[data-destaque="tem"]::before{background:var(--ab-tem);box-shadow:0 0 calc(12 * var(--u)) calc(1 * var(--u)) var(--ab-tem);animation:ab-tem 1.5s ease-in-out infinite}
+.ab-cartas>li[data-destaque^="evolui"]::before{inset:calc(-5 * var(--u));border-radius:calc(13 * var(--u));background:conic-gradient(from var(--ab-ang), var(--ab-anel));box-shadow:0 0 calc(20 * var(--u)) calc(4 * var(--u)) var(--ab-brilho);animation:ab-anel 1.8s linear infinite, ab-brilho .8s ease-in-out infinite alternate}
+.ab-cartas>li[data-destaque="evolui2"]{--ab-brilho:#ff8a1f;--ab-anel:#ffe066, #fff8dc, #ff9a1f, #ff4d1f, #ff9a1f, #fff8dc, #ffe066}
+.ab-cartas>li[data-destaque="evolui3"]{--ab-brilho:#d65cff;--ab-anel:#ff5ad1, #ffe066, #5ef0ff, #8a7dff, #ff5ad1}
+.ab-cartas>li[data-destaque] .marca.copias{background:rgba(0,0,0,.78);box-shadow:0 0 0 1px var(--ab-tem)}
 .ab-vender{position:absolute;top:calc(8 * var(--u));bottom:calc(8 * var(--u));left:calc(270 * var(--u));right:calc(8 * var(--u));display:flex;align-items:center;justify-content:center;gap:6px;font:700 calc(20 * var(--u)) var(--display);color:var(--bad);border:2px dashed var(--bad);border-radius:10px;background:color-mix(in srgb, var(--bad) 8%, transparent);pointer-events:none}
 .ab-loja.ab-sobre .ab-vender{background:color-mix(in srgb, var(--bad) 20%, transparent)}
 
@@ -768,6 +796,9 @@ body.ab-arrastando,body.ab-arrastando *{cursor:grabbing !important}
 @keyframes ab-lanca{0%{transform:none}25%{transform:translateY(-16%) rotate(-7deg)}45%{transform:translateY(-10%) rotate(6deg)}65%{transform:translateY(-3%) rotate(-4deg)}100%{transform:none}}
 @keyframes ab-pulsa{0%{transform:scale(1.18);box-shadow:0 0 0 0 rgba(255,120,110,.8)}100%{transform:scale(1);box-shadow:0 0 0 calc(14 * var(--u)) rgba(255,120,110,0)}}
 @keyframes ab-chama{50%{filter:brightness(1.25)}}
+@keyframes ab-tem{0%,100%{opacity:.75;box-shadow:0 0 calc(4 * var(--u)) var(--ab-tem)}50%{opacity:1;box-shadow:0 0 calc(14 * var(--u)) calc(2 * var(--u)) var(--ab-tem)}}
+@keyframes ab-anel{to{--ab-ang:360deg}}
+@keyframes ab-brilho{from{box-shadow:0 0 calc(8 * var(--u)) calc(1 * var(--u)) var(--ab-brilho)}to{box-shadow:0 0 calc(22 * var(--u)) calc(5 * var(--u)) var(--ab-brilho)}}
 @keyframes ab-moeda-brilha{50%{filter:drop-shadow(0 2px 2px rgba(0,0,0,.5)) drop-shadow(0 0 6px #ffe58a)}}
 @keyframes ab-moeda-cai{0%{opacity:0;transform:translate(-50%,-260%) scale(.7)}100%{opacity:1;transform:translate(-50%,-50%)}}
 @keyframes ab-clash{0%{opacity:0;transform:translate(-50%,-50%) scale(.85)}12%{opacity:1;transform:translate(-50%,-50%) scale(1)}82%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.06)}}
@@ -779,4 +810,6 @@ body.ab-arrastando,body.ab-arrastando *{cursor:grabbing !important}
   .ab-num,.ab-balao,.ab-fx,.ab-placar,.ab-aviso,.ab-peca.na-luta .ab-ficha,.ab-peca.trocou>.ab-ficha>.ab-foto,.ab-peca.lanca>.ab-ficha>.ab-foto,.ab-ligacoes line.tiro,
   .ab-clash,.ab-clash .lado,.ab-clash .vs,.ab-contagem.fim,.ab-moeda-chao,.ab-ganho,.ab-evolui,.ab-limite.sobra,.ab-imagem{animation:none}
   .ab-carta:hover:not(:disabled),.ab-opcao:hover{transform:none}
+  .ab-cartas>li[data-destaque]::before{animation:none;transition:none}
+  .ab-cartas>li[data-destaque]:has(>.ab-carta:hover:not(:disabled))::before{translate:none}
 }

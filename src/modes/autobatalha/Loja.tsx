@@ -1,6 +1,9 @@
 // Barra de baixo: ouro (com juros e sequência), nível e XP, chances da loja, comprar XP, atualizar, travar e as 7
-// cartas. Cada carta mostra o retrato inteiro, o custo, os traços em etiquetas coloridas, quantas cópias você já tem e
-// se a compra evolui. Soltar uma peça aqui vende.
+// cartas. Cada carta mostra o retrato inteiro, o custo, todos os traços em etiquetas coloridas (até duas linhas),
+// quantas cópias você já tem e se a compra evolui. Campeão que você já tem (banco ou tabuleiro) ganha um anel dourado
+// pulsando em volta da carta; se a compra fecha uma evolução, o anel gira e brilha mais forte, com o ★★ ou ★★★ no
+// meio. Soltar uma peça aqui vende.
+import { useLayoutEffect, useRef, useState } from 'react';
 import type { Jogador } from '../../autobatalha/tipos';
 import { S } from '../../autobatalha/dados';
 import { acoes } from '../../autobatalha/controle';
@@ -8,7 +11,7 @@ import { CUSTO_ATUALIZAR, CUSTO_XP, JUROS_MAX, bonusSequencia, chancesLoja, juro
 import { propsDica, useArrasto } from './interacao';
 import { usePlanoAtivo } from './planos';
 import { atributosDe } from './Tabuleiro';
-import { IconeAlcance, Moeda, corTraco, custoAttr, formaOuNada, imgForma, nomeTraco, pct, plural } from './comum';
+import { IconeAlcance, LETRAS_NOME_COMPRIDO, Moeda, corTraco, custoAttr, formaOuNada, imgForma, nomeCurtoTraco, nomeTraco, pct, plural } from './comum';
 
 /** a estrela que a compra fecha (1 = não evolui nada) */
 function estrelaAoComprar(j: Jogador, campeao: string): number {
@@ -17,11 +20,19 @@ function estrelaAoComprar(j: Jogador, campeao: string): number {
   return us.filter(u => u.estrela === 2).length + 1 >= 3 ? 3 : 2;
 }
 
-/** cópias que o jogador tem do campeão, por estrela */
+/** cópias que o jogador tem do campeão (banco e tabuleiro), por estrela */
 function copiasDe(j: Jogador, campeao: string): [number, number, number] {
   const us = Object.values(j.unidades).filter(u => u.campeao === campeao);
   const de = (e: number) => us.filter(u => u.estrela === e).length;
   return [de(1), de(2), de(3)];
+}
+
+/** Destaque da vaga da loja (data-destaque no item da lista, que desenha o anel em volta da carta): 'evolui2' ou
+ *  'evolui3' = a compra fecha a evolução; 'tem' = você já tem o campeão; sem = nenhum. */
+function destaqueDe(j: Jogador, campeao: string): string | undefined {
+  const evolui = estrelaAoComprar(j, campeao);
+  if (evolui > 1) return `evolui${evolui}`;
+  return copiasDe(j, campeao).some(n => n > 0) ? 'tem' : undefined;
 }
 
 export function Loja({ eu, editavel }: { eu: Jogador; editavel: boolean }) {
@@ -76,7 +87,7 @@ export function Loja({ eu, editavel }: { eu: Jogador; editavel: boolean }) {
       </div>
       <ol id="abCartas" className="ab-cartas">
         {eu.loja.map((id, i) => (
-          <li key={i}>
+          <li key={i} data-destaque={id ? destaqueDe(eu, id) : undefined}>
             {id ? (
               <Carta id={id} i={i} forma={formas?.[i] ?? S().formaPadrao(id, 1)} eu={eu} noPlano={plano.has(id)} editavel={editavel} />
             ) : <div className={'ab-carta vazia' + (i === 6 ? ' do-time' : '')} aria-label="Vaga vazia" />}
@@ -97,38 +108,76 @@ function Carta({ id, i, forma, eu, noPlano, editavel }: { id: string; i: number;
   const f = formaOuNada(forma);
   const classes = (f?.classes ?? []).filter(x => x !== c.fr && x !== 'unicos');
   const evolui = estrelaAoComprar(eu, id);
-  const [n1, n2] = copiasDe(eu, id);
+  const [n1, n2, n3] = copiasDe(eu, id);
   const time = i === 6;
   const alcance = atributosDe({ uid: -1, campeao: id, estrela: 1, forma, itens: [] })?.alcance;
-  const tem = n1 + n2 > 0;
+  const tem = n1 + n2 + n3 > 0;
+  const quantas = [
+    n1 ? plural(n1, 'cópia de estrela 1', 'cópias de estrela 1') : '',
+    n2 ? plural(n2, 'de estrela 2', 'de estrela 2') : '',
+    n3 ? plural(n3, 'de estrela 3', 'de estrela 3') : '',
+  ].filter(Boolean).join(' e ');
   return (
     <button type="button" className={'ab-carta' + (time ? ' do-time' : '') + (noPlano ? ' no-plano' : '') + (tem ? ' tem' : '') + (evolui > 1 ? ' evolui' : '')} {...custoAttr(c.custo)}
       data-campeao={id} disabled={!editavel} onClick={() => acoes.comprar(i)} {...propsDica({ tipo: 'campeao', campeao: id, forma })}
       aria-label={`Comprar ${f?.nome ?? c.nome} por ${c.custo} de ouro`}>
       <span className="retrato">
         <img src={imgForma(forma)} alt="" draggable={false} decoding="async" onError={e => { e.currentTarget.style.visibility = 'hidden'; }} />
+        {alcance != null && <IconeAlcance alcance={alcance} />}
       </span>
       <span className="marcas">
         {noPlano && <span className="marca plano" title="No plano ativo do planejador">plano</span>}
         {time && <span className="marca time" title="Vaga do time: campeão que divide origem ou classe com o seu tabuleiro">time</span>}
         {tem && (
-          <span className="marca copias" data-copias={n1} title={`Você tem ${[n1 ? plural(n1, 'cópia de estrela 1', 'cópias de estrela 1') : '', n2 ? plural(n2, 'de estrela 2', 'de estrela 2') : ''].filter(Boolean).join(' e ')}`}>
+          <span className="marca copias" data-copias={n1} title={`Você tem ${quantas}`}>
             {[0, 1, 2].map(k => <i key={k} className={k < n1 ? 'on' : undefined} />)}
             {n2 > 0 && <small>★★{n2 > 1 ? `×${n2}` : ''}</small>}
+            {n3 > 0 && <small>★★★{n3 > 1 ? `×${n3}` : ''}</small>}
           </span>
         )}
       </span>
       {evolui > 1 && <span className="ab-evolui" title={`Comprar fecha 3 cópias: vira estrela ${evolui}`}>{'★'.repeat(evolui)}</span>}
-      {alcance != null && <IconeAlcance alcance={alcance} />}
       <span className="faixa">
         <b className="nome">{f?.nome ?? c.nome}</b>
         <span className="custo"><Moeda />{c.custo}</span>
       </span>
-      <span className="tracos">
-        <span className="ab-etq origem" style={corTraco(c.fr)}>{nomeTraco(c.fr)}</span>
-        {classes.map(x => <span key={x} className="ab-etq" style={corTraco(x)}>{nomeTraco(x)}</span>)}
-      </span>
+      <Etiquetas key={[c.fr, ...classes].join()} origem={c.fr} classes={classes} />
     </button>
+  );
+}
+
+const comprido = (id: string) => nomeTraco(id).length > LETRAS_NOME_COMPRIDO;
+
+/** Etiquetas dos traços da carta, todas visíveis em até duas linhas: a origem primeiro e os nomes compridos no fim
+ *  (sozinhos numa linha, quebram melhor). Se ainda passar das duas linhas (4 traços com um comprido), os compridos
+ *  viram o nome curto, com o inteiro no title. Muda de campeão = componente novo (key), que mede de novo. */
+function Etiquetas({ origem, classes }: { origem: string; classes: string[] }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [curto, setCurto] = useState(false);
+  const ordem = [...classes.filter(x => !comprido(x)), ...classes.filter(comprido)];
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || curto) return;
+    const conferir = () => { if (el.scrollHeight > el.clientHeight + 1) setCurto(true); };
+    conferir();
+    // a fonte do site pode chegar depois da primeira medida
+    let vivo = true;
+    void document.fonts?.ready.then(() => { if (vivo) conferir(); });
+    return () => { vivo = false; };
+  }, [curto]);
+  const etiqueta = (id: string, origemDaCarta: boolean) => {
+    const encurta = curto && comprido(id);
+    return (
+      <span key={id} className={'ab-etq' + (origemDaCarta ? ' origem' : '')} style={corTraco(id)} title={encurta ? nomeTraco(id) : undefined}>
+        {encurta ? nomeCurtoTraco(id) : nomeTraco(id)}
+      </span>
+    );
+  };
+  return (
+    <span ref={ref} className="tracos" data-curto={curto || undefined}>
+      {etiqueta(origem, true)}
+      {ordem.map(x => etiqueta(x, false))}
+    </span>
   );
 }
 
