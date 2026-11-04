@@ -20,8 +20,9 @@ export { formasDaEvolucao, verificarEvolucoes } from './evolucao';
 export { ganharXp, poolCheio, sortearLoja } from './loja';
 export {
   acabou, aplicarRodada, avancarRodada, eliminar, fimDoPlanejamento, montarTime, simularRodada, timeMonstros,
-  BONUS_OVERWATCH, CHANCE_SUJIMON, type LutaDaRodada, type ResultadoRodada,
+  type LutaDaRodada, type ResultadoRodada,
 } from './luta';
+export * from './origens';
 export { atributosChefe, atributosComum, gerarMonstros } from './monstros';
 export { definirMotor, limparMotor, motorLigado, type MotorPartida, type TracoContado } from './motor';
 export { novaPartida } from './nova';

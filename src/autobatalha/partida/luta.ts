@@ -20,14 +20,8 @@ import { M, nivelTraco } from './motor';
 import { confrontosDaRodada } from './rodadas';
 import { rngDa } from './sorteio';
 import { prepararTabuleiro } from './tabuleiro';
+import { ALMAS_POR_ABATE, BONUS_DEADLOCK_POR_10_ALMAS, BONUS_OVERWATCH, CHANCE_SUJIMON, CUSTO_MAX_SUJIMON, porDegrau } from './origens';
 
-/** Bônus permanente do Overwatch pro herói que mais causou dano, por degrau (2/3/5 heróis). */
-export const BONUS_OVERWATCH = [0.03, 0.05, 0.08] as const;
-/** Deadlock: vida e dano por 10 almas juntadas, por degrau (2/3/5 heróis); cada 10 almas = +1 de ouro. */
-export const BONUS_DEADLOCK_POR_10_ALMAS = [0.02, 0.03, 0.04] as const;
-/** Sujimon: chance de recrutar depois de vencer monstros, por degrau (2/3/4 Sujimon). */
-export const CHANCE_SUJIMON = [0, 0.5, 1] as const;
-export const CUSTO_MAX_SUJIMON = 3;
 
 export interface LutaDaRodada {
   /** jogador do lado A (o humano, quando é a luta dele) */
@@ -57,7 +51,7 @@ export function unidadesQueLutam(j: Jogador): Unidade[] {
 export function montarTime(j: Jogador, dono: string = j.id): EntradaTime {
   const us = unidadesQueLutam(j);
   const dl = nivelTraco(us, 'deadlock');
-  const extra = dl >= 0 ? (BONUS_DEADLOCK_POR_10_ALMAS[dl] ?? 0) * Math.floor(j.almas / 10) : 0;
+  const extra = dl >= 0 ? porDegrau(BONUS_DEADLOCK_POR_10_ALMAS, dl) * Math.floor(j.almas / 10) : 0;
   const lutadores: EntradaLutador[] = [];
   for (const u of us) {
     const onde = ondeEsta(j, u.uid);
@@ -153,7 +147,7 @@ function tracosDepoisDaLuta(j: Jogador, time: EntradaTime, res: ResultadoLuta, l
     }
     const heroi = melhor != null ? j.unidades[melhor] : undefined;
     if (heroi) {
-      const b = BONUS_OVERWATCH[Math.min(ow, BONUS_OVERWATCH.length - 1)]!;
+      const b = porDegrau(BONUS_OVERWATCH, ow);
       heroi.bonus = { vida: (heroi.bonus?.vida ?? 0) + b, dano: (heroi.bonus?.dano ?? 0) + b };
     }
   }
@@ -162,7 +156,7 @@ function tracosDepoisDaLuta(j: Jogador, time: EntradaTime, res: ResultadoLuta, l
     const abates = porUid(res.abates, lado, time);
     let n = 0;
     for (const u of us) if (origemDe(u) === 'deadlock') n += abates.get(u.uid) ?? 0;
-    if (dl >= 2) n *= 2;
+    n *= porDegrau(ALMAS_POR_ABATE, dl);
     const antes = j.almas;
     j.almas += n;
     j.ouro += Math.floor(j.almas / 10) - Math.floor(antes / 10);
@@ -173,7 +167,7 @@ function tracosDepoisDaLuta(j: Jogador, time: EntradaTime, res: ResultadoLuta, l
 function recrutarSujimon(p: Partida, j: Jogador, time: EntradaTime, rng: Rng): void {
   const us = time.lutadores.flatMap(l => (l.unidade ? [l.unidade] : []));
   const nivel = nivelTraco(us, 'sujimon');
-  const chance = nivel >= 0 ? CHANCE_SUJIMON[Math.min(nivel, CHANCE_SUJIMON.length - 1)]! : 0;
+  const chance = nivel >= 0 ? porDegrau(CHANCE_SUJIMON, nivel) : 0;
   if (!chance || !rng.chance(chance)) return;
   const candidatos = S().dados.campeoes.filter(c => c.fr === 'sujimon' && c.custo <= CUSTO_MAX_SUJIMON && !c.stand);
   const c = rng.pesado(candidatos, x => p.pool[x.id] ?? 0);
