@@ -150,21 +150,24 @@ const comprido = (id: string) => nomeTraco(id).length > LETRAS_NOME_COMPRIDO;
 
 /** Etiquetas dos traços da carta, todas visíveis em até duas linhas: a origem primeiro e os nomes compridos no fim
  *  (sozinhos numa linha, quebram melhor). Se ainda passar das duas linhas (4 traços com um comprido), os compridos
- *  viram o nome curto, com o inteiro no title. Muda de campeão = componente novo (key), que mede de novo. */
+ *  viram o nome curto, com o inteiro no title; se nem assim couber (fonte mais larga em outro sistema), a letra diminui
+ *  em dois passos. Muda de campeão = componente novo (key), que mede de novo. */
 function Etiquetas({ origem, classes }: { origem: string; classes: string[] }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [curto, setCurto] = useState(false);
+  /** 0 = normal; 1 = nomes compridos encurtados; 2 e 3 = também letra menor */
+  const [aperto, setAperto] = useState(0);
+  const curto = aperto > 0;
   const ordem = [...classes.filter(x => !comprido(x)), ...classes.filter(comprido)];
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el || curto) return;
-    const conferir = () => { if (el.scrollHeight > el.clientHeight + 1) setCurto(true); };
+    if (!el || aperto >= 3) return;
+    const conferir = () => { if (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1) setAperto(aperto + 1); };
     conferir();
     // a fonte do site pode chegar depois da primeira medida
     let vivo = true;
     void document.fonts?.ready.then(() => { if (vivo) conferir(); });
     return () => { vivo = false; };
-  }, [curto]);
+  }, [aperto]);
   const etiqueta = (id: string, origemDaCarta: boolean) => {
     const encurta = curto && comprido(id);
     return (
@@ -174,7 +177,7 @@ function Etiquetas({ origem, classes }: { origem: string; classes: string[] }) {
     );
   };
   return (
-    <span ref={ref} className="tracos" data-curto={curto || undefined}>
+    <span ref={ref} className="tracos" data-curto={curto || undefined} data-aperto={aperto > 1 ? aperto : undefined}>
       {etiqueta(origem, true)}
       {ordem.map(x => etiqueta(x, false))}
     </span>

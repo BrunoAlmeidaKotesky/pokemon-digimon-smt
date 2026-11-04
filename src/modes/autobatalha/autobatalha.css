@@ -561,6 +561,8 @@ body.ab-arrastando .ab-vaga[data-solta]{border-color:color-mix(in srgb, var(--go
    nome comprido vai pro fim e, se ainda não couber, vira o curto (Loja.tsx) */
 .ab-carta .tracos{display:flex;flex-wrap:wrap;align-content:center;align-content:safe center;gap:calc(2 * var(--u)) calc(3 * var(--u));padding:calc(3 * var(--u)) calc(4 * var(--u));height:calc(39 * var(--u));overflow:hidden;font-size:calc(9.5 * var(--u))}
 .ab-carta .tracos .ab-etq{line-height:1.4;padding:0 .45em}
+.ab-carta .tracos[data-aperto="2"]{font-size:calc(8.5 * var(--u))}
+.ab-carta .tracos[data-aperto="3"]{font-size:calc(7.5 * var(--u))}
 .ab-carta .marcas{position:absolute;top:calc(4 * var(--u));left:calc(4 * var(--u));right:calc(4 * var(--u));display:flex;flex-wrap:wrap;gap:3px;pointer-events:none}
 .ab-carta .marca{font:700 calc(10 * var(--u)) var(--display);text-transform:uppercase;letter-spacing:.4px;padding:1px 6px;border-radius:999px;background:rgba(0,0,0,.62);color:#fff}
 .ab-carta .marca.plano{background:var(--gold);color:#1a1300}
