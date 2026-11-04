@@ -9,7 +9,7 @@ import { alvoDe } from './util';
 export { GOLPE, HABILIDADES_CLASSE } from './habilidades-classe';
 export { HABILIDADES_PROPRIAS } from './habilidades-proprias';
 export {
-  ALMAS_POR_ABATE, ATRIBUTO_PERSONA, CHANCE_RECRUTAR_SUJIMON, JOGADA_DA_PARTIDA, TRACOS, contarTracos, nivelDoTraco,
+  ALMAS_POR_ABATE, ATRIBUTO_PERSONA, CHANCE_RECRUTAR_SUJIMON, DEADLOCK_POR_10_ALMAS, JOGADA_DA_PARTIDA, TRACOS, contarTracos, nivelDoTraco,
   type TracoAtivo,
 } from './tracos';
 export { ESCUDO_HAOS, ITENS, MULT_COMPLETO, RECEITAS, combinar, ehComponente } from './itens';
