@@ -5,7 +5,8 @@ https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/
 
 **Modos:** Duelo (rei do morro), Trio, Quarteto, Campeonato com chaveamento, Ranking (top às cegas: um personagem por vez
 vai pra uma posição do top e fica travado lá), Placar, franquias personalizadas (grupos
-de imagens próprias) e Online (salas com votação em cada celular: Duelo, Trio, Quarteto, Campeonato, Draft e Ranking, via
+de imagens próprias), Autobatalha (jogo de montar time com sinergias e luta automática contra 7 bots; design em
+[docs/tft/autobatalha.md](docs/tft/autobatalha.md)) e Online (salas com votação em cada celular: Duelo, Trio, Quarteto, Campeonato, Draft e Ranking, via
 PeerJS). O passo a passo pra jogar com amigos está em [RELATORIO.md](RELATORIO.md#como-testar-com-amigos).
 
 ## Franquias
@@ -94,6 +95,9 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
   habilidade vêm de `public/catalogo/set1-base.json` (gerado por `node docs/tft/base/gerar.mjs`); classes, habilidade,
   custo (1 a 5) e linha evolutiva de cada personagem (vista Linhas, subabas Classes e Custos, que conta quantos cabem em
   cada custo e avisa quem passou do limite) ficam em `pdx-set1-plano` e vão no `set1.json` (Importar restaura).
+- `node autobatalha.mjs [exportação]`: transforma a exportação do Catálogo (padrão `docs/tft/set1-escolhas-v5.json`)
+  no set do modo Autobatalha, `public/autobatalha/set1.json` (campeões, formas, ult de transformação, imagens dos
+  Bakugan e monstros do Final Fantasy). Regras em `docs/tft/autobatalha.md`; confira os avisos no fim.
 
 ## Publicação
 
@@ -108,6 +112,8 @@ todo push; na `react` (e em PRs) roda também o Playwright. Só a `main` publica
 
 Ficam no localStorage com as chaves `pdx-stats` (placar e histórico), `pdx-bags` (saco de sorteio por franquia) e
 `pdx-ygo-v1` (cache da lista de Yu-Gi-Oh!). O nome e o formato dessas chaves não mudam, pra ninguém perder o placar.
+A Autobatalha usa chaves próprias: `pdx-autobatalha-v1` (partida em andamento), `pdx-autobatalha-config` e
+`pdx-autobatalha-planos` (planejador de time).
 
 ## Histórico
 

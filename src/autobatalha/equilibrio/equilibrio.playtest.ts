@@ -1,0 +1,104 @@
+// Playtest automático da Autobatalha: roda todas as medidas do laboratório e das partidas de bots e grava
+// docs/tft/matematica/equilibrio.md (a parte de baixo, do marcador do histórico em diante, é escrita à mão e fica).
+// Não entra no `vitest run` normal. Comando e opções: docs/tft/matematica/README.md, seção "Playtest".
+//
+//   node node_modules/vitest/vitest.mjs run --config src/autobatalha/equilibrio/playtest.config.ts
+//
+// Variáveis de ambiente (todas opcionais):
+//   EQUILIBRIO_PARTES   lista separada por vírgula: campeoes,curva,pacotes,tracos,itens,partidas (padrão: todas)
+//   EQUILIBRIO_RAPIDO=1 menos cenários (pra conferir um ajuste rápido; os números ficam mais ruidosos)
+//   EQUILIBRIO_SAIDA    arquivo .md (padrão docs/tft/matematica/equilibrio.md)
+//   EQUILIBRIO_JSON     se definido, grava também os números crus nesse arquivo .json
+//   EQUILIBRIO_SEMENTE  semente base (padrão 2026)
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { it } from 'vitest';
+import { definirSet } from '../dados';
+import { HABILIDADES_CLASSE, TRACOS } from '../conteudo';
+import type { Custo, Estrela, SetDados } from '../tipos';
+import {
+  curva, estenderSet, forcaPorCampeao, idsDosItens, valorDoItem, valorDoPacote, valorDoTraco, type Grupo, type TabelaLanc,
+} from './laboratorio';
+import { juntarComHistorico } from './medidas';
+import { jogarPartidas } from './partidas';
+import { montarRelatorio, type Resultados } from './relatorio';
+
+const env = process.env;
+const RAPIDO = env.EQUILIBRIO_RAPIDO === '1';
+const PARTES = new Set((env.EQUILIBRIO_PARTES ?? 'campeoes,curva,pacotes,tracos,itens,partidas').split(',').map(s => s.trim()));
+const SAIDA = env.EQUILIBRIO_SAIDA ?? 'docs/tft/matematica/equilibrio.md';
+const BASE = Number(env.EQUILIBRIO_SEMENTE ?? 2026);
+const CENARIOS = RAPIDO
+  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, partidas: [1, 2, 3, 4, 5, 6] }
+  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, partidas: Array.from({ length: 24 }, (_, i) => i + 1) };
+
+const G = (custo: Custo, estrela: Estrela): Grupo => ({ custo, estrela });
+/** Confrontos da curva: [time, contra]. */
+const CONFRONTOS: [Grupo, Grupo][] = [
+  ...([1, 2] as const).flatMap(e => ([1, 2, 3, 4] as const).map(c => [G((c + 1) as Custo, e), G(c, e)] as [Grupo, Grupo])),
+  [G(1, 2), G(1, 1)],
+  [G(1, 2), G(2, 1)], [G(1, 2), G(3, 1)],
+  [G(2, 2), G(3, 1)], [G(2, 2), G(4, 1)],
+  [G(3, 2), G(4, 1)], [G(3, 2), G(5, 1)],
+  [G(1, 3), G(2, 2)], [G(1, 3), G(3, 2)], [G(2, 3), G(4, 2)],
+];
+
+function log(msg: string): void {
+  process.stdout.write(`[equilíbrio ${new Date().toISOString().slice(11, 19)}] ${msg}\n`);
+}
+
+it('playtest: mede e grava o equilibrio.md', () => {
+  const dados = JSON.parse(readFileSync('public/autobatalha/set1.json', 'utf8')) as SetDados;
+  const classes = [...Object.keys(HABILIDADES_CLASSE), 'unicos'];
+  definirSet(estenderSet(dados, classes));
+  const r: Resultados = { data: new Date().toISOString().slice(0, 10), base: BASE, cenarios: CENARIOS };
+
+  if (PARTES.has('curva')) {
+    log('curva por custo');
+    const lanc: TabelaLanc = new Map();
+    r.curva = CONFRONTOS.map(([p, q]) => ({ p, q, placar: curva(p, q, CENARIOS.curva, 5, BASE, lanc) }));
+    r.lancCurva = lanc;
+  }
+  if (PARTES.has('campeoes')) {
+    r.campeoes = [];
+    for (const custo of [1, 2, 3, 4, 5] as const) for (const estrela of [1, 2] as const) {
+      log(`campeões custo ${custo} ★${estrela}`);
+      r.campeoes.push(...forcaPorCampeao(custo, estrela, BASE));
+    }
+  }
+  if (PARTES.has('pacotes')) {
+    log('pacotes de classe');
+    r.pacotes = classes.flatMap(classe => ([1, 2] as const).map(estrela =>
+      ({ classe, estrela, eq: valorDoPacote(classe, estrela, CENARIOS.pacotes, BASE) })));
+  }
+  if (PARTES.has('tracos')) {
+    r.tracos = [];
+    for (const [id, t] of Object.entries(TRACOS)) {
+      log(`traço ${id}`);
+      for (let nivel = 0; nivel < t.degraus.length; nivel++) {
+        const eq = valorDoTraco(id, nivel, 2, CENARIOS.tracos, BASE);
+        if (eq) r.tracos.push({ traco: id, nivel, estrela: 2, eq });
+      }
+    }
+  }
+  if (PARTES.has('itens')) {
+    log('itens');
+    r.itens = idsDosItens().map(item => ({ item, estrela: 2 as const, eq: valorDoItem(item, 2, CENARIOS.itens, BASE) }));
+  }
+  if (PARTES.has('partidas')) {
+    log(`partidas de bots (${CENARIOS.partidas.length})`);
+    r.partidas = jogarPartidas(CENARIOS.partidas.map(s => s + BASE));
+  }
+
+  const antigo = existsSync(SAIDA) ? readFileSync(SAIDA, 'utf8') : null;
+  writeFileSync(SAIDA, juntarComHistorico(montarRelatorio(r), antigo));
+  log(`gravado ${SAIDA}`);
+  if (env.EQUILIBRIO_JSON) {
+    const comoObjeto = (m: Map<string, unknown>) => Object.fromEntries(m);
+    const json = { ...r, lancCurva: r.lancCurva && comoObjeto(r.lancCurva), partidas: r.partidas && {
+      ...r.partidas, tracos: comoObjeto(r.partidas.tracos), itens: comoObjeto(r.partidas.itens), monstros: comoObjeto(r.partidas.monstros),
+      lanc: comoObjeto(r.partidas.lanc), moedas: comoObjeto(r.partidas.moedas),
+    } };
+    writeFileSync(env.EQUILIBRIO_JSON, JSON.stringify(json));
+    log(`gravado ${env.EQUILIBRIO_JSON}`);
+  }
+});
