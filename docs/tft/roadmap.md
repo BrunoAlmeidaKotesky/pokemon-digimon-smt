@@ -30,6 +30,17 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 12. **Digimon com duas 4ª formas** (EBEmon ou EBEmon X, os dois Justimon, Saint Galgomon ou Rapidmon Armor): as duas
     viram opções da transformação; o jogador escolhe qual no tooltip.
 
+13. **Dano na derrota:** diminuí o do rascunho do design (as partidas acabavam no estágio 5). Agora vão até o 6 ou
+    7, umas 35 rodadas.
+14. **Monstros:** calibrados com partidas de bots. Os comuns quase sempre perdem; o chefe ganha umas 35–40% das vezes.
+15. **Detalhes da partida:**
+    - a sequência de vitórias e derrotas só conta luta contra jogador;
+    - empate conta como derrota pros dois;
+    - as cópias de quem é eliminado voltam pro pool;
+    - o campeão de graça do começo nunca é Stand;
+    - a partida é salva só no começo de cada planejamento (compra feita no meio se perde se a página fechar).
+16. **Deadlock:** o degrau 3 tinha o mesmo efeito do 2. Agora cada degrau dá +2 / 3 / 4% por 10 almas.
+
 ## Habilidades que eu reescrevi (código em src/autobatalha/conteudo)
 
 As que você escreveu curtas viraram habilidades com números, mantendo a ideia:

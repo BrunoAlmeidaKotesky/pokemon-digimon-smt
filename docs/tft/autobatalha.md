@@ -204,6 +204,8 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   imagem, origem, classes (com o que cada traço faz), custo, estrelas, atributos (vida, dano, armadura, resistência,
   vel. ataque, alcance, mana, crítico), habilidade com os números da estrela atual em destaque, linha evolutiva
   (imagens de cada nível, alternativas, a forma atual marcada, a transformação da ult), informações do Catálogo e itens.
+  Clicar numa unidade sua fixa o tooltip, com os botões de escolher a ult e a posição do Yu-Gi-Oh! (fecha com Esc ou
+  clique fora). O jogo carrega só quando a aba abre (import com lazy).
 - **Planejador de time:** escolher até 10 campeões (busca, filtro por origem, classe e custo), ver os traços que
   ativam, salvar planos; na loja, campeão do plano ganha marca. Abre durante a partida e fora dela.
 - Arrastar e soltar (banco, tabuleiro, vender na loja, item na unidade). Atalhos: D atualiza, F compra XP, E vende o

@@ -210,7 +210,7 @@ export async function abrir(page: Page, path = './') {
   await expect(page.locator('#status')).not.toContainText('carregando', { timeout: 15000 });
 }
 
-export async function aba(page: Page, nome: 'Duelo' | 'Trio' | 'Quarteto' | 'Campeonato' | 'Ranking' | 'Placar' | 'Personalizar' | 'Catálogo' | 'Online') {
+export async function aba(page: Page, nome: 'Duelo' | 'Trio' | 'Quarteto' | 'Campeonato' | 'Ranking' | 'Placar' | 'Personalizar' | 'Catálogo' | 'Autobatalha' | 'Online') {
   await page.locator('nav button', { hasText: nome }).click();
 }
 

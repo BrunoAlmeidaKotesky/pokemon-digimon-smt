@@ -40,7 +40,7 @@ test.describe('catálogo do Set 1', () => {
     await abrir(page);
     // o catálogo só é baixado quando a aba abre
     expect(calls.catalogo).toBeUndefined();
-    await expect(page.locator('nav button')).toHaveText(['Duelo', 'Trio', 'Quarteto', 'Campeonato', 'Ranking', 'Placar', 'Personalizar', 'Catálogo', 'Online']);
+    await expect(page.locator('nav button')).toHaveText(['Duelo', 'Trio', 'Quarteto', 'Campeonato', 'Ranking', 'Placar', 'Personalizar', 'Catálogo', 'Autobatalha', 'Online']);
     await aba(page, 'Catálogo');
     await expect(page.locator('nav button.on')).toHaveText('Catálogo');
     await expect(page.locator('section#catalog')).toBeVisible();

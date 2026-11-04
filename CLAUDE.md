@@ -21,8 +21,14 @@ testes e publicação: [README.md](README.md).
 - `fontes-e-imagens`: como avaliar uma fonte (CORS, cobertura de imagem), comparar artes e as pegadinhas de cada API.
 - `publicar`: checagens, `react` → CI → `main` → deploy → teste de fumaça no site no ar.
 
-## Modo estilo TFT (em planejamento)
+## Autobatalha (modo estilo TFT)
 
+- Implementado na aba Autobatalha (nome escolhido pelo usuário; nada de "TFT" nem marca da Riot na tela). Design com
+  todos os números: [docs/tft/autobatalha.md](docs/tft/autobatalha.md); decisões e pendências pra revisar com o
+  usuário: [docs/tft/roadmap.md](docs/tft/roadmap.md). Código: `src/autobatalha/` (contrato em `tipos.ts`;
+  `combate/`, `conteudo/`, `partida/`, `controle.ts`) e `src/modes/autobatalha/`. O set sai de `node autobatalha.mjs`
+  (exportação do Catálogo → `public/autobatalha/set1.json`); exportação nova = `docs/tft/set1-escolhas-vN.json`, rodar
+  o script e `node docs/tft/matematica/analise.mjs`.
 - Decisões, discutidas com o usuário: doc compartilhado "Modo estilo TFT: planejamento"
   (https://claude.ai/artifact/YZWHvKZY5tyVaJSqgz8Hx7). Já decidido: set fixo e curado, origem = franquia, classes
   gerais que cruzam franquias.
