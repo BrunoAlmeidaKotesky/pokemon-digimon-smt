@@ -150,13 +150,23 @@ export function aplicarBonus(a: Atributos, b: Bonus): Atributos {
 
 /** Forma que não lança nada (não final de Pokémon e Digimon): vida e dano a mais, por estrela, no lugar da
  *  habilidade (na estrela 2 as habilidades dos outros crescem, então o bônus também). */
-export const BONUS_SEM_HABILIDADE: Record<Estrela, number> = { 1: 0.2, 2: 0.25, 3: 0.25 };
+// buff pedido pelo usuário em 04/11/2026 (era 20/25/25%). Medido no playtest: 22/28% deixa 52 campeões fora da
+// faixa (eram 73); 25/33% passava do ponto (80 fora, formas que só atacam com até 82%).
+export const BONUS_SEM_HABILIDADE: Record<Estrela, number> = { 1: 0.22, 2: 0.28, 3: 0.28 };
+
+/** Alcance próprio de uma forma, quando o do papel não combina com o personagem (id da forma → casas). */
+export const ALCANCE_PROPRIO: Readonly<Record<string, number>> = {
+  // pedido do usuário em 04/11/2026: a Baba Yaga bate de perto
+  'deadlock:Baba': 1,
+};
 
 /** Base da unidade (custo + estrela + papel); a habilidade, quando tem, define a mana (e a inicial, se disser). Sem
  *  habilidade, ganha BONUS_SEM_HABILIDADE de vida e dano. */
 export function baseDaUnidade(u: Unidade, hab: Habilidade | null): Atributos {
   const s = S();
   const at = atributosBase(s.campeao(u.campeao).custo, u.estrela, papelDe(s.forma(u.forma)));
+  const alcance = ALCANCE_PROPRIO[u.forma];
+  if (alcance !== undefined) at.alcance = alcance;
   if (hab) {
     at.mana = hab.mana;
     if (hab.manaInicial !== undefined) at.manaInicial = hab.manaInicial;

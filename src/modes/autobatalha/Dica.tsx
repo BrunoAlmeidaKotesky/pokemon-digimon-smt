@@ -48,7 +48,9 @@ export function Dica({ estado }: { estado: EstadoTela }) {
     <div ref={ref} id="abDica" className={'ab-dica ' + d.alvo.tipo + (d.fixa ? ' fixa' : '')} role="tooltip">
       {corpo}
       <p className="ab-d-rodape">
-        {d.fixa ? `Fixa: Esc ou clique fora fecha${retrato ? '. Clique na imagem pra ver a arte grande' : ''}` : 'Botão direito deixa a dica fixa'}
+        {d.fixa
+          ? `Fixa: Esc ou clique fora fecha${retrato ? '. Clique na imagem pra ver a arte grande' : ''}`
+          : retrato ? 'Botão direito: todos os detalhes' : 'Botão direito deixa a dica fixa'}
       </p>
     </div>
   );
@@ -152,6 +154,53 @@ function DicaUnidade({ u, editavel, luta, fixa = false, etiqueta, segura }: {
   const tracos = [f.fr, ...f.classes.filter(x => x !== f.fr)];
   const pos = u.posicao ?? 'ataque';
   const passiva = tentar(() => passivaDe(u.campeao));
+  const topo = (
+    <div className="ab-d-topo" {...custoAttr(c.custo)}>
+      <FotoDica src={luta ? urlImagem(luta.img) : imgForma(u.forma)} nome={luta?.nome ?? f.nome} fixa={fixa} />
+      <div className="ab-d-tit">
+        <b className="ab-d-nome">{luta?.nome ?? f.nome}</b>
+        <span className="ab-d-sub">
+          <Estrelas n={u.estrela} />
+          <span className="ab-d-custo" title="Custo"><Moeda />{c.custo}</span>
+          {at && <span className="ab-d-alcance"><IconeAlcance alcance={at.alcance} />{at.alcance > 1 ? `de longe (${at.alcance} casas)` : 'de perto'}</span>}
+          {c.stand && <span className="ab-tag">Stand</span>}
+          {etiqueta && <span className="ab-tag">{etiqueta}</span>}
+        </span>
+      </div>
+    </div>
+  );
+  // Passando o mouse: só o essencial (pedido do usuário). O botão direito fixa a dica com todos os detalhes.
+  if (!fixa) {
+    return (
+      <>
+        {topo}
+        <ul className="ab-d-tracos curtos">
+          {tracos.map(id => <li key={id} style={corTraco(id)}><b>{nomeTraco(id)}</b></li>)}
+        </ul>
+        {luta && (
+          <p className="ab-d-agora">
+            Vida <b>{Math.max(0, Math.round(luta.vida))}</b>/{Math.round(luta.vidaMax)}
+            {luta.manaMax > 0 && <> · Mana <b>{Math.round(luta.mana)}</b>/{Math.round(luta.manaMax)}</>}
+          </p>
+        )}
+        <section className="ab-d-hab">
+          {hab ? (
+            <>
+              <h4>{hab.nome} <span className="mute">· {hab.mana} de mana</span></h4>
+              <p><TextoPorEstrela texto={hab.texto} estrela={u.estrela} /></p>
+            </>
+          ) : <p className="mute">{f.semUlt ? 'Sem habilidade: esta forma ainda evolui e só ataca.' : 'Sem habilidade: só ataca.'}</p>}
+        </section>
+        {passiva && <p className="ab-d-passiva"><b>Passiva: {passiva.nome}</b></p>}
+        {segura && <p className="ab-d-passiva"><b>Vem com {nomeItem(segura)}</b></p>}
+        {u.itens.length > 0 && (
+          <ul className="ab-d-itens curtos" aria-label="Itens">
+            {u.itens.map((id, i) => <li key={i} title={nomeItem(id)}><IconeItem id={id} /></li>)}
+          </ul>
+        )}
+      </>
+    );
+  }
   return (
     <>
       <div className="ab-d-topo" {...custoAttr(c.custo)}>

@@ -261,7 +261,9 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   cor do traço no meio, nome, contagem e próximo degrau, a escada com o atual em destaque e uma barra até o próximo.
   Passar o mouse destaca no tabuleiro e no banco as unidades do traço (as outras apagam); o botão de lista abre os
   campeões do traço (retrato, custo; os seus marcados, no tabuleiro mais forte) com "Detalhes" pras Informações.
-- **Tooltip** (passar o mouse em qualquer retrato: tabuleiro, banco, loja, planejador, inimigo na luta): nome,
+- **Tooltip.** Passar o mouse mostra só o essencial (pedido do usuário): nome, imagem, custo, estrelas, alcance, os
+  traços, a habilidade com os números da estrela atual, o nome da passiva, os itens e, na luta, vida e mana atuais. O
+  **botão direito** fixa o tooltip completo: nome,
   imagem, alcance, origem, classes (com o que cada traço faz), custo, estrelas, passiva (se tiver), atributos (vida,
   dano, armadura, resistência, vel. ataque, alcance, mana, crítico), habilidade com os números da estrela atual em
   destaque, linha evolutiva (imagens de cada nível, alternativas, a forma atual marcada, a transformação da ult),

@@ -53,8 +53,11 @@ export function transformacao(alvo: string): Habilidade {
 }
 
 /** Classes da forma que têm ult, na ordem do Catálogo. */
+/** Ults de classe que a forma pode usar. Atirador não usa o Charme da Safada (pedido do usuário em 04/11/2026: a
+ *  combinação ganhava ~80% das lutas). */
 export function classesComUlt(forma: FormaDados): string[] {
-  return forma.classes.filter(c => c in HABILIDADES_CLASSE);
+  const atirador = forma.classes.includes('atirador');
+  return forma.classes.filter(c => c in HABILIDADES_CLASSE && !(atirador && c === 'safada'));
 }
 
 /** Regra do LoL (com ou sem traço): na estrela 3, a cada 2 lançamentos a habilidade sai duas vezes. */

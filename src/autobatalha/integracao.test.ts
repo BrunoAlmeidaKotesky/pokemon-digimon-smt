@@ -8,7 +8,7 @@ import type { Partida, SetDados } from './tipos';
 import { simularLuta, atributosDaUnidade } from './combate';
 import {
   ALMAS_POR_ABATE, CHANCE_RECRUTAR_SUJIMON, combinar, contarTracos, DEADLOCK_POR_10_ALMAS, ehComponente, HABILIDADES_PROPRIAS,
-  JOGADA_DA_PARTIDA, TRACOS,
+  JOGADA_DA_PARTIDA, opcoesDeUlt, TRACOS,
 } from './conteudo';
 import * as P from './partida';
 
@@ -53,6 +53,15 @@ describe('Autobatalha com tudo de verdade', () => {
     for (const [id, arr] of [['overwatch', P.BONUS_OVERWATCH], ['deadlock', P.BONUS_DEADLOCK_POR_10_ALMAS], ['sujimon', P.CHANCE_SUJIMON]] as const) {
       expect(arr.length, id).toBe(TRACOS[id]!.degraus.length);
     }
+  });
+
+  it('ajustes pedidos pelo usuário: Baba bate de perto; Atirador não escolhe o Charme', () => {
+    const baba = { uid: 1, campeao: 'deadlock:baba', estrela: 1 as const, forma: 'deadlock:Baba', itens: [] };
+    expect(atributosDaUnidade(baba).alcance).toBe(1);
+    const set = JSON.parse(readFileSync('public/autobatalha/set1.json', 'utf8')) as SetDados;
+    const comCharme = Object.values(set.formas).filter(f => f.classes.includes('atirador') && f.classes.includes('safada'));
+    expect(comCharme.length).toBeGreaterThan(0);
+    for (const f of comCharme) expect(opcoesDeUlt(f).map(o => o.id), f.id).not.toContain('safada');
   });
 
   it('partidas de 8 bots terminam, com colocações 1 a 8 e sem erro do conteúdo', () => {

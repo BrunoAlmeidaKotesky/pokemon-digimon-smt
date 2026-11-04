@@ -53,13 +53,18 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 16. **Deadlock:** o degrau 3 tinha o mesmo efeito do 2. Agora, com 5 degraus, cada um dá +1,5 / 2 / 2,5 / 3 / 4% por
     10 almas.
 
-## Pra você decidir (da rodada de equilíbrio)
+## Decididos depois da rodada de equilíbrio
 
-- **1º lançamento:** o alvo ficou em 4–10 s de luta (média 8,5 s), porque você pediu menos ult rápida. Fica?
-- **Formas que não lançam** (1ª e 2ª dos Pokémon/Digimon) ganham só 25–34% na estrela 2: subir o bônus delas ou
-  dar uma ult simples (minha recomendação: um golpe forte da classe, sem efeito)?
-- **Atirador com a ult Charme** (Kai'Sa, Tracer, Widowmaker) ganha ~80%: tirar o Charme das opções do Atirador
-  (recomendo) ou baixar o alcance do Atirador de 4 pra 3?
+- **1º lançamento** entre 4 e 10 s de luta (média 8,5 s). **[você] ok.**
+- **Formas que não lançam:** **[você] buff:** +22% de vida e dano na estrela 1 e +28% na 2 e na 3 (era 20/25%). O
+  playtest mediu 52 campeões fora da faixa com isso (eram 73); +25/33% passava do ponto (80 fora).
+- **Atirador com a ult Charme:** **[você] nerf:** quem é Atirador não escolhe mais a ult da Safada.
+- **Tooltip:** **[você] passar o mouse mostra só o essencial** (nome, custo, estrelas, alcance, traços, habilidade,
+  itens); o botão direito fixa com todos os detalhes.
+- **Baba (Deadlock):** **[você] bate de perto** (alcance 1).
+
+## Pra você decidir
+
 - **Visual da tela nova:** tons do gramado, metade do adversário em oliva, cores das classes, ícones de perto/longe e
   dos degraus, a apresentação "VS" e o lugar do painel de dano. E os sons, que ninguém ouviu ainda.
 - **Símbolos dos componentes:** usei os símbolos clássicos dos atributos (SVG da Bakugan Wiki). Os de facção mais
