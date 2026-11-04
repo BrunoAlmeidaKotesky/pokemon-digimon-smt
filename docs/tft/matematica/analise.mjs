@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import * as m from './lib.mjs';
 
 const ler = c => JSON.parse(fs.readFileSync(c, 'utf8'));
-const EXPORTACAO = 'docs/tft/set1-escolhas-v4.json';
+const EXPORTACAO = 'docs/tft/set1-escolhas-v5.json';
 const SAIDA = 'docs/tft/matematica/resultado.md';
 const ex = ler(EXPORTACAO);
 

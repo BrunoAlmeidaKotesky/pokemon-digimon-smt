@@ -94,6 +94,9 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
   habilidade vêm de `public/catalogo/set1-base.json` (gerado por `node docs/tft/base/gerar.mjs`); classes, habilidade,
   custo (1 a 5) e linha evolutiva de cada personagem (vista Linhas, subabas Classes e Custos, que conta quantos cabem em
   cada custo e avisa quem passou do limite) ficam em `pdx-set1-plano` e vão no `set1.json` (Importar restaura).
+- `node autobatalha.mjs [exportação]`: transforma a exportação do Catálogo (padrão `docs/tft/set1-escolhas-v5.json`)
+  no set do modo Autobatalha, `public/autobatalha/set1.json` (campeões, formas, ult de transformação, imagens dos
+  Bakugan e monstros do Final Fantasy). Regras em `docs/tft/autobatalha.md`; confira os avisos no fim.
 
 ## Publicação
 
