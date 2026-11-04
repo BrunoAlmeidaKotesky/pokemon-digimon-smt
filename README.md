@@ -5,9 +5,25 @@ https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/
 
 **Modos:** Duelo (rei do morro), Trio, Quarteto, Campeonato com chaveamento, Ranking (top às cegas: um personagem por vez
 vai pra uma posição do top e fica travado lá), Placar, franquias personalizadas (grupos
-de imagens próprias), Autobatalha (jogo de montar time com sinergias e luta automática contra 7 bots; design em
-[docs/tft/autobatalha.md](docs/tft/autobatalha.md)) e Online (salas com votação em cada celular: Duelo, Trio, Quarteto, Campeonato, Draft e Ranking, via
-PeerJS). O passo a passo pra jogar com amigos está em [RELATORIO.md](RELATORIO.md#como-testar-com-amigos).
+de imagens próprias), Autobatalha (jogo de montar time com sinergias e luta automática, contra 7 bots ou online com
+amigos; design em [docs/tft/autobatalha.md](docs/tft/autobatalha.md)) e Online (salas com votação em cada celular:
+Duelo, Trio, Quarteto, Campeonato, Draft e Ranking, via PeerJS). O passo a passo pra jogar as salas da aba Online com
+amigos está em [RELATORIO.md](RELATORIO.md#como-testar-com-amigos); o da Autobatalha, logo abaixo.
+
+### Autobatalha com amigos
+
+1. Na aba **Autobatalha**, toque em **Criar sala online** (bloco "Jogar com amigos", no lobby). Aparecem o código de 4
+   letras e o link (`…/?autobatalha=ABCD`): **Copiar link** e mande pros amigos (até 8 pessoas; o resto vira bot).
+2. Quem abre o link cai direto na sala. Cada um escolhe o nome, o ícone e o tabuleiro (todo mundo vê). Só quem criou a
+   sala (o anfitrião, com a coroa) muda as regras (relógio, segundos, dificuldade dos bots), tira alguém e toca em
+   **Começar partida**.
+3. Na partida cada um joga no próprio navegador: compra, posiciona e vota **Pronto** (com todos prontos, a luta começa
+   na hora). Cada um vê a própria luta; a rodada segue quando todos terminam de ver (ou pulam).
+4. **Quem criou a sala precisa deixar a página aberta até o fim** (de preferência visível), mesmo eliminado: é ela que
+   roda a partida de todos. Se ela fechar, a sala acaba e todo mundo vê o aviso.
+5. Quem cai continua na partida (um bot joga por ele) e volta abrindo o link de novo no mesmo navegador (ou, de outro,
+   com o mesmo nome). Se não conectar, valem as dicas de rede e TURN do [RELATORIO.md](RELATORIO.md#como-testar-com-amigos).
+6. Todo mundo precisa estar na mesma versão do site: se aparecer "versão diferente", recarreguem a página.
 
 ## Franquias
 
@@ -62,6 +78,8 @@ node node_modules/@playwright/test/cli.js test
 - `src/state/`: estado do site e ações dos modos.
 - `src/modes/`: um modo por pasta. `src/components/`: Carta, Arena, Roleta, Chaveamento, posições do Ranking, seletores.
 - `src/online/`: modo online (redutor puro da sala, protocolo, transporte PeerJS).
+- `src/autobatalha/`: a Autobatalha (set, motor de combate, conteúdo, partida, controle) e `online/`, a sala com amigos
+  (anfitrião, convidado, protocolo, visão de cada um); a tela fica em `src/modes/autobatalha/`.
 - `src/customs/`: franquias personalizadas.
 - `public/`: imagens e listas locais (`smt/`, `sujimon/`, `ff/`).
 
@@ -112,8 +130,9 @@ todo push; na `react` (e em PRs) roda também o Playwright. Só a `main` publica
 
 Ficam no localStorage com as chaves `pdx-stats` (placar e histórico), `pdx-bags` (saco de sorteio por franquia) e
 `pdx-ygo-v1` (cache da lista de Yu-Gi-Oh!). O nome e o formato dessas chaves não mudam, pra ninguém perder o placar.
-A Autobatalha usa chaves próprias: `pdx-autobatalha-v1` (partida em andamento), `pdx-autobatalha-config` e
-`pdx-autobatalha-planos` (planejador de time).
+A Autobatalha usa chaves próprias: `pdx-autobatalha-v1` (partida em andamento), `pdx-autobatalha-config`,
+`pdx-autobatalha-planos` (planejador de time) e `pdx-autobatalha-aparelho` (senha aleatória deste navegador pra
+voltar pro mesmo lugar numa sala online).
 
 ## Histórico
 

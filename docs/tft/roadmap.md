@@ -73,6 +73,12 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   girando com brilho mais forte e o ★★/★★★) e o "Pronto" como **votação** (placar "Prontos 7/8", ✓ em quem votou;
   com todos prontos a luta começa na hora; no solo os bots votam no começo e o seu voto fecha; dá pra desfazer). O
   voto fica na partida (`Jogador.pronto`), pensando no online. **Pra você ver:** as cores dos anéis (prints da loja).
+- **Online (jogar com amigos):** **[você] pediu** como prioridade. Feito com o anfitrião autoritativo (o navegador de
+  quem cria a sala roda a partida; a luta de cada um é reproduzida no navegador dele com a mesma semente), link
+  `?autobatalha=ABCD`, até 8 pessoas e bots no resto; detalhes na seção "Online" do design. Decisões minhas: quem cai
+  vira bot até voltar (pelo mesmo aparelho ou pelo mesmo nome); partida em andamento não aceita gente nova; o
+  anfitrião que fecha a página acaba a sala (sem trocar de anfitrião); a rodada espera todos verem a luta (cada um na
+  velocidade dele), com um limite; a partida online não é salva; nome vazio vira "Jogador N".
 
 ## Pra você decidir
 
@@ -124,4 +130,6 @@ está fora no fim de [matematica/equilibrio.md](matematica/equilibrio.md).
 - Linhas marcadas como não confirmadas no Catálogo (todas as da Persona e do Sujimon, Zygarde) entraram como estão.
 - Classes fora da faixa de tamanho (resultado.md, seção 3): Temporais (faltam 6), Anjo (faltam 3), Assassino
   (faltam 3), Safada (sobram 4), Porradeiro (sobram 2). Dá pra mexer no Catálogo.
-- Modo online (jogar com amigos) ficou pra depois: só solo contra bots.
+- Online: sem troca de anfitrião (se ele sair, a sala acaba) e sem espectador (quem chega com a partida rolando espera
+  a próxima). Com PeerJS de verdade, testado só no mesmo computador (dois navegadores isolados): falta testar entre
+  redes diferentes.

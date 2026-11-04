@@ -1,10 +1,10 @@
 // Partida da Autobatalha: loja, economia, rodadas, carrossel, bots e salvar. Lógica pura sobre o objeto Partida
 // (muda ele no lugar). As ações devolvem a mensagem pro jogador quando não dá ("Ouro insuficiente") ou null quando
 // deu certo.
-// O controle (src/autobatalha/controle.ts) liga o motor (definirMotor), roda o relógio e chama isto.
+// O controle (src/autobatalha/controle.ts) liga o motor (definirMotor), roda o relógio e chama isto; as ações do
+// jogador passam por aplicarAcao (acao.ts), que confere a fase de cada uma.
 import type { Onde, Partida } from '../tipos';
-import { S } from '../dados';
-import { jogadorDe, origemDe } from './consultas';
+import { jogadorDe } from './consultas';
 import { escolherForma } from './evolucao';
 import { pegarDoCarrossel } from './carrossel';
 import { equiparItem, juntarSoltos } from './itens';
@@ -34,7 +34,8 @@ export * from './origens';
 export { casaNoChao, moedasProChao, pegarMoeda } from './moedas';
 export { atributosChefe, atributosComum, gerarMonstros } from './monstros';
 export { definirMotor, limparMotor, motorLigado, type MotorPartida, type TracoContado } from './motor';
-export { limparNome, lugaresDaSala, nomeDoJogador, novaPartida } from './nova';
+export { limparNome, lugaresComHumanos, lugaresDaSala, nomeDoJogador, novaPartida, novaPartidaComHumanos } from './nova';
+export { aplicarAcao, FASES_DE_JOGO, MSG_SO_PLANEJAMENTO, podeAgir } from './acao';
 export { confrontosDaRodada, sortearConfrontos } from './rodadas';
 export { apagarPartida, carregarPartida, CHAVE_PARTIDA, salvarPartida, temPartidaSalva } from './salvar';
 export { jogarBot, jogarBots, nivelAlvo, perfilDa, PERFIS_BOT, type PerfilBot } from './bots';
@@ -61,21 +62,5 @@ export const escolherEvolucao = (p: Partida, jid: string, forma: string): string
 /** O jogador pega a opção i do carrossel (só depois de liberado, uma vez). */
 export const pegarCarrossel = (p: Partida, jid: string, i: number): string | null => pegarDoCarrossel(p, jid, i);
 
-/** Qual ult a unidade usa (id de classe da forma ou de forma de transformação). */
-export function escolherUlt(p: Partida, jid: string, uid: number, ult: string): string | null {
-  const u = jogadorDe(p, jid).unidades[uid];
-  if (!u) return 'Unidade não encontrada';
-  const f = S().forma(u.forma);
-  if (!f.classes.includes(ult) && !(f.transforma ?? []).includes(ult)) return 'Essa ult não é desta forma';
-  u.ult = ult;
-  return null;
-}
-
-/** Yu-Gi-Oh!: alterna ataque/defesa. */
-export function alternarPosicao(p: Partida, jid: string, uid: number): string | null {
-  const u = jogadorDe(p, jid).unidades[uid];
-  if (!u) return 'Unidade não encontrada';
-  if (origemDe(u) !== 'ygo') return 'Só as cartas do Yu-Gi-Oh! têm posição';
-  u.posicao = u.posicao === 'defesa' ? 'ataque' : 'defesa';
-  return null;
-}
+/** Qual ult a unidade usa; Yu-Gi-Oh!: alterna ataque/defesa (acao.ts, junto das outras ações). */
+export { alternarPosicao, escolherUlt } from './acao';

@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ORIGENS, type Custo } from '../../autobatalha/tipos';
 import { S, urlImagem } from '../../autobatalha/dados';
-import { acoes } from '../../autobatalha/controle';
+import { acoes } from '../../autobatalha/sessao';
 import { FILTRO_ICONES_VAZIO, filtrarIcones, iconesDoSet, type FiltroIcones } from '../../autobatalha/icones';
 import { Foto, Moeda, corTraco, custoAttr, nomeTraco, plural } from './comum';
 

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
-  fimDoPlanejamento, humano, jogadorDe, limparVotos, novaPartida, prontos, todosProntos, votarBots, votarPronto, vivos,
+  fimDoPlanejamento, humano, jogadorDe, limparVotos, novaPartida, novaPartidaComHumanos, prontos, todosProntos, votarBots,
+  votarPronto, vivos,
 } from './index';
 import { prepararTeste } from './test-helpers';
 
@@ -50,5 +51,18 @@ describe('votação do "Pronto"', () => {
     votarBots(p);
     limparVotos(p);
     expect(prontos(p)).toHaveLength(0);
+  });
+
+  it('online: cada humano vota da sua tela; humano fora do ar vota como bot', () => {
+    const p = novaPartidaComHumanos(5, [{ id: 'h1', escolhas: {} }, { id: 'h2', escolhas: {} }, { id: 'h3', escolhas: {} }], 'facil', 'h1');
+    jogadorDe(p, 'h3').ausente = true;
+    votarBots(p);
+    expect(prontos(p).map(j => j.id)).toContain('h3');
+    expect(prontos(p).map(j => j.id)).not.toContain('h2');
+    expect(todosProntos(p)).toBe(false);
+    votarPronto(p, 'h1', true);
+    expect(todosProntos(p)).toBe(false);
+    votarPronto(p, 'h2', true);
+    expect(todosProntos(p)).toBe(true);
   });
 });

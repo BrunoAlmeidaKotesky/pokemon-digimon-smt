@@ -6,7 +6,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import type { Jogador } from '../../autobatalha/tipos';
 import { S } from '../../autobatalha/dados';
-import { acoes } from '../../autobatalha/controle';
+import { acoes } from '../../autobatalha/sessao';
 import { CUSTO_ATUALIZAR, CUSTO_XP, JUROS_MAX, bonusSequencia, chancesLoja, juros, valorVenda, xpParaProximo } from '../../autobatalha/partida';
 import { propsDica, useArrasto } from './interacao';
 import { usePlanoAtivo } from './planos';

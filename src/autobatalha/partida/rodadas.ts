@@ -23,7 +23,8 @@ function* pareamentos(ids: string[]): Generator<[string, string][]> {
   }
 }
 
-/** Sorteia os confrontos contra jogadores. O humano (se vivo) fica sempre no lado A. */
+/** Sorteia os confrontos contra jogadores. O humano desta tela (p.voce, se vivo) fica sempre no lado A; online, humano
+ *  contra bot também fica no A (o convidado no lado B vê a luta espelhada, online/visao.ts). */
 export function sortearConfrontos(p: Partida, rng: Rng): [string, string][] {
   const vs = vivos(p);
   if (vs.length < 2) return [];
@@ -52,7 +53,9 @@ export function sortearConfrontos(p: Partida, rng: Rng): [string, string][] {
     if (melhor?.penalidade === 0) break;
   }
   // o humano sempre no lado A
-  return melhor!.pares.map(([a, b]) => (b === p.voce ? [b, a] : [a, b]) as [string, string]);
+  const humanoAqui = (id: string) => porId.get(id)?.bot === false;
+  const trocar = (a: string, b: string) => b === p.voce || (humanoAqui(b) && !humanoAqui(a) && a !== p.voce);
+  return melhor!.pares.map(([a, b]) => (trocar(a, b) ? [b, a] : [a, b]) as [string, string]);
 }
 
 /** Confrontos da rodada pelo tipo. */
