@@ -227,12 +227,42 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   tanques na frente, alcance atrás; itens no mais forte; Stand preso a um aliado qualquer.
 - **Salvar:** a partida é salva no localStorage (`pdx-autobatalha-v1`) no começo de cada planejamento (depois do
   carrossel: fechar a página no meio dele volta pro último planejamento salvo); os planos do planejador em
-  `pdx-autobatalha-planos`. Chaves novas; as antigas do site não mudam.
+  `pdx-autobatalha-planos`; a configuração (regras da sala, as suas escolhas no lobby e as preferências) em
+  `pdx-autobatalha-config` (config antiga, sem os campos do lobby, ganha os padrões). Chaves novas; as antigas do
+  site não mudam.
+- **Jogadores e estilos:** cada jogador tem um ícone (`Jogador.avatar`, a imagem de uma forma) e um **estilo de
+  tabuleiro** (`Jogador.estilo`, id de `src/autobatalha/estilos.ts`; partida salva antes disto = o padrão, o
+  gramado). O humano leva o nome, o ícone e o estilo escolhidos no lobby (`novaPartida(semente, escolhas,
+  dificuldade)`); os bots sorteiam o ícone (no 1º sorteio da partida, como sempre) e o estilo (num gerador à parte,
+  pra não mudar o resto da partida). `lugaresDaSala(semente, escolhas)` dá os 8 como vão estar na partida, e o lobby
+  mostra isso antes de começar.
 
 ## Tela (src/modes/autobatalha)
 
 - Aba **Autobatalha** no site. Só monta o conteúdo com a aba aberta; o jogo carrega só quando a aba abre (import com
   lazy). Pensada pra computador, de 1280 a 2560 px.
+- **Lobby** (Lobby.tsx, no lugar da tela inicial): a sala antes da partida. À esquerda, os **8 jogadores**: você,
+  com a marca de **anfitrião** (coroa), e os 7 bots com o ícone, a dificuldade e uma prévia do tabuleiro que vão ter
+  na partida (a sala guarda a semente da próxima partida; começar sem semente usa ela, e depois a sala sorteia outra).
+  À direita: **Você** (o que os outros veem: nome opcional, padrão "Você", até 16 letras; o **ícone**, botão "Trocar
+  ícone" e "Sortear" pra voltar ao sorteado; o **tabuleiro**, 8 estilos com prévia), as **Regras da sala** (relógio,
+  segundos de planejamento e dificuldade dos bots: só o anfitrião muda, e a tela diz isso) e as **Suas preferências**
+  (velocidade da luta e volume, só da sua tela). Embaixo: Planejador de times, "Continuar a partida salva" (se houver)
+  e **Começar partida**, e o "Como jogar".
+- **Sala × jogador** (pensando num modo online): o contrato separa as `RegrasSala` (do anfitrião), as
+  `EscolhasJogador` (nome, ícone, estilo; tipos.ts) e as `Preferencias`; `EstadoTela.sala` tem a semente, o
+  anfitrião, você e os 8 `LugarSala`. Ações: `mudarRegras` (ignorada se você não for o anfitrião), `escolher` e
+  `configurar` (tudo salvo em `pdx-autobatalha-config`). Hoje o jogo é solo: você é sempre o anfitrião.
+- **Ícone** (Icones.tsx; lista e filtros em `src/autobatalha/icones.ts`): janela com a grade de todos os personagens
+  do set (cada forma uma vez, inclusive as de transformação), retratos redondos com a arte inteira, borda da cor do
+  custo; filtros por nome (sem acento), origem (botões nas cores das franquias) e custo. Clicar escolhe e fecha. O
+  ícone aparece na lista do lobby, na lista de jogadores da partida, na apresentação "VS", no carrossel e no fim.
+- **Estilos do tabuleiro** (só cores e fundo, em variáveis CSS por `[data-estilo]` no autobatalha.css, claro e
+  escuro): Gramado (o verde de sempre, padrão), Deserto, Neve, Vulcão, Oceano, Noite estrelada, Floresta e Roxo
+  arcano. Cada um define as faixas do chão, um desenho por cima (estrelas, neve, brasas, brilhos, dunas, ondas,
+  manchas de luz), as casas (miolo, brilho, aro) e um tom pras casas do adversário. A partida usa o seu; olhando o
+  tabuleiro de outro jogador, o dele; na luta, a metade de cima (chão e casas) é do adversário (do dono, contra
+  fantasma; contra monstros, a sua), e quando os dois têm o mesmo estilo as casas de cima ficam no tom "deles".
 - **A partida ocupa a janela inteira**, abaixo das abas do site (o cabeçalho some e as abas ficam numa faixa fina).
   Tudo escala com a janela: a tela põe `--k` no `#autobatalha` (1 = 1280×720, até 2,4) e o CSS mede tudo em
   `calc(N * var(--u))` (`--u` = 1px × k); o tabuleiro mede o espaço que sobra (ResizeObserver) e escolhe o maior
@@ -244,8 +274,9 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   luta, o **dano por unidade** (causado, do motor, e recebido, somado dos eventos; seu lado ou o deles). Embaixo: ouro
   com **juros** (+1 a cada 10) e **sequência** de vitórias ou derrotas, nível e XP, chances da loja, XP, Atualizar,
   travar e as 7 cartas.
-- **Tabuleiro:** um gramado (faixas de grama, vinheta) com casas hexagonais de grama de aro claro; na luta a metade
-  do adversário é de outra grama (oliva) e a linha do meio é tracejada com um círculo central; no planejamento a
+- **Tabuleiro:** no estilo padrão, um gramado (faixas de grama, vinheta) com casas hexagonais de grama de aro claro;
+  na luta a metade do adversário tem o estilo dele (mesmo estilo: o tom "deles", oliva no gramado) e a linha do meio
+  é tracejada com um círculo central; no planejamento a
   linha tracejada fica em cima da sua metade (o adversário vem de cima). Em cima da área: **unidades x/y** (limite da
   partida, sem número fixo na tela; pisca quando sobra vaga) e a **contagem grande** dos segundos até a luta, que fica
   vermelha e pulsa nos últimos 5.
@@ -273,8 +304,8 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Informações** (botão no topo; Info.tsx): todos os traços com degraus, efeitos e os campeões de cada um; a grade de
   receitas dos Bakugan (componente × componente); as chances da loja por nível até o máximo da partida, com XP e
   limite do tabuleiro; e as regras de ouro, juros, sequência, venda e dano, montadas das constantes da partida.
-- **Configuração** (tela inicial e engrenagem na partida): relógio e segundos, velocidade, dificuldade dos bots (vale
-  pra partida nova) e volume com mudo.
+- **Configuração** (lobby e engrenagem na partida): regras da sala (relógio e segundos, dificuldade dos bots, que vale
+  pra partida nova; só o anfitrião) e preferências (velocidade e volume com mudo).
 - **Planejador de time:** escolher até 10 campeões (busca, filtro por origem, classe e custo), ver os traços que
   ativam, salvar planos; na loja, campeão do plano ganha marca. Abre durante a partida e fora dela.
 - Arrastar e soltar: banco, tabuleiro, vender na loja (o valor de venda vai junto com o mouse e aparece na loja), item

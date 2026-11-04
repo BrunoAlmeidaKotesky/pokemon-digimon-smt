@@ -10,19 +10,26 @@
 // A partida é trocada por uma cópia a cada mudança (estado.partida muda de referência), então a tela pode
 // comparar referências. Sem ninguém olhando (aba fechada), o relógio, o carrossel e a luta ficam pausados.
 import { useSyncExternalStore } from 'react';
-import type { Acoes, Config, EstadoCarrossel, EstadoTela, Velocidade } from './api';
+import type { Acoes, Config, EstadoCarrossel, EstadoSala, EstadoTela, RegrasSala, Velocidade } from './api';
 import { atributosDaUnidade, simularLuta } from './combate';
 import { combinar, contarTracos, ehComponente } from './conteudo';
-import { carregarSet, S } from './dados';
+import { carregarSet, S, setCarregado } from './dados';
+import { ESTILO_PADRAO, estiloOuPadrao } from './estilos';
 import * as P from './partida';
-import type { Fase, Onde, Partida } from './tipos';
+import type { EscolhasJogador, Fase, Onde, Partida } from './tipos';
 
 P.definirMotor({ simularLuta, atributosDaUnidade, contarTracos, combinar, ehComponente });
 
 // ---------- configuração ----------
 
 export const CHAVE_CONFIG = 'pdx-autobatalha-config';
-export const CONFIG_PADRAO: Config = { relogio: true, segundos: 35, velocidade: 1, dificuldade: 'facil', volume: 0.6 };
+export const CONFIG_PADRAO: Config = {
+  relogio: true, segundos: 35, dificuldade: 'facil',
+  nome: '', avatar: null, estilo: ESTILO_PADRAO,
+  velocidade: 1, volume: 0.6,
+};
+/** campos da configuração que são regras da sala: só o anfitrião muda */
+export const CAMPOS_SALA: readonly (keyof RegrasSala)[] = ['relogio', 'segundos', 'dificuldade'];
 /** tempo da tela de resultado entre a luta e o próximo planejamento */
 export const MS_RESULTADO = 1500;
 /** tick da reprodução da luta */
@@ -37,17 +44,26 @@ const MS_AVISO = 2500;
 
 function lerConfig(): Config {
   try {
-    const c = JSON.parse(globalThis.localStorage?.getItem(CHAVE_CONFIG) ?? 'null') as Partial<Config> | null;
-    if (!c || typeof c !== 'object') return { ...CONFIG_PADRAO };
-    return normalizarConfig({ ...CONFIG_PADRAO, ...c });
+    return normalizarConfig(JSON.parse(globalThis.localStorage?.getItem(CHAVE_CONFIG) ?? 'null'));
   } catch { return { ...CONFIG_PADRAO }; }
 }
-function normalizarConfig(c: Config): Config {
-  const v: Velocidade = c.velocidade === 2 || c.velocidade === 4 ? c.velocidade : 1;
-  const segundos = Number.isFinite(c.segundos) ? Math.min(300, Math.max(5, Math.round(c.segundos))) : CONFIG_PADRAO.segundos;
+const numero = (x: unknown): number | null => (typeof x === 'number' && Number.isFinite(x) ? x : null);
+/** Configuração válida a partir do que veio do armazenamento: o que faltar (config antiga, sem os campos da sala e
+ *  do jogador) ou vier errado fica com o padrão. */
+export function normalizarConfig(bruto: unknown): Config {
+  const c = (bruto && typeof bruto === 'object' ? bruto : {}) as Partial<Record<keyof Config, unknown>>;
+  const velocidade: Velocidade = c.velocidade === 2 || c.velocidade === 4 ? c.velocidade : 1;
+  const s = numero(c.segundos);
+  const segundos = s != null ? Math.min(300, Math.max(5, Math.round(s))) : CONFIG_PADRAO.segundos;
   const dificuldade = c.dificuldade === 'normal' || c.dificuldade === 'dificil' ? c.dificuldade : 'facil';
-  const volume = Number.isFinite(c.volume) ? Math.min(1, Math.max(0, c.volume)) : CONFIG_PADRAO.volume;
-  return { relogio: c.relogio !== false, segundos, velocidade: v, dificuldade, volume };
+  const v = numero(c.volume);
+  const volume = v != null ? Math.min(1, Math.max(0, v)) : CONFIG_PADRAO.volume;
+  const avatar = typeof c.avatar === 'string' && c.avatar && c.avatar.length <= 200 ? c.avatar : null;
+  return {
+    relogio: c.relogio !== false, segundos, dificuldade,
+    nome: P.limparNome(c.nome), avatar, estilo: estiloOuPadrao(c.estilo),
+    velocidade, volume,
+  };
 }
 function gravarConfig(c: Config): void {
   try { globalThis.localStorage?.setItem(CHAVE_CONFIG, JSON.stringify(c)); } catch { /* sem localStorage */ }
@@ -58,12 +74,32 @@ function gravarConfig(c: Config): void {
 let partida: Partida | null = null;
 let pendente: P.ResultadoRodada | null = null;
 let estado: EstadoTela = {
-  carregando: false, erro: null, partida: null, relogio: null, reproducao: null, config: lerConfig(),
+  carregando: false, erro: null, partida: null, relogio: null, reproducao: null, config: lerConfig(), sala: null,
   temSalva: false, carrossel: null, olhando: null, aviso: null,
 };
 /** segundos desde o começo do carrossel, e o segundo em que ele acaba */
 let tCarrossel = 0;
 let fimCarrossel = 0;
+
+// ---------- sala (lobby) ----------
+// A sala separa o que é do anfitrião (RegrasSala: relógio, segundos, dificuldade) do que é de cada jogador
+// (EscolhasJogador: nome, ícone, estilo). Hoje o jogo é solo e você é sempre o anfitrião; num modo online, as regras
+// viriam de quem criou a sala e as escolhas de cada um.
+
+/** semente da próxima partida: o lobby mostra os bots com o ícone e o estilo que vão ter nela */
+let sementeSala = Date.now() >>> 0;
+const novaSementeSala = () => { sementeSala = (Math.floor(Math.random() * 4294967296) ^ Date.now()) >>> 0; };
+
+const escolhasDe = (c: Config): EscolhasJogador => ({ nome: c.nome, avatar: c.avatar, estilo: c.estilo });
+
+/** A sala da próxima partida (null sem o set: os ícones dos bots saem dele). */
+function montarSala(config: Config): EstadoSala | null {
+  if (!setCarregado()) return null;
+  return { semente: sementeSala, anfitriao: P.ID_HUMANO, voce: P.ID_HUMANO, lugares: P.lugaresDaSala(sementeSala, escolhasDe(config)) };
+}
+
+/** você muda as regras da sala (sem sala ainda, é solo: sim) */
+const souAnfitriao = (): boolean => !estado.sala || estado.sala.anfitriao === estado.sala.voce;
 
 const ouvintes = new Set<() => void>();
 
@@ -349,7 +385,7 @@ export const acoes: Acoes = {
     mudar({ carregando: true, erro: null });
     try {
       await carregarSet();
-      mudar({ carregando: false, temSalva: P.temPartidaSalva() });
+      mudar({ carregando: false, temSalva: P.temPartidaSalva(), sala: montarSala(estado.config) });
     } catch (e) {
       mudar({ carregando: false, erro: `Não deu pra baixar o set da Autobatalha (${e instanceof Error ? e.message : String(e)})` });
     }
@@ -357,14 +393,17 @@ export const acoes: Acoes = {
 
   novaPartida(semente) {
     pararTudo();
+    const c = estado.config;
     try {
-      partida = P.novaPartida(semente ?? (Date.now() >>> 0), undefined, estado.config.dificuldade);
+      partida = P.novaPartida(semente ?? sementeSala, escolhasDe(c), c.dificuldade);
     } catch (e) {
       partida = null;
       mudar({ erro: `Não deu pra começar a partida (${e instanceof Error ? e.message : String(e)})` });
       return;
     }
-    estado = { ...estado, erro: null, olhando: null, reproducao: null, aviso: null };
+    // a semente da sala foi usada: a próxima sala vem com outros bots
+    novaSementeSala();
+    estado = { ...estado, erro: null, olhando: null, reproducao: null, aviso: null, sala: montarSala(c) };
     comecarPlanejamento();
   },
 
@@ -390,7 +429,7 @@ export const acoes: Acoes = {
     pararTudo();
     P.apagarPartida();
     partida = null;
-    mudar({ temSalva: false, reproducao: null, relogio: null, olhando: null, aviso: null });
+    mudar({ temSalva: false, reproducao: null, relogio: null, olhando: null, aviso: null, sala: montarSala(estado.config) });
   },
 
   comprar: i => acao((p, id) => P.comprar(p, id, i)),
@@ -438,11 +477,32 @@ export const acoes: Acoes = {
 
   configurar(c) {
     const antes = estado.config;
-    const config = normalizarConfig({ ...antes, ...c });
+    // regras da sala de quem não é o anfitrião: ignoradas
+    const pedido: Partial<Config> = { ...c };
+    if (!souAnfitriao()) for (const k of CAMPOS_SALA) delete pedido[k];
+    const config = normalizarConfig({ ...antes, ...pedido });
     gravarConfig(config);
-    estado = { ...estado, config };
+    const mudouEscolha = config.nome !== antes.nome || config.avatar !== antes.avatar || config.estilo !== antes.estilo;
+    estado = { ...estado, config, ...(mudouEscolha ? { sala: montarSala(config) } : {}) };
     if (partida?.fase === 'planejamento' && config.relogio !== antes.relogio) ligarRelogio();
     publicar();
+  },
+
+  mudarRegras(c) {
+    if (!souAnfitriao()) return;
+    const regras: Partial<RegrasSala> = {};
+    if (c.relogio !== undefined) regras.relogio = c.relogio;
+    if (c.segundos !== undefined) regras.segundos = c.segundos;
+    if (c.dificuldade !== undefined) regras.dificuldade = c.dificuldade;
+    acoes.configurar(regras);
+  },
+
+  escolher(c) {
+    const escolhas: Partial<EscolhasJogador> = {};
+    if (c.nome !== undefined) escolhas.nome = c.nome;
+    if (c.avatar !== undefined) escolhas.avatar = c.avatar;
+    if (c.estilo !== undefined) escolhas.estilo = c.estilo;
+    acoes.configurar(escolhas);
   },
 
   olhar(id) { mudar({ olhando: id }); },

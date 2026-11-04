@@ -62,6 +62,12 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 - **Tooltip:** **[você] passar o mouse mostra só o essencial** (nome, custo, estrelas, alcance, traços, habilidade,
   itens); o botão direito fixa com todos os detalhes.
 - **Baba (Deadlock):** **[você] bate de perto** (alcance 1).
+- **Lobby:** **[você] pediu** a sala antes da partida no lugar da tela inicial: os 8 jogadores (você com a marca de
+  anfitrião; os bots com o ícone e o tabuleiro que vão ter), as regras da sala que só o anfitrião muda (relógio,
+  segundos, dificuldade), o seu nome, o seu **tabuleiro** (8 estilos só de cores e fundo: Gramado, Deserto, Neve,
+  Vulcão, Oceano, Noite estrelada, Floresta e Roxo arcano; na luta, a metade do adversário fica com o dele) e o seu
+  **ícone** (grade de todos os personagens com busca, origem e custo). O estado já separa sala e jogador, pensando no
+  online. **Pra você ver:** as cores de cada estilo e os desenhos por cima (prints do lobby e da partida).
 
 ## Pra você decidir
 

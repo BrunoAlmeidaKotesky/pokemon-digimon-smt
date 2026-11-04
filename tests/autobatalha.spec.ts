@@ -1,6 +1,7 @@
-// Aba Autobatalha: tela inicial, partida (loja, banco, tabuleiro, Pronto, apresentação e luta, próxima rodada,
-// carrossel do 2-1), dica no hover e fixa, itens (equipar e juntar), moedas no chão, atalhos, traços, informações,
-// configuração e o planejador de times (pdx-autobatalha-planos). O set é o public/autobatalha/set1.json de verdade
+// Aba Autobatalha: lobby (regras da sala, nome, estilo do tabuleiro e ícone), partida (loja, banco, tabuleiro,
+// Pronto, apresentação e luta, próxima rodada, carrossel do 2-1), dica no hover e fixa, itens (equipar e juntar),
+// moedas no chão, atalhos, traços, informações, configuração e o planejador de times (pdx-autobatalha-planos).
+// O set é o public/autobatalha/set1.json de verdade
 // (servido junto com o site); as imagens externas viram o PNG cinza dos mocks. O relógio fica desligado
 // (pdx-autobatalha-config) pra rodada só acabar no "Pronto".
 import { test, expect, type Locator, type Page } from '@playwright/test';
@@ -174,8 +175,11 @@ test.describe('Autobatalha', () => {
     const dica = page.locator('#abDica');
     await expect(dica).toBeVisible();
     await expect(dica.locator('.ab-d-nome')).toHaveText(nome);
-    await expect(dica).toContainText('Vida');
     await expect(dica).toContainText('na loja: estrela 1');
+    // passando o mouse, só o essencial (alcance sim, a tabela de atributos não); o botão direito mostra tudo
+    await expect(dica.locator('.ab-d-alcance')).toBeVisible();
+    await expect(dica.locator('.ab-d-at')).toHaveCount(0);
+    await expect(dica).toContainText('Botão direito: todos os detalhes');
     // dentro da janela
     const b = (await dica.boundingBox())!;
     expect(b.x).toBeGreaterThanOrEqual(0);
@@ -187,11 +191,12 @@ test.describe('Autobatalha', () => {
     await expect(dica).toBeHidden();
     await page.locator('#abTabuleiro .ab-peca').first().hover();
     await expect(dica).toBeVisible();
-    await expect(dica.locator('.ab-d-at')).toContainText('Alcance');
+    await expect(dica.locator('.ab-d-alcance')).toBeVisible();
     await expect(dica).not.toHaveClass(/fixa/);
-    // clique (sem arrastar) fixa a dica; clique fora solta
+    // clique (sem arrastar) fixa a dica, com todos os detalhes; clique fora solta
     await page.locator('#abTabuleiro .ab-peca').first().click();
     await expect(dica).toHaveClass(/fixa/);
+    await expect(dica.locator('.ab-d-at')).toContainText('Alcance');
     await page.mouse.click(5, 5);
     await expect(dica).toBeHidden();
 
@@ -227,6 +232,80 @@ test.describe('Autobatalha', () => {
     await page.locator('#abVoltar').click();
     await expect(page.locator('.ab-olhando')).toHaveCount(0);
     await expect(page.locator('#abTabuleiro')).toHaveClass(/editavel/);
+  });
+
+  test('lobby: o anfitrião muda as regras, escolhe nome, tabuleiro e ícone (com filtros) e a partida usa tudo', async ({ page }) => {
+    await inicio(page);
+    // 8 jogadores: você, o anfitrião, e 7 bots com ícone e tabuleiro
+    const lugares = page.locator('#abSala .ab-lugar');
+    await expect(lugares).toHaveCount(8);
+    await expect(page.locator('#abSala .ab-lugar.bot')).toHaveCount(7);
+    await expect(page.locator('#abSala .ab-tag.anfitriao')).toHaveCount(1);
+    await expect(page.locator('#abSala .ab-lugar.eu .ab-tag.anfitriao')).toBeVisible();
+    await expect(page.locator('#abSala .ab-lugar.bot .ab-mini-tab')).toHaveCount(7);
+    await expect(page.locator('#abRegrasNota')).toContainText('Você é o anfitrião');
+
+    // regras da sala: relógio, tempo e dificuldade
+    await page.locator('#abRelogio').setChecked(true);
+    await page.locator('#abSegundosMais').click();
+    await expect(page.locator('#abSegundos')).toHaveValue('36');
+    await page.locator('#abDificuldade button', { hasText: 'Difícil' }).click();
+    await expect(page.locator('#abSala .ab-lugar.bot').first()).toContainText('Difícil');
+
+    // o seu nome e o seu tabuleiro
+    await page.locator('#abNome').fill('Bruno');
+    await expect(page.locator('#abSala .ab-lugar.eu .nm')).toHaveText('Bruno');
+    await page.locator('#abEstilos [data-estilo-op="deserto"]').click();
+    await expect(page.locator('#abEstilos [data-estilo-op="deserto"]')).toHaveAttribute('aria-checked', 'true');
+    await expect(page.locator('#abSala .ab-lugar.eu')).toHaveAttribute('data-estilo-lugar', 'deserto');
+
+    // o ícone: grade de todos os personagens, filtrada por origem, custo e nome
+    await page.locator('#abIcone').click();
+    const janela = page.locator('#abIcones');
+    await expect(janela).toBeVisible();
+    const grade = janela.locator('#abIconeGrade .ab-icone');
+    const total = await grade.count();
+    expect(total).toBeGreaterThan(300);
+    await janela.locator('#abIconeOrigens [data-origem="pokemon"]').click();
+    await expect.poll(() => grade.count()).toBeLessThan(total);
+    expect(await grade.evaluateAll(els => els.every(e => e.getAttribute('data-origem') === 'pokemon'))).toBe(true);
+    await janela.locator('.ab-chip.custo[data-custo="1"]').click();
+    expect(await grade.evaluateAll(els => els.every(e => e.getAttribute('data-custo') === '1'))).toBe(true);
+    await janela.locator('#abIconeBusca').fill('zzzz-ninguem');
+    await expect(grade).toHaveCount(0);
+    await janela.locator('#abIconeBusca').fill('pika');
+    await expect(grade.first()).toBeVisible();
+    const forma = (await grade.first().getAttribute('data-forma'))!;
+    await grade.first().click();
+    await expect(janela).toBeHidden();
+    await expect(page.locator('#abIconeAtual')).toContainText('Pika');
+    const img = (await page.locator('#abSala .ab-lugar.eu .ab-foto img').getAttribute('src'))!;
+    expect(img).toBeTruthy();
+    const cfg = await lerStorage<Record<string, unknown>>(page, 'pdx-autobatalha-config');
+    expect(cfg).toMatchObject({ nome: 'Bruno', avatar: forma, estilo: 'deserto', dificuldade: 'dificil', segundos: 36, relogio: true });
+
+    // a partida: o seu nome e ícone na lista, o seu estilo no tabuleiro, o relógio ligado
+    await page.locator('#abNova').click();
+    await expect(page.locator('.ab-jogo')).toHaveAttribute('data-estilo', 'deserto');
+    await expect(page.locator('.ab-area')).toHaveAttribute('data-estilo', 'deserto');
+    await expect(page.locator('#abJogadores .ab-jog.eu .nm')).toContainText('Bruno');
+    await expect(page.locator('#abJogadores .ab-jog.eu .ab-foto img')).toHaveAttribute('src', img);
+    await expect(page.locator('#abContagem')).toBeVisible();
+
+    // olhar o tabuleiro de um bot mostra o estilo dele
+    const salva = await lerStorage<{ dificuldade: string; jogadores: { id: string; estilo: string }[] }>(page, 'pdx-autobatalha-v1');
+    expect(salva?.dificuldade).toBe('dificil');
+    const pyrus = salva!.jogadores.find(j => j.id === 'pyrus')!;
+    await page.locator('#abJogadores .ab-jog[data-jogador="pyrus"]').click();
+    await expect(page.locator('.ab-area')).toHaveAttribute('data-estilo', pyrus.estilo);
+    await page.locator('#abVoltar').click();
+
+    // a luta (contra monstros na 1-1): você no "VS" com o seu ícone; a metade de cima fica com o seu estilo, no tom "deles"
+    await page.locator('#abPronto').click();
+    await expect(page.locator('#abClash .lado.eu .ab-foto img')).toHaveAttribute('src', img);
+    await expect(page.locator('#abClash .lado.eu')).toContainText('Bruno');
+    await expect(page.locator('#abLuta .ab-estilo-deles')).toHaveAttribute('data-estilo', 'deserto');
+    await expect(page.locator('#abLuta')).toHaveClass(/mesmo-estilo/);
   });
 
   test('planejador: escolhe campeões, salva, marca na loja e fica no localStorage', async ({ page }) => {

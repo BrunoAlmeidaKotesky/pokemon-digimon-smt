@@ -1,13 +1,13 @@
-// Tela da Autobatalha (carregada sob demanda pela aba, src/modes/autobatalha/Autobatalha.tsx): início, partida e
-// fim. O estado da partida fica em src/autobatalha/controle.ts; a tela só lê EstadoTela e chama as ações
+// Tela da Autobatalha (carregada sob demanda pela aba, src/modes/autobatalha/Autobatalha.tsx): lobby (Lobby.tsx),
+// partida e fim. O estado da partida fica em src/autobatalha/controle.ts; a tela só lê EstadoTela e chama as ações
 // (src/autobatalha/api.ts). Design: docs/tft/autobatalha.md.
 //
 // A partida ocupa a janela inteira (abaixo das abas do site) e escala com ela: `--k` no #autobatalha (1 = 1280×720)
 // multiplica os tamanhos do CSS, e o tabuleiro mede o espaço que sobra pra escolher o tamanho das casas.
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
-import { Segmented, Stepper, Switch } from '../../components/Controls';
-import type { Config, EstadoTela, Velocidade } from '../../autobatalha/api';
-import type { CasaDono, Dificuldade, Jogador, Partida as PartidaDados } from '../../autobatalha/tipos';
+import { Segmented } from '../../components/Controls';
+import type { EstadoTela } from '../../autobatalha/api';
+import type { CasaDono, Jogador, Partida as PartidaDados } from '../../autobatalha/tipos';
 import { COLUNAS, LINHAS_DONO } from '../../autobatalha/tipos';
 import { setCarregado } from '../../autobatalha/dados';
 import { chave } from '../../autobatalha/hex';
@@ -16,7 +16,8 @@ import { humano, limiteTabuleiro, ondeEsta, rodadasDoEstagio, unidadesNoTabuleir
 import { alvoSobMouse, fecharDica, propsDica } from './interacao';
 import { Dica, ImagemGrandeJanela } from './Dica';
 import {
-  Banco, DanoDaLuta, Fantasma, ItensSoltos, TabuleiroDono, TabuleiroLuta, atributosDe, ladoAdversario, lembrarVida, type Espaco, type LutaVista,
+  Banco, DanoDaLuta, Fantasma, ItensSoltos, TabuleiroDono, TabuleiroLuta, atributosDe, estiloDoAdversario, ladoAdversario, lembrarVida, type Espaco,
+  type LutaVista,
 } from './Tabuleiro';
 import { Loja } from './Loja';
 import { Jogadores, Tracos } from './Lateral';
@@ -24,10 +25,10 @@ import { Planejador } from './Planejador';
 import { Carrossel } from './Carrossel';
 import { Informacoes, type AbaInfo } from './Info';
 import { useSons } from './sons';
-import { Foto, IconeRodada, avatarDe, formaOuNada, imgForma, nomeTraco, rotuloRodada } from './comum';
+import { BotaoMudo, JanelaConfig, VELOCIDADES } from './Configuracao';
+import { Lobby } from './Lobby';
+import { Foto, IconeRodada, avatarDe, estiloDe, formaOuNada, imgForma, nomeTraco, rotuloRodada } from './comum';
 
-const VELOCIDADES: { value: Velocidade; label: string }[] = [{ value: 1, label: '1×' }, { value: 2, label: '2×' }, { value: 4, label: '4×' }];
-const DIFICULDADES: { value: Dificuldade; label: string }[] = [{ value: 'facil', label: 'Fácil' }, { value: 'normal', label: 'Normal' }, { value: 'dificil', label: 'Difícil' }];
 const FASE: Record<PartidaDados['fase'], string> = {
   carrossel: 'Carrossel', planejamento: 'Planejamento', luta: 'Luta', resultado: 'Resultado', fim: 'Fim',
 };
@@ -67,15 +68,6 @@ function useMedida(ref: RefObject<HTMLElement | null>): Espaco {
   return m;
 }
 
-/** último volume ouvido antes do mudo (o botão de mudo volta pra ele) */
-let volumeAntes = 0.6;
-function alternarMudo(v: number): void {
-  if (v > 0) {
-    volumeAntes = v;
-    acoes.configurar({ volume: 0 });
-  } else acoes.configurar({ volume: volumeAntes > 0 ? volumeAntes : 0.6 });
-}
-
 export function Conteudo() {
   const e = useAutobatalha();
   const [planejador, setPlanejador] = useState(false);
@@ -96,131 +88,18 @@ export function Conteudo() {
   const fim = p?.fase === 'fim';
   return (
     <>
-      {!p || !eu ? <Inicio e={e} abrirPlanejador={abrirPlanejador} /> : fim ? <Fim partida={p} eu={eu} /> : (
+      {!p || !eu ? <Lobby e={e} abrirPlanejador={abrirPlanejador} /> : fim ? <Fim partida={p} eu={eu} /> : (
         <Jogo key={p.semente} e={e} p={p} eu={eu} abrirPlanejador={abrirPlanejador} abrirInfo={abrirInfo} abrirConfig={() => setConfig(true)} />
       )}
       {planejador && setCarregado() && <Planejador fechar={fecharPlanejador} />}
       {info && setCarregado() && <Informacoes eu={eu ?? null} fechar={fecharInfo} aba={info.aba} traco={info.traco} />}
-      {config && <JanelaConfig cfg={e.config} fechar={() => setConfig(false)} />}
+      {config && <JanelaConfig e={e} fechar={() => setConfig(false)} />}
       {p && eu && !fim && p.fase !== 'carrossel' && <Janelas eu={eu} />}
       <Aviso texto={e.aviso} />
       <Fantasma />
       <Dica estado={e} />
       <ImagemGrandeJanela />
     </>
-  );
-}
-
-// ---------- configuração ----------
-/** Relógio, velocidade, dificuldade e som. Na partida, a dificuldade vale pra próxima. */
-function PainelConfig({ cfg, naPartida }: { cfg: Config; naPartida: boolean }) {
-  return (
-    <div className="ab-config">
-      <Switch id="abRelogio" checked={cfg.relogio} onChange={v => acoes.configurar({ relogio: v })} title="Relógio no planejamento">
-        Desligado, a rodada espera você apertar Pronto.
-      </Switch>
-      <label className="ab-config-campo">
-        <span>Segundos de planejamento</span>
-        <Stepper id="abSegundos" value={cfg.segundos} min={10} max={120} disabled={!cfg.relogio} ariaLabel="Segundos de planejamento"
-          onChange={v => acoes.configurar({ segundos: v })} />
-      </label>
-      <div className="ab-config-campo">
-        <span>Velocidade da luta</span>
-        <Segmented id={naPartida ? 'abVelConfig' : 'abVelInicio'} ariaLabel="Velocidade da luta" value={cfg.velocidade} options={VELOCIDADES}
-          onChange={v => acoes.configurar({ velocidade: v })} />
-      </div>
-      <div className="ab-config-campo">
-        <span>Dificuldade dos bots{naPartida ? ' (vale na próxima partida)' : ''}</span>
-        <Segmented id="abDificuldade" ariaLabel="Dificuldade dos bots" value={cfg.dificuldade} options={DIFICULDADES}
-          onChange={v => acoes.configurar({ dificuldade: v })} />
-      </div>
-      <div className="ab-config-campo">
-        <span>Volume dos sons</span>
-        <span className="ab-volume">
-          <BotaoMudo volume={cfg.volume} id={naPartida ? 'abMudoConfig' : 'abMudoInicio'} />
-          <input id="abVolume" type="range" min={0} max={100} step={5} value={Math.round(cfg.volume * 100)} aria-label="Volume"
-            onChange={ev => acoes.configurar({ volume: Number(ev.target.value) / 100 })} />
-          <b>{Math.round(cfg.volume * 100)}%</b>
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function BotaoMudo({ volume, id }: { volume: number; id: string }) {
-  const mudo = volume <= 0;
-  return (
-    <button type="button" id={id} className={'ab-ico ab-mudo' + (mudo ? ' on' : '')} aria-pressed={mudo}
-      title={mudo ? 'Ligar o som' : 'Desligar o som'} aria-label={mudo ? 'Ligar o som' : 'Desligar o som'} onClick={() => alternarMudo(volume)}>
-      <svg viewBox="0 0 20 20" aria-hidden="true">
-        <path d="M3 8h3l4-3.5v11L6 12H3z" fill="currentColor" />
-        {mudo
-          ? <path d="M13 7.5l5 5M18 7.5l-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-          : <path d="M13 7.2a4 4 0 0 1 0 5.6M15.3 5a7 7 0 0 1 0 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />}
-      </svg>
-    </button>
-  );
-}
-
-function JanelaConfig({ cfg, fechar }: { cfg: Config; fechar: () => void }) {
-  useEffect(() => {
-    const tecla = (ev: KeyboardEvent) => { if (ev.key === 'Escape') fechar(); };
-    document.addEventListener('keydown', tecla);
-    return () => document.removeEventListener('keydown', tecla);
-  }, [fechar]);
-  return (
-    <div className="ab-sobreposto" onPointerDown={ev => { if (ev.target === ev.currentTarget) fechar(); }}>
-      <div id="abConfig" className="ab-janela ab-janela-config panel" role="dialog" aria-modal="true" aria-label="Configuração">
-        <div className="ab-janela-cab">
-          <h3>Configuração</h3>
-          <button type="button" id="abConfigFechar" className="btn mini" onClick={fechar}>Fechar</button>
-        </div>
-        <PainelConfig cfg={cfg} naPartida />
-      </div>
-    </div>
-  );
-}
-
-// ---------- início ----------
-function Inicio({ e, abrirPlanejador }: { e: EstadoTela; abrirPlanejador: () => void }) {
-  const pronto = !e.carregando && !e.erro && setCarregado();
-  return (
-    <div className="panel stack ab-inicio">
-      <div>
-        <h2>Autobatalha</h2>
-        <p className="mute">
-          Monte um time com personagens de todas as franquias, junte cópias pra subir as estrelas, ative traços de origem e
-          de classe e veja a luta acontecer sozinha nas casas hexagonais. Você contra 7 bots; ganha quem sobrar.
-        </p>
-      </div>
-      {e.carregando && <p id="abCarregando" className="mute">Carregando o set…</p>}
-      {e.erro && (
-        <p id="abErro" className="note bad">
-          Não deu pra carregar o set: {e.erro}{' '}
-          <button type="button" className="btn mini" onClick={() => void acoes.carregar()}>Tentar de novo</button>
-        </p>
-      )}
-      <div className="ab-inicio-acoes">
-        <button type="button" id="abNova" className="btn main" disabled={!pronto} onClick={() => acoes.novaPartida()}>Nova partida</button>
-        {e.temSalva && <button type="button" id="abContinuar" className="btn" disabled={!pronto} onClick={() => acoes.continuar()}>Continuar a partida salva</button>}
-        <button type="button" id="abAbrirPlanejador" className="btn" disabled={!pronto} onClick={abrirPlanejador}>Planejador de times</button>
-      </div>
-      <PainelConfig cfg={e.config} naPartida={false} />
-      <details className="ab-ajuda">
-        <summary>Como jogar</summary>
-        <ul>
-          <li>Clique numa carta da loja pra comprar. Três cópias iguais viram uma de estrela acima (numa linha evolutiva, a forma seguinte).</li>
-          <li>Arraste do banco pro tabuleiro (o limite de unidades aparece em cima do tabuleiro), entre casas, de volta pro banco ou pra loja (vende).</li>
-          <li>Arraste os itens soltos (Bakugan, à esquerda do tabuleiro) pra uma unidade; um componente solto em cima de outro vira um item completo.</li>
-          <li>Passe o mouse em qualquer retrato pra ver atributos, habilidade, traços e a linha evolutiva; o botão direito deixa a dica fixa.</li>
-          <li>Moedas que caem no tabuleiro durante a luta ficam lá: passe o mouse em cima pra pegar.</li>
-          <li>
-            Atalhos: <kbd>D</kbd> atualiza a loja, <kbd>F</kbd> compra XP, <kbd>E</kbd> vende a unidade debaixo do mouse, <kbd>W</kbd> manda a
-            unidade debaixo do mouse do banco pro tabuleiro (ou de volta).
-          </li>
-        </ul>
-      </details>
-    </div>
   );
 }
 
@@ -303,12 +182,14 @@ function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
   const planejando = !naLuta && !carrossel;
   const total = (p.estagio === 1 ? 2 / 3 : 1) * e.config.segundos;
   return (
-    <div className={'ab-jogo fase-' + p.fase + (naLuta ? ' na-luta' : '') + (carrossel ? ' no-carrossel' : '')} data-fase={p.fase}>
+    <div className={'ab-jogo fase-' + p.fase + (naLuta ? ' na-luta' : '') + (carrossel ? ' no-carrossel' : '')} data-fase={p.fase} data-estilo={estiloDe(eu)}>
       <Topo e={e} p={p} abrirPlanejador={abrirPlanejador} abrirInfo={abrirInfo} abrirConfig={abrirConfig} />
       <Tracos j={visto} eu={eu} abrirInfo={abrirInfo} />
       <div className="ab-centro">
         <ItensSoltos j={visto} editavel={!olhando} />
-        <div className="ab-area">
+        {/* o estilo do tabuleiro de quem está sendo visto; na luta, a metade de cima é do adversário */}
+        <div className="ab-area" data-estilo={estiloDe(visto)}>
+          {naLuta && <span className="ab-campo-deles" data-estilo={estiloDoAdversario(p, rep.adversario)} aria-hidden="true" />}
           {planejando && (
             <div className="ab-area-cab">
               <span id="abLimite" className={'ab-limite' + (noTab > limite ? ' acima' : noTab < limite ? ' sobra' : '')}

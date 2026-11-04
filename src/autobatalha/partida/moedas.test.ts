@@ -65,7 +65,7 @@ describe('dificuldade dos bots', () => {
 
   it('partida nova guarda a dificuldade; bots do fácil ficam com nível menor', () => {
     const nivelMedio = (d: 'facil' | 'normal') => {
-      const p = novaPartida(77, 'Você', d);
+      const p = novaPartida(77, {}, d);
       expect(p.dificuldade).toBe(d);
       for (let r = 0; r < 14; r++) {
         for (const j of vivos(p)) jogarBot(p, j);

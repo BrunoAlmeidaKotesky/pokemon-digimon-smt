@@ -12,9 +12,12 @@ export function misturar(a: number, b: number): number {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
+/** Gerador do sorteio número n da partida da semente (o mesmo que rngDa dá quando o contador chega em n). */
+export const rngDoSorteio = (semente: number, n: number): Rng => criarRng(misturar(semente >>> 0, n));
+
 /** Gerador pro próximo sorteio da partida (avança o contador). */
 export function rngDa(p: Partida): Rng {
   const n = (p.sorteios ?? 0) + 1;
   p.sorteios = n;
-  return criarRng(misturar(p.semente >>> 0, n));
+  return rngDoSorteio(p.semente, n);
 }

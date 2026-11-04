@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { acoes, estadoAutobatalha, MS_CLASH, MS_RESULTADO, S_FECHAR_CARROSSEL } from './controle';
-import { CHAVE_PARTIDA, definirMotor, horarioDoGrupo, humano, S_DEPOIS_DA_ULTIMA } from './partida';
+import { acoes, CHAVE_CONFIG, CONFIG_PADRAO, estadoAutobatalha, MS_CLASH, MS_RESULTADO, normalizarConfig, S_FECHAR_CARROSSEL } from './controle';
+import { ehEstilo, ESTILO_PADRAO } from './estilos';
+import { S } from './dados';
+import { CHAVE_PARTIDA, definirMotor, horarioDoGrupo, humano, MAX_NOME, S_DEPOIS_DA_ULTIMA } from './partida';
 import { lutaGanha, prepararTeste } from './partida/test-helpers';
 
 let guardado: Map<string, string>;
@@ -15,7 +17,7 @@ beforeEach(() => {
   });
   prepararTeste();
   acoes.abandonar();
-  acoes.configurar({ relogio: true, segundos: 30, velocidade: 1 });
+  acoes.configurar({ relogio: true, segundos: 30, velocidade: 1, dificuldade: 'facil', nome: '', avatar: null, estilo: ESTILO_PADRAO });
 });
 afterEach(() => {
   acoes.abandonar();
@@ -246,5 +248,67 @@ describe('controle', () => {
     expect(E().olhando).toBe('pyrus');
     acoes.olhar(null);
     expect(E().olhando).toBeNull();
+  });
+});
+
+describe('configuração salva (pdx-autobatalha-config)', () => {
+  it('config antiga, sem os campos da sala e do jogador: ganha os padrões e mantém o resto', () => {
+    expect(normalizarConfig({ relogio: false, segundos: 50, velocidade: 2, dificuldade: 'normal', volume: 0.3 })).toEqual({
+      relogio: false, segundos: 50, dificuldade: 'normal', nome: '', avatar: null, estilo: ESTILO_PADRAO, velocidade: 2, volume: 0.3,
+    });
+    for (const lixo of [null, undefined, 'texto', 42, []]) expect(normalizarConfig(lixo)).toEqual(CONFIG_PADRAO);
+  });
+
+  it('campos novos: os válidos ficam, os errados voltam pro padrão', () => {
+    expect(normalizarConfig({ nome: '  Ana   Bia  ', avatar: 'pokemon:Squirtle', estilo: 'noite' })).toMatchObject({
+      nome: 'Ana Bia', avatar: 'pokemon:Squirtle', estilo: 'noite',
+    });
+    expect(normalizarConfig({ nome: 7, avatar: 3, estilo: 'lava' })).toMatchObject({ nome: '', avatar: null, estilo: ESTILO_PADRAO });
+    expect(normalizarConfig({ nome: 'x'.repeat(40), avatar: '' }).nome).toHaveLength(MAX_NOME);
+    expect(normalizarConfig({ avatar: '' }).avatar).toBeNull();
+    // o resto continua sendo conferido como antes
+    expect(normalizarConfig({ segundos: 9999, velocidade: 3, volume: -1, dificuldade: 'impossivel' })).toMatchObject({
+      segundos: 300, velocidade: 1, volume: 0, dificuldade: 'facil',
+    });
+  });
+
+  it('escolhas do jogador e regras da sala vão pra mesma chave, normalizadas', () => {
+    acoes.escolher({ nome: ' Bruno ', avatar: 'pokemon:Squirtle', estilo: 'deserto' });
+    acoes.mudarRegras({ dificuldade: 'dificil', segundos: 60 });
+    const salvo = JSON.parse(guardado.get(CHAVE_CONFIG)!) as Record<string, unknown>;
+    expect(salvo).toMatchObject({ nome: 'Bruno', avatar: 'pokemon:Squirtle', estilo: 'deserto', dificuldade: 'dificil', segundos: 60, relogio: true });
+    expect(E().config).toMatchObject({ nome: 'Bruno', estilo: 'deserto', dificuldade: 'dificil' });
+  });
+});
+
+describe('sala (lobby)', () => {
+  it('8 lugares: você é o anfitrião, os bots têm ícone e estilo válidos; muda com as suas escolhas', () => {
+    const sala = E().sala!;
+    expect(sala.anfitriao).toBe(sala.voce);
+    expect(sala.lugares).toHaveLength(8);
+    expect(sala.lugares[0]).toMatchObject({ id: sala.voce, nome: 'Você', bot: false, anfitriao: true, estilo: ESTILO_PADRAO });
+    for (const l of sala.lugares.slice(1)) {
+      expect(l.bot).toBe(true);
+      expect(l.anfitriao).toBe(false);
+      expect(l.avatar).toBeTruthy();
+      expect(ehEstilo(l.estilo)).toBe(true);
+    }
+    acoes.escolher({ nome: 'Ana', avatar: 'pokemon:Squirtle', estilo: 'vulcao' });
+    const nova = E().sala!;
+    expect(nova.semente).toBe(sala.semente);
+    expect(nova.lugares[0]).toMatchObject({ nome: 'Ana', avatar: S().forma('pokemon:Squirtle').img, estilo: 'vulcao' });
+    expect(nova.lugares.slice(1)).toEqual(sala.lugares.slice(1));
+  });
+
+  it('começar sem semente usa a da sala: a partida tem os jogadores que o lobby mostrou; depois a sala troca', () => {
+    acoes.escolher({ nome: 'Ana', avatar: 'pokemon:Squirtle', estilo: 'oceano' });
+    acoes.mudarRegras({ relogio: false, dificuldade: 'normal' });
+    const sala = E().sala!;
+    acoes.novaPartida();
+    const p = E().partida!;
+    expect(p.semente).toBe(sala.semente);
+    expect(p.dificuldade).toBe('normal');
+    expect(p.jogadores.map(j => [j.id, j.nome, j.avatar, j.estilo])).toEqual(sala.lugares.map(l => [l.id, l.nome, l.avatar, l.estilo]));
+    expect(E().sala!.semente).not.toBe(sala.semente);
   });
 });

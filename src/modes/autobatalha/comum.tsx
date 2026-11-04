@@ -4,6 +4,7 @@ import { Fragment, type CSSProperties, type ReactNode } from 'react';
 import { COLUNAS, type Casa, type Componente, type Custo, type Estrela, type FormaDados, type Jogador, type TipoRodada } from '../../autobatalha/tipos';
 import { S, urlImagem } from '../../autobatalha/dados';
 import { ITENS, ehComponente } from '../../autobatalha/conteudo';
+import { estiloOuPadrao } from '../../autobatalha/estilos';
 
 export const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
 
@@ -30,6 +31,8 @@ export const imgForma = (id: string) => (S().temForma(id) ? urlImagem(S().forma(
 export const formaOuNada = (id: string): FormaDados | null => (S().temForma(id) ? S().forma(id) : null);
 /** imagem do avatar do jogador (uma forma do set ou um caminho) */
 export const avatarDe = (j: Pick<Jogador, 'avatar'>) => (formaOuNada(j.avatar) ? imgForma(j.avatar) : j.avatar ? urlImagem(j.avatar) : '');
+/** id do estilo do tabuleiro do jogador (pro data-estilo do CSS); partida salva antes dos estilos = o padrão */
+export const estiloDe = (j: Pick<Jogador, 'estilo'> | null | undefined): string => estiloOuPadrao(j?.estilo);
 /** classes da forma que são traço de verdade (Únicos não é traço) */
 export const NOME_UNICOS = 'Únicos';
 export const ehOrigem = (id: string) => ['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'lol', 'overwatch', 'deadlock', 'sujimon'].includes(id);
@@ -83,10 +86,18 @@ export function IconeAlcance({ alcance, className }: { alcance: number; classNam
 
 /** Retrato redondo (ou quadrado), com a imagem inteira (contain, sem cortar) sobre o fundo. Imagem que falha some e
  *  fica a inicial. */
-export function Foto({ src, nome, className, style }: { src: string; nome: string; className?: string; style?: CSSProperties }) {
+export function Foto({ src, nome, className, style, preguicosa }: {
+  src: string;
+  nome: string;
+  className?: string;
+  style?: CSSProperties;
+  /** só baixa a imagem quando ela chega perto da tela (grades grandes) */
+  preguicosa?: boolean;
+}) {
   return (
     <span className={'ab-foto' + (className ? ' ' + className : '')} style={style} data-ini={nome.slice(0, 1)}>
-      {src ? <img src={src} alt="" draggable={false} decoding="async" onError={e => { e.currentTarget.style.visibility = 'hidden'; }} /> : null}
+      {src ? <img src={src} alt="" draggable={false} decoding="async" loading={preguicosa ? 'lazy' : undefined}
+        onError={e => { e.currentTarget.style.visibility = 'hidden'; }} /> : null}
     </span>
   );
 }

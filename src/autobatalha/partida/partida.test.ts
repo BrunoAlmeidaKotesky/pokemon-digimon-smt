@@ -10,7 +10,9 @@ import {
   sortearLoja, standDe, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos, xpParaProximo, apagarPartida,
   temPartidaSalva, CHAVE_PARTIDA, escolherUlt, gerarMonstros, montarTime, BONUS_DEADLOCK_POR_10_ALMAS,
   BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor, OURO_VITORIA, UNIDADES_ALEM_DO_NIVEL,
+  lugaresDaSala, MAX_NOME, NOME_PADRAO,
 } from './index';
+import { ehEstilo, ESTILO_PADRAO, ESTILOS_TABULEIRO, estiloOuPadrao } from '../estilos';
 import { contarTracosFalso, dar, limpar, lutaGanha, prepararTeste, resultado } from './test-helpers';
 
 beforeEach(() => prepararTeste());
@@ -72,6 +74,44 @@ describe('partida nova', () => {
   it('a mesma semente dá a mesma partida', () => {
     expect(JSON.stringify(novaPartida(7))).toBe(JSON.stringify(novaPartida(7)));
     expect(JSON.stringify(novaPartida(7))).not.toBe(JSON.stringify(novaPartida(8)));
+  });
+
+  it('escolhas do lobby: nome, ícone e estilo do humano; a dificuldade vai pra partida', () => {
+    const p = novaPartida(42, { nome: '  Ana   Bia ', avatar: 'pokemon:Squirtle', estilo: 'neve' }, 'dificil');
+    expect(humano(p)).toMatchObject({ nome: 'Ana Bia', avatar: S().forma('pokemon:Squirtle').img, estilo: 'neve' });
+    expect(p.dificuldade).toBe('dificil');
+    // sem escolha: o nome e o estilo padrão, e o ícone sorteado
+    const q = novaPartida(42);
+    expect(humano(q)).toMatchObject({ nome: NOME_PADRAO, estilo: ESTILO_PADRAO });
+    expect(humano(q).avatar).toMatch(/\.webp$/);
+    // forma que não existe mais no set e estilo desconhecido: o sorteado e o padrão
+    expect(humano(novaPartida(42, { avatar: 'pokemon:Ninguem', estilo: 'lava' }))).toMatchObject({ avatar: humano(q).avatar, estilo: ESTILO_PADRAO });
+    // nome comprido é cortado
+    expect(humano(novaPartida(42, { nome: 'x'.repeat(40) })).nome).toHaveLength(MAX_NOME);
+    // as escolhas do humano não mudam o resto da partida (bots, campeões de graça, lojas, monstros)
+    const semHumano = (x: Partida) => JSON.stringify({ ...x, dificuldade: null, jogadores: x.jogadores.map(j => (j.bot ? j : { ...j, nome: '', avatar: '', estilo: '' })) });
+    expect(semHumano(p)).toBe(semHumano(q));
+  });
+
+  it('bots sorteiam um estilo de tabuleiro válido, variado entre as partidas', () => {
+    const vistos = new Set<string>();
+    for (let s = 1; s <= 30; s++) {
+      for (const j of novaPartida(s).jogadores.filter(x => x.bot)) {
+        expect(ehEstilo(j.estilo), `${s} ${j.id}: ${j.estilo}`).toBe(true);
+        vistos.add(j.estilo!);
+      }
+    }
+    expect(vistos.size).toBe(ESTILOS_TABULEIRO.length);
+  });
+
+  it('o lobby mostra os 8 lugares como vão estar na partida da mesma semente', () => {
+    for (const s of [3, 99, 2026]) {
+      const escolhas = { nome: 'Bia', avatar: null, estilo: 'oceano' };
+      const lugares = lugaresDaSala(s, escolhas);
+      const p = novaPartida(s, escolhas);
+      expect(lugares.map(l => [l.id, l.nome, l.bot, l.avatar, l.estilo])).toEqual(p.jogadores.map(j => [j.id, j.nome, j.bot, j.avatar, j.estilo]));
+      expect(lugares.filter(l => l.anfitriao).map(l => l.id)).toEqual([humano(p).id]);
+    }
   });
 });
 
@@ -662,6 +702,16 @@ describe('salvar', () => {
       }
     }
     expect(JSON.stringify(q)).toBe(JSON.stringify(p));
+  });
+
+  it('partida salva antes dos estilos de tabuleiro (jogador sem `estilo`) continua carregando', () => {
+    const p = novaPartida(4);
+    for (const j of p.jogadores) delete j.estilo;
+    salvarPartida(p);
+    const q = carregarPartida();
+    expect(q).not.toBeNull();
+    expect(q!.jogadores.every(j => j.estilo === undefined)).toBe(true);
+    expect(estiloOuPadrao(humano(q!).estilo)).toBe(ESTILO_PADRAO);
   });
 
   it('ignora versão errada e JSON quebrado; apagar limpa', () => {

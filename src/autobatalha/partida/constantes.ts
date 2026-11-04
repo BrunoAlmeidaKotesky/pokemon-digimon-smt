@@ -67,5 +67,9 @@ export const JUROS_MAX = 5;
 /** nomes dos 7 bots (os atributos dos Bakugan) */
 export const NOMES_BOTS = ['Pyrus', 'Aquos', 'Haos', 'Darkus', 'Subterra', 'Ventus', 'Aurelus'] as const;
 export const ID_HUMANO = 'voce';
+/** nome do humano quando ele não escolhe um no lobby */
+export const NOME_PADRAO = 'Você';
+/** tamanho máximo do nome escolhido no lobby */
+export const MAX_NOME = 16;
 export const ID_MONSTROS = 'monstros';
 export const PREFIXO_FANTASMA = 'fantasma:';

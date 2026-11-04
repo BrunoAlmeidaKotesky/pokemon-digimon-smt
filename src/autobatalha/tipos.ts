@@ -355,8 +355,11 @@ export interface Jogador {
   id: string;
   nome: string;
   bot: boolean;
-  /** imagem do avatar (uma forma do set) */
+  /** imagem do avatar (uma forma do set: a escolhida no lobby ou a sorteada) */
   avatar: string;
+  /** id do estilo do tabuleiro, só cores e fundo (src/autobatalha/estilos.ts); sem = o padrão (partida salva antes
+   *  dos estilos). Não confundir com `tabuleiro`, as unidades nas casas. */
+  estilo?: string;
   vida: number;
   ouro: number;
   nivel: number;
@@ -424,6 +427,30 @@ export interface Rodada { estagio: number; rodada: number; tipo: TipoRodada }
 
 /** Força dos bots: no fácil compram e posicionam pior e sobem de nível mais tarde. */
 export type Dificuldade = 'facil' | 'normal' | 'dificil';
+
+/** O que cada jogador escolhe no lobby antes da partida (os outros veem). As regras da sala (relógio, dificuldade)
+ *  são do anfitrião e ficam em api.ts (RegrasSala). */
+export interface EscolhasJogador {
+  /** nome na partida; '' = o padrão ("Você") */
+  nome: string;
+  /** id da forma do ícone; null = sorteado com a semente da partida */
+  avatar: string | null;
+  /** id do estilo do tabuleiro (src/autobatalha/estilos.ts) */
+  estilo: string;
+}
+
+/** Um lugar na sala antes da partida: o lobby mostra os 8 (você e os bots) como vão estar na partida. */
+export interface LugarSala {
+  id: string;
+  nome: string;
+  bot: boolean;
+  /** quem muda as regras da sala (hoje, sempre você: o jogo é solo) */
+  anfitriao: boolean;
+  /** imagem do ícone (como Jogador.avatar) */
+  avatar: string;
+  /** id do estilo do tabuleiro */
+  estilo: string;
+}
 
 export interface Partida {
   versao: 1;

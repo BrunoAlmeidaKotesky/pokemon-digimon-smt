@@ -1,20 +1,41 @@
 // Interface entre a tela (src/modes/autobatalha) e o controle da partida (src/autobatalha/controle.ts).
 // O controle guarda a partida em andamento, roda o relógio, os bots e as lutas, e avisa a tela a cada mudança
 // (useSyncExternalStore, como src/state/app.ts). A tela só lê EstadoTela e chama Acoes.
-import type { Dificuldade, OpcaoCarrossel, Onde, Partida, ResultadoLuta } from './tipos';
+import type { Dificuldade, EscolhasJogador, LugarSala, OpcaoCarrossel, Onde, Partida, ResultadoLuta } from './tipos';
 
 export type Velocidade = 1 | 2 | 4;
 
-export interface Config {
+/** Regras da sala: valem pra partida inteira e só o anfitrião muda (num modo online, valeriam pra todos). */
+export interface RegrasSala {
   /** relógio da fase de planejamento ligado (senão espera o "Pronto") */
   relogio: boolean;
   /** segundos de planejamento (estágio 1 usa 2/3 disso) */
   segundos: number;
-  velocidade: Velocidade;
   /** força dos bots nas partidas novas */
   dificuldade: Dificuldade;
+}
+
+/** Preferências pessoais: só mudam a sua tela. */
+export interface Preferencias {
+  velocidade: Velocidade;
   /** volume dos sons, 0 (mudo) a 1 */
   volume: number;
+}
+
+/** O que fica salvo em `pdx-autobatalha-config`: as regras da sala (do anfitrião), as suas escolhas de jogador
+ *  (nome, ícone, estilo do tabuleiro; tipos.ts) e as preferências. Num só objeto, como sempre foi salvo. */
+export interface Config extends RegrasSala, EscolhasJogador, Preferencias {}
+
+/** A sala antes da partida (o lobby). */
+export interface EstadoSala {
+  /** semente da próxima partida: os bots aparecem no lobby como vão estar nela */
+  semente: number;
+  /** id de quem muda as regras da sala */
+  anfitriao: string;
+  /** id do jogador desta tela */
+  voce: string;
+  /** os 8 lugares: você primeiro, depois os bots */
+  lugares: LugarSala[];
 }
 
 export interface Reproducao {
@@ -57,6 +78,8 @@ export interface EstadoTela {
   relogio: number | null;
   reproducao: Reproducao | null;
   config: Config;
+  /** a sala da próxima partida (lobby); null até o set carregar */
+  sala: EstadoSala | null;
   /** existe partida salva pra continuar */
   temSalva: boolean;
   /** carrossel do começo do estágio (null = fora da fase 'carrossel') */
@@ -70,6 +93,7 @@ export interface EstadoTela {
 export interface Acoes {
   /** baixa o set (a tela chama ao abrir a aba) */
   carregar(): Promise<void>;
+  /** começa a partida com as regras da sala e as suas escolhas; sem semente, a da sala (os bots como o lobby mostra) */
   novaPartida(semente?: number): void;
   continuar(): void;
   abandonar(): void;
@@ -101,7 +125,12 @@ export interface Acoes {
   velocidade(v: Velocidade): void;
   /** mostra o fim da luta direto */
   pularLuta(): void;
+  /** muda a configuração salva; as regras da sala só mudam se você for o anfitrião */
   configurar(c: Partial<Config>): void;
+  /** regras da sala (relógio, segundos, dificuldade): só o anfitrião */
+  mudarRegras(c: Partial<RegrasSala>): void;
+  /** as suas escolhas na sala (nome, ícone, estilo do tabuleiro) */
+  escolher(c: Partial<EscolhasJogador>): void;
   /** mostra o tabuleiro de outro jogador (null = volta pro seu) */
   olhar(id: string | null): void;
 }

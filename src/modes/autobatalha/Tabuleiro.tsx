@@ -20,8 +20,8 @@ import {
 } from './interacao';
 import { eventosEntre, lutadoresEm } from './reproducao';
 import {
-  Estrelas, Foto, IconeAlcance, IconeItem, Moeda, RAZAO_LUTA, avatarDe, casaQueCabe, centroCasa, custoAttr, formaOuNada, geo, imgForma, num,
-  plural, tamanhoTabuleiro, type Geo,
+  Estrelas, Foto, IconeAlcance, IconeItem, Moeda, RAZAO_LUTA, avatarDe, casaQueCabe, centroCasa, custoAttr, estiloDe, formaOuNada, geo, imgForma,
+  num, plural, tamanhoTabuleiro, type Geo,
 } from './comum';
 
 // ---------- atributos (com memória: a peça redesenha muito na luta) ----------
@@ -310,8 +310,14 @@ export function lembrarVida(p: Partida, vida: number): void {
   vidaNoPlanejamento.set(chaveRodada(p), vida);
 }
 
-/** O tabuleiro inteiro na luta: o adversário em cima (espelhado), você embaixo. Antes de correr, a apresentação dos
- *  dois lados (clash). */
+/** Estilo do tabuleiro do lado do adversário na luta: o do jogador (ou do dono do fantasma); contra monstros, o seu. */
+export function estiloDoAdversario(p: Partida, adversario: string): string {
+  const j = adversario === 'monstros' ? null : donoDoLado(p.jogadores, adversario);
+  return estiloDe(j ?? p.jogadores.find(x => x.id === p.voce));
+}
+
+/** O tabuleiro inteiro na luta: o adversário em cima (espelhado), você embaixo; a metade de cima com o estilo de
+ *  tabuleiro dele. Antes de correr, a apresentação dos dois lados (clash). */
 export function TabuleiroLuta({ partida, rep, velocidade, espaco }: { partida: Partida; rep: Reproducao; velocidade: number; espaco: Espaco }) {
   const foco = useTracoEmFoco();
   const g = geo(casaQueCabe(espaco.largura - FOLGA, espaco.altura - FOLGA, LINHAS, RAZAO_LUTA), RAZAO_LUTA);
@@ -346,10 +352,17 @@ export function TabuleiroLuta({ partida, rep, velocidade, espaco }: { partida: P
   const meio = (LINHAS_DONO - 0.5) * g.h * 0.75 + g.h / 2;
 
   const duracao = `${(0.42 / v).toFixed(3)}s`;
+  const estiloDeles = estiloDoAdversario(partida, rep.adversario);
+  // mesmo estilo dos dois lados (ou monstros): as casas de cima ganham o tom "deles" do estilo, pra separar as metades
+  const mesmoEstilo = estiloDeles === estiloDe(partida.jogadores.find(j => j.id === partida.voce));
   return (
-    <div id="abLuta" className={'ab-tab luta' + (foco ? ' focando' : '') + (rep.comecou ? '' : ' antes')}
+    <div id="abLuta" className={'ab-tab luta' + (foco ? ' focando' : '') + (rep.comecou ? '' : ' antes') + (mesmoEstilo ? ' mesmo-estilo' : '')}
       style={varsTab(g, g.w * 0.64, { width: largura, height: altura, ['--mov' as string]: duracao, ['--meio' as string]: `${meio}px` })}>
-      {casas.map(c => <div key={`${c.col},${c.lin}`} className={'ab-casa' + (c.lin < LINHAS_DONO ? ' deles' : '')} style={estiloCasa(c, g)} />)}
+      {/* display: contents: as casas de cima pegam as cores do estilo do adversário sem mudar a posição */}
+      <div className="ab-estilo-deles" data-estilo={estiloDeles}>
+        {casas.filter(c => c.lin < LINHAS_DONO).map(c => <div key={`${c.col},${c.lin}`} className="ab-casa deles" style={estiloCasa(c, g)} />)}
+      </div>
+      {casas.filter(c => c.lin >= LINHAS_DONO).map(c => <div key={`${c.col},${c.lin}`} className="ab-casa" style={estiloCasa(c, g)} />)}
       <span className="ab-meio" aria-hidden="true" />
       {efeitos.map(({ ev, i }) => ev.tipo === 'visual' && ev.casas.map((c, k) => (
         <div key={`${i}-${k}`} className={`ab-fx fx-${EFEITOS.includes(ev.efeito) ? ev.efeito : 'golpe'}`} style={estiloCasa(c, g)} />
