@@ -76,9 +76,11 @@ export function setDeTeste(): SetDados {
   };
 }
 
+/** as mesmas escadas de conteudo/tracos.ts */
 const DEGRAUS_ORIGEM: Record<Origem, number[]> = {
-  pokemon: [4, 8, 9], digimon: [2, 3, 5], smt: [2, 4, 6], persona: [1, 2, 3], jojo: [2, 4, 7], ygo: [2, 5, 7],
-  lol: [2, 4, 7], overwatch: [2, 3, 5], deadlock: [2, 3, 5], sujimon: [2, 3, 4],
+  pokemon: [2, 4, 6, 8, 9, 10], digimon: [2, 3, 4, 5, 6], smt: [2, 3, 4, 6, 8], persona: [1, 2, 3, 4, 5],
+  jojo: [2, 3, 5, 7, 9, 10], ygo: [2, 3, 5, 7, 9, 10], lol: [2, 3, 5, 7, 9, 10], overwatch: [2, 3, 4, 5, 7],
+  deadlock: [2, 3, 4, 5, 6], sujimon: [2, 3, 4, 5, 6],
 };
 const ELEMENTOS = new Set(['agua', 'fogo', 'raio', 'gelo', 'terra', 'vento', 'planta']);
 

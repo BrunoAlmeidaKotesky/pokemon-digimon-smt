@@ -20,7 +20,12 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 6. **Formas alternativas no nível 1** (Jack Frost ou Jack-o'-Lantern, Daemon ou Succubus, Orpheus ou Orpheus F): a
    loja sorteia qual vem; todas contam como cópias do mesmo campeão.
 7. **Custos que faltavam:** Clock Wyvern 2, Panther Warrior 1.
-8. **No lugar do carrossel:** no começo dos estágios 2, 3 e 4, cada jogador escolhe 1 de 3 componentes.
+8. **Carrossel como o do gênero** (decidido por você; trocou o "presente" de 1 de 3 componentes): no começo de
+   cada estágio a partir do 2, 9 campeões de estrela 1 segurando um item (componente até o estágio 4, completo do 5
+   em diante), custos subindo com o estágio, escolha em duplas da menor vida pra maior. Números meus: 3 s até a 1ª
+   dupla e entre as duplas, 4 s depois da última, fecha 1,5 s depois de todos pegarem, 50/50 entre os dois custos
+   de cada estágio (40/40/20 no 5+), banco cheio vende o campeão pelo custo (menos quando fecha evolução, como na
+   loja), e dá pra mexer na loja durante o carrossel.
 9. **Atributos, economia e loja:** tabelas no design (base pelo custo, ajuste pelo papel da 1ª classe; renda, juros,
    XP e chances no padrão do gênero). Ponto de partida, sem calibragem fina.
 10. **Bots:** 7, com os nomes dos atributos Bakugan (Pyrus, Aquos…). Jogam de forma simples.

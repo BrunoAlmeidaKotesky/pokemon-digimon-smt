@@ -1,19 +1,20 @@
 // O ciclo da rodada: fim do planejamento (prepara os tabuleiros) → simular as lutas → aplicar os resultados
-// (vida, ouro, sequência, traços que mexem na partida, eliminações) → avançar pra próxima rodada.
+// (vida, ouro, sequência, traços que mexem na partida, eliminações) → avançar pra próxima rodada (no começo de cada
+// estágio a partir do 2, o carrossel vem antes do planejamento).
 import { S } from '../dados';
 import type { Rng } from '../rng';
 import {
   COMPONENTES, type EntradaLutador, type EntradaTime, type Jogador, type Lado, type Partida, type ResultadoLuta,
   type SimularLuta, type Unidade,
 } from '../tipos';
-import { ESTAGIOS_COM_PRESENTE, ID_MONSTROS, XP_POR_RODADA } from './constantes';
+import { montarCarrossel, temCarrossel, terminarCarrossel } from './carrossel';
+import { ID_MONSTROS, XP_POR_RODADA } from './constantes';
 import {
   donoDoFantasma, ehFantasma, ehMonstros, ehStand, estaVivo, forca, jogadorDe, limiteTabuleiro, ondeEsta, origemDe,
   rodadasDoEstagio, unidadesNoTabuleiro, vivos,
 } from './consultas';
 import { danoDerrota, danoMonstros, novaSequencia, rendaDaRodada } from './economia';
 import { sortearEscolhas } from './evolucao';
-import { sortearPresente } from './itens';
 import { darUnidade, devolverTudo, ganharXp, sortearLoja } from './loja';
 import { gerarMonstros } from './monstros';
 import { M, nivelTraco } from './motor';
@@ -101,15 +102,12 @@ function estrelasVivas(res: ResultadoLuta, lado: Lado, time: EntradaTime): numbe
 
 // ---------- fim do planejamento e simular ----------
 
-/** Fim do planejamento: escolhas e presentes sem resposta são sorteados, e cada tabuleiro é preparado. */
+/** Fim do planejamento: escolhas sem resposta são sorteadas e cada tabuleiro é preparado. Carrossel que ficou aberto
+ *  (simulação que pulou a fase) termina antes. */
 export function fimDoPlanejamento(p: Partida): void {
+  if (p.carrossel) terminarCarrossel(p);
   for (const j of vivos(p)) {
     sortearEscolhas(p, j);
-    if (j.presente) {
-      const r = rngDa(p);
-      j.itens.push(j.presente[r.int(j.presente.length)]!);
-      j.presente = undefined;
-    }
     prepararTabuleiro(j);
   }
 }
@@ -256,8 +254,10 @@ export function montarRodada(p: Partida, rng: Rng): void {
   p.confrontos = confrontosDaRodada(p, p.tipo, rng);
 }
 
-/** Avança pra próxima rodada e começa o planejamento: renda, XP, presente (começo dos estágios 2, 3 e 4), loja
- *  nova (se não travada), monstros e confrontos. Os bots jogam depois (jogarBots). */
+/** Avança pra próxima rodada: carrossel (começo de cada estágio a partir do 2; os campeões dele saem do pool antes
+ *  das lojas), renda, XP, loja nova (se não travada), monstros e confrontos. Com carrossel a partida fica na fase
+ *  'carrossel' (terminarCarrossel leva pro planejamento); sem, já no planejamento. Os bots jogam o planejamento
+ *  depois (jogarBots). */
 export function avancarRodada(p: Partida): void {
   if (acabou(p)) { p.fase = 'fim'; return; }
   const tipos = rodadasDoEstagio(p.estagio);
@@ -265,17 +265,12 @@ export function avancarRodada(p: Partida): void {
   else { p.estagio++; p.rodada = 1; }
   p.tipo = rodadasDoEstagio(p.estagio)[p.rodada - 1]!;
   const rng = rngDa(p);
-  const presente = p.rodada === 1 && ESTAGIOS_COM_PRESENTE.includes(p.estagio);
+  p.fase = 'planejamento';
+  if (temCarrossel(p.estagio, p.rodada)) montarCarrossel(p, rng);
   for (const j of vivos(p)) {
     j.ouro += rendaDaRodada(p.estagio, p.rodada, j.ouro, j.sequencia);
     ganharXp(j, XP_POR_RODADA);
-    if (presente) {
-      const opcoes = sortearPresente(rng);
-      if (j.bot) j.itens.push(opcoes[rng.int(opcoes.length)]!);
-      else j.presente = opcoes;
-    }
     if (!j.lojaTravada) sortearLoja(p, j, rng);
   }
   montarRodada(p, rng);
-  p.fase = 'planejamento';
 }

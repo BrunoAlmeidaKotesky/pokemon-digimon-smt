@@ -14,10 +14,13 @@ import { Banco, Fantasma, ItensSoltos, TabuleiroDono, TabuleiroLuta, lembrarVida
 import { Loja } from './Loja';
 import { Jogadores, Tracos } from './Lateral';
 import { Planejador } from './Planejador';
-import { Foto, IconeItem, IconeRodada, formaOuNada, imgForma, nomeItem, nomeTraco, rotuloRodada, textoItem } from './comum';
+import { Carrossel } from './Carrossel';
+import { Foto, IconeRodada, formaOuNada, imgForma, nomeTraco, rotuloRodada } from './comum';
 
 const VELOCIDADES: { value: Velocidade; label: string }[] = [{ value: 1, label: '1×' }, { value: 2, label: '2×' }, { value: 4, label: '4×' }];
-const FASE: Record<PartidaDados['fase'], string> = { planejamento: 'Planejamento', luta: 'Luta', resultado: 'Resultado', fim: 'Fim' };
+const FASE: Record<PartidaDados['fase'], string> = {
+  carrossel: 'Carrossel', planejamento: 'Planejamento', luta: 'Luta', resultado: 'Resultado', fim: 'Fim',
+};
 
 export function Conteudo() {
   const e = useAutobatalha();
@@ -37,7 +40,7 @@ export function Conteudo() {
         <Jogo e={e} p={p} eu={eu} abrirPlanejador={abrirPlanejador} />
       )}
       {planejador && setCarregado() && <Planejador fechar={fecharPlanejador} />}
-      {p && eu && !fim && <Janelas e={e} eu={eu} />}
+      {p && eu && !fim && p.fase !== 'carrossel' && <Janelas eu={eu} />}
       <Aviso texto={e.aviso} />
       <Fantasma />
       <Dica estado={e} />
@@ -104,6 +107,7 @@ function Jogo({ e, p, eu, abrirPlanejador }: { e: EstadoTela; p: PartidaDados; e
   const visto = olhando ?? eu;
   const rep = e.reproducao;
   const naLuta = !!rep && !olhando;
+  const carrossel = p.fase === 'carrossel' && !olhando ? e.carrossel : null;
 
   // a vida no planejamento, pra mostrar no fim da luta quanto ela custou
   useEffect(() => { if (p.fase === 'planejamento') lembrarVida(p, eu.vida); });
@@ -136,12 +140,12 @@ function Jogo({ e, p, eu, abrirPlanejador }: { e: EstadoTela; p: PartidaDados; e
   const noTab = unidadesNoTabuleiro(visto, false).length;
   const limite = limiteTabuleiro(visto);
   return (
-    <div className={'ab-jogo fase-' + p.fase + (naLuta ? ' na-luta' : '')} data-fase={p.fase}>
+    <div className={'ab-jogo fase-' + p.fase + (naLuta ? ' na-luta' : '') + (carrossel ? ' no-carrossel' : '')} data-fase={p.fase}>
       <Topo e={e} p={p} abrirPlanejador={abrirPlanejador} />
       <Tracos j={visto} />
       <div className="ab-centro">
         <div className="ab-area">
-          {naLuta ? <TabuleiroLuta partida={p} rep={rep} velocidade={e.config.velocidade} /> : (
+          {naLuta ? <TabuleiroLuta partida={p} rep={rep} velocidade={e.config.velocidade} /> : carrossel ? <Carrossel c={carrossel} partida={p} /> : (
             <>
               <div className="ab-area-cab">
                 {olhando ? (
@@ -216,8 +220,8 @@ function BotaoSair() {
   );
 }
 
-// ---------- janelinhas ----------
-function Janelas({ e, eu }: { e: EstadoTela; eu: Jogador }) {
+// ---------- janelinha da evolução (fora do carrossel) ----------
+function Janelas({ eu }: { eu: Jogador }) {
   const esc = eu.escolhaPendente;
   if (esc) {
     const u = eu.unidades[esc.uid];
@@ -240,24 +244,6 @@ function Janelas({ e, eu }: { e: EstadoTela; eu: Jogador }) {
             })}
           </div>
           <p className="mute">Sem resposta até o fim do relógio, sai uma ao acaso.</p>
-        </div>
-      </div>
-    );
-  }
-  if (e.presente?.length) {
-    return (
-      <div className="ab-sobreposto">
-        <div id="abPresente" className="ab-janela panel" role="dialog" aria-modal="true" aria-label="Presente do estágio">
-          <h3>Presente do estágio: escolha um componente</h3>
-          <div className="ab-opcoes">
-            {e.presente.map(c => (
-              <button key={c} type="button" className="ab-opcao" data-componente={c} onClick={() => acoes.escolherPresente(c)}>
-                <IconeItem id={c} className="grande" />
-                <b>{nomeItem(c)}</b>
-                <small>{textoItem(c)}</small>
-              </button>
-            ))}
-          </div>
         </div>
       </div>
     );

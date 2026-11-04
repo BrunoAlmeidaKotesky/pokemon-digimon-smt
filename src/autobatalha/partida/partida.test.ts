@@ -1,16 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { S } from '../dados';
 import { criarRng } from '../rng';
-import { COMPONENTES, type Componente, type Partida } from '../tipos';
+import type { Partida } from '../tipos';
 import {
   acabou, alternarPosicao, aplicarRodada, atualizarLoja, avancarRodada, bonusSequencia, carregarPartida, CHANCES_LOJA,
   chancesLoja, comprar, comprarXp, contaNoLimite, COPIAS_POR_CUSTO, danoDerrota, equipar, escolherEvolucao,
-  escolherPresente, fimDoPlanejamento, humano, jogadorDe, jogarBot, jogarBots, juros, limiteTabuleiro, mover,
+  fimDoPlanejamento, humano, jogadorDe, jogarBot, jogarBots, juros, limiteTabuleiro, mover, terminarCarrossel,
   MSG_LIMITE, novaPartida, ondeEsta, rendaDaRodada, rodadasDoEstagio, salvarPartida, simularRodada, sortearConfrontos,
   sortearLoja, standDe, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos, xpParaProximo, apagarPartida,
-  temPartidaSalva, CHAVE_PARTIDA, escolherUlt, gerarMonstros, montarTime,
+  temPartidaSalva, CHAVE_PARTIDA, escolherUlt, gerarMonstros, montarTime, BONUS_DEADLOCK_POR_10_ALMAS,
+  BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor,
 } from './index';
-import { dar, limpar, lutaGanha, prepararTeste, resultado } from './test-helpers';
+import { contarTracosFalso, dar, limpar, lutaGanha, prepararTeste, resultado } from './test-helpers';
 
 beforeEach(() => prepararTeste());
 
@@ -92,7 +93,7 @@ describe('economia', () => {
     b.lojaTravada = true;
     const lojaB = [...b.loja];
     avancarRodada(p);
-    expect([p.estagio, p.rodada, p.tipo]).toEqual([2, 1, 'pvp']);
+    expect([p.estagio, p.rodada, p.tipo, p.fase]).toEqual([2, 1, 'pvp', 'carrossel']);
     expect(a.ouro).toBe(23 + 5 + 2 + 1);
     expect(a.xp).toBe(2);
     expect(b.loja).toEqual(lojaB);
@@ -402,8 +403,10 @@ describe('tabuleiro e Stands', () => {
     expect(ondeEsta(eu, sp.uid)?.tipo).toBe('banco');
     const time = montarTime(eu);
     expect(time.lutadores).toHaveLength(3);
+    // 2 do Deadlock = 1º degrau; 25 almas = 2 dezenas
     const haze = time.lutadores.find(l => l.id === String(h1.uid))!;
-    expect(haze.unidade!.bonus).toEqual({ vida: 0.04, dano: 0.04 });
+    const extra = BONUS_DEADLOCK_POR_10_ALMAS[0] * 2;
+    expect(haze.unidade!.bonus).toEqual({ vida: extra, dano: extra });
     expect(eu.unidades[h1.uid]!.bonus).toBeUndefined();
   });
 });
@@ -420,35 +423,6 @@ describe('itens', () => {
     expect(equipar(p, eu.id, 0, u.uid)).toBeNull();
     expect(equipar(p, eu.id, 0, u.uid)).toMatch(/3 itens/);
     expect(eu.itens).toEqual(['ventus']);
-  });
-
-  it('presente no começo do estágio 2: bot pega na hora, humano escolhe (ou sorteia no fim)', () => {
-    const p = novaPartida(41);
-    p.rodada = 3;
-    const bot = jogadorDe(p, 'haos');
-    avancarRodada(p);
-    expect(bot.itens).toHaveLength(1);
-    const eu = humano(p);
-    expect(eu.presente).toHaveLength(3);
-    expect(new Set(eu.presente).size).toBe(3);
-    const fora = COMPONENTES.find(c => !eu.presente!.includes(c))!;
-    expect(escolherPresente(p, eu.id, fora)).toMatch(/não está/);
-    const c = eu.presente![1]!;
-    expect(escolherPresente(p, eu.id, c)).toBeNull();
-    expect(eu.itens).toEqual([c]);
-    expect(eu.presente).toBeUndefined();
-    // estágio 3: sem escolher, o fim do planejamento sorteia
-    p.estagio = 2; p.rodada = 7;
-    avancarRodada(p);
-    expect(eu.presente).toHaveLength(3);
-    const opcoes = [...eu.presente!];
-    fimDoPlanejamento(p);
-    expect(eu.presente).toBeUndefined();
-    expect(opcoes).toContain(eu.itens[1] as Componente);
-    // estágio 5 não tem presente
-    p.estagio = 4; p.rodada = 7;
-    avancarRodada(p);
-    expect(eu.presente).toBeUndefined();
   });
 });
 
@@ -530,14 +504,21 @@ describe('rodada', () => {
     dar(p, eu, 'deadlock:abrams', { casa: [4, 0] });
     const ouro = eu.ouro;
     rodadaContra(p, 'pyrus', () => resultado('a', [`a:${t.uid}`], [], { [`a:${t.uid}`]: 100, [`a:${m.uid}`]: 300, [`b:${t.uid}`]: 999 }, { [`a:${h.uid}`]: 3 }));
-    expect(eu.unidades[m.uid]!.bonus).toEqual({ vida: 0.03, dano: 0.03 });
+    // 2 do Overwatch = 1º degrau
+    expect(eu.unidades[m.uid]!.bonus).toEqual({ vida: BONUS_OVERWATCH[0], dano: BONUS_OVERWATCH[0] });
     expect(eu.unidades[t.uid]!.bonus).toBeUndefined();
-    // 3 heróis do Deadlock = degrau 2 (3/5): almas sem dobrar; 8 + 3 = 11 → +1 de ouro; +1 da vitória
-    expect(eu.almas).toBe(11);
+    // 3 heróis do Deadlock = 2º degrau: 8 + 3 abates × almas do degrau = 11 → +1 de ouro; +1 da vitória
+    expect(ALMAS_POR_ABATE[1]).toBe(1);
+    expect(eu.almas).toBe(8 + 3 * ALMAS_POR_ABATE[1]);
     expect(eu.ouro).toBe(ouro + 2);
   });
 
-  it('Sujimon (4) recruta um Sujimon de custo até 3 depois de vencer monstros', () => {
+  it('Sujimon no último degrau recruta um Sujimon de custo até 3 depois de vencer monstros', () => {
+    // o set de teste tem só 5 Sujimon: o último degrau (6, chance 100%) é forçado no contarTracos
+    expect(CHANCE_SUJIMON.at(-1)).toBe(1);
+    definirMotor({
+      contarTracos: us => contarTracosFalso(us).map(t => (t.id === 'sujimon' ? { ...t, nivel: CHANCE_SUJIMON.length - 1 } : t)),
+    });
     const p = novaPartida(54);
     const eu = humano(p);
     limpar(eu);
@@ -606,6 +587,7 @@ describe('partida inteira', () => {
       aplicarRodada(p, simularRodada(p));
       for (const v of Object.values(p.pool)) expect(v).toBeGreaterThanOrEqual(0);
       avancarRodada(p);
+      terminarCarrossel(p);
     }
     return rodadas;
   }
@@ -639,6 +621,7 @@ describe('partida inteira', () => {
       for (const j of vivos(p)) expect(unidadesNoTabuleiro(j, false).length).toBeLessThanOrEqual(j.nivel);
       aplicarRodada(p, simularRodada(p));
       avancarRodada(p);
+      terminarCarrossel(p);
     }
     // 3-2 já passou: nível 6 pros que tiveram ouro
     expect([p.estagio, p.rodada]).toEqual([3, 3]);
@@ -663,7 +646,7 @@ describe('salvar', () => {
   it('salvar e carregar dá a mesma partida, e ela continua igual', () => {
     const p = novaPartida(77);
     for (let r = 0; r < 5; r++) {
-      jogarBots(p); fimDoPlanejamento(p); aplicarRodada(p, simularRodada(p)); avancarRodada(p);
+      jogarBots(p); fimDoPlanejamento(p); aplicarRodada(p, simularRodada(p)); avancarRodada(p); terminarCarrossel(p);
     }
     jogarBots(p);
     salvarPartida(p);
@@ -672,7 +655,7 @@ describe('salvar', () => {
     expect(q).toEqual(JSON.parse(JSON.stringify(p)));
     for (const x of [p, q]) {
       for (let r = 0; r < 4; r++) {
-        fimDoPlanejamento(x); aplicarRodada(x, simularRodada(x)); avancarRodada(x); jogarBots(x);
+        fimDoPlanejamento(x); aplicarRodada(x, simularRodada(x)); avancarRodada(x); terminarCarrossel(x); jogarBots(x);
       }
     }
     expect(JSON.stringify(q)).toBe(JSON.stringify(p));

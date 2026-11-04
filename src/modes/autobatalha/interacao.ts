@@ -17,8 +17,9 @@ function loja<T>(inicial: T) {
 export type AlvoDica =
   /** unidade de um jogador (tabuleiro ou banco); editavel = é sua e dá pra escolher ult e posição */
   | { tipo: 'unidade'; dono: string; uid: number; editavel: boolean }
-  /** carta da loja ou retrato do planejador: o campeão na estrela 1 (ou na pedida) */
-  | { tipo: 'campeao'; campeao: string; forma: string; estrela?: Estrela }
+  /** carta da loja, retrato do planejador ou opção do carrossel: o campeão na estrela 1 (ou na pedida); `item` = o que
+   *  ele segura no carrossel; `etiqueta` = a marca no topo (padrão: "na loja: estrela 1") */
+  | { tipo: 'campeao'; campeao: string; forma: string; estrela?: Estrela; item?: string; etiqueta?: string }
   /** lutador na luta (id da gravação) */
   | { tipo: 'lutador'; id: string }
   | { tipo: 'traco'; id: string; n: number; nivel: number }

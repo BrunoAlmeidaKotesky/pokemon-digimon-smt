@@ -77,7 +77,7 @@ function conteudo(alvo: AlvoDica, e: EstadoTela, fixa: boolean): ReactNode {
     }
     case 'campeao': {
       const u: Unidade = { uid: -1, campeao: alvo.campeao, estrela: alvo.estrela ?? 1, forma: alvo.forma, itens: [] };
-      return <DicaUnidade u={u} editavel={false} />;
+      return <DicaUnidade u={u} editavel={false} etiqueta={alvo.etiqueta ?? 'na loja: estrela 1'} segura={alvo.item} />;
     }
     case 'lutador': {
       const rep = e.reproducao;
@@ -121,8 +121,11 @@ function tentar<T>(f: () => T): T | null {
   }
 }
 
-/** `editavel`: é sua (dá pra escolher ult e posição); os botões aparecem com a dica fixa (clique na unidade). */
-function DicaUnidade({ u, editavel, luta, fixa = false }: { u: Unidade; editavel: boolean; luta?: EstadoVisivel; fixa?: boolean }) {
+/** `editavel`: é sua (dá pra escolher ult e posição); os botões aparecem com a dica fixa (clique na unidade).
+ *  `etiqueta`: marca no topo (carta da loja, carrossel); `segura`: item que vem junto (carrossel), fora dos atributos. */
+function DicaUnidade({ u, editavel, luta, fixa = false, etiqueta, segura }: {
+  u: Unidade; editavel: boolean; luta?: EstadoVisivel; fixa?: boolean; etiqueta?: string; segura?: string;
+}) {
   const c = tentar(() => S().campeao(u.campeao));
   const f = formaOuNada(u.forma);
   if (!c || !f) return null;
@@ -142,10 +145,15 @@ function DicaUnidade({ u, editavel, luta, fixa = false }: { u: Unidade; editavel
             <Estrelas n={u.estrela} />
             <span className="ab-d-custo" title="Custo"><Moeda />{c.custo}</span>
             {c.stand && <span className="ab-tag">Stand</span>}
-            {u.uid < 0 && <span className="ab-tag">na loja: estrela 1</span>}
+            {etiqueta && <span className="ab-tag">{etiqueta}</span>}
           </span>
         </div>
       </div>
+      {segura && (
+        <ul className="ab-d-itens ab-d-segura" aria-label="Item que vem junto">
+          <li><IconeItem id={segura} /><span><b>Vem com {nomeItem(segura)}</b> (vai pros itens soltos). {textoItem(segura)}</span></li>
+        </ul>
+      )}
       <ul className="ab-d-tracos">
         {tracos.map(id => (
           <li key={id} style={corTraco(id)}>

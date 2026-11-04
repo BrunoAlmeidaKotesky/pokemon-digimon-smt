@@ -3,7 +3,6 @@
 // 50 de ouro pelos juros e depois rolam, tanques e corpo a corpo na frente e alcance atrás, itens no mais forte,
 // Stand preso a um aliado.
 import { S } from '../dados';
-import type { Rng } from '../rng';
 import type { Jogador, Partida, Unidade } from '../tipos';
 import { CUSTO_ATUALIZAR, CUSTO_XP, VAGAS_BANCO } from './constantes';
 import {
@@ -13,7 +12,6 @@ import {
 import { sortearEscolhas } from './evolucao';
 import { equiparItem } from './itens';
 import { atualizar, comprarVaga, comprarXpDe, venderUnidade } from './loja';
-import { rngDa } from './sorteio';
 import { casaPreferida, casasLivresAoLado, colocar, podeSegurar } from './tabuleiro';
 
 /** Pontos fixos de subir de nível: [estágio, rodada, nível]. */
@@ -146,8 +144,7 @@ export function equiparItens(j: Jogador): void {
 }
 
 /** Um bot joga o planejamento inteiro. */
-export function jogarBot(p: Partida, j: Jogador, rng: Rng = rngDa(p)): void {
-  if (j.presente) { j.itens.push(j.presente[rng.int(j.presente.length)]!); j.presente = undefined; }
+export function jogarBot(p: Partida, j: Jogador): void {
   sortearEscolhas(p, j);
   escolherAlvos(j);
   const alvo = nivelAlvo(p.estagio, p.rodada);

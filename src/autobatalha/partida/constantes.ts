@@ -59,5 +59,3 @@ export const NOMES_BOTS = ['Pyrus', 'Aquos', 'Haos', 'Darkus', 'Subterra', 'Vent
 export const ID_HUMANO = 'voce';
 export const ID_MONSTROS = 'monstros';
 export const PREFIXO_FANTASMA = 'fantasma:';
-/** estágios que começam com presente (1 de 3 componentes) */
-export const ESTAGIOS_COM_PRESENTE: readonly number[] = [2, 3, 4];

@@ -1,7 +1,7 @@
 // Interface entre a tela (src/modes/autobatalha) e o controle da partida (src/autobatalha/controle.ts).
 // O controle guarda a partida em andamento, roda o relógio, os bots e as lutas, e avisa a tela a cada mudança
 // (useSyncExternalStore, como src/state/app.ts). A tela só lê EstadoTela e chama Acoes.
-import type { Componente, Onde, Partida, ResultadoLuta } from './tipos';
+import type { OpcaoCarrossel, Onde, Partida, ResultadoLuta } from './tipos';
 
 export type Velocidade = 1 | 2 | 4;
 
@@ -24,6 +24,24 @@ export interface Reproducao {
   acabou: boolean;
 }
 
+/** O carrossel do começo do estágio, pra tela (fase 'carrossel'). */
+export interface EstadoCarrossel {
+  /** as opções (campeão, forma, item e quem pegou), na ordem em que ficam no círculo */
+  opcoes: OpcaoCarrossel[];
+  /** ordem de escolha: duplas de ids de jogador, da menor vida pra maior */
+  grupos: string[][];
+  /** quantos grupos já foram liberados (os ids liberados são grupos.slice(0, liberados)) */
+  liberados: number;
+  /** segundo (desde o começo do carrossel) em que cada grupo é liberado */
+  horarios: number[];
+  /** segundos desde o começo do carrossel */
+  tempo: number;
+  /** segundo em que o carrossel acaba (quem não pegou leva uma ao acaso); encurta quando todos já pegaram */
+  fim: number;
+  /** o humano está liberado, vivo e ainda não pegou: pode clicar numa opção */
+  podePegar: boolean;
+}
+
 export interface EstadoTela {
   /** set ainda baixando */
   carregando: boolean;
@@ -35,8 +53,8 @@ export interface EstadoTela {
   config: Config;
   /** existe partida salva pra continuar */
   temSalva: boolean;
-  /** presente do começo do estágio: 3 componentes pra escolher um (null = nada pendente) */
-  presente: Componente[] | null;
+  /** carrossel do começo do estágio (null = fora da fase 'carrossel') */
+  carrossel: EstadoCarrossel | null;
   /** jogador cujo tabuleiro a tela está mostrando (olhar o adversário); null = o próprio */
   olhando: string | null;
   /** última mensagem curta pro jogador ("Banco cheio", "Ouro insuficiente") */
@@ -62,7 +80,8 @@ export interface Acoes {
   /** equipa o item da posição i dos itens soltos na unidade (2 componentes viram o Bakugan completo) */
   equipar(i: number, uid: number): void;
   escolherEvolucao(forma: string): void;
-  escolherPresente(c: Componente): void;
+  /** pega a opção i do carrossel (só depois de liberado, uma vez por carrossel) */
+  pegarCarrossel(i: number): void;
   /** qual ult a unidade usa (id de classe ou de forma de transformação) */
   escolherUlt(uid: number, ult: string): void;
   /** Yu-Gi-Oh!: alterna ataque/defesa */

@@ -155,7 +155,19 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Rodadas:** estágio 1 = 1-1, 1-2, 1-3 contra monstros. Do estágio 2 em diante: x-1 a x-6 contra jogadores e x-7
   contra monstros (2-7 monstros comuns; 3-7 em diante um **chefe** do Final Fantasy, categoria Chefe, com escolta).
   Monstros e chefes sorteados a cada partida.
-- **Presente:** no começo dos estágios 2, 3 e 4, cada jogador escolhe 1 de 3 componentes sorteados.
+- **Carrossel** (`src/autobatalha/partida/carrossel.ts`): no começo de cada estágio a partir do 2, antes do
+  planejamento da x-1, uma fase própria. 9 campeões de estrela 1 saem do pool (forma de nível 1 com alternativas:
+  sorteada, como na loja), cada um segurando um item: componente nos estágios 2 a 4, Bakugan completo do 5 em
+  diante. Custos pelo estágio: 2 → 1 e 2; 3 → 2 e 3; 4 → 3 e 4; 5+ → 3, 4 e 5 (tabela `CUSTOS_DO_CARROSSEL`), sem
+  repetir campeão enquanto der. Os vivos são liberados em duplas, da menor vida pra maior (empate sorteado): a 1ª
+  dupla aos 3 s e uma nova a cada 3 s. O bot pega na hora em que é liberado (prefere campeão que já tem, que fecha
+  evolução ou que dá traço que ele monta; senão o componente que fecha um completo com um solto; o custo desempata).
+  Você, depois de liberado, clica em qualquer opção que sobrou; sem pegar até o fim (4 s depois da última dupla),
+  leva uma ao acaso. Quando todos já pegaram, fecha 1,5 s depois. Quem pega leva o campeão pro banco (vale a evolução
+  por 3 cópias; banco cheio: o campeão é vendido na hora pelo custo e o item fica, a não ser que feche uma evolução,
+  como na loja) e o item pros itens soltos. Os que ninguém pegou voltam pro pool. A renda, o XP e a loja nova da x-1
+  vêm junto com o carrossel (dá pra comprar, vender e atualizar enquanto ele roda; o tabuleiro só muda no
+  planejamento), e os bots jogam o planejamento depois dele.
 - **Adversário:** sorteado entre os vivos, evitando os 2 últimos; com número ímpar, um enfrenta um fantasma (cópia do
   tabuleiro de outro), e o fantasma não perde vida.
 - **Dano na derrota:** base do estágio (2: 2, 3: 3, 4: 4, 5: 6, 6: 8, 7+: 11) + metade, arredondada pra cima, de (1
@@ -190,8 +202,9 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Bots:** escolhem 1 ou 2 traços pelas primeiras unidades, compram o que encaixa ou evolui, sobem de nível em
   pontos fixos (4 no 2-1, 5 no 2-5, 6 no 3-2, 7 no 4-1, 8 no 5-1), guardam 50 de ouro pelos juros e depois rolam;
   tanques na frente, alcance atrás; itens no mais forte; Stand preso a um aliado qualquer.
-- **Salvar:** a partida é salva no localStorage (`pdx-autobatalha-v1`) no começo de cada planejamento; os planos do
-  planejador em `pdx-autobatalha-planos`. Chaves novas; as antigas do site não mudam.
+- **Salvar:** a partida é salva no localStorage (`pdx-autobatalha-v1`) no começo de cada planejamento (depois do
+  carrossel: fechar a página no meio dele volta pro último planejamento salvo); os planos do planejador em
+  `pdx-autobatalha-planos`. Chaves novas; as antigas do site não mudam.
 
 ## Tela (src/modes/autobatalha)
 
@@ -214,4 +227,9 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   que está sob o mouse.
 - Luta: unidades andam entre casas, barras mudam, números de dano sobem, nome da habilidade aparece, efeitos simples
   nas casas atingidas. Velocidade 1×/2×/4× e "Pular luta".
-- Escolhas (forma da evolução, presente) em janelinha; sem resposta no fim do relógio, sorteia.
+- Escolha da forma da evolução em janelinha (fica pra depois do carrossel); sem resposta no fim do relógio, sorteia.
+- **Carrossel** no lugar do tabuleiro: as 9 opções num círculo que gira devagar (para com o mouse em cima), cada uma
+  com a foto redonda da cor do custo e o ícone do item; a dica mostra o campeão e o item que vem junto. Quem pegou
+  aparece com o avatar em cima da opção, que fica apagada. Ao lado, a ordem de escolha em duplas, com a vez atual, o
+  tempo até cada dupla e o que cada um pegou. No meio, a sua situação ("Sua vez em 3 s", "Sua vez: clique num
+  campeão", "Você pegou…") e quanto falta pra fechar.

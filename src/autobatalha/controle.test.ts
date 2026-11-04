@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { acoes, estadoAutobatalha, MS_RESULTADO } from './controle';
-import { CHAVE_PARTIDA, definirMotor, humano } from './partida';
+import { acoes, estadoAutobatalha, MS_RESULTADO, S_FECHAR_CARROSSEL } from './controle';
+import { CHAVE_PARTIDA, definirMotor, horarioDoGrupo, humano, S_DEPOIS_DA_ULTIMA } from './partida';
 import { lutaGanha, prepararTeste } from './partida/test-helpers';
 
 let guardado: Map<string, string>;
@@ -82,18 +82,93 @@ describe('controle', () => {
     expect(E().partida?.rodada).toBe(2);
   });
 
-  it('presente aparece no estado e a escolha vai pros itens', () => {
+  /** joga as 3 rodadas do estágio 1 (sem relógio) e para no carrossel do estágio 2 */
+  function ateOCarrossel(semente: number) {
     acoes.configurar({ relogio: false });
-    acoes.novaPartida(8);
+    acoes.novaPartida(semente);
     for (let r = 0; r < 3; r++) { acoes.pronto(); acoes.pularLuta(); vi.advanceTimersByTime(MS_RESULTADO); }
     const e = E();
-    expect([e.partida?.estagio, e.partida?.rodada]).toEqual([2, 1]);
-    expect(e.presente).toHaveLength(3);
-    const c = e.presente![0]!;
-    const n = humano(e.partida!).itens.length;
-    acoes.escolherPresente(c);
-    expect(E().presente).toBeNull();
-    expect(humano(E().partida!).itens).toHaveLength(n + 1);
+    expect([e.partida?.estagio, e.partida?.rodada, e.partida?.fase]).toEqual([2, 1, 'carrossel']);
+    return e.carrossel!;
+  }
+
+  it('carrossel no começo do estágio 2: duplas no tempo, o humano pega quando liberado e fecha antes se todos pegaram', () => {
+    const c = ateOCarrossel(8);
+    expect(c.opcoes).toHaveLength(9);
+    expect(c.liberados).toBe(0);
+    expect(c.podePegar).toBe(false);
+    expect(c.horarios).toEqual(c.grupos.map((_, k) => horarioDoGrupo(k)));
+    expect(c.fim).toBe(c.horarios.at(-1)! + S_DEPOIS_DA_ULTIMA);
+    expect(E().relogio).toBeNull();
+    const salvaAntes = guardado.get(CHAVE_PARTIDA);
+    const itensAntes = humano(E().partida!).itens.length; // os monstros do estágio 1 podem ter dado componentes
+    // antes da vez: não dá
+    acoes.pegarCarrossel(0);
+    expect(E().aviso).toMatch(/Espere/);
+    expect(E().carrossel!.opcoes[0]!.pegou).toBeNull();
+    // a dupla do humano é liberada no horário dela (as anteriores já pegaram)
+    const k = c.grupos.findIndex(g => g.includes('voce'));
+    let t = c.horarios[k]! * 1000 + 300;
+    vi.advanceTimersByTime(t);
+    let e = E();
+    expect(e.carrossel!.liberados).toBe(k + 1);
+    expect(e.carrossel!.tempo).toBeGreaterThan(c.horarios[k]!);
+    expect(e.carrossel!.podePegar).toBe(true);
+    expect(e.carrossel!.opcoes.filter(o => o.pegou != null && o.pegou !== 'voce').length).toBeGreaterThanOrEqual(2 * k);
+    const i = e.carrossel!.opcoes.findIndex(o => o.pegou == null);
+    const opcao = e.carrossel!.opcoes[i]!;
+    acoes.pegarCarrossel(i);
+    e = E();
+    expect(e.carrossel!.opcoes[i]!.pegou).toBe('voce');
+    expect(e.carrossel!.podePegar).toBe(false);
+    const eu = humano(e.partida!);
+    expect(eu.itens).toHaveLength(itensAntes + 1);
+    expect(eu.itens.at(-1)).toBe(opcao.item);
+    expect(Object.values(eu.unidades).some(u => u.campeao === opcao.campeao)).toBe(true);
+    // a última dupla pega na hora; todos pegaram: fecha ~1,5 s depois, antes do fim do tempo
+    const ultima = c.horarios.at(-1)! * 1000;
+    vi.advanceTimersByTime(Math.max(0, ultima - t) + S_FECHAR_CARROSSEL * 1000 + 500);
+    t = Math.max(t, ultima) + S_FECHAR_CARROSSEL * 1000 + 500;
+    expect(t).toBeLessThan(c.fim * 1000);
+    e = E();
+    expect(e.partida?.fase).toBe('planejamento');
+    expect(e.carrossel).toBeNull();
+    expect(e.partida?.carrossel).toBeUndefined();
+    // os bots jogaram o planejamento e a partida foi salva de novo, sem o carrossel
+    const salva = guardado.get(CHAVE_PARTIDA)!;
+    expect(salva).not.toBe(salvaAntes);
+    expect(JSON.parse(salva)).toMatchObject({ estagio: 2, rodada: 1, fase: 'planejamento' });
+    expect(salva).not.toContain('"carrossel"');
+  });
+
+  it('carrossel sem o humano pegar: no fim ele leva uma ao acaso', () => {
+    const c = ateOCarrossel(12);
+    const itensAntes = humano(E().partida!).itens.length;
+    vi.advanceTimersByTime(c.fim * 1000 - 500);
+    expect(E().partida?.fase).toBe('carrossel');
+    expect(E().carrossel!.liberados).toBe(c.grupos.length);
+    vi.advanceTimersByTime(800);
+    const e = E();
+    expect(e.partida?.fase).toBe('planejamento');
+    expect(humano(e.partida!).itens).toHaveLength(itensAntes + 1);
+    expect(e.aviso).toMatch(/do carrossel ao acaso/);
+  });
+
+  it('no carrossel dá pra mexer na loja, mas não no tabuleiro; pegar fora do carrossel não faz nada', () => {
+    acoes.configurar({ relogio: false });
+    acoes.novaPartida(13);
+    acoes.pegarCarrossel(0); // planejamento: não faz nada
+    expect(E().aviso).toBeNull();
+    for (let r = 0; r < 3; r++) { acoes.pronto(); acoes.pularLuta(); vi.advanceTimersByTime(MS_RESULTADO); }
+    expect(E().partida?.fase).toBe('carrossel');
+    const ouro = humano(E().partida!).ouro;
+    acoes.atualizarLoja();
+    expect(humano(E().partida!).ouro).toBe(ouro - 2);
+    const uid = Number(Object.values(humano(E().partida!).tabuleiro)[0]);
+    acoes.mover(uid, { tipo: 'banco', i: 8 });
+    expect(E().aviso).toMatch(/só muda no planejamento/);
+    acoes.pronto(); // não termina nada fora do planejamento
+    expect(E().partida?.fase).toBe('carrossel');
   });
 
   it('continuar carrega a salva; abandonar apaga', () => {

@@ -27,6 +27,8 @@ function jogarPartida(semente: number): Resumo {
     rodadas++;
     if (P.acabou(p)) break;
     P.avancarRodada(p);
+    // carrossel: o humano (que joga como bot) leva uma ao acaso no fim
+    P.terminarCarrossel(p);
   }
   return { estagioFinal: p.estagio, rodadas, colocacoes: p.jogadores.map(j => j.colocacao ?? 0) };
 }

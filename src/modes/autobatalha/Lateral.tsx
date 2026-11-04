@@ -54,7 +54,8 @@ export function Tracos({ j }: { j: Jogador }) {
   );
 }
 
-const avatar = (j: Jogador) => (formaOuNada(j.avatar) ? imgForma(j.avatar) : j.avatar ? urlImagem(j.avatar) : '');
+/** imagem do avatar do jogador (uma forma do set ou um caminho) */
+export const avatarDe = (j: Jogador) => (formaOuNada(j.avatar) ? imgForma(j.avatar) : j.avatar ? urlImagem(j.avatar) : '');
 
 export function Jogadores({ partida, olhando }: { partida: Partida; olhando: string | null }) {
   const vivo = (j: Jogador) => (j.vida > 0 && j.colocacao == null) || j.colocacao === 1;
@@ -74,7 +75,7 @@ export function Jogadores({ partida, olhando }: { partida: Partida; olhando: str
               <button type="button" className={'ab-jog' + (eu ? ' eu' : '') + (fora ? ' fora' : '') + (j.id === vendo ? ' vendo' : '') + (j.id === adv ? ' adv' : '')}
                 data-jogador={j.id} aria-pressed={j.id === vendo} title={eu ? 'Seu tabuleiro' : `Ver o tabuleiro de ${j.nome}`}
                 onClick={() => acoes.olhar(eu ? null : j.id)}>
-                <Foto src={avatar(j)} nome={j.nome} className="redonda" />
+                <Foto src={avatarDe(j)} nome={j.nome} className="redonda" />
                 <span className="txt">
                   <span className="nm">{j.nome}{eu && <small> (você)</small>}</span>
                   <span className="vida-bar" aria-hidden="true"><i style={{ width: `${Math.max(0, Math.min(100, j.vida))}%` }} /></span>

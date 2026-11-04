@@ -1,7 +1,7 @@
-// Aba Autobatalha: tela inicial, partida (loja, banco, tabuleiro, Pronto, luta, próxima rodada), dica no hover e o
-// planejador de times (pdx-autobatalha-planos). O set é o public/autobatalha/set1.json de verdade (servido junto com o
-// site); as imagens externas viram o PNG cinza dos mocks. O relógio fica desligado (pdx-autobatalha-config) pra rodada
-// só acabar no "Pronto".
+// Aba Autobatalha: tela inicial, partida (loja, banco, tabuleiro, Pronto, luta, próxima rodada, carrossel do 2-1),
+// dica no hover e o planejador de times (pdx-autobatalha-planos). O set é o public/autobatalha/set1.json de verdade
+// (servido junto com o site); as imagens externas viram o PNG cinza dos mocks. O relógio fica desligado
+// (pdx-autobatalha-config) pra rodada só acabar no "Pronto".
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { prepare, abrir, aba, lerStorage } from './helpers';
 
@@ -89,6 +89,53 @@ test.describe('Autobatalha', () => {
     await expect(page.locator('#abLuta')).toHaveCount(0);
     await expect(page.locator('#abTabuleiro')).toBeVisible();
     await expect(page.locator('#abPronto')).toBeVisible();
+  });
+
+  test('carrossel no começo do estágio 2: ordem, dica, pega uma opção na sua vez e vai pro planejamento', async ({ page }) => {
+    test.setTimeout(90_000);
+    // sem movimento o círculo não gira (o clique fica estável)
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await inicio(page);
+    await page.locator('#abNova').click();
+    for (const r of ['1-1', '1-2', '1-3']) {
+      await expect(page.locator('#abRodada')).toHaveAttribute('data-rodada', r, { timeout: 10000 });
+      await page.locator('#abPronto').click();
+      await page.locator('#abPular').click();
+    }
+    const car = page.locator('#abCarrossel');
+    await expect(car).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('.ab-jogo')).toHaveAttribute('data-fase', 'carrossel');
+    await expect(page.locator('#abRodada')).toHaveAttribute('data-rodada', '2-1');
+    await expect(page.locator('#abPronto')).toHaveCount(0);
+    await expect(car.locator('.ab-car-op')).toHaveCount(9);
+    await expect(car.locator('#abCarOrdem .ab-car-jog')).toHaveCount(8);
+    await expect(car.locator('#abCarOrdem .ab-car-jog.eu')).toHaveCount(1);
+
+    // dica da opção: o campeão e o item que vem junto
+    await car.locator('.ab-car-op').first().hover();
+    const dica = page.locator('#abDica');
+    await expect(dica).toContainText('no carrossel: estrela 1');
+    await expect(dica).toContainText('Vem com');
+    await page.mouse.move(5, 5);
+    await expect(dica).toBeHidden();
+
+    // espera a vez do humano (a 4ª dupla sai em ~12 s) e pega uma opção que sobrou
+    await expect(car).toHaveClass(/\bpode\b/, { timeout: 20000 });
+    await expect(page.locator('#abCarStatus')).toHaveText('Sua vez: clique num campeão');
+    const itens = await page.locator('#abItens .ab-item-solto').count();
+    const livre = car.locator('.ab-car-op.pode').first();
+    const campeao = (await livre.getAttribute('data-campeao'))!;
+    await livre.click();
+    await expect(car.locator('.ab-car-op[data-pegou="voce"]')).toHaveCount(1);
+    await expect(page.locator('#abCarStatus')).toContainText('Você pegou');
+    await expect(car.locator('#abCarOrdem .ab-car-jog.eu')).toHaveClass(/pegou/);
+    await expect(page.locator('#abItens .ab-item-solto')).toHaveCount(itens + 1);
+
+    // acaba sozinho e vem o planejamento da 2-1, com o campeão pego
+    await expect(page.locator('#abPronto')).toBeVisible({ timeout: 20000 });
+    await expect(car).toHaveCount(0);
+    await expect(page.locator('.ab-jogo')).toHaveAttribute('data-fase', 'planejamento');
+    await expect(page.locator(`#abBanco .ab-peca[data-campeao="${campeao}"], #abTabuleiro .ab-peca[data-campeao="${campeao}"]`).first()).toBeVisible();
   });
 
   test('dica no hover: carta da loja, peça do banco e lutador na luta', async ({ page }) => {

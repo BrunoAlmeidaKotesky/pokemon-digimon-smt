@@ -2,19 +2,20 @@
 // lutas, e avisa a tela a cada mudança (useSyncExternalStore, como src/state/app.ts). A tela só lê EstadoTela
 // (useAutobatalha) e chama `acoes` (contrato em api.ts).
 //
-// Ciclo: planejamento (bots jogam no começo; a partida é salva; relógio ou "Pronto") → luta (todas simuladas de uma
-// vez; a do humano é reproduzida em tempo real × velocidade) → resultado (~1,5 s) → próximo planejamento. Com o
-// humano eliminado, o resto da partida corre sem mostrar e a tela vai pro fim.
+// Ciclo: [carrossel no começo de cada estágio a partir do 2: as duplas são liberadas no tempo, o humano clica numa
+// opção] → planejamento (bots jogam no começo; a partida é salva; relógio ou "Pronto") → luta (todas simuladas de uma
+// vez; a do humano é reproduzida em tempo real × velocidade) → resultado (~1,5 s) → próxima rodada. Com o humano
+// eliminado, o resto da partida corre sem mostrar e a tela vai pro fim.
 //
 // A partida é trocada por uma cópia a cada mudança (estado.partida muda de referência), então a tela pode
-// comparar referências. Sem ninguém olhando (aba fechada), o relógio e a luta ficam pausados.
+// comparar referências. Sem ninguém olhando (aba fechada), o relógio, o carrossel e a luta ficam pausados.
 import { useSyncExternalStore } from 'react';
-import type { Acoes, Config, EstadoTela, Velocidade } from './api';
+import type { Acoes, Config, EstadoCarrossel, EstadoTela, Velocidade } from './api';
 import { atributosDaUnidade, simularLuta } from './combate';
 import { combinar, contarTracos, ehComponente } from './conteudo';
 import { carregarSet, S } from './dados';
 import * as P from './partida';
-import type { Componente, Fase, Onde, Partida } from './tipos';
+import type { Fase, Onde, Partida } from './tipos';
 
 P.definirMotor({ simularLuta, atributosDaUnidade, contarTracos, combinar, ehComponente });
 
@@ -26,6 +27,10 @@ export const CONFIG_PADRAO: Config = { relogio: true, segundos: 35, velocidade: 
 export const MS_RESULTADO = 1500;
 /** tick da reprodução da luta */
 export const MS_TICK_LUTA = 50;
+/** tick do carrossel (libera as duplas e anda o tempo da tela) */
+export const MS_TICK_CARROSSEL = 200;
+/** todos já pegaram no carrossel: ele fecha este tanto de segundos depois */
+export const S_FECHAR_CARROSSEL = 1.5;
 const MS_AVISO = 2500;
 
 function lerConfig(): Config {
@@ -50,16 +55,27 @@ let partida: Partida | null = null;
 let pendente: P.ResultadoRodada | null = null;
 let estado: EstadoTela = {
   carregando: false, erro: null, partida: null, relogio: null, reproducao: null, config: lerConfig(),
-  temSalva: false, presente: null, olhando: null, aviso: null,
+  temSalva: false, carrossel: null, olhando: null, aviso: null,
 };
+/** segundos desde o começo do carrossel, e o segundo em que ele acaba */
+let tCarrossel = 0;
+let fimCarrossel = 0;
 
 const ouvintes = new Set<() => void>();
+
+function estadoDoCarrossel(p: Partida | null): EstadoCarrossel | null {
+  const c = p?.fase === 'carrossel' ? p.carrossel : undefined;
+  if (!p || !c) return null;
+  return {
+    opcoes: c.opcoes, grupos: c.grupos, liberados: c.liberados, horarios: c.grupos.map((_, k) => P.horarioDoGrupo(k)),
+    tempo: tCarrossel, fim: fimCarrossel, podePegar: P.podePegar(p, p.voce),
+  };
+}
 
 /** Avisa a tela. `copiar` = a partida mudou (troca por uma cópia, pra mudar a referência). */
 function publicar(copiar = false): void {
   if (copiar && partida) partida = structuredClone(partida);
-  const eu = partida?.jogadores.find(j => j.id === partida!.voce);
-  estado = { ...estado, partida, presente: eu?.presente ?? null };
+  estado = { ...estado, partida, carrossel: estadoDoCarrossel(partida) };
   ouvintes.forEach(l => l());
 }
 function mudar(m: Partial<EstadoTela>, copiar = false): void {
@@ -86,6 +102,7 @@ export const estadoAutobatalha = (): EstadoTela => estado;
 
 let timerRelogio: ReturnType<typeof setInterval> | null = null;
 let timerLuta: ReturnType<typeof setInterval> | null = null;
+let timerCarrossel: ReturnType<typeof setInterval> | null = null;
 let timerResultado: ReturnType<typeof setTimeout> | null = null;
 let timerAviso: ReturnType<typeof setTimeout> | null = null;
 /** fim do planejamento (Date.now) */
@@ -97,10 +114,11 @@ let pausado = false;
 
 function pararRelogio(): void { if (timerRelogio) clearInterval(timerRelogio); timerRelogio = null; }
 function pararLuta(): void { if (timerLuta) clearInterval(timerLuta); timerLuta = null; }
+function pararCarrossel(): void { if (timerCarrossel) clearInterval(timerCarrossel); timerCarrossel = null; }
 function pararResultado(): void { if (timerResultado) clearTimeout(timerResultado); timerResultado = null; }
 function pararTudo(): void {
-  pararRelogio(); pararLuta(); pararResultado();
-  prazo = null; restante = null; pendente = null;
+  pararRelogio(); pararLuta(); pararCarrossel(); pararResultado();
+  prazo = null; restante = null; pendente = null; tCarrossel = 0; fimCarrossel = 0;
 }
 
 const segundosDoPlanejamento = (p: Partida, c: Config) => (p.estagio <= 1 ? Math.round((c.segundos * 2) / 3) : c.segundos);
@@ -138,10 +156,31 @@ function tickLuta(): void {
   mudar({ reproducao: { ...r, t } });
 }
 
+function ligarCarrossel(): void {
+  pararCarrossel();
+  ultimoTick = Date.now();
+  if (!pausado) timerCarrossel = setInterval(tickCarrossel, MS_TICK_CARROSSEL);
+}
+/** Todos já pegaram: o carrossel fecha logo (não espera o fim do tempo). */
+function encurtarCarrossel(p: Partida): void {
+  if (P.todosPegaram(p)) fimCarrossel = Math.min(fimCarrossel, tCarrossel + S_FECHAR_CARROSSEL);
+}
+function tickCarrossel(): void {
+  const p = partida;
+  if (!p?.carrossel || p.fase !== 'carrossel') { pararCarrossel(); return; }
+  const agora = Date.now();
+  tCarrossel += (agora - ultimoTick) / 1000;
+  ultimoTick = agora;
+  const liberou = P.avancarCarrossel(p, tCarrossel) > 0;
+  encurtarCarrossel(p);
+  if (tCarrossel >= fimCarrossel) { fecharCarrossel(); return; }
+  publicar(liberou);
+}
+
 function pausar(): void {
   pausado = true;
   if (timerRelogio && prazo != null) restante = Math.max(0, prazo - Date.now());
-  pararRelogio(); pararLuta(); pararResultado();
+  pararRelogio(); pararLuta(); pararCarrossel(); pararResultado();
 }
 function retomar(): void {
   if (!pausado) return;
@@ -149,11 +188,40 @@ function retomar(): void {
   const p = partida;
   if (!p) return;
   if (p.fase === 'planejamento' && restante != null) { const ms = restante; restante = null; ligarRelogio(ms); }
+  else if (p.fase === 'carrossel' && p.carrossel) ligarCarrossel();
   else if (p.fase === 'luta' && estado.reproducao && !estado.reproducao.acabou) ligarLuta();
   else if (p.fase === 'resultado') timerResultado = setTimeout(depoisDoResultado, MS_RESULTADO);
 }
 
 // ---------- ciclo da rodada ----------
+
+/** Começo do estágio com carrossel: o tempo corre (as duplas são liberadas) até o fim, e aí vem o planejamento. */
+function comecarCarrossel(): void {
+  const p = partida;
+  if (!p?.carrossel) { comecarPlanejamento(); return; }
+  tCarrossel = 0;
+  fimCarrossel = P.duracaoDoCarrossel(p.carrossel);
+  estado = { ...estado, reproducao: null, relogio: null };
+  ligarCarrossel();
+  publicar(true);
+}
+
+/** Fim do carrossel: quem não pegou leva uma ao acaso, o resto volta pro pool e começa o planejamento. */
+function fecharCarrossel(): void {
+  pararCarrossel();
+  const p = partida;
+  if (!p) return;
+  const c = p.carrossel;
+  const jaTinha = !c || P.jaPegou(c, p.voce);
+  P.terminarCarrossel(p);
+  const minha = c?.opcoes.find(o => o.pegou === p.voce);
+  if (minha && !jaTinha) {
+    const nome = S().temForma(minha.forma) ? S().forma(minha.forma).nome : S().campeao(minha.campeao).nome;
+    avisar(`Você levou ${nome} do carrossel ao acaso${minha.vendido ? ' (banco cheio: vendido)' : ''}`);
+  }
+  tCarrossel = 0;
+  comecarPlanejamento();
+}
 
 function comecarPlanejamento(): void {
   const p = partida;
@@ -198,6 +266,7 @@ function correrAteOFim(p: Partida): void {
   for (let guarda = 0; guarda < 400 && !P.acabou(p); guarda++) {
     P.avancarRodada(p);
     if (P.acabou(p)) break;
+    if (p.fase === 'carrossel') P.terminarCarrossel(p);
     P.jogarBots(p);
     P.fimDoPlanejamento(p);
     P.aplicarRodada(p, P.simularRodada(p));
@@ -217,7 +286,8 @@ function depoisDoResultado(): void {
     return;
   }
   P.avancarRodada(p);
-  comecarPlanejamento();
+  if (p.fase === 'carrossel') comecarCarrossel();
+  else comecarPlanejamento();
 }
 
 // ---------- avisos e ações do humano ----------
@@ -231,7 +301,8 @@ function avisar(msg: string): void {
   }, MS_AVISO);
 }
 
-const FASES_DE_JOGO: readonly Fase[] = ['planejamento', 'luta', 'resultado'];
+/** fases em que o humano mexe na loja, no banco e nos itens (o tabuleiro, só no planejamento) */
+const FASES_DE_JOGO: readonly Fase[] = ['carrossel', 'planejamento', 'luta', 'resultado'];
 
 /** Roda uma ação do humano (vivo, em fase de jogo) e mostra a mensagem se não deu. */
 function acao(f: (p: Partida, id: string) => string | null | void, fases: readonly Fase[] = FASES_DE_JOGO): void {
@@ -288,7 +359,8 @@ export const acoes: Acoes = {
     partida = p;
     estado = { ...estado, erro: null, olhando: null, reproducao: null };
     if (p.fase === 'fim') { mudar({ relogio: null }, true); return; }
-    // a partida é salva no começo do planejamento, com os bots já jogados
+    // a partida é salva no começo do planejamento, com os bots já jogados (carrossel aberto num salvo antigo: fecha)
+    if (p.carrossel) P.terminarCarrossel(p);
     p.fase = 'planejamento';
     ligarRelogio();
     publicar(true);
@@ -318,7 +390,14 @@ export const acoes: Acoes = {
 
   equipar: (i, uid) => acao((p, id) => P.equipar(p, id, i, uid)),
   escolherEvolucao: forma => acao((p, id) => P.escolherEvolucao(p, id, forma)),
-  escolherPresente: (c: Componente) => acao((p, id) => P.escolherPresente(p, id, c)),
+  pegarCarrossel(i) {
+    acao((p, id) => {
+      const msg = P.pegarCarrossel(p, id, i);
+      if (msg) return msg;
+      encurtarCarrossel(p);
+      return p.carrossel?.opcoes[i]?.vendido ? 'Banco cheio: o campeão foi vendido (o item ficou)' : null;
+    }, ['carrossel']);
+  },
   escolherUlt: (uid, ult) => acao((p, id) => P.escolherUlt(p, id, uid, ult)),
   alternarPosicao: uid => acao((p, id) => P.alternarPosicao(p, id, uid)),
 

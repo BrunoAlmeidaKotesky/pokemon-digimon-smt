@@ -1,15 +1,23 @@
-// Partida da Autobatalha: loja, economia, rodadas, bots e salvar. Lógica pura sobre o objeto Partida (muda ele no
-// lugar). As ações devolvem a mensagem pro jogador quando não dá ("Ouro insuficiente") ou null quando deu certo.
+// Partida da Autobatalha: loja, economia, rodadas, carrossel, bots e salvar. Lógica pura sobre o objeto Partida
+// (muda ele no lugar). As ações devolvem a mensagem pro jogador quando não dá ("Ouro insuficiente") ou null quando
+// deu certo.
 // O controle (src/autobatalha/controle.ts) liga o motor (definirMotor), roda o relógio e chama isto.
-import type { Componente, Onde, Partida } from '../tipos';
+import type { Onde, Partida } from '../tipos';
 import { S } from '../dados';
 import { jogadorDe, origemDe } from './consultas';
 import { escolherForma } from './evolucao';
-import { equiparItem, escolherPresenteDe } from './itens';
+import { pegarDoCarrossel } from './carrossel';
+import { equiparItem } from './itens';
 import { atualizar, comprarVaga, comprarXpDe, travar, venderUnidade } from './loja';
 import { moverUnidade } from './tabuleiro';
 
 export * from './constantes';
+export {
+  avancarCarrossel, CUSTOS_DO_CARROSSEL, custosDoCarrossel, duracaoDoCarrossel, ESTAGIO_DO_ITEM_COMPLETO, foiLiberado,
+  horarioDoGrupo, jaPegou, liberarProximoGrupo, montarCarrossel, OPCOES_DO_CARROSSEL, ordemDoCarrossel, podePegar,
+  POR_GRUPO, PRIMEIRO_ESTAGIO_DO_CARROSSEL, S_ATE_A_PRIMEIRA, S_DEPOIS_DA_ULTIMA, S_ENTRE_DUPLAS, temCarrossel,
+  terminarCarrossel, todosPegaram,
+} from './carrossel';
 export {
   chancesLoja, custoDe, ehFantasma, ehMonstros, ehStand, estaVivo, forca, humano, jogadorDe, limiteTabuleiro,
   ondeEsta, origemDe, rodadasDoEstagio, standDe, unidadesNoBanco, unidadesNoTabuleiro, valorVenda, vivos,
@@ -45,8 +53,8 @@ export const equipar = (p: Partida, jid: string, i: number, uid: number): string
   equiparItem(jogadorDe(p, jid), i, uid);
 export const escolherEvolucao = (p: Partida, jid: string, forma: string): string | null =>
   escolherForma(p, jogadorDe(p, jid), forma);
-export const escolherPresente = (p: Partida, jid: string, c: Componente): string | null =>
-  escolherPresenteDe(jogadorDe(p, jid), c);
+/** O jogador pega a opção i do carrossel (só depois de liberado, uma vez). */
+export const pegarCarrossel = (p: Partida, jid: string, i: number): string | null => pegarDoCarrossel(p, jid, i);
 
 /** Qual ult a unidade usa (id de classe da forma ou de forma de transformação). */
 export function escolherUlt(p: Partida, jid: string, uid: number, ult: string): string | null {
