@@ -250,6 +250,9 @@ export interface Contexto {
   texto(u: Lutador, texto: string): void;
   /** soma ouro achado na luta pro dono do lado (Harvest) */
   ouro(lado: Lado, n: number): void;
+  /** derruba `n` de ouro no chão, na casa de `onde` (o jogador humano recolhe passando o mouse; soma em `ouro` do
+   *  resultado e aparece em `moedas`) */
+  moeda(lado: Lado, n: number, onde: Lutador | Casa): void;
 }
 
 /** Valor por estrela: [★1, ★2, ★3]. */
@@ -315,6 +318,13 @@ export interface Item extends Ganchos<Lutador> {
   atributos: Partial<Record<NomeAtributo, number>>;
 }
 
+/** Passiva de um campeão (poucos têm; conteudo/passivas.ts): ganchos como os de item, no lutador do campeão. */
+export interface Passiva extends Ganchos<Lutador> {
+  nome: string;
+  /** texto pro tooltip, sem o "Passiva:" */
+  texto: string;
+}
+
 // ===================================================================================================
 // Partida: o que cada jogador tem (src/autobatalha/partida)
 // ===================================================================================================
@@ -371,6 +381,8 @@ export interface Jogador {
   ultimosAdversarios: string[];
   /** evolução esperando escolha do jogador (forma alternativa) */
   escolhaPendente?: EscolhaEvolucao;
+  /** ouro caído na sua metade do tabuleiro, esperando o jogador passar o mouse em cima (bot recolhe na hora) */
+  moedas?: { casa: CasaDono; valor: number }[];
   /** outras escolhas de evolução esperando a vez (a primeira fica em escolhaPendente) */
   escolhasFila?: EscolhaEvolucao[];
   /** forma de nível 1 sorteada em cada vaga da loja (campeão com alternativas no nível 1); null = a padrão */
@@ -495,7 +507,8 @@ export type EventoLuta =
   | { t: number; tipo: 'visual'; efeito: EfeitoVisual; casas: Casa[]; de?: string }
   | { t: number; tipo: 'texto'; para: string; texto: string }
   | { t: number; tipo: 'transformar'; id: string; nome: string; img: string }
-  | { t: number; tipo: 'surge'; estado: EstadoVisivel };
+  | { t: number; tipo: 'surge'; estado: EstadoVisivel }
+  | { t: number; tipo: 'moeda'; lado: Lado; casa: Casa; valor: number };
 
 /** Fotografia da luta a cada tick (só o que muda de tick em tick). */
 export interface Quadro {
@@ -522,6 +535,8 @@ export interface ResultadoLuta {
   abates: Record<string, number>;
   /** ouro achado (Harvest) por lado */
   ouro: { a: number; b: number };
+  /** moedas derrubadas no chão (já somadas em `ouro`), com a casa onde caíram */
+  moedas?: { lado: Lado; casa: Casa; valor: number }[];
   /** gravação pra tela (só quando pedida) */
   gravacao?: {
     /** segundos por tick */

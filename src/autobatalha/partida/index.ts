@@ -31,12 +31,13 @@ export {
   type LutaDaRodada, type ResultadoRodada,
 } from './luta';
 export * from './origens';
+export { casaNoChao, moedasProChao, pegarMoeda } from './moedas';
 export { atributosChefe, atributosComum, gerarMonstros } from './monstros';
 export { definirMotor, limparMotor, motorLigado, type MotorPartida, type TracoContado } from './motor';
 export { novaPartida } from './nova';
 export { confrontosDaRodada, sortearConfrontos } from './rodadas';
 export { apagarPartida, carregarPartida, CHAVE_PARTIDA, salvarPartida, temPartidaSalva } from './salvar';
-export { jogarBot, jogarBots, nivelAlvo } from './bots';
+export { jogarBot, jogarBots, nivelAlvo, perfilDa, PERFIS_BOT, type PerfilBot } from './bots';
 export { arrumarStands, contaNoLimite, MSG_LIMITE, prepararTabuleiro } from './tabuleiro';
 export { MSG_BANCO, MSG_OURO } from './loja';
 

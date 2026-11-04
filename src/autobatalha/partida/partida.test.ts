@@ -9,7 +9,7 @@ import {
   MSG_LIMITE, novaPartida, ondeEsta, rendaDaRodada, rodadasDoEstagio, salvarPartida, simularRodada, sortearConfrontos,
   sortearLoja, standDe, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos, xpParaProximo, apagarPartida,
   temPartidaSalva, CHAVE_PARTIDA, escolherUlt, gerarMonstros, montarTime, BONUS_DEADLOCK_POR_10_ALMAS,
-  BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor,
+  BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor, OURO_VITORIA, UNIDADES_ALEM_DO_NIVEL,
 } from './index';
 import { contarTracosFalso, dar, limpar, lutaGanha, prepararTeste, resultado } from './test-helpers';
 
@@ -26,8 +26,9 @@ function cenario(semente = 1): { p: Partida; eu: ReturnType<typeof humano> } {
 
 describe('constantes e consultas', () => {
   it('xp por nível, chances e rodadas', () => {
-    expect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(xpParaProximo)).toEqual([2, 2, 6, 10, 20, 36, 48, 76, 84, 0]);
-    for (let n = 1; n <= 10; n++) expect(chancesLoja(n).reduce((a, b) => a + b, 0)).toBeCloseTo(1);
+    expect([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(xpParaProximo)).toEqual([2, 2, 4, 8, 14, 24, 36, 56, 76, 96, 120, 0]);
+    for (let n = 1; n <= 12; n++) expect(chancesLoja(n).reduce((a, b) => a + b, 0)).toBeCloseTo(1);
+    expect(chancesLoja(12)).toEqual([0.02, 0.05, 0.13, 0.35, 0.45]);
     expect(chancesLoja(7)).toEqual([0.19, 0.3, 0.4, 0.1, 0.01]);
     expect(rodadasDoEstagio(1)).toEqual(['monstros', 'monstros', 'monstros']);
     expect(rodadasDoEstagio(2)).toEqual(['pvp', 'pvp', 'pvp', 'pvp', 'pvp', 'pvp', 'monstros']);
@@ -77,12 +78,12 @@ describe('partida nova', () => {
 describe('economia', () => {
   it('juros, sequência e renda', () => {
     expect([0, 9, 10, 19, 49, 50, 99].map(juros)).toEqual([0, 0, 1, 1, 4, 5, 5]);
-    expect([0, 1, 2, 3, 4, 5, 9, -2, -4, -7].map(bonusSequencia)).toEqual([0, 0, 1, 1, 2, 3, 3, 1, 2, 3]);
+    expect([0, 1, 2, 3, 4, 5, 9, -2, -4, -7].map(bonusSequencia)).toEqual([0, 0, 1, 2, 3, 4, 4, 1, 3, 4]);
     expect(rendaDaRodada(1, 1, 10, 0)).toBe(0);
     expect(rendaDaRodada(1, 2, 10, 0)).toBe(2);
     expect(rendaDaRodada(1, 3, 50, 5)).toBe(2);
-    expect(rendaDaRodada(2, 1, 35, -4)).toBe(5 + 3 + 2);
-    expect(rendaDaRodada(4, 3, 80, 6)).toBe(5 + 5 + 3);
+    expect(rendaDaRodada(2, 1, 35, -4)).toBe(6 + 3 + 3);
+    expect(rendaDaRodada(4, 3, 80, 6)).toBe(6 + 5 + 4);
   });
 
   it('avançar pra 2-1 dá renda, XP e loja nova (a travada fica)', () => {
@@ -94,7 +95,7 @@ describe('economia', () => {
     const lojaB = [...b.loja];
     avancarRodada(p);
     expect([p.estagio, p.rodada, p.tipo, p.fase]).toEqual([2, 1, 'pvp', 'carrossel']);
-    expect(a.ouro).toBe(23 + 5 + 2 + 1);
+    expect(a.ouro).toBe(23 + 6 + 2 + 1);
     expect(a.xp).toBe(2);
     expect(b.loja).toEqual(lojaB);
   });
@@ -105,7 +106,7 @@ describe('economia', () => {
     expect(comprarXp(p, eu.id)).toBeNull();
     expect([eu.nivel, eu.xp, eu.ouro]).toEqual([3, 0, 5]);
     expect(comprarXp(p, eu.id)).toBeNull();
-    expect([eu.nivel, eu.xp]).toEqual([3, 4]);
+    expect([eu.nivel, eu.xp]).toEqual([4, 0]);
     expect(comprarXp(p, eu.id)).toBe('Ouro insuficiente');
   });
 });
@@ -328,11 +329,13 @@ describe('evolução', () => {
 });
 
 describe('tabuleiro e Stands', () => {
-  it('limite do tabuleiro = nível; trocar não passa do limite', () => {
+  it('limite do tabuleiro = nível + 1; trocar não passa do limite', () => {
     const { p, eu } = cenario(30);
     const a = dar(p, eu, 'pokemon:squirtle', { casa: [3, 0] });
+    dar(p, eu, 'overwatch:tracer', { casa: [5, 0] });
     const b = dar(p, eu, 'sujimon:a', { banco: 0 });
-    expect(limiteTabuleiro(eu)).toBe(1);
+    expect(limiteTabuleiro(eu)).toBe(eu.nivel + UNIDADES_ALEM_DO_NIVEL);
+    expect(limiteTabuleiro(eu)).toBe(2);
     expect(mover(p, eu.id, b.uid, { tipo: 'tabuleiro', casa: { col: 4, lin: 0 } })).toBe(MSG_LIMITE);
     expect(ondeEsta(eu, b.uid)).toEqual({ tipo: 'banco', i: 0 });
     // trocar com a do tabuleiro pode
@@ -343,7 +346,7 @@ describe('tabuleiro e Stands', () => {
     expect(mover(p, eu.id, b.uid, { tipo: 'tabuleiro', casa: { col: 0, lin: 3 } })).toBeNull();
     eu.nivel = 2;
     expect(mover(p, eu.id, a.uid, { tipo: 'tabuleiro', casa: { col: 4, lin: 0 } })).toBeNull();
-    expect(contaNoLimite(eu)).toBe(2);
+    expect(contaNoLimite(eu)).toBe(3);
     expect(mover(p, eu.id, a.uid, { tipo: 'tabuleiro', casa: { col: 8, lin: 0 } })).toBe('Lugar inválido');
   });
 
@@ -395,14 +398,14 @@ describe('tabuleiro e Stands', () => {
     const sp = dar(p, eu, 'jojo:star-platinum', { casa: [7, 3] });
     eu.almas = 25;
     fimDoPlanejamento(p);
-    expect(contaNoLimite(eu)).toBe(3);
+    expect(contaNoLimite(eu)).toBe(4);
     expect(ondeEsta(eu, forte.uid)?.tipo).toBe('tabuleiro');
     // atirador vai pra trás
     const cf = ondeEsta(eu, forte.uid);
     expect(cf?.tipo === 'tabuleiro' && cf.casa.lin).toBe(3);
     expect(ondeEsta(eu, sp.uid)?.tipo).toBe('banco');
     const time = montarTime(eu);
-    expect(time.lutadores).toHaveLength(3);
+    expect(time.lutadores).toHaveLength(4);
     // 2 do Deadlock = 1º degrau; 25 almas = 2 dezenas
     const haze = time.lutadores.find(l => l.id === String(h1.uid))!;
     const extra = BONUS_DEADLOCK_POR_10_ALMAS[0] * 2;
@@ -449,7 +452,7 @@ describe('rodada', () => {
     expect(simular).toHaveBeenCalledOnce();
     expect(eu.vida).toBe(100 - (3 + 2));
     expect(b.vida).toBe(100);
-    expect(b.ouro).toBe(1 + 1);
+    expect(b.ouro).toBe(1 + OURO_VITORIA);
     expect([eu.sequencia, b.sequencia]).toEqual([-1, 1]);
     expect(eu.ultimosAdversarios).toEqual(['pyrus']);
     expect(p.historico[eu.id]).toEqual(['d']);
@@ -507,10 +510,10 @@ describe('rodada', () => {
     // 2 do Overwatch = 1º degrau
     expect(eu.unidades[m.uid]!.bonus).toEqual({ vida: BONUS_OVERWATCH[0], dano: BONUS_OVERWATCH[0] });
     expect(eu.unidades[t.uid]!.bonus).toBeUndefined();
-    // 3 heróis do Deadlock = 2º degrau: 8 + 3 abates × almas do degrau = 11 → +1 de ouro; +1 da vitória
+    // 3 heróis do Deadlock = 2º degrau: 8 + 3 abates × almas do degrau = 11 → +1 de ouro; + o ouro da vitória
     expect(ALMAS_POR_ABATE[1]).toBe(1);
     expect(eu.almas).toBe(8 + 3 * ALMAS_POR_ABATE[1]);
-    expect(eu.ouro).toBe(ouro + 2);
+    expect(eu.ouro).toBe(ouro + 1 + OURO_VITORIA);
   });
 
   it('Sujimon no último degrau recruta um Sujimon de custo até 3 depois de vencer monstros', () => {
@@ -618,7 +621,7 @@ describe('partida inteira', () => {
     for (let r = 0; r < 12; r++) {
       jogarBots(p);
       fimDoPlanejamento(p);
-      for (const j of vivos(p)) expect(unidadesNoTabuleiro(j, false).length).toBeLessThanOrEqual(j.nivel);
+      for (const j of vivos(p)) expect(unidadesNoTabuleiro(j, false).length).toBeLessThanOrEqual(limiteTabuleiro(j));
       aplicarRodada(p, simularRodada(p));
       avancarRodada(p);
       terminarCarrossel(p);

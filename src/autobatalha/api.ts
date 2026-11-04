@@ -86,6 +86,8 @@ export interface Acoes {
   escolherEvolucao(forma: string): void;
   /** pega a opção i do carrossel (só depois de liberado, uma vez por carrossel) */
   pegarCarrossel(i: number): void;
+  /** recolhe a moeda i do chão do seu tabuleiro (Jogador.moedas) */
+  pegarMoeda(i: number): void;
   /** qual ult a unidade usa (id de classe ou de forma de transformação) */
   escolherUlt(uid: number, ult: string): void;
   /** Yu-Gi-Oh!: alterna ataque/defesa */

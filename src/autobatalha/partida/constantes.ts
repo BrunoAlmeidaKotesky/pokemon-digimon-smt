@@ -3,7 +3,10 @@ import type { Custo, Estrela } from '../tipos';
 
 export const VIDA_INICIAL = 100;
 export const OURO_INICIAL = 1;
-export const NIVEL_MAXIMO = 10;
+/** nível máximo (pedido do usuário em 04/11/2026: era 10) */
+export const NIVEL_MAXIMO = 12;
+/** unidades no tabuleiro além do nível (limite = nível + isto; Stands à parte). O set é bem maior que o do gênero. */
+export const UNIDADES_ALEM_DO_NIVEL = 1;
 export const VAGAS_LOJA = 7;
 /** a última vaga da loja é a vaga do time */
 export const VAGA_DO_TIME = VAGAS_LOJA - 1;
@@ -19,7 +22,8 @@ export const XP_POR_RODADA = 2;
 export const PESO_DONO = 4;
 
 /** XP pra passar do nível n pro n + 1 (índice n - 1) */
-export const XP_POR_NIVEL: readonly number[] = [2, 2, 6, 10, 20, 36, 48, 76, 84];
+/** (mais barata nos níveis baixos e médios, pedido do usuário em 04/11/2026; era 2, 2, 6, 10, 20, 36, 48, 76, 84) */
+export const XP_POR_NIVEL: readonly number[] = [2, 2, 4, 8, 14, 24, 36, 56, 76, 96, 120];
 
 /** chance de cada custo (1 a 5) por nível (índice nível - 1), em porcentagem */
 export const CHANCES_LOJA: readonly (readonly [number, number, number, number, number])[] = [
@@ -33,6 +37,8 @@ export const CHANCES_LOJA: readonly (readonly [number, number, number, number, n
   [18, 25, 32, 22, 3],
   [15, 20, 25, 30, 10],
   [5, 10, 20, 40, 25],
+  [3, 7, 15, 40, 35],
+  [2, 5, 13, 35, 45],
 ];
 
 /** cópias de cada campeão no pool compartilhado, por custo */
@@ -47,8 +53,12 @@ export function danoBaseEstagio(estagio: number): number {
   return ([2, 3, 4, 6, 8] as const)[estagio - 2] ?? 11;
 }
 
-/** renda fixa do começo do planejamento a partir do 2-1 */
-export const RENDA_BASE = 5;
+/** renda fixa do começo do planejamento a partir do 2-1 (era 5: o set tem muito mais campeões que o do gênero) */
+export const RENDA_BASE = 6;
+/** ouro por vitória contra jogador (era 1) */
+export const OURO_VITORIA = 2;
+/** bônus de sequência (vitórias ou derrotas seguidas): índice = tamanho da sequência, o último vale pra mais */
+export const BONUS_SEQUENCIA: readonly number[] = [0, 0, 1, 2, 3, 4];
 /** renda da 1-2 e da 1-3 */
 export const RENDA_ESTAGIO_1 = 2;
 /** juros: 1 de ouro a cada 10 guardados, até 5 */

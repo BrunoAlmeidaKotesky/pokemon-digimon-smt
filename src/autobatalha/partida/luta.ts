@@ -8,7 +8,7 @@ import {
   type SimularLuta, type Unidade,
 } from '../tipos';
 import { montarCarrossel, temCarrossel, terminarCarrossel } from './carrossel';
-import { ID_MONSTROS, XP_POR_RODADA } from './constantes';
+import { ID_MONSTROS, OURO_VITORIA, XP_POR_RODADA } from './constantes';
 import {
   donoDoFantasma, ehFantasma, ehMonstros, ehStand, estaVivo, forca, jogadorDe, limiteTabuleiro, ondeEsta, origemDe,
   rodadasDoEstagio, unidadesNoTabuleiro, vivos,
@@ -21,6 +21,7 @@ import { M, nivelTraco } from './motor';
 import { confrontosDaRodada } from './rodadas';
 import { rngDa } from './sorteio';
 import { prepararTabuleiro } from './tabuleiro';
+import { moedasProChao } from './moedas';
 import { ALMAS_POR_ABATE, BONUS_DEADLOCK_POR_10_ALMAS, BONUS_OVERWATCH, CHANCE_SUJIMON, CUSTO_MAX_SUJIMON, porDegrau } from './origens';
 
 
@@ -189,7 +190,7 @@ export function aplicarRodada(p: Partida, rr: ResultadoRodada): void {
     const res = luta.resultado;
     const venceuA = res.vencedor === 'a', venceuB = res.vencedor === 'b';
     tracosDepoisDaLuta(A, luta.entradaA, res, 'a');
-    A.ouro += res.ouro.a;
+    A.ouro += res.ouro.a - (A.bot ? 0 : moedasProChao(A, res, 'a'));
     registrar(p, A, venceuA);
     if (luta.a === p.voce) {
       const { gravacao: _g, ...semGravacao } = res;
@@ -212,17 +213,17 @@ export function aplicarRodada(p: Partida, rr: ResultadoRodada): void {
     const idB = fantasma ? donoDoFantasma(luta.b) : luta.b;
     lembrarAdversario(A, idB);
     A.sequencia = novaSequencia(A.sequencia, venceuA);
-    if (venceuA) A.ouro += 1;
+    if (venceuA) A.ouro += OURO_VITORIA;
     else A.vida -= danoDerrota(estagio, estrelasVivas(res, 'b', luta.entradaB));
     if (fantasma) continue;
     // o lado B é um jogador de verdade
     const B = jogadorDe(p, luta.b);
     tracosDepoisDaLuta(B, luta.entradaB, res, 'b');
-    B.ouro += res.ouro.b;
+    B.ouro += res.ouro.b - (B.bot ? 0 : moedasProChao(B, res, 'b'));
     registrar(p, B, venceuB);
     lembrarAdversario(B, A.id);
     B.sequencia = novaSequencia(B.sequencia, venceuB);
-    if (venceuB) B.ouro += 1;
+    if (venceuB) B.ouro += OURO_VITORIA;
     else B.vida -= danoDerrota(estagio, estrelasVivas(res, 'a', luta.entradaA));
   }
   eliminar(p);
