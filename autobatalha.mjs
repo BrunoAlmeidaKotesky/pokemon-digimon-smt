@@ -352,8 +352,30 @@ async function imagensBakugan(nomes) {
   }));
 }
 
+/** Símbolo clássico de cada atributo (File:<Atributo>.svg na Bakugan Wiki): a imagem dos componentes dos itens. */
+const ATRIBUTOS_BAKUGAN = ['Pyrus', 'Aquos', 'Haos', 'Darkus', 'Subterra', 'Ventus', 'Aurelus'];
+async function simbolosAtributos() {
+  const q = new URLSearchParams({
+    action: 'query', format: 'json', prop: 'imageinfo', iiprop: 'url', titles: ATRIBUTOS_BAKUGAN.map(a => `File:${a}.svg`).join('|'),
+  });
+  const achados = {};
+  try {
+    const j = await getJson(`${BAKUGAN_API}?${q}`, { headers: HEADERS });
+    for (const pg of Object.values(j.query?.pages ?? {})) {
+      const url = pg.imageinfo?.[0]?.url;
+      if (url) achados[pg.title.replace(/^File:/, '').replace(/\.svg$/, '')] = url;
+    }
+  } catch (e) {
+    avisar(`Bakugan Wiki falhou nos símbolos (${e.message})`);
+  }
+  return Object.fromEntries(ATRIBUTOS_BAKUGAN.map(a => {
+    if (!achados[a]) avisar(`símbolo do atributo ${a}: não achei na Bakugan Wiki`);
+    return [a, achados[a] ?? ''];
+  }));
+}
+
 const nomesBakugan = [...new Set(lerJson('docs/tft/base/receitas-bakugan.json').map(r => r[2]))];
-const bakugan = await imagensBakugan(nomesBakugan);
+const bakugan = { ...await simbolosAtributos(), ...await imagensBakugan(nomesBakugan) };
 
 const catFF = lerJson('public/catalogo/ff.json').itens;
 const ff = { inimigos: [], chefes: [] };
@@ -434,7 +456,7 @@ for (const fr of ORIGENS) {
   if (xs.length) console.log(`  ${fr} (${xs.length}): ${xs.map(f => f.nome + (f.habilidadeOriginal ? '' : ' [Únicos, sem texto]')).join(', ')}`);
 }
 console.log(`\n${transformacoes.length} transformações: ${transformacoes.join(', ')}`);
-console.log(`\nBakugan: ${Object.values(bakugan).filter(Boolean).length} de ${nomesBakugan.length} com imagem`);
+console.log(`\nBakugan: ${Object.values(bakugan).filter(Boolean).length} de ${nomesBakugan.length + ATRIBUTOS_BAKUGAN.length} com imagem (com os 7 símbolos dos atributos)`);
 console.log(`Final Fantasy: ${ff.inimigos.length} inimigos, ${ff.chefes.length} chefes`);
 console.log(`\n${avisos.length} avisos${avisos.length ? ':' : ''}`);
 for (const a of avisos) console.log(`  - ${a}`);

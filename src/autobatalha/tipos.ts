@@ -71,7 +71,7 @@ export interface SetDados {
   tracos: { id: string; nome: string }[];
   campeoes: CampeaoDados[];
   formas: Record<string, FormaDados>;
-  /** imagem de cada Bakugan usado como item: nome → URL */
+  /** imagem de cada Bakugan usado como item (nome → URL), e o símbolo de cada atributo ("Pyrus"…) pros componentes */
   bakugan: Record<string, string>;
   /** monstros do Final Fantasy: inimigos comuns (categoria Inimigo) e chefes (categoria Chefe) */
   ff: { inimigos: MonstroDados[]; chefes: MonstroDados[] };
@@ -375,16 +375,37 @@ export interface Jogador {
   escolhasFila?: EscolhaEvolucao[];
   /** forma de nível 1 sorteada em cada vaga da loja (campeão com alternativas no nível 1); null = a padrão */
   lojaFormas?: (string | null)[];
-  /** presente do começo do estágio: 3 componentes pra escolher um */
-  presente?: Componente[];
   /** bots: traços que o bot decidiu montar (1 ou 2) */
   alvos?: string[];
 }
 
 export interface EscolhaEvolucao { uid: number; opcoes: string[] }
 
+/** Uma opção do carrossel: campeão estrela 1 segurando um item. */
+export interface OpcaoCarrossel {
+  /** id de CampeaoDados */
+  campeao: string;
+  /** forma de nível 1 (a sorteada, quando o campeão tem alternativas no nível 1) */
+  forma: string;
+  /** id do item: componente nos estágios 2 a 4, completo do 5 em diante */
+  item: string;
+  /** id do jogador que pegou (null = ainda está no carrossel) */
+  pegou: string | null;
+  /** quem pegou estava com o banco cheio: o campeão foi vendido na hora pelo custo (o item ficou) */
+  vendido?: true;
+}
+
+/** Carrossel do começo do estágio (fase 'carrossel'; a lógica está em partida/carrossel.ts). */
+export interface Carrossel {
+  opcoes: OpcaoCarrossel[];
+  /** ordem de escolha: duplas de ids de jogador (da menor vida pra maior), liberadas uma a uma */
+  grupos: string[][];
+  /** quantos grupos já foram liberados */
+  liberados: number;
+}
+
 export type TipoRodada = 'pvp' | 'monstros' | 'chefe';
-export type Fase = 'planejamento' | 'luta' | 'resultado' | 'fim';
+export type Fase = 'carrossel' | 'planejamento' | 'luta' | 'resultado' | 'fim';
 
 export interface Rodada { estagio: number; rodada: number; tipo: TipoRodada }
 
@@ -404,6 +425,8 @@ export interface Partida {
   confrontos: [string, string][];
   /** monstros da rodada (PvE) */
   monstros: MonstroRodada[];
+  /** carrossel em andamento (só na fase 'carrossel'; a partida é salva no planejamento, então nunca vai pro salvo) */
+  carrossel?: Carrossel;
   /** resultado da luta do humano na rodada atual (pra tela) */
   ultimaLuta?: ResultadoLuta;
   /** histórico de cada jogador: 'v' | 'd' por rodada */

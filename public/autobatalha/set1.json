@@ -886,6 +886,13 @@
 "digimon:Omegamon":{"id":"digimon:Omegamon","nome":"Omegamon","img":"https://digi-api.com/images/digimon/w/Omegamon.png","fr":"digimon","classes":["dragao","fogo"],"soUlt":true,"info":[{"rotulo":"Nível","valor":"Ultimate, Perfect"},{"rotulo":"Atributo","valor":"Vaccine"},{"rotulo":"Field","valor":"Metal Empire, Nightmare Soldiers, Virus Busters, Nature Spirits, Deep Savers, Wind Guardians"},{"rotulo":"Tipo","valor":"Holy Knight"},{"rotulo":"Ano","valor":"1999"}]}
 },
 "bakugan":{
+"Pyrus":"https://static.wikia.nocookie.net/bakugan/images/8/8f/Pyrus.svg/revision/latest?cb=20090319063810",
+"Aquos":"https://static.wikia.nocookie.net/bakugan/images/e/e9/Aquos.svg/revision/latest?cb=20090318083500",
+"Haos":"https://static.wikia.nocookie.net/bakugan/images/7/70/Haos.svg/revision/latest?cb=20090319063807",
+"Darkus":"https://static.wikia.nocookie.net/bakugan/images/7/7c/Darkus.svg/revision/latest?cb=20090318092724",
+"Subterra":"https://static.wikia.nocookie.net/bakugan/images/c/c5/Subterra.svg/revision/latest?cb=20090318101821",
+"Ventus":"https://static.wikia.nocookie.net/bakugan/images/9/99/Ventus.svg/revision/latest?cb=20090319063811",
+"Aurelus":"https://static.wikia.nocookie.net/bakugan/images/c/c5/Aurelus.svg/revision/latest?cb=20210207180248",
 "Drago":"https://static.wikia.nocookie.net/bakugan/images/5/58/FusionDragonoid1.jpg/revision/latest?cb=20250406235650",
 "Preyas":"https://static.wikia.nocookie.net/bakugan/images/6/66/BK_CD_Preyas.jpg/revision/latest?cb=20090918205858",
 "Tigrerra":"https://static.wikia.nocookie.net/bakugan/images/5/58/BK_CD_Tigrerra.jpg/revision/latest?cb=20090918204950",
