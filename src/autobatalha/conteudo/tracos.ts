@@ -50,7 +50,8 @@ const ATIRADOR = [0.03, 0.06, 0.1];
 const ANJO = [0.3, 0.3, 0.6];
 const ROBO_ARMADURA = [0.25, 0.5, 0.9];
 const ROBO_ESCUDO = [0.1, 0.2, 0.35];
-const DRAGAO = [0.15, 0.3, 0.5];
+// Dragão levou nerf a pedido do usuário (04/11/2026): era 15/30/50% e +10% de dano pro time
+const DRAGAO = [0.1, 0.2, 0.32];
 const TEMPORAIS = [0.06, 0.12, 0.2];
 
 // aoMorrer roda nos traços do lado do morto e também nos do lado de quem matou: quem age em morte só confia no
@@ -249,14 +250,14 @@ const classes: Traco[] = [
     id: 'dragao', nome: 'Dragão', tipo: 'classe', degraus: [2, 4, 6],
     descricao: 'Mais vida e mais dano.',
     textos: [
-      '+15% de vida e dano.',
-      '+30% de vida e dano.',
-      '+50% de vida e dano, e o time inteiro ganha +10% de dano.',
+      '+10% de vida e dano.',
+      '+20% de vida e dano.',
+      '+32% de vida e dano, e o time inteiro ganha +5% de dano.',
     ],
     atributos: n => ({ vida: deg(DRAGAO, n), dano: deg(DRAGAO, n) }),
     aoComecar(ctx, n, membros) {
       if (n < 2 || !membros[0]) return;
-      for (const a of ctx.aliadosDe(membros[0], true)) ctx.buff(a, 'dano', 0.1);
+      for (const a of ctx.aliadosDe(membros[0], true)) ctx.buff(a, 'dano', 0.05);
     },
   },
   {
@@ -480,16 +481,28 @@ const elementos: Traco[] = [
 // Origens (franquias)
 // ===================================================================================================
 
-const POKEMON = [0.02, 0.03, 0.04];
-const DIGIMON = [0.1, 0.2, 0.35];
-const SMT = [0.25, 0.4, 0.6];
-const PERSONA = [0.1, 0.2, 0.35];
-const JOJO = [0.1, 0.2, 0.35];
-const YGO = [0.15, 0.3, 0.5];
-const LOL = [0.15, 0.3, 0.5];
-const OVERWATCH = [0.1, 0.15, 0.25];
-const OVERWATCH_JOGADA = [0.03, 0.05, 0.08];
-const SUJIMON = [0.15, 0.25, 0.4];
+// Escadas das origens: 5 degraus (6 nas maiores), pela conta de docs/tft/matematica/resultado.md, seção 6b. Os números
+// de cada degrau estão nas listas abaixo (uma posição por degrau).
+const POKEMON = [0.01, 0.015, 0.02, 0.025, 0.03, 0.035];
+const DIGIMON = [0.08, 0.12, 0.18, 0.25, 0.35];
+/** Digimon: o parceiro ganha metade a partir deste degrau (3 Digimon), e a mana cheia a partir deste (5 Digimon) */
+const DIGIMON_PARCEIRO = 1;
+const DIGIMON_MANA = 3;
+const SMT = [0.2, 0.25, 0.32, 0.45, 0.6];
+const PERSONA = [0.08, 0.14, 0.2, 0.28, 0.38];
+const JOJO = [0.06, 0.1, 0.16, 0.24, 0.32, 0.42];
+/** JoJo: Stands lançam com 25% menos mana a partir deste degrau (7 de JoJo) */
+const JOJO_MANA = 3;
+const YGO = [0.1, 0.15, 0.22, 0.3, 0.4, 0.5];
+/** Yu-Gi-Oh!: as cartas ganham as duas posições a partir deste degrau (7 cartas) */
+const YGO_DUAS = 3;
+const LOL = [0.1, 0.15, 0.22, 0.3, 0.4, 0.5];
+const OVERWATCH = [0.06, 0.1, 0.15, 0.2, 0.28];
+const OVERWATCH_JOGADA = [0.02, 0.03, 0.05, 0.07, 0.1];
+const DEADLOCK_POR_10 = [0.015, 0.02, 0.025, 0.03, 0.04];
+const DEADLOCK_ALMAS = [1, 1, 1, 2, 2];
+const SUJIMON = [0.1, 0.15, 0.22, 0.3, 0.4];
+const SUJIMON_RECRUTAR = [0, 0.3, 0.5, 0.75, 1];
 
 /** Atributo que cada Persona espalha, pela 1ª classe dela. */
 export const ATRIBUTO_PERSONA: Record<string, NomeAtributo[]> = {
@@ -502,7 +515,7 @@ export const ATRIBUTO_PERSONA: Record<string, NomeAtributo[]> = {
 
 const origens: Traco[] = [
   {
-    id: 'pokemon', nome: 'Pokémon', tipo: 'origem', degraus: [4, 8, 9],
+    id: 'pokemon', nome: 'Pokémon', tipo: 'origem', degraus: [2, 4, 6, 8, 9, 10],
     descricao: 'Quanto mais Pokémon no tabuleiro, mais fortes todos ficam.',
     textos: POKEMON.map(v => `Cada Pokémon ganha +${pct(v)} de vida e dano por Pokémon no tabuleiro.`),
     aoComecar(ctx, n, membros) {
@@ -514,14 +527,12 @@ const origens: Traco[] = [
     },
   },
   {
-    id: 'digimon', nome: 'Digimon', tipo: 'origem', degraus: [2, 3, 4],
+    id: 'digimon', nome: 'Digimon', tipo: 'origem', degraus: [2, 3, 4, 5, 6],
     descricao: 'Parceiro: o Digimon fica mais forte do lado de um aliado de outra franquia.',
-    textos: [
-      'Parceiro: o Digimon com um aliado de outra origem do lado (1 casa) no começo da luta ganha +10% de vida e dano.',
-      'O Digimon com parceiro ganha +20% de vida e dano, e o parceiro ganha metade (+10%).',
-      'O Digimon com parceiro ganha +35% de vida e dano, o parceiro ganha metade (+17,5%), e o Digimon com parceiro ' +
-      'começa com a mana cheia.',
-    ],
+    textos: DIGIMON.map((v, i) => `Parceiro: o Digimon com um aliado de outra origem do lado (1 casa) no começo da luta ` +
+      `ganha +${pct(v)} de vida e dano` +
+      (i >= DIGIMON_PARCEIRO ? `, e o parceiro ganha metade (+${pct(v / 2)})` : '') +
+      (i >= DIGIMON_MANA ? '; o Digimon com parceiro começa com a mana cheia' : '') + '.'),
     aoComecar(ctx, n, membros) {
       const usados = new Set<Lutador>();
       const v = deg(DIGIMON, n);
@@ -534,16 +545,16 @@ const origens: Traco[] = [
         ctx.visual('luz', [m, parceiro], m);
         ctx.buff(m, 'dano', v);
         buffVidaInicio(ctx, m, v);
-        if (n >= 1) {
+        if (n >= DIGIMON_PARCEIRO) {
           ctx.buff(parceiro, 'dano', v / 2);
           buffVidaInicio(ctx, parceiro, v / 2);
         }
-        if (n >= 2) ctx.mana(m, m.at.mana);
+        if (n >= DIGIMON_MANA) ctx.mana(m, m.at.mana);
       }
     },
   },
   {
-    id: 'smt', nome: 'SMT', tipo: 'origem', degraus: [2, 4, 6],
+    id: 'smt', nome: 'SMT', tipo: 'origem', degraus: [2, 3, 4, 6, 8],
     descricao: 'Invocadores: cada demônio chama um monstro do Final Fantasy pra lutar do lado dele.',
     textos: SMT.map(v => `No começo da luta, cada demônio invoca ao lado um monstro do Final Fantasy (sorteado) com ` +
       `${pct(v)} dos atributos dele.`),
@@ -552,7 +563,7 @@ const origens: Traco[] = [
     },
   },
   {
-    id: 'persona', nome: 'Persona', tipo: 'origem', degraus: [1, 2, 3],
+    id: 'persona', nome: 'Persona', tipo: 'origem', degraus: [1, 2, 3, 4, 5],
     descricao: 'Cada Persona dá aos aliados em volta (1 casa) um atributo, pela 1ª classe dela: dano (Atirador, ' +
       'Assassino, Porradeiro, Fogo, Raio), vida (Tanque, Terra, Anjo, Água), vel. ataque (Vento, Safada, Temporais), ' +
       'armadura e resistência (Robô, Gelo, Planta) ou poder de habilidade (Fadinhas, Demoníacos, Dragão, Criaturinha ' +
@@ -576,13 +587,10 @@ const origens: Traco[] = [
     },
   },
   {
-    id: 'jojo', nome: 'JoJo', tipo: 'origem', degraus: [2, 5, 7],
+    id: 'jojo', nome: 'JoJo', tipo: 'origem', degraus: [2, 3, 5, 7, 9, 10],
     descricao: 'Stands e seus usuários ficam mais fortes.',
-    textos: [
-      'Stands e seus usuários ganham +10% de dano e vida.',
-      'Stands e seus usuários ganham +20% de dano e vida.',
-      'Stands e seus usuários ganham +35% de dano e vida, e os Stands lançam com 25% menos mana.',
-    ],
+    textos: JOJO.map((v, i) => `Stands e seus usuários ganham +${pct(v)} de dano e vida` +
+      (i >= JOJO_MANA ? ', e os Stands lançam com 25% menos mana' : '') + '.'),
     aoComecar(ctx, n, membros) {
       const v = deg(JOJO, n);
       const todos = new Set<Lutador>();
@@ -595,27 +603,25 @@ const origens: Traco[] = [
         ctx.buff(u, 'dano', v);
         buffVidaInicio(ctx, u, v);
       }
-      if (n < 2) return;
+      if (n < JOJO_MANA) return;
       for (const m of membros) if (m.stand) ctx.buff(m, 'mana', -Math.round(m.at.mana * 0.25));
     },
   },
   {
-    id: 'ygo', nome: 'Yu-Gi-Oh!', tipo: 'origem', degraus: [2, 5, 7],
+    id: 'ygo', nome: 'Yu-Gi-Oh!', tipo: 'origem', degraus: [2, 3, 5, 7, 9, 10],
     descricao: 'Cada carta fica em posição de ataque (mais dano) ou de defesa (mais vida e armadura, e provoca).',
-    textos: [
-      'Em ataque: +15% de dano. Em defesa: +15% de vida e armadura, e provoca os inimigos em volta (1 casa) por 2 s no ' +
-      'começo.',
-      'Em ataque: +30% de dano. Em defesa: +30% de vida e armadura, e provoca os inimigos em volta (1 casa) por 2 s no ' +
-      'começo.',
-      'Cada carta ganha os dois: +50% de dano, +50% de vida e armadura, e as em defesa provocam os inimigos em volta ' +
-      '(1 casa) por 2 s no começo.',
-    ],
+    textos: YGO.map((v, i) => (i < YGO_DUAS
+      ? `Em ataque: +${pct(v)} de dano. Em defesa: +${pct(v)} de vida e armadura, e provoca os inimigos em volta ` +
+        '(1 casa) por 2 s no começo.'
+      : `Cada carta ganha os dois: +${pct(v)} de dano, +${pct(v)} de vida e armadura, e as em defesa provocam os ` +
+        'inimigos em volta (1 casa) por 2 s no começo.')),
     aoComecar(ctx, n, membros) {
       const v = deg(YGO, n);
+      const duas = n >= YGO_DUAS;
       for (const m of membros) {
         const defesa = m.unidade?.posicao === 'defesa';
-        if (!defesa || n >= 2) ctx.buff(m, 'dano', v);
-        if (!defesa && n < 2) continue;
+        if (!defesa || duas) ctx.buff(m, 'dano', v);
+        if (!defesa && !duas) continue;
         ctx.buff(m, 'armadura', v);
         buffVidaInicio(ctx, m, v);
         if (!defesa) continue;
@@ -624,39 +630,35 @@ const origens: Traco[] = [
     },
   },
   {
-    id: 'lol', nome: 'LoL', tipo: 'origem', degraus: [2, 5, 7],
+    id: 'lol', nome: 'LoL', tipo: 'origem', degraus: [2, 3, 5, 7, 9, 10],
     descricao: 'Mais poder de habilidade. Regra da franquia, com ou sem o traço: na estrela 3, a cada 2 lançamentos a ' +
       'habilidade sai duas vezes (a "ultimate").',
     textos: LOL.map(v => `+${pct(v)} de poder de habilidade.`),
     atributos: n => ({ poder: deg(LOL, n) }),
   },
   {
-    id: 'overwatch', nome: 'Overwatch', tipo: 'origem', degraus: [2, 4, 5],
+    id: 'overwatch', nome: 'Overwatch', tipo: 'origem', degraus: [2, 3, 4, 5, 7],
     descricao: 'Mais velocidade de ataque, e o destaque de cada luta fica mais forte pro resto da partida.',
     textos: OVERWATCH.map((v, i) => `+${pct(v)} de vel. ataque. Jogada da Partida: depois de cada luta, o herói do ` +
       `Overwatch que mais causou dano ganha +${pct(OVERWATCH_JOGADA[i] ?? 0)} de dano e vida pro resto da partida.`),
     atributos: n => ({ velAtaque: deg(OVERWATCH, n) }),
   },
   {
-    id: 'deadlock', nome: 'Deadlock', tipo: 'origem', degraus: [2, 3, 5],
+    id: 'deadlock', nome: 'Deadlock', tipo: 'origem', degraus: [2, 3, 4, 5, 6],
     descricao: 'Juntam almas com os abates e as trocam por ouro e força.',
-    textos: [
-      'Cada abate de um herói do Deadlock rende 1 alma. A cada 10 almas: +1 de ouro, e os heróis do Deadlock ganham ' +
-      '+2% de dano e vida (por 10 almas juntadas na partida).',
-      'Cada abate de um herói do Deadlock rende 1 alma. A cada 10 almas: +1 de ouro, e os heróis do Deadlock ganham ' +
-      '+3% de dano e vida (por 10 almas juntadas na partida).',
-      'Cada abate de um herói do Deadlock rende 2 almas. A cada 10 almas: +1 de ouro, e os heróis do Deadlock ganham ' +
-      '+4% de dano e vida (por 10 almas juntadas na partida).',
-    ],
+    textos: DEADLOCK_POR_10.map((v, i) => `Cada abate de um herói do Deadlock rende ${DEADLOCK_ALMAS[i] ?? 1} ` +
+      `alma${(DEADLOCK_ALMAS[i] ?? 1) > 1 ? 's' : ''}. A cada 10 almas: +1 de ouro, e os heróis do Deadlock ganham ` +
+      `+${pct(v)} de dano e vida (por 10 almas juntadas na partida).`),
   },
   {
-    id: 'sujimon', nome: 'Sujimon', tipo: 'origem', degraus: [2, 3, 4],
+    id: 'sujimon', nome: 'Sujimon', tipo: 'origem', degraus: [2, 3, 4, 5, 6],
     descricao: 'Mais vida e dano, e trazem outros Sujimon depois das rodadas de monstros.',
-    textos: [
-      '+15% de vida e dano.',
-      '+25% de vida e dano, e vencer uma rodada de monstros tem 50% de chance de trazer um Sujimon de graça pro banco.',
-      '+40% de vida e dano, e vencer uma rodada de monstros sempre traz um Sujimon de graça pro banco.',
-    ],
+    textos: SUJIMON.map((v, i) => {
+      const c = SUJIMON_RECRUTAR[i] ?? 0;
+      return `+${pct(v)} de vida e dano` + (c >= 1
+        ? ', e vencer uma rodada de monstros sempre traz um Sujimon de graça pro banco.'
+        : c > 0 ? `, e vencer uma rodada de monstros tem ${pct(c)} de chance de trazer um Sujimon de graça pro banco.` : '.');
+    }),
     atributos: n => ({ vida: deg(SUJIMON, n), dano: deg(SUJIMON, n) }),
   },
 ];
@@ -665,11 +667,13 @@ const origens: Traco[] = [
 export const TRACOS: Record<string, Traco> = Object.fromEntries([...origens, ...classes, ...elementos].map(t => [t.id, t]));
 
 /** Bônus da Jogada da Partida do Overwatch por degrau (a partida aplica depois da luta). */
-export const JOGADA_DA_PARTIDA = OVERWATCH_JOGADA;
+export const JOGADA_DA_PARTIDA: readonly number[] = OVERWATCH_JOGADA;
+/** Vida e dano por 10 almas do Deadlock, por degrau (a partida aplica). */
+export const DEADLOCK_POR_10_ALMAS: readonly number[] = DEADLOCK_POR_10;
 /** Almas por abate de herói do Deadlock por degrau (a partida conta). */
-export const ALMAS_POR_ABATE = [1, 1, 2] as const;
+export const ALMAS_POR_ABATE: readonly number[] = DEADLOCK_ALMAS;
 /** Chance de trazer um Sujimon de graça ao vencer rodada de monstros, por degrau (a partida sorteia). */
-export const CHANCE_RECRUTAR_SUJIMON = [0, 0.5, 1] as const;
+export const CHANCE_RECRUTAR_SUJIMON: readonly number[] = SUJIMON_RECRUTAR;
 
 export interface TracoAtivo { id: string; n: number; nivel: number }
 

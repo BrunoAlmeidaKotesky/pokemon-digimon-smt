@@ -43,7 +43,7 @@ export const PAPEIS: Record<string, Papel> = {
   porradeiro: { vida: 1.15, dano: 1.05, alcance: 1, mana: 70 },
   assassino: { vida: 0.85, dano: 1.2, crit: 0.15, alcance: 1, mana: 60 },
   atirador: { vida: 0.8, dano: 1.1, velAtaque: 1.1, alcance: 4, mana: 80 },
-  dragao: { vida: 1.1, dano: 1.1, alcance: 2, mana: 80 },
+  dragao: { vida: 1.05, dano: 1.05, alcance: 2, mana: 80 },
   robo: { vida: 1, dano: 1, armadura: 15, alcance: 2, mana: 70 },
   anjo: { vida: 0.95, dano: 1, alcance: 3, mana: 80 },
   fadinhas: { vida: 0.85, dano: 0.9, alcance: 3, mana: 70 },

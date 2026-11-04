@@ -22,6 +22,11 @@ const VAGAS = 5;
 const TOLERANCIA = 0.25;
 // elementos que o usuário não quer
 const FORA = ['luz', 'trevas'];
+// Autobatalha: origens com mais degraus (pedido do usuário em 04/11/2026). Escada de referência de uma origem média com
+// 5 degraus; as origens maiores que a média ganham 6. O limite é o nível máximo do jogo (10 no tabuleiro).
+const ESCADA_ORIGEM_5 = [2, 3, 4, 6, 8];
+const ESCADA_ORIGEM_6 = [2, 3, 4, 6, 8, 10];
+const TABULEIRO_JOGO = 10;
 
 const f = (x, d = 1) => (Number.isFinite(x) ? x.toFixed(d).replace('.', ',') : '∞');
 const x = r => `${f(r, 2)}×`;
@@ -177,6 +182,19 @@ const grandes = origens.filter(o => {
 }).map(o => o.origem);
 const pequenas = origens.filter(o => escadas.get(o.origem).degraus[0] === 1).map(o => o.origem);
 p(`${grandes.length ? `${lista(grandes)} não se iguala${grandes.length > 1 ? 'm' : ''} nem com a escada no limite do tabuleiro. ` : ''}${pequenas.length ? `${lista(pequenas)} só se iguala${pequenas.length > 1 ? 'm' : ''} com um degrau 1 (ativo com um campeão só). ` : ''}A alternativa à escada é mexer no tamanho: de ${fx.min} a ${fx.max} campeões, a origem usa ${ESCADA.join('/')}.`);
+
+// ---------- origens com 5 ou 6 degraus (Autobatalha) ----------
+p('### 6b. Origens com 5 ou 6 degraus (Autobatalha)',
+  `A Autobatalha usa mais degraus nas origens. Referência: uma origem média (${f(nAlvo, 1)} campeões) com ${ESCADA_ORIGEM_5.join('/')}; as origens maiores que a média ganham 6 degraus, com referência ${ESCADA_ORIGEM_6.join('/')}. Cada origem pega a escada que iguala o custo de cada degrau ao da referência, até ${TABULEIRO_JOGO} (o nível máximo). Degrau repetido não existe: quando a conta empilha degraus no limite, a origem fica com menos degraus.`);
+const escadasJogo = new Map(origens.map(o => {
+  const ref = o.campeoes > nAlvo ? ESCADA_ORIGEM_6 : ESCADA_ORIGEM_5;
+  return [o.origem, { ref, ...m.escadaEquivalente(o.campeoes, nAlvo, ref, U, TABULEIRO_JOGO) }];
+}));
+p(tabela(['Origem', 'Campeões', 'Referência', 'Escada que iguala', 'Custo de cada degrau (1 = igual)'],
+  origens.map(o => {
+    const esc = escadasJogo.get(o.origem);
+    return [o.origem, o.campeoes, esc.ref.join('/'), esc.degraus.join('/'), esc.razoes.map(v => x(v)).join(' · ')];
+  })));
 
 // ---------- comps que fecham dois traços ----------
 p('## 7. Comps que fecham origem e classe juntas',

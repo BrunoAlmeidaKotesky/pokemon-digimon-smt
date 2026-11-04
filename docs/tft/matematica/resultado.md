@@ -119,6 +119,22 @@ Uma franquia com mais campeões fecha 2/4/6 mais barato. Pra igualar, a escada d
 
 Pokémon não se iguala nem com a escada no limite do tabuleiro. Persona só se iguala com um degrau 1 (ativo com um campeão só). A alternativa à escada é mexer no tamanho: de 23 a 33 campeões, a origem usa 2/4/6.
 
+### 6b. Origens com 5 ou 6 degraus (Autobatalha)
+A Autobatalha usa mais degraus nas origens. Referência: uma origem média (27,0 campeões) com 2/3/4/6/8; as origens maiores que a média ganham 6 degraus, com referência 2/3/4/6/8/10. Cada origem pega a escada que iguala o custo de cada degrau ao da referência, até 10 (o nível máximo). Degrau repetido não existe: quando a conta empilha degraus no limite, a origem fica com menos degraus.
+
+| Origem | Campeões | Referência | Escada que iguala | Custo de cada degrau (1 = igual) |
+|---|---|---|---|---|
+| Pokémon | 55 | 2/3/4/6/8/10 | 4/6/8/10 | 0,99× · 0,99× · 0,99× · 0,81× |
+| Digimon | 19 | 2/3/4/6/8 | 2/3/4/5/6 | 1,43× · 1,45× · 1,46× · 1,20× · 1,07× |
+| SMT | 26 | 2/3/4/6/8 | 2/3/4/6/8 | 1,04× · 1,04× · 1,04× · 1,04× · 1,05× |
+| Persona | 12 | 2/3/4/6/8 | 1/2/3/4/5 | 1,10× · 1,51× · 1,74× · 1,57× · 1,48× |
+| JoJo | 31 | 2/3/4/6/8/10 | 2/3/5/7/9/10 | 0,87× · 0,87× · 1,10× · 1,02× · 0,98× · 0,85× |
+| Yu-Gi-Oh! | 31 | 2/3/4/6/8/10 | 2/3/5/7/9/10 | 0,87× · 0,87× · 1,10× · 1,02× · 0,98× · 0,85× |
+| LoL | 31 | 2/3/4/6/8/10 | 2/3/5/7/9/10 | 0,87× · 0,87× · 1,10× · 1,02× · 0,98× · 0,85× |
+| Overwatch | 24 | 2/3/4/6/8 | 2/3/4/5/7 | 1,13× · 1,13× · 1,13× · 0,93× · 0,98× |
+| Deadlock | 21 | 2/3/4/6/8 | 2/3/4/5/6 | 1,29× · 1,30× · 1,31× · 1,08× · 0,95× |
+| Sujimon | 20 | 2/3/4/6/8 | 2/3/4/5/6 | 1,36× · 1,37× · 1,38× · 1,14× · 1,01× |
+
 ## 7. Comps que fecham origem e classe juntas
 Pra fechar 6 de uma origem e 4 de uma classe em 9 vagas, pelo menos 1 campeão precisa ter as duas; pra 6 e 6, 3. Com as classes de hoje, em quantas das 12 classes cada origem consegue isso:
 

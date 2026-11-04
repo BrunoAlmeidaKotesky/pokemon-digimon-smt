@@ -61,7 +61,7 @@ O **papel** vem da primeira classe da forma nesta ordem de prioridade e ajusta o
 | Porradeiro | ×1,15 | ×1,05 | | 1 | 70 |
 | Assassino | ×0,85 | ×1,20 | +15% crítico | 1 | 60 |
 | Atirador | ×0,80 | ×1,10 | vel. ataque ×1,10 | 4 | 80 |
-| Dragão | ×1,10 | ×1,10 | | 2 | 80 |
+| Dragão | ×1,05 | ×1,05 | | 2 | 80 |
 | Robô | ×1,00 | ×1,00 | +15 armadura | 2 | 70 |
 | Anjo | ×0,95 | ×1,00 | | 3 | 80 |
 | Fadinhas | ×0,85 | ×0,90 | | 3 | 70 |
@@ -89,7 +89,9 @@ outra coisa. Redução: dano × 100 / (100 + defesa).
 ## Traços (src/autobatalha/conteudo/tracos.ts)
 
 Conta campeões diferentes no tabuleiro (duas cópias do mesmo campeão contam uma vez), pela forma atual. Únicos não é
-traço. Escadas das classes 2/4/6, dos elementos 2/3/4 e das origens a da conta (docs/tft/matematica/resultado.md, seção 6, refeita com o v5).
+traço. Escadas das classes 2/4/6 e dos elementos 2/3/4. As origens têm 5 degraus (6 nas maiores), pedido do usuário em
+04/11/2026, com as escadas da conta (docs/tft/matematica/resultado.md, seção 6b); o Pokémon, grande demais pra se
+igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
 
 **Classes**
 
@@ -105,7 +107,7 @@ traço. Escadas das classes 2/4/6, dos elementos 2/3/4 e das origens a da conta 
 | Atirador | +1 de alcance; cada ataque dá +3 / 6 / 10% de vel. ataque (até 15 vezes) |
 | Anjo | (2) o primeiro Anjo que morrer renasce com 30% da vida; (4) todos renascem uma vez com 30%; (6) com 60% |
 | Robô | +25 / 50 / 90% de armadura e escudo de 10 / 20 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |
-| Dragão | +15 / 30 / 50% de vida e dano; (6) o time inteiro ganha +10% de dano |
+| Dragão | +10 / 20 / 32% de vida e dano; (6) o time inteiro ganha +5% de dano |
 | Temporais | a cada 5 s, o time ganha +6 / 12 / 20% de vel. ataque até o fim da luta (acumula); (6) uma vez por luta, o aliado que cairia abaixo de 20% da vida cura 40% |
 | Fogo (2/3/4) | ataques queimam (1 / 2 / 3% da vida máxima por s, 3 s, e 33% menos cura); (4) quem morre queimando passa o fogo pro inimigo mais perto |
 | Água (2/3/4) | recuperam 1 / 2 / 3% da vida por segundo; (4) a cada 4 s se livram dos efeitos ruins |
@@ -119,16 +121,16 @@ traço. Escadas das classes 2/4/6, dos elementos 2/3/4 e das origens a da conta 
 
 | Origem | Escada | Efeito |
 |---|---|---|
-| Pokémon | 4/8/9 | cada Pokémon ganha +2 / 3 / 4% de vida e dano por Pokémon no tabuleiro |
-| Digimon | 2/3/4 | Parceiro: Digimon com aliado de outra origem do lado ganha +10 / 20 / 35% de vida e dano; (3) o parceiro ganha metade; (4) o Digimon com parceiro começa com a mana cheia |
-| SMT | 2/4/6 | Invocadores: no começo, cada demônio invoca um monstro do Final Fantasy (sorteado) ao lado, com 25 / 40 / 60% dos atributos dele |
-| Persona | 1/2/3 | cada Persona dá aos aliados em volta +10 / 20 / 35% de um atributo, pela 1ª classe dela (dano: Atirador, Assassino, Porradeiro, Fogo, Raio; vida: Tanque, Terra, Anjo, Água; vel. ataque: Vento, Safada, Temporais; armadura e resist.: Robô, Gelo, Planta; poder de habilidade: Fadinhas, Demoníacos, Dragão, Criaturinha Bizarra) |
-| JoJo | 2/5/7 | Stands e seus usuários ganham +10 / 20 / 35% de dano e vida; (7) os Stands lançam com 25% menos mana |
-| Yu-Gi-Oh! | 2/5/7 | cada carta fica em ataque (+15 / 30 / 50% de dano) ou em defesa (+15 / 30 / 50% de vida e armadura, e provoca os inimigos em volta por 2 s no começo); (7) ganham os dois |
-| LoL | 2/5/7 | +15 / 30 / 50% de poder de habilidade. Regra da franquia, com ou sem traço: na estrela 3, a cada 2 lançamentos a habilidade sai duas vezes (a "ultimate") |
-| Overwatch | 2/4/5 | +10 / 15 / 25% de vel. ataque. Jogada da Partida: depois de cada luta, o herói que mais causou dano ganha +3 / 5 / 8% de dano e vida pro resto da partida |
-| Deadlock | 2/3/5 | abates de heróis do Deadlock rendem almas (×2 no 5). A cada 10 almas: +1 de ouro, e os heróis ganham +2 / 3 / 4% de dano e vida por 10 almas juntadas na partida |
-| Sujimon | 2/3/4 | +15 / 25 / 40% de vida e dano; (3) vencer rodada de monstros tem 50% de chance de trazer um Sujimon de graça pro banco; (4) sempre |
+| Pokémon | 2/4/6/8/9/10 | cada Pokémon ganha +1 / 1,5 / 2 / 2,5 / 3 / 3,5% de vida e dano por Pokémon no tabuleiro |
+| Digimon | 2/3/4/5/6 | Parceiro: Digimon com aliado de outra origem do lado ganha +8 / 12 / 18 / 25 / 35% de vida e dano; (3) o parceiro ganha metade; (5) o Digimon com parceiro começa com a mana cheia |
+| SMT | 2/3/4/6/8 | Invocadores: no começo, cada demônio invoca um monstro do Final Fantasy (sorteado) ao lado, com 20 / 25 / 32 / 45 / 60% dos atributos dele |
+| Persona | 1/2/3/4/5 | cada Persona dá aos aliados em volta +8 / 14 / 20 / 28 / 38% de um atributo, pela 1ª classe dela (dano: Atirador, Assassino, Porradeiro, Fogo, Raio; vida: Tanque, Terra, Anjo, Água; vel. ataque: Vento, Safada, Temporais; armadura e resist.: Robô, Gelo, Planta; poder de habilidade: Fadinhas, Demoníacos, Dragão, Criaturinha Bizarra) |
+| JoJo | 2/3/5/7/9/10 | Stands e seus usuários ganham +6 / 10 / 16 / 24 / 32 / 42% de dano e vida; (7) os Stands lançam com 25% menos mana |
+| Yu-Gi-Oh! | 2/3/5/7/9/10 | cada carta fica em ataque (+10 / 15 / 22 / 30 / 40 / 50% de dano) ou em defesa (o mesmo em vida e armadura, e provoca os inimigos em volta por 2 s no começo); (7) ganham os dois |
+| LoL | 2/3/5/7/9/10 | +10 / 15 / 22 / 30 / 40 / 50% de poder de habilidade. Regra da franquia, com ou sem traço: na estrela 3, a cada 2 lançamentos a habilidade sai duas vezes (a "ultimate") |
+| Overwatch | 2/3/4/5/7 | +6 / 10 / 15 / 20 / 28% de vel. ataque. Jogada da Partida: depois de cada luta, o herói que mais causou dano ganha +2 / 3 / 5 / 7 / 10% de dano e vida pro resto da partida |
+| Deadlock | 2/3/4/5/6 | abates de heróis do Deadlock rendem almas (×2 a partir do 5). A cada 10 almas: +1 de ouro, e os heróis ganham +1,5 / 2 / 2,5 / 3 / 4% de dano e vida por 10 almas juntadas na partida |
+| Sujimon | 2/3/4/5/6 | +10 / 15 / 22 / 30 / 40% de vida e dano; vencer rodada de monstros traz um Sujimon de graça pro banco com 0 / 30 / 50 / 75 / 100% de chance |
 
 ## Itens: Bakugan (src/autobatalha/conteudo/itens.ts)
 

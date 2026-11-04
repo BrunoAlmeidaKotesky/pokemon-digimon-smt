@@ -179,8 +179,9 @@ describe('traços', () => {
   it('10 origens e 19 classes/elementos, sem Únicos, com as escadas do design', () => {
     expect(Object.keys(TRACOS).sort()).toEqual([...ORIGENS, ...CLASSES, ...ELEMENTOS].sort());
     const escadas: Record<string, number[]> = {
-      pokemon: [4, 8, 9], digimon: [2, 3, 4], smt: [2, 4, 6], persona: [1, 2, 3], jojo: [2, 5, 7], ygo: [2, 5, 7],
-      lol: [2, 5, 7], overwatch: [2, 4, 5], deadlock: [2, 3, 5], sujimon: [2, 3, 4],
+      pokemon: [2, 4, 6, 8, 9, 10], digimon: [2, 3, 4, 5, 6], smt: [2, 3, 4, 6, 8], persona: [1, 2, 3, 4, 5],
+      jojo: [2, 3, 5, 7, 9, 10], ygo: [2, 3, 5, 7, 9, 10], lol: [2, 3, 5, 7, 9, 10], overwatch: [2, 3, 4, 5, 7],
+      deadlock: [2, 3, 4, 5, 6], sujimon: [2, 3, 4, 5, 6],
     };
     for (const o of ORIGENS) expect(TRACOS[o]!.degraus, o).toEqual(escadas[o]);
     for (const c of CLASSES) expect(TRACOS[c]!.degraus, c).toEqual([2, 4, 6]);
@@ -224,7 +225,7 @@ describe('traços', () => {
     const de = (id: string) => r.find(t => t.id === id);
     expect(de('unicos')).toBeUndefined();
     expect(de('fogo')).toEqual({ id: 'fogo', n: 2, nivel: 0 });
-    expect(de('pokemon')).toEqual({ id: 'pokemon', n: 4, nivel: 0 });
+    expect(de('pokemon')).toEqual({ id: 'pokemon', n: 4, nivel: 1 });
     expect(de('dragao')).toEqual({ id: 'dragao', n: 1, nivel: -1 });
     expect(de('planta')).toEqual({ id: 'planta', n: 1, nivel: -1 });
     expect(de('digimon')).toEqual({ id: 'digimon', n: 1, nivel: -1 });

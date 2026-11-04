@@ -6,7 +6,10 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { definirSet } from './dados';
 import type { Partida, SetDados } from './tipos';
 import { simularLuta, atributosDaUnidade } from './combate';
-import { combinar, contarTracos, ehComponente, HABILIDADES_PROPRIAS } from './conteudo';
+import {
+  ALMAS_POR_ABATE, CHANCE_RECRUTAR_SUJIMON, combinar, contarTracos, DEADLOCK_POR_10_ALMAS, ehComponente, HABILIDADES_PROPRIAS,
+  JOGADA_DA_PARTIDA, TRACOS,
+} from './conteudo';
 import * as P from './partida';
 
 interface Resumo { estagioFinal: number; rodadas: number; colocacoes: number[] }
@@ -38,6 +41,16 @@ describe('Autobatalha com tudo de verdade', () => {
     const set = JSON.parse(readFileSync('public/autobatalha/set1.json', 'utf8')) as SetDados;
     const faltam = Object.values(set.formas).filter(f => f.habilidade && !HABILIDADES_PROPRIAS[f.habilidade]).map(f => f.id);
     expect(faltam).toEqual([]);
+  });
+
+  it('números das origens que agem fora da luta: os da partida batem com os dos textos', () => {
+    expect([...P.BONUS_OVERWATCH]).toEqual([...JOGADA_DA_PARTIDA]);
+    expect([...P.BONUS_DEADLOCK_POR_10_ALMAS]).toEqual([...DEADLOCK_POR_10_ALMAS]);
+    expect([...P.ALMAS_POR_ABATE]).toEqual([...ALMAS_POR_ABATE]);
+    expect([...P.CHANCE_SUJIMON]).toEqual([...CHANCE_RECRUTAR_SUJIMON]);
+    for (const [id, arr] of [['overwatch', P.BONUS_OVERWATCH], ['deadlock', P.BONUS_DEADLOCK_POR_10_ALMAS], ['sujimon', P.CHANCE_SUJIMON]] as const) {
+      expect(arr.length, id).toBe(TRACOS[id]!.degraus.length);
+    }
   });
 
   it('partidas de 8 bots terminam, com colocações 1 a 8 e sem erro do conteúdo', () => {

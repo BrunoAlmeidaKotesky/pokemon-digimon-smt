@@ -161,16 +161,16 @@ describe('comportamentos', () => {
   it('Pokémon: bônus pelo número de Pokémon no tabuleiro', () => {
     const { m, eu, usuario, aliado } = montar();
     TRACOS.pokemon!.aoComecar!(m.ctx, 0, [eu, usuario, aliado]);
-    expect(eu.at.dano).toBeCloseTo(100 * (1 + 0.02 * 3));
+    expect(eu.at.dano).toBeCloseTo(100 * (1 + 0.01 * 3));
     expect(eu.vida).toBeCloseTo(eu.at.vida);
   });
 
   it('JoJo (7): Stands lançam com 25% menos mana; usuário também ganha o bônus', () => {
     const { m, eu, usuario } = montar();
     eu.stand = true;
-    TRACOS.jojo!.aoComecar!(m.ctx, 2, [eu]);
+    TRACOS.jojo!.aoComecar!(m.ctx, 3, [eu]);
     expect(eu.at.mana).toBe(60);
-    expect(usuario.at.dano).toBeCloseTo(135);
+    expect(usuario.at.dano).toBeCloseTo(124);
   });
 
   it('Transformação e Reuniclus: o Reuniclus se sacrifica pelo aliado abaixo de metade', () => {
