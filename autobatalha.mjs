@@ -12,7 +12,9 @@
 //   - public/ff/list.json e public/catalogo/ff.json: monstros do Final Fantasy (inimigos e chefes);
 //   - docs/tft/base/receitas-bakugan.json: os Bakugan dos itens completos.
 // E busca na internet a imagem das formas de ult (Pokémon: PokeAPI; Digimon: Digi-API) e dos Bakugan (Bakugan Wiki).
-// Confira os avisos no fim: personagem sem custo, linha que saiu, imagem que não achou.
+// Personagem sem custo no Catálogo fica fora do set (é assim que o usuário tira alguém). Linha do plano sem nenhuma
+// forma marcada entra com os dados do plano (classes, custo, habilidade), a info do catálogo e a imagem da fonte.
+// Confira os avisos no fim: personagem que saiu, linha que saiu, imagem que não achou.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -26,8 +28,8 @@ const HEADERS = { 'User-Agent': 'autobatalha.mjs (script pessoal do site Quem Vo
 /** As origens, na ordem de src/autobatalha/tipos.ts. Final Fantasy (monstros) e Bakugan (itens) não são campeões. */
 const ORIGENS = ['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'lol', 'overwatch', 'deadlock', 'sujimon'];
 const SEM_HABILIDADE = '[Nenhuma Habilidade Especial]';
-/** Personagens que vieram sem custo do Catálogo: o custo que o set usa. */
-const CUSTO_FALTANDO = { 'ygo:Clock Wyvern': 2, 'ygo:Panther Warrior': 1 };
+/** Nome no jogo diferente do da fonte: o Zygarde da PokeAPI é a forma 50%. */
+const RENOMEAR = { 'pokemon:Zygarde': 'Zygarde (50%)' };
 /** Franquias em que a forma não final não lança nada (só ataca), salvo habilidade própria. */
 const SO_ATACA_SE_NAO_FINAL = new Set(['pokemon', 'digimon']);
 
@@ -157,7 +159,7 @@ function custoDe(id, fr, base, todas) {
   const chave = `${fr}:${base.nome}`;
   let custo = base.custo;
   if (custo == null) {
-    custo = CUSTO_FALTANDO[chave] ?? todas.find(p => p.custo != null)?.custo ?? 1;
+    custo = todas.find(p => p.custo != null)?.custo ?? 1;
     avisar(`${chave} veio sem custo do Catálogo: usei ${custo}`);
   }
   const outros = [...new Set(todas.map(p => p.custo).filter(c => c != null && c !== custo))];
@@ -221,6 +223,50 @@ function campeaoDaLinha(fr, l, P) {
     id, fr, nome: primeira, linha, custo: custoDe(id, fr, P.get(primeira), todas),
     ...(fr === 'jojo' ? { stand: true } : {}), niveis: ids, ...(de ? { de } : {}),
   };
+}
+
+// Renomeia (na exportação inteira) e tira quem veio sem custo.
+for (const [fr, F] of Object.entries(exp.franquias)) {
+  const nomeNovo = n => RENOMEAR[`${fr}:${n}`] ?? n;
+  for (const p of F.personagens) p.nome = nomeNovo(p.nome);
+  for (const l of exp.linhas?.[fr] ?? []) {
+    l.niveis = l.niveis.map(n => n.map(nomeNovo));
+    if (l.de) l.de = Object.fromEntries(Object.entries(l.de).map(([a, b]) => [nomeNovo(a), nomeNovo(b)]));
+  }
+  const unidades = exp.plano?.unidades?.[fr];
+  if (unidades) {
+    for (const [velho, novo] of Object.entries(RENOMEAR)) {
+      const [f, n] = [velho.slice(0, velho.indexOf(':')), velho.slice(velho.indexOf(':') + 1)];
+      if (f === fr && unidades[n]) { unidades[novo] = unidades[n]; delete unidades[n]; }
+    }
+  }
+  for (const p of F.personagens) if (p.custo == null) avisar(`${fr}:${p.nome} veio sem custo do Catálogo e ficou fora do set`);
+  F.personagens = F.personagens.filter(p => p.custo != null);
+}
+
+// Linha do plano sem nenhuma forma marcada: monta os personagens com o plano, o catálogo e a imagem da fonte.
+const nomeClasse = id => tracos.find(t => t.id === id)?.nome ?? id;
+for (const fr of ORIGENS) {
+  const F = exp.franquias[fr];
+  if (!F) continue;
+  const unidades = exp.plano?.unidades?.[fr] ?? {};
+  const marcados = new Set(F.personagens.map(p => p.nome));
+  for (const l of exp.linhas?.[fr] ?? []) {
+    const nomes = l.niveis.flat();
+    if (nomes.some(n => marcados.has(n))) continue;
+    const custo = unidades[nomes[0]]?.custo;
+    if (custo == null) continue;
+    for (const nome of nomes) {
+      const u = unidades[nome] ?? {};
+      const img = fr === 'pokemon' ? await imagemPokemon(nome) : fr === 'digimon' ? await imagemDigimon(nome) : undefined;
+      if (!img) avisar(`${fr}:${nome} (linha ${l.id} sem marcados): sem imagem`);
+      F.personagens.push({
+        ...(catalogo(fr)[nome] ?? {}), nome, img: img ?? '', classes: (u.classes ?? []).map(nomeClasse),
+        ...(u.habilidade ? { habilidade: u.habilidade } : {}), ...(u.ult ? { ult: u.ult } : {}), custo,
+      });
+    }
+    avisar(`linha ${l.id} (${nomes.join(', ')}) não tinha forma marcada: entrou com os dados do plano`);
+  }
 }
 
 for (const fr of Object.keys(exp.franquias)) if (!ORIGENS.includes(fr)) avisar(`franquia ${fr} da exportação não é origem e ficou de fora`);
