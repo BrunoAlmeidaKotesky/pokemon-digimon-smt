@@ -93,6 +93,14 @@ export function comprarVaga(p: Partida, j: Jogador, i: number): string | null {
   if (livre >= 0) j.banco[livre] = u.uid;
   j.loja[i] = null;
   if (j.lojaFormas) j.lojaFormas[i] = null;
+  // Nível 1 com alternativas (Jack Frost ou Jack-o'-Lantern): o humano escolhe qual leva, se a compra não evoluir na
+  // hora (aí a forma do nível 1 some). A forma sorteada na loja fica até ele escolher; bot fica com a sorteada.
+  const nivel1 = c.niveis[0] ?? [];
+  if (!j.bot && nivel1.length > 1 && copias(j, id, 1) < 3) {
+    const escolha = { uid: u.uid, opcoes: [u.forma, ...nivel1.filter(f => f !== u.forma)], motivo: 'compra' as const };
+    if (!j.escolhaPendente) j.escolhaPendente = escolha;
+    else (j.escolhasFila ??= []).push(escolha);
+  }
   verificarEvolucoes(p, j);
   return null;
 }

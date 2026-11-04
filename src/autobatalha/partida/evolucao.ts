@@ -3,7 +3,7 @@
 // da do nível anterior; sem `de`, o jogador escolhe (bot sorteia).
 import { S } from '../dados';
 import type { Rng } from '../rng';
-import type { CampeaoDados, Estrela, Jogador, Partida, Unidade } from '../tipos';
+import type { CampeaoDados, EscolhaEvolucao, Estrela, Jogador, Partida, Unidade } from '../tipos';
 import { ondeEsta, todasUnidades } from './consultas';
 import { juntarItens } from './itens';
 import { rngDa } from './sorteio';
@@ -48,8 +48,9 @@ function ajustarUlt(u: Unidade): void {
   if (!f.classes.includes(u.ult) && !(f.transforma ?? []).includes(u.ult)) u.ult = undefined;
 }
 
+/** Unidades esperando escolha de forma da evolução (essas não evoluem de novo até escolher; a escolha da compra não trava). */
 const uidsPendentes = (j: Jogador): Set<number> =>
-  new Set([j.escolhaPendente, ...(j.escolhasFila ?? [])].filter(e => e != null).map(e => e.uid));
+  new Set([j.escolhaPendente, ...(j.escolhasFila ?? [])].filter((e): e is EscolhaEvolucao => e != null && e.motivo !== 'compra').map(e => e.uid));
 
 /** A que fica: a do tabuleiro, senão a do banco mais à esquerda (a recém-comprada, sem lugar, por último). */
 function ordemDeFicar(j: Jogador, us: Unidade[]): Unidade[] {
@@ -62,6 +63,12 @@ function ordemDeFicar(j: Jogador, us: Unidade[]): Unidade[] {
 }
 
 function fundir(p: Partida, j: Jogador, tres: Unidade[], nova: Estrela): void {
+  // a forma do nível 1 escolhida na compra não importa mais: tira essas escolhas
+  const fundidas = new Set(tres.map(u => u.uid));
+  const resto = [j.escolhaPendente, ...(j.escolhasFila ?? [])]
+    .filter((e): e is EscolhaEvolucao => e != null && !(e.motivo === 'compra' && fundidas.has(e.uid)));
+  j.escolhaPendente = resto.shift();
+  j.escolhasFila = resto.length ? resto : undefined;
   const ordem = ordemDeFicar(j, tres);
   const fica = ordem[0]!;
   const itens = ordem.flatMap(u => u.itens);
@@ -140,6 +147,7 @@ export function sortearEscolhas(p: Partida, j: Jogador): void {
     limparEscolhas(j);
     const e = j.escolhaPendente;
     if (!e) return;
-    escolherForma(p, j, e.opcoes[rngDa(p).int(e.opcoes.length)]!);
+    // forma da compra: fica a que veio da loja (a 1ª); evolução: sorteia
+    escolherForma(p, j, e.motivo === 'compra' ? e.opcoes[0]! : e.opcoes[rngDa(p).int(e.opcoes.length)]!);
   }
 }

@@ -421,7 +421,9 @@ function Janelas({ eu }: { eu: Jogador }) {
     return (
       <div className="ab-sobreposto">
         <div id="abEscolha" className="ab-janela panel" role="dialog" aria-modal="true" aria-label="Escolha da evolução">
-          <h3>{nome ? `${nome} vai evoluir: escolha a forma` : 'Escolha a forma da evolução'}</h3>
+          <h3>{esc.motivo === 'compra'
+            ? `${nome ? `${nome}: ` : ''}qual forma você leva?`
+            : nome ? `${nome} vai evoluir: escolha a forma` : 'Escolha a forma da evolução'}</h3>
           <div className="ab-opcoes">
             {esc.opcoes.map(f => {
               const fd = formaOuNada(f);

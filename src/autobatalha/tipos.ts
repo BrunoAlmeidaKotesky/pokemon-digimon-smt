@@ -391,7 +391,8 @@ export interface Jogador {
   alvos?: string[];
 }
 
-export interface EscolhaEvolucao { uid: number; opcoes: string[] }
+/** Forma pra escolher: na evolução (nível com alternativas) ou na compra (nível 1 com alternativas). */
+export interface EscolhaEvolucao { uid: number; opcoes: string[]; motivo?: 'evolucao' | 'compra' }
 
 /** Uma opção do carrossel: campeão estrela 1 segurando um item. */
 export interface OpcaoCarrossel {
