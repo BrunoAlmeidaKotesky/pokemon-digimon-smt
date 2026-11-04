@@ -1,37 +1,43 @@
 # Autobatalha: pendências pra revisar juntos
 
 O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design completo está em
-[autobatalha.md](autobatalha.md). Marque cada item como quiser (ok, mudar pra…, discutir).
+[autobatalha.md](autobatalha.md). Respostas suas de 04/11/2026 marcadas com **[você]**.
 
 ## Decisões que tomei (dá pra mudar)
 
 1. **Como a luta se resolve:** luta automática simulada (o doc sugeria pontuação de sinergia, mas o pedido de
-   tabuleiro, habilidades e itens só faz sentido com luta). Passo de 0,1 s, 30 s no máximo.
-2. **Escadas das origens:** as da conta refeita com o v5 (Pokémon 4/8/9, Digimon 2/3/4, SMT 2/4/6, Persona 1/2/3,
-   JoJo 2/5/7, Yu-Gi-Oh! 2/5/7, LoL 2/5/7, Overwatch 2/4/5, Deadlock 2/3/5, Sujimon 2/3/4). Elementos 2/3/4, como a
-   conta recomendava.
+   tabuleiro, habilidades e itens só faz sentido com luta). Passo de 0,1 s, 30 s no máximo. **[você] ok.**
+2. **Escadas das origens:** **[você] mais degraus em todas.** Agora 5 (6 nas maiores), pela conta (resultado.md,
+   seção 6b): Persona 1/2/3/4/5, Digimon, Deadlock e Sujimon 2/3/4/5/6, Overwatch 2/3/4/5/7, SMT 2/3/4/6/8, JoJo,
+   Yu-Gi-Oh! e LoL 2/3/5/7/9/10, Pokémon 2/4/6/8/9/10 (grande demais pra igualar; degraus de baixo dão pouco).
+   Elementos 2/3/4. A conta usa 10 unidades como teto; com o limite novo (nível + 1, até 13) dá pra refazer.
 3. **Efeitos das classes sem número** (Demoníacos, Criaturinha Bizarra, Fadinhas, Safada, Atirador, Anjo, Robô,
    Dragão, Temporais): escrevi números a partir da sua ideia de cada uma. Dragão virou escada normal (2/4/6) com bônus
-   de vida e dano; a ideia "só cabe um ativo" ficou de fora.
+   de vida e dano; a ideia "só cabe um ativo" ficou de fora. **[você] nerf no Dragão:** +10/20/32% (era 15/30/50%),
+   +5% pro time no 6 (era 10%), papel ×1,05. Depois veio a rodada de equilíbrio (equilibrio.md).
 4. **Bônus das origens** que estavam "A definir" (Pokémon, SMT, Persona, LoL, Overwatch): seguem a mecânica que você
    escreveu; os números são meus. Persona: o atributo que cada Persona dá sai da 1ª classe dela.
 5. **Digimon de 4 formas:** as 3 primeiras são as estrelas; a 4ª é a transformação da ult da 3ª. War Greymon →
-   Omegamon vira uma segunda transformação.
+   Omegamon vira uma segunda transformação. **[você] ok.**
 6. **Formas alternativas no nível 1** (Jack Frost ou Jack-o'-Lantern, Daemon ou Succubus, Orpheus ou Orpheus F): a
-   loja sorteia qual vem; todas contam como cópias do mesmo campeão.
-7. **Custos que faltavam:** Clock Wyvern 2, Panther Warrior 1.
+   loja sorteia qual vem; todas contam como cópias do mesmo campeão. **[você] e ao comprar dá pra escolher qual:**
+   feito (sem resposta, fica a da loja; bot fica com a sorteada).
+7. **Custos que faltavam:** **[você] saem do set** (personagem sem custo no Catálogo não entra).
 8. **Carrossel como o do gênero** (decidido por você; trocou o "presente" de 1 de 3 componentes): no começo de
    cada estágio a partir do 2, 9 campeões de estrela 1 segurando um item (componente até o estágio 4, completo do 5
    em diante), custos subindo com o estágio, escolha em duplas da menor vida pra maior. Números meus: 3 s até a 1ª
    dupla e entre as duplas, 4 s depois da última, fecha 1,5 s depois de todos pegarem, 50/50 entre os dois custos
    de cada estágio (40/40/20 no 5+), banco cheio vende o campeão pelo custo (menos quando fecha evolução, como na
    loja), e dá pra mexer na loja durante o carrossel.
-9. **Atributos, economia e loja:** tabelas no design (base pelo custo, ajuste pelo papel da 1ª classe; renda, juros,
-   XP e chances no padrão do gênero). Ponto de partida, sem calibragem fina.
-10. **Bots:** 7, com os nomes dos atributos Bakugan (Pyrus, Aquos…). Jogam de forma simples.
+9. **Atributos, economia e loja:** tabelas no design. **[você] economia mais generosa e mais unidades:** renda 6,
+   vitória +2, sequência +1/+2/+3/+4, nível máximo 12, limite nível + 1, XP mais barata nos níveis baixos e médios.
+   Atributos e habilidades passaram pela rodada de equilíbrio (equilibrio.md).
+10. **Bots:** 7, com os nomes dos atributos Bakugan (Pyrus, Aquos…). **[você] fortes demais:** dificuldade Fácil
+    (padrão), Normal e Difícil. Um jogador "normal" fica em ~2,9º contra os fáceis e ~4,9º contra os normais. O
+    Difícil ainda é quase igual ao Normal (5,0º): falta reforçar.
 
-11. **Zygarde:** o Zygarde (nível 2 da linha) tem ult Mega Zygarde no Catálogo, mas a regra "forma não final só
-    ataca" ganhou: só o Zygarde (Complete) vira Mega Zygarde.
+11. **Zygarde:** linha 10% → 50% → Complete → Mega Zygarde, como você queria; o Zygarde da PokeAPI é a forma 50% e
+    agora aparece como "Zygarde (50%)".
 12. **Digimon com duas 4ª formas** (EBEmon ou EBEmon X, os dois Justimon, Saint Galgomon ou Rapidmon Armor): as duas
     viram opções da transformação; o jogador escolhe qual no tooltip.
 
@@ -44,7 +50,20 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
     - as cópias de quem é eliminado voltam pro pool;
     - o campeão de graça do começo nunca é Stand;
     - a partida é salva só no começo de cada planejamento (compra feita no meio se perde se a página fechar).
-16. **Deadlock:** o degrau 3 tinha o mesmo efeito do 2. Agora cada degrau dá +2 / 3 / 4% por 10 almas.
+16. **Deadlock:** o degrau 3 tinha o mesmo efeito do 2. Agora, com 5 degraus, cada um dá +1,5 / 2 / 2,5 / 3 / 4% por
+    10 almas.
+
+## Pra você decidir (da rodada de equilíbrio)
+
+- **1º lançamento:** o alvo ficou em 4–10 s de luta (média 8,5 s), porque você pediu menos ult rápida. Fica?
+- **Formas que não lançam** (1ª e 2ª dos Pokémon/Digimon) ganham só 25–34% na estrela 2: subir o bônus delas ou
+  dar uma ult simples (minha recomendação: um golpe forte da classe, sem efeito)?
+- **Atirador com a ult Charme** (Kai'Sa, Tracer, Widowmaker) ganha ~80%: tirar o Charme das opções do Atirador
+  (recomendo) ou baixar o alcance do Atirador de 4 pra 3?
+- **Visual da tela nova:** tons do gramado, metade do adversário em oliva, cores das classes, ícones de perto/longe e
+  dos degraus, a apresentação "VS" e o lugar do painel de dano. E os sons, que ninguém ouviu ainda.
+- **Símbolos dos componentes:** usei os símbolos clássicos dos atributos (SVG da Bakugan Wiki). Os de facção mais
+  novos não têm o do Subterra.
 
 ## Habilidades que eu reescrevi (código em src/autobatalha/conteudo)
 
