@@ -569,6 +569,8 @@ body.ab-arrastando .ab-vaga[data-solta]{border-color:color-mix(in srgb, var(--go
 .ab-d-tracos li b{margin-right:5px;color:color-mix(in srgb, var(--tc,var(--fg)) 50%, var(--fg))}
 .ab-d-tracos li span{color:var(--mute)}
 .ab-d-tracos.curtos{display:flex;flex-wrap:wrap;gap:4px}
+.ab-ct-sub{margin:10px 0 6px;font:700 calc(13 * var(--u, 1px)) var(--display);color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
+.ab-ct-c .evolui{font-size:.82em;color:var(--mute);text-align:center;line-height:1.2}
 .ab-d-tracos.curtos li{padding:1px 7px;border:0;border-radius:999px;background:color-mix(in srgb, var(--tc,var(--line)) 22%, transparent);font-size:.92em}
 .ab-d-tracos.curtos li b{margin:0}
 .ab-d-itens.curtos{display:flex;gap:4px}
