@@ -644,9 +644,9 @@ const origens: Traco[] = [
       'Cada abate de um herói do Deadlock rende 1 alma. A cada 10 almas: +1 de ouro, e os heróis do Deadlock ganham ' +
       '+2% de dano e vida (por 10 almas juntadas na partida).',
       'Cada abate de um herói do Deadlock rende 1 alma. A cada 10 almas: +1 de ouro, e os heróis do Deadlock ganham ' +
-      '+2% de dano e vida (por 10 almas juntadas na partida).',
+      '+3% de dano e vida (por 10 almas juntadas na partida).',
       'Cada abate de um herói do Deadlock rende 2 almas. A cada 10 almas: +1 de ouro, e os heróis do Deadlock ganham ' +
-      '+2% de dano e vida (por 10 almas juntadas na partida).',
+      '+4% de dano e vida (por 10 almas juntadas na partida).',
     ],
   },
   {

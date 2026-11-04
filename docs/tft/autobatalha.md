@@ -127,7 +127,7 @@ traço. Escadas das classes 2/4/6, dos elementos 2/3/4 e das origens a da conta 
 | Yu-Gi-Oh! | 2/5/7 | cada carta fica em ataque (+15 / 30 / 50% de dano) ou em defesa (+15 / 30 / 50% de vida e armadura, e provoca os inimigos em volta por 2 s no começo); (7) ganham os dois |
 | LoL | 2/5/7 | +15 / 30 / 50% de poder de habilidade. Regra da franquia, com ou sem traço: na estrela 3, a cada 2 lançamentos a habilidade sai duas vezes (a "ultimate") |
 | Overwatch | 2/4/5 | +10 / 15 / 25% de vel. ataque. Jogada da Partida: depois de cada luta, o herói que mais causou dano ganha +3 / 5 / 8% de dano e vida pro resto da partida |
-| Deadlock | 2/3/5 | abates de heróis do Deadlock rendem almas (×2 no 5). A cada 10 almas: +1 de ouro, e os heróis ganham +2% de dano e vida por 10 almas juntadas na partida |
+| Deadlock | 2/3/5 | abates de heróis do Deadlock rendem almas (×2 no 5). A cada 10 almas: +1 de ouro, e os heróis ganham +2 / 3 / 4% de dano e vida por 10 almas juntadas na partida |
 | Sujimon | 2/3/4 | +15 / 25 / 40% de vida e dano; (3) vencer rodada de monstros tem 50% de chance de trazer um Sujimon de graça pro banco; (4) sempre |
 
 ## Itens: Bakugan (src/autobatalha/conteudo/itens.ts)
@@ -156,8 +156,9 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Presente:** no começo dos estágios 2, 3 e 4, cada jogador escolhe 1 de 3 componentes sorteados.
 - **Adversário:** sorteado entre os vivos, evitando os 2 últimos; com número ímpar, um enfrenta um fantasma (cópia do
   tabuleiro de outro), e o fantasma não perde vida.
-- **Dano na derrota:** base do estágio (2: 2, 3: 4, 4: 6, 5: 8, 6: 10, 7+: 14) + 1 por inimigo vivo + 1 por estrela
-  acima da 1ª desses vivos. Contra monstros só a base (estágio 1 não tira vida).
+- **Dano na derrota:** base do estágio (2: 2, 3: 3, 4: 4, 5: 6, 6: 8, 7+: 11) + metade, arredondada pra cima, de (1
+  por inimigo vivo + 1 por estrela acima da 1ª desses vivos). Contra monstros só a base (estágio 1 não tira vida). Com
+  isso, partidas de 8 bots vão até o estágio 6 ou 7 (~35 rodadas; medido em src/autobatalha/integracao.test.ts).
 - **Ouro:** começa com 1. No começo de cada planejamento: 1-2 e 1-3 dão 2; do 2-1 em diante, 5 + juros (1 a cada 10,
   até 5) + sequência (2–3 seguidas: +1; 4: +2; 5 ou mais: +3, de vitórias ou de derrotas). Vencer contra jogador: +1.
 - **Monstros:** vencer dá 1 componente + 1 de ouro (chefe: 2 componentes + 2 de ouro); perder dá 1 de ouro.
