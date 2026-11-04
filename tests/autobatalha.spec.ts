@@ -1,11 +1,33 @@
-// Aba Autobatalha: tela inicial, partida (loja, banco, tabuleiro, Pronto, luta, próxima rodada, carrossel do 2-1),
-// dica no hover e o planejador de times (pdx-autobatalha-planos). O set é o public/autobatalha/set1.json de verdade
+// Aba Autobatalha: tela inicial, partida (loja, banco, tabuleiro, Pronto, apresentação e luta, próxima rodada,
+// carrossel do 2-1), dica no hover e fixa, itens (equipar e juntar), moedas no chão, atalhos, traços, informações,
+// configuração e o planejador de times (pdx-autobatalha-planos). O set é o public/autobatalha/set1.json de verdade
 // (servido junto com o site); as imagens externas viram o PNG cinza dos mocks. O relógio fica desligado
 // (pdx-autobatalha-config) pra rodada só acabar no "Pronto".
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import { prepare, abrir, aba, lerStorage } from './helpers';
 
-const CONFIG = { relogio: false, segundos: 35, velocidade: 4 };
+const CONFIG = { relogio: false, segundos: 35, velocidade: 4, dificuldade: 'facil', volume: 0.6 };
+
+/** limite do tabuleiro mostrado agora ("3/4" → 4) */
+async function limite(page: Page): Promise<number> {
+  return Number((await page.locator('#abLimite b').textContent())!.split('/')[1]);
+}
+
+/** Partida nova com o jogador mudado no salvo (ouro, nível, itens, moedas no chão), carregada pela "Continuar". */
+async function partidaMexida(page: Page, mudar: Record<string, unknown>) {
+  await inicio(page);
+  await page.locator('#abNova').click();
+  await expect(page.locator('#abPronto')).toBeVisible();
+  await page.evaluate(m => {
+    const p = JSON.parse(localStorage.getItem('pdx-autobatalha-v1')!) as { voce: string; jogadores: { id: string }[] };
+    Object.assign(p.jogadores.find(j => j.id === p.voce)!, m);
+    localStorage.setItem('pdx-autobatalha-v1', JSON.stringify(p));
+  }, mudar);
+  await abrir(page);
+  await aba(page, 'Autobatalha');
+  await page.locator('#abContinuar').click();
+  await expect(page.locator('#abPronto')).toBeVisible();
+}
 
 async function inicio(page: Page, storage: Record<string, unknown> = {}) {
   await prepare(page, { storage: { 'pdx-autobatalha-config': CONFIG, ...storage } });
@@ -53,9 +75,13 @@ test.describe('Autobatalha', () => {
     const noTab = page.locator('#abTabuleiro .ab-peca');
     await expect(noTab).toHaveCount(1);
     await expect(noBanco).toHaveCount(0);
-    await expect(page.locator('#abLimite')).toHaveText('1/1');
+    // o limite vem da partida (nível + o que ela der a mais): a tela só mostra
+    const lim = await limite(page);
+    expect(lim).toBeGreaterThanOrEqual(1);
+    await expect(page.locator('#abLimite b')).toHaveText(`1/${lim}`);
     await expect(page.locator('#abTracos .ab-traco').first()).toBeVisible();
     await expect(page.locator('#abOuro')).toHaveText('1');
+    await expect(page.locator('#abJuros')).toHaveText('+0 juros');
     await page.locator('#abCartas .ab-carta[data-custo="1"]').first().click();
     await expect(page.locator('#abOuro')).toHaveText('0');
     await expect(noBanco).toHaveCount(1);
@@ -66,20 +92,21 @@ test.describe('Autobatalha', () => {
     await expect(noTab).toHaveCount(0);
     await expect(noBanco).toHaveCount(2);
     await expect(page.locator('#abBanco .ab-vaga[data-i="5"] .ab-peca')).toHaveCount(1);
-    await expect(page.locator('#abLimite')).toHaveText('0/1');
+    await expect(page.locator('#abLimite b')).toHaveText(`0/${lim}`);
     await arrastar(page, noBanco.first(), page.locator('#abTabuleiro .ab-casa[data-col="3"][data-lin="1"]'));
     await expect(noTab).toHaveCount(1);
     await expect(noBanco).toHaveCount(1);
-    await expect(page.locator('#abLimite')).toHaveText('1/1');
+    await expect(page.locator('#abLimite b')).toHaveText(`1/${lim}`);
     // a peça fica no centro da casa onde foi solta
     const casa = (await page.locator('#abTabuleiro .ab-casa[data-col="3"][data-lin="1"]').boundingBox())!;
     const peca = (await noTab.first().locator('.ab-foto').boundingBox())!;
     expect(Math.abs(peca.x + peca.width / 2 - (casa.x + casa.width / 2))).toBeLessThan(3);
     expect(Math.abs(peca.y + peca.height / 2 - (casa.y + casa.height / 2))).toBeLessThan(3);
 
-    // Pronto: a luta aparece com os dois lados; pular mostra o placar; depois vem a 1-2
+    // Pronto: a apresentação (você VS o adversário) e a luta com os dois lados; pular mostra o placar; depois vem a 1-2
     await page.locator('#abPronto').click();
     await expect(page.locator('#abLuta')).toBeVisible();
+    await expect(page.locator('#abClash')).toContainText('VS');
     await expect(page.locator('#abLuta .ab-peca[data-lado="a"]').first()).toBeVisible();
     await expect(page.locator('#abLuta .ab-peca[data-lado="b"]').first()).toBeVisible();
     await page.locator('#abPular').click();
@@ -228,5 +255,122 @@ test.describe('Autobatalha', () => {
     await expect(grade).toHaveCount(0);
     await page.keyboard.press('Escape');
     await expect(painel).toBeHidden();
+  });
+
+  test('a partida ocupa a janela inteira, abaixo das abas do site', async ({ page }) => {
+    await inicio(page);
+    await page.locator('#abNova').click();
+    const jogo = (await page.locator('.ab-jogo').boundingBox())!;
+    const nav = (await page.locator('nav').boundingBox())!;
+    expect(jogo.x).toBe(0);
+    expect(jogo.width).toBe(1280);
+    expect(Math.abs(jogo.y - (nav.y + nav.height))).toBeLessThan(2);
+    expect(jogo.y + jogo.height).toBe(800);
+    await expect(page.locator('header')).toBeHidden();
+    // nada passa da janela: sem barra de rolagem na página
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(800);
+    // o tabuleiro usa a largura da área (casas grandes)
+    const area = (await page.locator('.ab-palco').boundingBox())!;
+    const tab = (await page.locator('#abTabuleiro').boundingBox())!;
+    expect(tab.width).toBeGreaterThan(area.width * 0.9);
+  });
+
+  test('itens: um componente solto em cima de outro vira o completo; equipa arrastando; moeda no chão recolhe no mouse', async ({ page }) => {
+    await partidaMexida(page, { itens: ['pyrus', 'aquos', 'haos+darkus'], moedas: [{ casa: { col: 6, lin: 2 }, valor: 2 }] });
+    const itens = page.locator('#abItens .ab-item-solto');
+    await expect(itens).toHaveCount(3);
+    await arrastar(page, itens.nth(1), itens.nth(0));
+    await expect(itens).toHaveCount(2);
+    await expect(itens.nth(0)).toHaveAttribute('data-item', 'pyrus+aquos');
+    // completo não junta com nada
+    await arrastar(page, itens.nth(0), itens.nth(1));
+    await expect(itens).toHaveCount(2);
+    // equipa na unidade do tabuleiro
+    await arrastar(page, itens.nth(0), page.locator('#abTabuleiro .ab-peca').first());
+    await expect(itens).toHaveCount(1);
+    await expect(page.locator('#abTabuleiro .ab-peca').first().locator('.itens .ab-item')).toHaveCount(1);
+
+    await page.mouse.move(5, 300);
+    const ouro = Number(await page.locator('#abOuro').textContent());
+    const moeda = page.locator('#abTabuleiro .ab-moeda-chao');
+    await expect(moeda).toHaveCount(1);
+    await moeda.hover();
+    await expect(page.locator('#abOuro')).toHaveText(String(ouro + 2));
+    await expect(moeda).toHaveCount(0);
+  });
+
+  test('tecla W, traço em foco, campeões do traço e dica fixa com a arte grande', async ({ page }) => {
+    await partidaMexida(page, { ouro: 20, nivel: 4 });
+    await page.locator('#abCartas .ab-carta[data-campeao]').first().click();
+    const banco = page.locator('#abBanco .ab-peca');
+    const noTab = page.locator('#abTabuleiro .ab-peca');
+    await expect(banco).toHaveCount(1);
+    const n = await noTab.count();
+    await banco.first().hover();
+    await page.keyboard.press('w');
+    await expect(noTab).toHaveCount(n + 1);
+    await expect(banco).toHaveCount(0);
+    await noTab.first().hover();
+    await page.keyboard.press('w');
+    await expect(banco).toHaveCount(1);
+    await expect(noTab).toHaveCount(n);
+
+    // passar o mouse no traço destaca as unidades dele; o botão abre a lista de campeões (os seus marcados)
+    const traco = page.locator('#abTracos .ab-traco').first();
+    await traco.hover();
+    await expect(page.locator('#abTabuleiro.focando .ab-peca.em-foco').first()).toBeVisible();
+    await traco.locator('.ab-ver').click();
+    const pop = page.locator('#abCampeoesTraco');
+    await expect(pop).toBeVisible();
+    await expect(pop.locator('.ab-ct-c.tem').first()).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(pop).toBeHidden();
+
+    // botão direito na carta fixa a dica sem comprar; clicar na foto abre a arte grande
+    await page.mouse.move(5, 300);
+    const ouro = await page.locator('#abOuro').textContent();
+    await page.locator('#abCartas .ab-carta[data-campeao]').first().click({ button: 'right' });
+    const dica = page.locator('#abDica');
+    await expect(dica).toHaveClass(/fixa/);
+    await expect(page.locator('#abOuro')).toHaveText(ouro!);
+    await dica.locator('.ab-d-foto-btn').click();
+    await expect(page.locator('#abImagem')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#abImagem')).toBeHidden();
+    await expect(dica).toBeHidden();
+  });
+
+  test('informações, configuração (dificuldade e mudo) e a contagem grande do relógio', async ({ page }) => {
+    await inicio(page, { 'pdx-autobatalha-config': { ...CONFIG, relogio: true, segundos: 90 } });
+    await page.locator('#abNova').click();
+    await expect(page.locator('#abContagem b')).toHaveText(/^\d+$/);
+
+    await page.locator('#abInfoBtn').click();
+    const info = page.locator('#abInfo');
+    await expect(info).toBeVisible();
+    await expect(info.locator('.ab-info-traco').first()).toBeVisible();
+    await info.locator('[data-aba="bakugan"]').click();
+    await expect(info.locator('#abInfoReceitas td[data-item]')).toHaveCount(49);
+    await info.locator('[data-aba="loja"]').click();
+    expect(await info.locator('#abInfoChances tr[data-nivel]').count()).toBeGreaterThanOrEqual(10);
+    await expect(info.locator('#abInfoChances tr.eu')).toHaveAttribute('data-nivel', '1');
+    await info.locator('#abInfoFechar').click();
+    await expect(info).toBeHidden();
+
+    await page.locator('#abConfigBtn').click();
+    await expect(page.locator('#abConfig')).toBeVisible();
+    await page.locator('#abDificuldade button', { hasText: 'Difícil' }).click();
+    await page.locator('#abConfigFechar').click();
+    await page.locator('#abMudo').click();
+    const cfg = await lerStorage<{ dificuldade: string; volume: number }>(page, 'pdx-autobatalha-config');
+    expect(cfg).toMatchObject({ dificuldade: 'dificil', volume: 0 });
+    await page.locator('#abMudo').click();
+    expect((await lerStorage<{ volume: number }>(page, 'pdx-autobatalha-config'))?.volume).toBeGreaterThan(0);
+
+    // a apresentação some sozinha e a luta corre
+    await page.locator('#abPronto').click();
+    await expect(page.locator('#abClash')).toBeVisible();
+    await expect(page.locator('#abClash')).toBeHidden({ timeout: 4000 });
+    await expect(page.locator('#abLuta')).toBeVisible();
   });
 });

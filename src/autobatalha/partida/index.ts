@@ -7,7 +7,7 @@ import { S } from '../dados';
 import { jogadorDe, origemDe } from './consultas';
 import { escolherForma } from './evolucao';
 import { pegarDoCarrossel } from './carrossel';
-import { equiparItem } from './itens';
+import { equiparItem, juntarSoltos } from './itens';
 import { atualizar, comprarVaga, comprarXpDe, travar, venderUnidade } from './loja';
 import { moverUnidade } from './tabuleiro';
 
@@ -52,6 +52,9 @@ export const mover = (p: Partida, jid: string, uid: number, para: Onde): string 
   moverUnidade(jogadorDe(p, jid), uid, para);
 export const equipar = (p: Partida, jid: string, i: number, uid: number): string | null =>
   equiparItem(jogadorDe(p, jid), i, uid);
+/** Junta dois componentes dos itens soltos (o i solto em cima do k) no Bakugan completo, no lugar do k. */
+export const juntarItens = (p: Partida, jid: string, i: number, k: number): string | null =>
+  juntarSoltos(jogadorDe(p, jid), i, k);
 export const escolherEvolucao = (p: Partida, jid: string, forma: string): string | null =>
   escolherForma(p, jogadorDe(p, jid), forma);
 /** O jogador pega a opção i do carrossel (só depois de liberado, uma vez). */

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { acoes, estadoAutobatalha, MS_RESULTADO, S_FECHAR_CARROSSEL } from './controle';
+import { acoes, estadoAutobatalha, MS_CLASH, MS_RESULTADO, S_FECHAR_CARROSSEL } from './controle';
 import { CHAVE_PARTIDA, definirMotor, horarioDoGrupo, humano, S_DEPOIS_DA_ULTIMA } from './partida';
 import { lutaGanha, prepararTeste } from './partida/test-helpers';
 
@@ -41,6 +41,13 @@ describe('controle', () => {
     expect(e.reproducao?.adversario).toBe('monstros');
     expect(e.reproducao?.resultado.gravacao).toBeDefined();
     expect(e.relogio).toBeNull();
+    // primeiro a apresentação dos dois lados (clash): o tempo da luta não corre
+    expect(e.reproducao?.comecou).toBe(false);
+    vi.advanceTimersByTime(MS_CLASH - 100);
+    expect(E().reproducao!.t).toBe(0);
+    expect(E().reproducao!.comecou).toBe(false);
+    vi.advanceTimersByTime(100);
+    expect(E().reproducao!.comecou).toBe(true);
     vi.advanceTimersByTime(4000);
     expect(E().reproducao!.t).toBeGreaterThan(3.5);
     acoes.velocidade(4);
@@ -202,6 +209,35 @@ describe('controle', () => {
     expect(e.partida?.fase).toBe('fim');
     expect(e.partida?.jogadores.map(j => j.colocacao).sort()).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     expect(e.temSalva).toBe(false);
+  });
+
+  it('pular durante a apresentação (clash) termina a luta', () => {
+    acoes.configurar({ relogio: false });
+    acoes.novaPartida(14);
+    acoes.pronto();
+    expect(E().reproducao?.comecou).toBe(false);
+    acoes.pularLuta();
+    expect(E().partida?.fase).toBe('resultado');
+    expect(E().reproducao).toMatchObject({ comecou: true, acabou: true });
+    vi.advanceTimersByTime(MS_RESULTADO);
+    expect(E().partida?.rodada).toBe(2);
+  });
+
+  it('juntar dois componentes soltos e recolher a moeda do chão', () => {
+    acoes.novaPartida(15);
+    const p = E().partida!;
+    humano(p).itens = ['pyrus', 'aurelus', 'haos+darkus'];
+    humano(p).moedas = [{ casa: { col: 2, lin: 1 }, valor: 2 }];
+    acoes.juntarItens(1, 0);
+    expect(humano(E().partida!).itens).toEqual(['pyrus+aurelus', 'haos+darkus']);
+    acoes.juntarItens(0, 1);
+    expect(E().aviso).toMatch(/dois componentes/);
+    const ouro = humano(E().partida!).ouro;
+    acoes.pegarMoeda(0);
+    expect(humano(E().partida!).ouro).toBe(ouro + 2);
+    expect(humano(E().partida!).moedas ?? []).toHaveLength(0);
+    acoes.pegarMoeda(0); // já recolhida: nada muda
+    expect(humano(E().partida!).ouro).toBe(ouro + 2);
   });
 
   it('olhar outro jogador', () => {

@@ -27,6 +27,8 @@ export const CONFIG_PADRAO: Config = { relogio: true, segundos: 35, velocidade: 
 export const MS_RESULTADO = 1500;
 /** tick da reprodução da luta */
 export const MS_TICK_LUTA = 50;
+/** apresentação dos dois lados (o "clash", com "VS") antes de cada luta: a reprodução só começa a correr depois */
+export const MS_CLASH = 1500;
 /** tick do carrossel (libera as duplas e anda o tempo da tela) */
 export const MS_TICK_CARROSSEL = 200;
 /** todos já pegaram no carrossel: ele fecha este tanto de segundos depois */
@@ -104,6 +106,7 @@ export const estadoAutobatalha = (): EstadoTela => estado;
 
 let timerRelogio: ReturnType<typeof setInterval> | null = null;
 let timerLuta: ReturnType<typeof setInterval> | null = null;
+let timerClash: ReturnType<typeof setTimeout> | null = null;
 let timerCarrossel: ReturnType<typeof setInterval> | null = null;
 let timerResultado: ReturnType<typeof setTimeout> | null = null;
 let timerAviso: ReturnType<typeof setTimeout> | null = null;
@@ -115,7 +118,11 @@ let ultimoTick = 0;
 let pausado = false;
 
 function pararRelogio(): void { if (timerRelogio) clearInterval(timerRelogio); timerRelogio = null; }
-function pararLuta(): void { if (timerLuta) clearInterval(timerLuta); timerLuta = null; }
+function pararLuta(): void {
+  if (timerLuta) clearInterval(timerLuta);
+  if (timerClash) clearTimeout(timerClash);
+  timerLuta = null; timerClash = null;
+}
 function pararCarrossel(): void { if (timerCarrossel) clearInterval(timerCarrossel); timerCarrossel = null; }
 function pararResultado(): void { if (timerResultado) clearTimeout(timerResultado); timerResultado = null; }
 function pararTudo(): void {
@@ -143,10 +150,21 @@ function tickRelogio(): void {
   if (falta !== estado.relogio) mudar({ relogio: falta });
 }
 
+/** Liga a reprodução: primeiro a apresentação (MS_CLASH, reproducao.comecou = false), depois o tempo corre. Pausar no
+ *  meio da apresentação recomeça ela ao voltar. */
 function ligarLuta(): void {
   pararLuta();
+  if (pausado) return;
+  if (estado.reproducao && !estado.reproducao.comecou) { timerClash = setTimeout(comecarLuta, MS_CLASH); return; }
   ultimoTick = Date.now();
-  if (!pausado) timerLuta = setInterval(tickLuta, MS_TICK_LUTA);
+  timerLuta = setInterval(tickLuta, MS_TICK_LUTA);
+}
+function comecarLuta(): void {
+  timerClash = null;
+  const r = estado.reproducao;
+  if (!r || r.acabou) return;
+  mudar({ reproducao: { ...r, comecou: true } });
+  ligarLuta();
 }
 function tickLuta(): void {
   const r = estado.reproducao;
@@ -245,7 +263,7 @@ function terminarPlanejamento(): void {
   pendente = P.simularRodada(p);
   const minha = pendente.lutas.find(l => l.a === p.voce);
   if (!minha) { estado = { ...estado, relogio: null }; terminarLuta(); return; }
-  estado = { ...estado, relogio: null, reproducao: { resultado: minha.resultado, adversario: minha.b, t: 0, acabou: false } };
+  estado = { ...estado, relogio: null, reproducao: { resultado: minha.resultado, adversario: minha.b, t: 0, comecou: false, acabou: false } };
   publicar(true);
   ligarLuta();
 }
@@ -255,7 +273,7 @@ function terminarLuta(): void {
   const p = partida;
   if (!p || !pendente) return;
   const r = estado.reproducao;
-  if (r) estado = { ...estado, reproducao: { ...r, t: r.resultado.duracao, acabou: true } };
+  if (r) estado = { ...estado, reproducao: { ...r, t: r.resultado.duracao, comecou: true, acabou: true } };
   P.aplicarRodada(p, pendente);
   pendente = null;
   publicar(true);
@@ -391,6 +409,9 @@ export const acoes: Acoes = {
   },
 
   equipar: (i, uid) => acao((p, id) => P.equipar(p, id, i, uid)),
+  juntarItens: (i, k) => acao((p, id) => P.juntarItens(p, id, i, k)),
+  // recolhe passando o mouse: moeda que já sumiu não vira aviso
+  pegarMoeda: i => acao((p, id) => { P.pegarMoeda(p, id, i); }),
   escolherEvolucao: forma => acao((p, id) => P.escolherEvolucao(p, id, forma)),
   pegarCarrossel(i) {
     acao((p, id) => {

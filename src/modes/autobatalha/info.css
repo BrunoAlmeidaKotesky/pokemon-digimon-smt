@@ -1,0 +1,89 @@
+/* ---------- Informações da partida (Info.tsx): traços, receitas dos Bakugan, loja e regras ---------- */
+/* Tamanhos em calc(Npx * var(--k, 1)): a tela define --k pra escalar com a janela (1 = 1280×720). */
+.ab-info{
+  width:min(calc(1100px * var(--k, 1)), 96vw);height:min(88vh, calc(860px * var(--k, 1)));
+  display:grid;grid-template-rows:auto minmax(0,1fr);gap:0;padding:0;overflow:hidden;
+  font-size:calc(14px * var(--k, 1));line-height:1.4;
+}
+.ab-info h2{margin:0;font:700 calc(20px * var(--k, 1)) var(--display)}
+.ab-info h3{margin:calc(14px * var(--k, 1)) 0 calc(6px * var(--k, 1));font:700 calc(13px * var(--k, 1)) var(--display);text-transform:uppercase;letter-spacing:.7px;color:var(--mute)}
+.ab-info h3 small{font-weight:600}
+.ab-info-cab{display:flex;flex-wrap:wrap;align-items:center;gap:calc(8px * var(--k, 1)) calc(16px * var(--k, 1));padding:calc(12px * var(--k, 1)) calc(16px * var(--k, 1));border-bottom:1px solid var(--line);background:linear-gradient(180deg, color-mix(in srgb, var(--gold) 7%, var(--panel)), var(--panel))}
+.ab-info-cab .btn{margin-left:auto;font-size:calc(13px * var(--k, 1))}
+.ab-info-abas{display:flex;flex-wrap:wrap;gap:calc(4px * var(--k, 1))}
+.ab-info-aba{font:600 calc(13px * var(--k, 1)) var(--display);text-transform:uppercase;letter-spacing:.5px;padding:calc(6px * var(--k, 1)) calc(12px * var(--k, 1));border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--mute);cursor:pointer}
+.ab-info-aba:hover{border-color:var(--fg);color:var(--fg)}
+.ab-info-aba.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.ab-info-corpo{overflow:auto;padding:calc(4px * var(--k, 1)) calc(16px * var(--k, 1)) calc(16px * var(--k, 1));overscroll-behavior:contain}
+.ab-info-nota{margin:calc(10px * var(--k, 1)) 0;max-width:80ch}
+.ab-info-rolar{overflow-x:auto}
+.ab-info .ab-moeda{margin-right:2px}
+
+/* traços */
+.ab-info-busca{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:calc(6px * var(--k, 1)) calc(14px * var(--k, 1));padding:calc(10px * var(--k, 1)) 0;background:var(--panel);font-size:calc(12px * var(--k, 1))}
+#autobatalha .ab-info-busca input{flex:0 1 calc(320px * var(--k, 1));font-size:calc(14px * var(--k, 1))}
+.ab-info-tracos{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(440px * var(--k, 1)),1fr));gap:calc(8px * var(--k, 1));align-items:start}
+.ab-info-traco{padding:calc(9px * var(--k, 1)) calc(11px * var(--k, 1));border:1px solid var(--line);border-left:calc(4px * var(--k, 1)) solid var(--tc,var(--line));border-radius:calc(10px * var(--k, 1));background:color-mix(in srgb, var(--tc,var(--line)) 5%, var(--panel))}
+.ab-info-traco.ativo{background:color-mix(in srgb, var(--tc,var(--line)) 11%, var(--panel))}
+.ab-info-traco.aberto{grid-column:1 / -1}
+.ab-info-traco-cab{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:calc(10px * var(--k, 1))}
+.ab-info .ab-marca-dg{width:calc(34px * var(--k, 1));height:calc(38px * var(--k, 1));font-size:calc(14px * var(--k, 1))}
+.ab-info-traco-cab .tit{display:grid;min-width:0}
+.ab-info-traco-cab .tit b{font:700 calc(16px * var(--k, 1))/1.15 var(--display);color:color-mix(in srgb, var(--tc,var(--fg)) 55%, var(--fg))}
+.ab-info-traco-cab .tit span{font-size:calc(12px * var(--k, 1))}
+.ab-info .ab-chip{font-size:calc(12px * var(--k, 1));padding:calc(3px * var(--k, 1)) calc(10px * var(--k, 1))}
+.ab-info-desc{margin:calc(6px * var(--k, 1)) 0 0}
+.ab-info-degraus{list-style:none;margin:calc(6px * var(--k, 1)) 0 0;padding:0;display:grid;gap:calc(3px * var(--k, 1));font-size:calc(13px * var(--k, 1))}
+.ab-info-degraus li{color:var(--mute);padding:calc(1px * var(--k, 1)) calc(6px * var(--k, 1));border-radius:calc(5px * var(--k, 1))}
+.ab-info-degraus li b{font-family:var(--display);margin-right:3px}
+.ab-info-degraus li.feito{color:var(--fg)}
+.ab-info-degraus li.on{color:var(--fg);font-weight:600;background:color-mix(in srgb, var(--tc,var(--gold)) 22%, transparent);box-shadow:inset 3px 0 0 var(--tc,var(--gold))}
+
+/* campeões de um traço (também usada fora deste painel) */
+.ab-ct{list-style:none;margin:calc(8px * var(--k, 1)) 0 0;padding:calc(6px * var(--k, 1));display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(92px * var(--k, 1)),1fr));gap:calc(6px * var(--k, 1));border-radius:calc(8px * var(--k, 1));background:color-mix(in srgb, var(--fg) 4%, transparent)}
+.ab-ct-c{--cc:var(--custo1);position:relative;display:grid;justify-items:center;gap:calc(2px * var(--k, 1));padding:calc(6px * var(--k, 1)) calc(3px * var(--k, 1)) calc(5px * var(--k, 1));border:1px solid var(--line);border-radius:calc(9px * var(--k, 1));background:var(--panel);text-align:center;cursor:default}
+.ab-ct-c:hover{border-color:var(--cc)}
+.ab-ct-c .ab-foto{width:calc(52px * var(--k, 1));height:calc(52px * var(--k, 1));border:calc(3px * var(--k, 1)) solid var(--cc);background:color-mix(in srgb, var(--cc) 16%, var(--panel))}
+.ab-ct-c .nm{font:600 calc(11px * var(--k, 1))/1.15 var(--display);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical}
+.ab-ct-c .custo{display:inline-flex;align-items:center;gap:2px;font:700 calc(11px * var(--k, 1)) var(--display);color:var(--cc)}
+.ab-ct-c .onde{font:700 calc(9px * var(--k, 1)) var(--display);text-transform:uppercase;letter-spacing:.4px;color:var(--gold)}
+.ab-ct-c.tem.banco{border-color:color-mix(in srgb, var(--gold) 55%, var(--line));background:color-mix(in srgb, var(--gold) 7%, var(--panel))}
+.ab-ct-c.tem.banco .ab-foto{box-shadow:0 0 0 2px color-mix(in srgb, var(--gold) 45%, transparent)}
+.ab-ct-c.tem.tabuleiro{border-color:var(--gold);background:color-mix(in srgb, var(--gold) 15%, var(--panel));box-shadow:0 0 0 1px var(--gold)}
+.ab-ct-c.tem.tabuleiro .ab-foto{box-shadow:0 0 0 3px var(--gold),0 0 10px color-mix(in srgb, var(--gold) 60%, transparent)}
+.ab-ct-vazio{margin:calc(6px * var(--k, 1)) 0 0;font-size:calc(13px * var(--k, 1))}
+
+/* Bakugan: grade componente × componente */
+.ab-info-receitas{border-collapse:separate;border-spacing:calc(3px * var(--k, 1));margin:0 auto}
+.ab-info-receitas th,.ab-info-receitas td{width:calc(104px * var(--k, 1));padding:calc(5px * var(--k, 1)) calc(3px * var(--k, 1));text-align:center;vertical-align:top;border-radius:calc(8px * var(--k, 1))}
+.ab-info-receitas th{background:color-mix(in srgb, var(--fg) 6%, transparent)}
+.ab-info-receitas th.canto{background:none;font:700 calc(22px * var(--k, 1)) var(--display);color:var(--mute);vertical-align:middle}
+.ab-info-receitas td{border:1px solid var(--line);background:var(--panel);transition:border-color .1s, background .1s}
+.ab-info-receitas td:hover{border-color:var(--gold);background:color-mix(in srgb, var(--gold) 10%, var(--panel))}
+.ab-info-receitas td.igual{background:color-mix(in srgb, var(--fg) 4%, var(--panel))}
+.ab-info-receitas .ab-item{width:calc(44px * var(--k, 1));height:calc(44px * var(--k, 1))}
+.ab-info-receitas th .ab-item{width:calc(32px * var(--k, 1));height:calc(32px * var(--k, 1))}
+.ab-info-receitas small{display:block;margin-top:calc(3px * var(--k, 1));font:600 calc(11px * var(--k, 1))/1.15 var(--display);overflow-wrap:anywhere}
+.ab-info-comp{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(300px * var(--k, 1)),1fr));gap:calc(6px * var(--k, 1)) calc(14px * var(--k, 1))}
+.ab-info-comp li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:calc(8px * var(--k, 1));align-items:center}
+.ab-info-comp .ab-item{width:calc(30px * var(--k, 1));height:calc(30px * var(--k, 1))}
+
+/* tabelas (loja, pool, venda) */
+.ab-info-tabela{border-collapse:collapse;font-variant-numeric:tabular-nums}
+.ab-info-tabela th,.ab-info-tabela td{padding:calc(5px * var(--k, 1)) calc(12px * var(--k, 1));text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+.ab-info-tabela thead th{font:700 calc(12px * var(--k, 1)) var(--display);text-transform:uppercase;letter-spacing:.4px;color:var(--mute)}
+.ab-info-tabela thead th.cu{color:var(--cc)}
+.ab-info-tabela tbody th{font:700 calc(14px * var(--k, 1)) var(--display);text-align:left}
+.ab-info-tabela tbody th small{font-weight:400;color:var(--mute)}
+.ab-info-chances td.tem{font-weight:700;color:color-mix(in srgb, var(--cc) 70%, var(--fg));background:color-mix(in srgb, var(--cc) calc(var(--p, 0%) * .5), transparent)}
+.ab-info-chances td.zero{color:var(--mute);opacity:.45}
+.ab-info-chances tr.eu th,.ab-info-chances tr.eu td{border-top:2px solid var(--gold);border-bottom:2px solid var(--gold)}
+.ab-info-chances tr.eu th{background:color-mix(in srgb, var(--gold) 18%, transparent)}
+.ab-info-pool tbody th,.ab-info-venda tbody th{font-family:var(--body);font-weight:600;font-size:calc(13px * var(--k, 1))}
+.ab-info-venda tbody th{color:#d9a520;letter-spacing:-1px}
+
+/* regras */
+.ab-info-regras{display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(460px * var(--k, 1)),1fr));gap:0 calc(24px * var(--k, 1));align-items:start}
+.ab-info-regras section{min-width:0}
+.ab-info-regras ul{margin:0;padding-left:calc(18px * var(--k, 1));display:grid;gap:calc(4px * var(--k, 1))}
+.ab-info-regras .ab-info-venda{margin-top:calc(6px * var(--k, 1))}

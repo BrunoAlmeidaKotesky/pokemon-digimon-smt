@@ -37,7 +37,6 @@ export function Carrossel({ c, partida }: { c: EstadoCarrossel; partida: Partida
           <b className="tit">Carrossel</b>
           <span id="abCarStatus" className={'st' + (c.podePegar ? ' vez' : '')} role="status">{status}</span>
           <span className="tempo">fecha em <b id="abCarTempo">{segundos(c.fim - c.tempo)}</b></span>
-          <small className="mute">O campeão vai pro banco; o item, pros itens soltos.</small>
         </div>
       </div>
       <Ordem c={c} porId={porId} eu={eu} />
@@ -70,7 +69,7 @@ function Ordem({ c, porId, eu }: { c: EstadoCarrossel; porId: Map<string, Jogado
   return (
     <section className="ab-car-lado" aria-label="Ordem de escolha">
       <h4>Ordem de escolha</h4>
-      <p className="mute">Menos vida escolhe antes, em duplas.</p>
+      <p className="mute">Menos vida escolhe antes, em duplas. O campeão vai pro banco; o item, pros itens soltos.</p>
       <ol id="abCarOrdem" className="ab-car-ordem">
         {c.grupos.map((g, k) => {
           const liberado = k < c.liberados;

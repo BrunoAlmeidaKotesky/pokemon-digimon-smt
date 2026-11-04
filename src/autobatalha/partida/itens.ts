@@ -29,6 +29,19 @@ export function equiparItem(j: Jogador, i: number, uid: number): string | null {
   return null;
 }
 
+/** Junta dois componentes dos itens soltos (o da posição i solto em cima do da posição k): o completo fica no lugar
+ *  do k e o i sai da lista. Só componente com componente, em posições diferentes. */
+export function juntarSoltos(j: Jogador, i: number, k: number): string | null {
+  const a = j.itens[i];
+  const b = j.itens[k];
+  if (a == null || b == null || i === k) return 'Item não encontrado';
+  const m = M();
+  if (!m.ehComponente(a) || !m.ehComponente(b)) return 'Só dá pra juntar dois componentes';
+  j.itens[k] = m.combinar(a, b);
+  j.itens.splice(i, 1);
+  return null;
+}
+
 /** Junta itens numa unidade (evolução); o que não couber volta pros itens soltos. */
 export function juntarItens(j: Jogador, u: Unidade, itens: string[]): void {
   for (const item of itens) if (!porItem(u, item)) j.itens.push(item);

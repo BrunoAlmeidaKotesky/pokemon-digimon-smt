@@ -25,6 +25,8 @@ export interface Reproducao {
   /** o humano é o lado A */
   /** segundos de luta já mostrados */
   t: number;
+  /** false durante a apresentação dos dois lados (o "clash", MS_CLASH no controle) antes da luta correr; t fica em 0 */
+  comecou: boolean;
   acabou: boolean;
 }
 
@@ -83,6 +85,8 @@ export interface Acoes {
   mover(uid: number, para: Onde): void;
   /** equipa o item da posição i dos itens soltos na unidade (2 componentes viram o Bakugan completo) */
   equipar(i: number, uid: number): void;
+  /** junta dois componentes dos itens soltos (o da posição i solto em cima do da posição k) no Bakugan completo */
+  juntarItens(i: number, k: number): void;
   escolherEvolucao(forma: string): void;
   /** pega a opção i do carrossel (só depois de liberado, uma vez por carrossel) */
   pegarCarrossel(i: number): void;

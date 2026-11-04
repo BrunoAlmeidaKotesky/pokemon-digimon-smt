@@ -1,7 +1,7 @@
 // Peças da tela da Autobatalha usadas em mais de um lugar: geometria das casas, cores do custo, imagens das formas,
 // ícones de item e de rodada, estrelas e o texto "a/b/c" com o número da estrela em destaque.
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
-import { COLUNAS, type Casa, type Componente, type Custo, type Estrela, type FormaDados, type TipoRodada } from '../../autobatalha/tipos';
+import { COLUNAS, type Casa, type Componente, type Custo, type Estrela, type FormaDados, type Jogador, type TipoRodada } from '../../autobatalha/tipos';
 import { S, urlImagem } from '../../autobatalha/dados';
 import { ITENS, ehComponente } from '../../autobatalha/conteudo';
 
@@ -9,7 +9,17 @@ export const plural = (n: number, um: string, varios: string) => `${n} ${n === 1
 
 // ---------- casas hexagonais (pontudas em cima, linhas ímpares meia casa pra direita, como hex.ts) ----------
 export interface Geo { w: number; h: number }
-export const geo = (w: number): Geo => ({ w, h: Math.round(w * 1.1547 * 10) / 10 });
+/** altura da casa / largura: 1 (o hexágono regular seria 1,1547) achata um pouco o tabuleiro, como uma câmera
+ *  inclinada, e deixa as casas maiores na mesma altura */
+export const RAZAO_CASA = 1;
+/** na luta (8 linhas na mesma altura) o tabuleiro achata mais, pra as casas não ficarem pequenas */
+export const RAZAO_LUTA = 0.8;
+export const geo = (w: number, razao = RAZAO_CASA): Geo => ({ w, h: Math.round(w * razao * 10) / 10 });
+/** maior largura de casa que cabe em largura × altura com `linhas` linhas (8,5 casas de largura: as ímpares deslocadas) */
+export function casaQueCabe(largura: number, altura: number, linhas: number, razao = RAZAO_CASA): number {
+  const porAltura = altura / (((linhas - 1) * 0.75 + 1) * razao);
+  return Math.max(24, Math.floor(Math.min(largura / (COLUNAS + 0.5), porAltura)));
+}
 /** centro da casa em pixels, a partir do canto de cima à esquerda do tabuleiro */
 export const centroCasa = (c: Casa, g: Geo) => ({ x: c.col * g.w + (c.lin & 1 ? g.w / 2 : 0) + g.w / 2, y: c.lin * g.h * 0.75 + g.h / 2 });
 export const tamanhoTabuleiro = (linhas: number, g: Geo) => ({ largura: COLUNAS * g.w + g.w / 2, altura: (linhas - 1) * g.h * 0.75 + g.h });
@@ -18,14 +28,61 @@ export const tamanhoTabuleiro = (linhas: number, g: Geo) => ({ largura: COLUNAS 
 export const custoAttr = (c: Custo | number) => ({ 'data-custo': String(c) });
 export const imgForma = (id: string) => (S().temForma(id) ? urlImagem(S().forma(id).img) : '');
 export const formaOuNada = (id: string): FormaDados | null => (S().temForma(id) ? S().forma(id) : null);
+/** imagem do avatar do jogador (uma forma do set ou um caminho) */
+export const avatarDe = (j: Pick<Jogador, 'avatar'>) => (formaOuNada(j.avatar) ? imgForma(j.avatar) : j.avatar ? urlImagem(j.avatar) : '');
 /** classes da forma que são traço de verdade (Únicos não é traço) */
 export const NOME_UNICOS = 'Únicos';
 export const ehOrigem = (id: string) => ['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'lol', 'overwatch', 'deadlock', 'sujimon'].includes(id);
 export const nomeTraco = (id: string) => (id === 'unicos' ? NOME_UNICOS : S().nomeTraco(id));
-/** cor do traço pra CSS: a da franquia pras origens */
-export const corTraco = (id: string): CSSProperties | undefined => (ehOrigem(id) ? ({ ['--tc' as string]: `var(--${id})` }) : undefined);
+/** Cor própria de cada classe e elemento (as origens usam a cor da franquia, a mesma do resto do site). */
+const COR_TRACO: Record<string, string> = {
+  tanque: '#8394a8', porradeiro: '#d26a2c', assassino: '#8e44c9', demoniacos: '#b02a43', 'criaturinha-bizarra': '#9bb32a',
+  fadinhas: '#ea7fc8', safada: '#e0447a', atirador: '#c9a03a', anjo: '#e4c55a', robo: '#3f9bb8', dragao: '#c43b2c',
+  temporais: '#6a6ce6', fogo: '#ff7022', agua: '#2e8cf0', terra: '#a77a42', vento: '#4ccfa0', raio: '#f0c419',
+  gelo: '#7ad3f2', planta: '#4caf3e',
+};
+/** cor do traço (valor CSS): a da franquia pras origens, a própria pras classes e elementos */
+export const corDoTraco = (id: string): string => (ehOrigem(id) ? `var(--${id})` : COR_TRACO[id] ?? 'var(--mute)');
+/** cor do traço pra CSS (`--tc`) */
+export const corTraco = (id: string): CSSProperties => ({ ['--tc' as string]: corDoTraco(id) });
 
-/** Retrato redondo (ou quadrado, com `quadrado`), com a imagem cobrindo. Imagem que falha some e fica a inicial. */
+/** Forma do degrau ativo: bronze, prata, ouro e prisma (o último degrau das escadas longas). null = inativo. */
+export type ClasseDegrau = 'bronze' | 'prata' | 'ouro' | 'prisma';
+export function classeDegrau(nivel: number, total: number): ClasseDegrau | null {
+  if (nivel < 0 || total <= 0) return null;
+  if (nivel >= total - 1) return total >= 4 ? 'prisma' : 'ouro';
+  const a = total > 1 ? nivel / (total - 1) : 1;
+  return a < 0.34 ? 'bronze' : a < 0.67 ? 'prata' : 'ouro';
+}
+
+/** Hexágono do traço: borda na forma do degrau (bronze, prata, ouro, prisma; cinza se inativo), miolo na cor do traço
+ *  e a contagem no meio. */
+export function MarcaDegrau({ id, n, nivel, total, className }: { id: string; n: number | string; nivel: number; total: number; className?: string }) {
+  const c = classeDegrau(nivel, total);
+  return (
+    <span className={'ab-marca-dg ' + (c ?? 'inativo') + (className ? ' ' + className : '')} style={corTraco(id)}>
+      <b>{n}</b>
+    </span>
+  );
+}
+
+/** Ícone do alcance: espada (corpo a corpo, alcance 1) ou arco (de longe, 2 ou mais). */
+export function IconeAlcance({ alcance, className }: { alcance: number; className?: string }) {
+  const longe = alcance > 1;
+  return (
+    <span className={'ab-alcance' + (longe ? ' longe' : ' perto') + (className ? ' ' + className : '')}
+      title={longe ? `Ataca de longe (${alcance} casas)` : 'Ataca de perto (corpo a corpo)'} aria-label={longe ? `de longe, ${alcance} casas` : 'corpo a corpo'}>
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        {longe
+          ? <path d="M5 2.5c4.5.8 7.7 4 8.5 8.5M5 2.5L3 13l10.5-2M3 13L12.5 3.5M10 3.5h2.5V6" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+          : <path d="M13.5 2.5l-.6 3L6.4 12 4 9.6l6.5-6.5zM3.2 10.4l2.4 2.4M2.3 13.7l1.8-1.8" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />}
+      </svg>
+    </span>
+  );
+}
+
+/** Retrato redondo (ou quadrado), com a imagem inteira (contain, sem cortar) sobre o fundo. Imagem que falha some e
+ *  fica a inicial. */
 export function Foto({ src, nome, className, style }: { src: string; nome: string; className?: string; style?: CSSProperties }) {
   return (
     <span className={'ab-foto' + (className ? ' ' + className : '')} style={style} data-ini={nome.slice(0, 1)}>
@@ -59,13 +116,16 @@ export function partesItem(id: string): Componente[] {
   if (ehComponente(id)) return [id];
   return id.split('+').filter(ehComponente);
 }
-function imgItem(id: string): string {
-  const b = ITENS[id]?.bakugan;
-  const url = b ? S().dados.bakugan[b] : undefined;
+/** Imagem do item: o Bakugan (completo) ou o símbolo do atributo (componente), de SetDados.bakugan. */
+export function imgItem(id: string): string {
+  const it = ITENS[id];
+  const chave = it?.bakugan ?? (ehComponente(id) ? it?.nome ?? NOME_COMPONENTE[id] : undefined);
+  const url = chave ? S().dados.bakugan[chave] : undefined;
   return url ? urlImagem(url) : '';
 }
 
-/** Ícone de item: a imagem do Bakugan (completo), ou um disco da cor do atributo com a inicial. */
+/** Ícone de item: componente = o símbolo do atributo num disco da cor dele; completo = a imagem do Bakugan inteira
+ *  (sem cortar) num quadradinho com a borda nas cores dos dois componentes. Sem imagem fica a inicial. */
 export function IconeItem({ id, className }: { id: string; className?: string }) {
   const partes = partesItem(id);
   const cores = partes.map(c => COR_COMPONENTE[c]);
@@ -73,7 +133,8 @@ export function IconeItem({ id, className }: { id: string; className?: string })
   const img = imgItem(id);
   const completo = partes.length > 1;
   return (
-    <span className={'ab-item' + (completo ? ' completo' : '') + (className ? ' ' + className : '')} style={{ background: fundo }} aria-label={nomeItem(id)}>
+    <span className={'ab-item' + (completo ? ' completo' : ' componente') + (className ? ' ' + className : '')}
+      style={{ background: fundo, ['--ic' as string]: cores[0] ?? 'var(--line)' }} aria-label={nomeItem(id)}>
       <b>{nomeItem(id).slice(0, 1)}</b>
       {img ? <img src={img} alt="" draggable={false} onError={e => { e.currentTarget.style.visibility = 'hidden'; }} /> : null}
     </span>

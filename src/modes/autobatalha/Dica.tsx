@@ -6,11 +6,12 @@ import type { Atributos, CampeaoDados, EstadoVisivel, Jogador, Partida, Unidade 
 import { S, urlImagem } from '../../autobatalha/dados';
 import { acoes } from '../../autobatalha/controle';
 import { atributosDaUnidade, separarId } from '../../autobatalha/combate';
-import { TRACOS, habilidadeDa, opcoesDeUlt } from '../../autobatalha/conteudo';
-import { fecharDica, useDica, type AlvoDica } from './interacao';
+import { TRACOS, habilidadeDa, opcoesDeUlt, passivaDe } from '../../autobatalha/conteudo';
+import { abrirImagem, fecharDica, useDica, useImagemGrande, type AlvoDica } from './interacao';
 import { lutadoresEm } from './reproducao';
 import {
-  Estrelas, Foto, IconeItem, Moeda, NOME_UNICOS, TextoPorEstrela, corTraco, custoAttr, formaOuNada, imgForma, nomeItem, nomeTraco, num, partesItem, pct, textoItem,
+  Estrelas, Foto, IconeAlcance, IconeItem, Moeda, NOME_UNICOS, TextoPorEstrela, corTraco, custoAttr, formaOuNada, imgForma, nomeItem, nomeTraco, num, partesItem,
+  pct, textoItem,
 } from './comum';
 
 export function Dica({ estado }: { estado: EstadoTela }) {
@@ -42,10 +43,25 @@ export function Dica({ estado }: { estado: EstadoTela }) {
   if (!d) return null;
   const corpo = conteudo(d.alvo, estado, d.fixa);
   if (!corpo) return null;
+  const retrato = d.alvo.tipo === 'unidade' || d.alvo.tipo === 'campeao' || d.alvo.tipo === 'lutador';
   return (
     <div ref={ref} id="abDica" className={'ab-dica ' + d.alvo.tipo + (d.fixa ? ' fixa' : '')} role="tooltip">
       {corpo}
+      <p className="ab-d-rodape">
+        {d.fixa ? `Fixa: Esc ou clique fora fecha${retrato ? '. Clique na imagem pra ver a arte grande' : ''}` : 'Botão direito deixa a dica fixa'}
+      </p>
     </div>
+  );
+}
+
+/** Foto da dica: com a dica fixa, clicar abre a arte em tamanho grande. */
+function FotoDica({ src, nome, fixa, className = 'ab-d-foto' }: { src: string; nome: string; fixa: boolean; className?: string }) {
+  if (!fixa || !src) return <Foto src={src} nome={nome} className={className} />;
+  return (
+    <button type="button" className="ab-d-foto-btn" title="Ver a arte grande" aria-label={`Ver a arte de ${nome} grande`}
+      onClick={() => abrirImagem({ src, nome })}>
+      <Foto src={src} nome={nome} className={className} />
+    </button>
   );
 }
 
@@ -77,7 +93,7 @@ function conteudo(alvo: AlvoDica, e: EstadoTela, fixa: boolean): ReactNode {
     }
     case 'campeao': {
       const u: Unidade = { uid: -1, campeao: alvo.campeao, estrela: alvo.estrela ?? 1, forma: alvo.forma, itens: [] };
-      return <DicaUnidade u={u} editavel={false} etiqueta={alvo.etiqueta ?? 'na loja: estrela 1'} segura={alvo.item} />;
+      return <DicaUnidade u={u} editavel={false} fixa={fixa} etiqueta={alvo.etiqueta ?? 'na loja: estrela 1'} segura={alvo.item} />;
     }
     case 'lutador': {
       const rep = e.reproducao;
@@ -86,11 +102,11 @@ function conteudo(alvo: AlvoDica, e: EstadoTela, fixa: boolean): ReactNode {
       const l = lutadoresEm(g, rep.t).find(x => x.id === alvo.id);
       if (!l) return null;
       const u = unidadeDoLutador(p, rep.adversario, l);
-      if (u && !l.monstro) return <DicaUnidade u={u} editavel={false} luta={l} />;
+      if (u && !l.monstro) return <DicaUnidade u={u} editavel={false} luta={l} fixa={fixa} />;
       const s = separarId(l.id);
       const m = s.invocado ? null : /^m(\d+)$/.exec(s.id);
       const mon = l.lado === 'b' && m ? p.monstros[Number(m[1])] : undefined;
-      return <DicaMonstro l={l} at={mon?.atributos ?? null} />;
+      return <DicaMonstro l={l} at={mon?.atributos ?? null} fixa={fixa} />;
     }
     case 'traco':
       return <DicaTraco id={alvo.id} n={alvo.n} nivel={alvo.nivel} />;
@@ -135,20 +151,25 @@ function DicaUnidade({ u, editavel, luta, fixa = false, etiqueta, segura }: {
   const ult = u.ult && ops.some(o => o.id === u.ult) ? u.ult : ops[0]?.id;
   const tracos = [f.fr, ...f.classes.filter(x => x !== f.fr)];
   const pos = u.posicao ?? 'ataque';
+  const passiva = tentar(() => passivaDe(u.campeao));
   return (
     <>
       <div className="ab-d-topo" {...custoAttr(c.custo)}>
-        <Foto src={luta ? urlImagem(luta.img) : imgForma(u.forma)} nome={f.nome} className="ab-d-foto" />
+        <FotoDica src={luta ? urlImagem(luta.img) : imgForma(u.forma)} nome={luta?.nome ?? f.nome} fixa={fixa} />
         <div className="ab-d-tit">
           <b className="ab-d-nome">{luta?.nome ?? f.nome}</b>
           <span className="ab-d-sub">
             <Estrelas n={u.estrela} />
             <span className="ab-d-custo" title="Custo"><Moeda />{c.custo}</span>
+            {at && <span className="ab-d-alcance"><IconeAlcance alcance={at.alcance} />{at.alcance > 1 ? `de longe (${at.alcance} casas)` : 'de perto'}</span>}
             {c.stand && <span className="ab-tag">Stand</span>}
             {etiqueta && <span className="ab-tag">{etiqueta}</span>}
           </span>
         </div>
       </div>
+      {passiva && (
+        <p className="ab-d-passiva"><b>Passiva: {passiva.nome}.</b> {passiva.texto}</p>
+      )}
       {segura && (
         <ul className="ab-d-itens ab-d-segura" aria-label="Item que vem junto">
           <li><IconeItem id={segura} /><span><b>Vem com {nomeItem(segura)}</b> (vai pros itens soltos). {textoItem(segura)}</span></li>
@@ -216,7 +237,7 @@ function Atribs({ at, luta }: { at: Atributos; luta?: EstadoVisivel }) {
     ['Armadura', num(at.armadura)],
     ['Resistência', num(at.resist)],
     ['Vel. ataque', num(at.velAtaque, 2)],
-    ['Alcance', num(at.alcance)],
+    ['Alcance', at.alcance > 1 ? `${num(at.alcance)} (longe)` : '1 (perto)'],
     ['Mana', luta ? `${num(luta.mana)} / ${num(luta.manaMax)}` : `${num(at.manaInicial)} / ${num(at.mana)}`],
     ['Crítico', `${pct(at.critChance)} (×${num(at.critDano, 2)})`],
   ];
@@ -283,11 +304,11 @@ function LinhaEvolutiva({ c, atual }: { c: CampeaoDados; atual: string }) {
   );
 }
 
-function DicaMonstro({ l, at }: { l: EstadoVisivel; at: Atributos | null }) {
+function DicaMonstro({ l, at, fixa }: { l: EstadoVisivel; at: Atributos | null; fixa: boolean }) {
   return (
     <>
       <div className="ab-d-topo monstro" {...custoAttr(l.custo)}>
-        <Foto src={urlImagem(l.img)} nome={l.nome} className="ab-d-foto" />
+        <FotoDica src={urlImagem(l.img)} nome={l.nome} fixa={fixa} />
         <div className="ab-d-tit">
           <b className="ab-d-nome">{l.nome}</b>
           <span className="ab-d-sub">
@@ -339,8 +360,32 @@ function DicaItem({ id }: { id: string }) {
       </div>
       <p className="ab-d-desc">{textoItem(id)}</p>
       {partes.length > 1 && <p className="mute ab-d-receita">{partes.map(nomeItem).join(' + ')}</p>}
-      {partes.length === 1 && <p className="mute ab-d-receita">Componente: arraste pra uma unidade. Dois componentes na mesma unidade viram um Bakugan completo.</p>}
+      {partes.length === 1 && (
+        <p className="mute ab-d-receita">
+          Componente: arraste pra uma unidade, ou solte em cima de outro componente nos itens soltos. Dois componentes viram um Bakugan completo.
+        </p>
+      )}
     </>
+  );
+}
+
+/** A arte em tamanho grande (clique na foto da dica fixa): fecha com Esc ou clique. */
+export function ImagemGrandeJanela() {
+  const img = useImagemGrande();
+  useEffect(() => {
+    if (!img) return;
+    const tecla = (e: KeyboardEvent) => { if (e.key === 'Escape') abrirImagem(null); };
+    document.addEventListener('keydown', tecla);
+    return () => document.removeEventListener('keydown', tecla);
+  }, [img]);
+  if (!img) return null;
+  return (
+    <div id="abImagem" className="ab-imagem" role="dialog" aria-modal="true" aria-label={img.nome} onClick={() => abrirImagem(null)}>
+      <figure>
+        <img src={img.src} alt={img.nome} />
+        <figcaption>{img.nome} <small>(clique ou Esc fecha)</small></figcaption>
+      </figure>
+    </div>
   );
 }
 

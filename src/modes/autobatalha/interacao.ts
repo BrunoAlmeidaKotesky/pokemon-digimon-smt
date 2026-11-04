@@ -1,6 +1,6 @@
 // Estado de interação da tela da Autobatalha, fora do React pra não redesenhar o jogo a cada movimento do mouse:
 // a dica (tooltip) aberta e o arrasto em andamento (pointer events, sem biblioteca).
-import { useSyncExternalStore, type PointerEvent as PointerReact } from 'react';
+import { useSyncExternalStore, type MouseEvent as MouseReact, type PointerEvent as PointerReact } from 'react';
 import type { Custo, Estrela } from '../../autobatalha/tipos';
 
 function loja<T>(inicial: T) {
@@ -53,7 +53,8 @@ export const useDica = () => useSyncExternalStore(dica.assinar, dica.get);
 export const dicaAtual = () => dica.get();
 export const alvoSobMouse = () => sob;
 
-/** onPointerEnter/onPointerLeave pra pôr num retrato */
+/** onPointerEnter/onPointerLeave pra pôr num retrato; o botão direito deixa a dica fixa (o esquerdo continua
+ *  comprando, arrastando ou pegando) */
 export function propsDica(alvo: AlvoDica) {
   return {
     onPointerEnter: (e: PointerReact<HTMLElement>) => {
@@ -64,12 +65,28 @@ export function propsDica(alvo: AlvoDica) {
       if (sob === alvo) sob = null;
       fecharDica();
     },
+    onContextMenu: (e: MouseReact<HTMLElement>) => {
+      e.preventDefault();
+      abrirDica(alvo, e.currentTarget, true);
+    },
   };
 }
 
+// ---------- traço em foco (passar o mouse num traço destaca as unidades dele) ----------
+const foco = loja<string | null>(null);
+export const useTracoEmFoco = () => useSyncExternalStore(foco.assinar, foco.get);
+export const focarTraco = (id: string | null) => { if (foco.get() !== id) foco.set(id); };
+
+// ---------- imagem grande (clicar na foto da dica fixa) ----------
+export interface ImagemGrande { src: string; nome: string }
+const imagem = loja<ImagemGrande | null>(null);
+export const useImagemGrande = () => useSyncExternalStore(imagem.assinar, imagem.get);
+export const abrirImagem = (x: ImagemGrande | null) => imagem.set(x);
+
 // ---------- arrastar ----------
 export type Carga =
-  | { tipo: 'unidade'; uid: number; img: string; custo: Custo; nome: string }
+  /** `venda` = valor de venda (aparece no que segue o mouse) */
+  | { tipo: 'unidade'; uid: number; img: string; custo: Custo; nome: string; venda?: number }
   | { tipo: 'item'; i: number; id: string };
 
 const arrasto = loja<Carga | null>(null);

@@ -1,32 +1,92 @@
 // Tela da Autobatalha (carregada sob demanda pela aba, src/modes/autobatalha/Autobatalha.tsx): início, partida e
 // fim. O estado da partida fica em src/autobatalha/controle.ts; a tela só lê EstadoTela e chama as ações
 // (src/autobatalha/api.ts). Design: docs/tft/autobatalha.md.
-import { useCallback, useEffect, useState } from 'react';
+//
+// A partida ocupa a janela inteira (abaixo das abas do site) e escala com ela: `--k` no #autobatalha (1 = 1280×720)
+// multiplica os tamanhos do CSS, e o tabuleiro mede o espaço que sobra pra escolher o tamanho das casas.
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { Segmented, Stepper, Switch } from '../../components/Controls';
-import type { EstadoTela, Velocidade } from '../../autobatalha/api';
-import type { Jogador, Partida as PartidaDados } from '../../autobatalha/tipos';
+import type { Config, EstadoTela, Velocidade } from '../../autobatalha/api';
+import type { CasaDono, Dificuldade, Jogador, Partida as PartidaDados } from '../../autobatalha/tipos';
+import { COLUNAS, LINHAS_DONO } from '../../autobatalha/tipos';
 import { setCarregado } from '../../autobatalha/dados';
-import { acoes, useAutobatalha } from '../../autobatalha/controle';
-import { limiteTabuleiro, rodadasDoEstagio, unidadesNoTabuleiro } from '../../autobatalha/partida';
+import { chave } from '../../autobatalha/hex';
+import { acoes, estadoAutobatalha, useAutobatalha } from '../../autobatalha/controle';
+import { humano, limiteTabuleiro, ondeEsta, rodadasDoEstagio, unidadesNoTabuleiro } from '../../autobatalha/partida';
 import { alvoSobMouse, fecharDica, propsDica } from './interacao';
-import { Dica } from './Dica';
-import { Banco, Fantasma, ItensSoltos, TabuleiroDono, TabuleiroLuta, lembrarVida } from './Tabuleiro';
+import { Dica, ImagemGrandeJanela } from './Dica';
+import {
+  Banco, DanoDaLuta, Fantasma, ItensSoltos, TabuleiroDono, TabuleiroLuta, atributosDe, ladoAdversario, lembrarVida, type Espaco, type LutaVista,
+} from './Tabuleiro';
 import { Loja } from './Loja';
 import { Jogadores, Tracos } from './Lateral';
 import { Planejador } from './Planejador';
 import { Carrossel } from './Carrossel';
-import { Foto, IconeRodada, formaOuNada, imgForma, nomeTraco, rotuloRodada } from './comum';
+import { Informacoes, type AbaInfo } from './Info';
+import { useSons } from './sons';
+import { Foto, IconeRodada, avatarDe, formaOuNada, imgForma, nomeTraco, rotuloRodada } from './comum';
 
 const VELOCIDADES: { value: Velocidade; label: string }[] = [{ value: 1, label: '1×' }, { value: 2, label: '2×' }, { value: 4, label: '4×' }];
+const DIFICULDADES: { value: Dificuldade; label: string }[] = [{ value: 'facil', label: 'Fácil' }, { value: 'normal', label: 'Normal' }, { value: 'dificil', label: 'Difícil' }];
 const FASE: Record<PartidaDados['fase'], string> = {
   carrossel: 'Carrossel', planejamento: 'Planejamento', luta: 'Luta', resultado: 'Resultado', fim: 'Fim',
 };
 
+/** Escala da aba pelo tamanho da janela: --k = 1 em 1280×720, até 2,4 (telas grandes). */
+function useEscala(): void {
+  useEffect(() => {
+    const el = document.getElementById('autobatalha');
+    if (!el) return;
+    const medir = () => {
+      const k = Math.min(2.4, Math.max(0.75, Math.min(window.innerWidth / 1280, window.innerHeight / 720)));
+      el.style.setProperty('--k', k.toFixed(3));
+    };
+    medir();
+    window.addEventListener('resize', medir);
+    return () => {
+      window.removeEventListener('resize', medir);
+      el.style.removeProperty('--k');
+    };
+  }, []);
+}
+
+/** Tamanho do conteúdo de um elemento (ResizeObserver); 0 × 0 até a primeira medida. */
+function useMedida(ref: RefObject<HTMLElement | null>): Espaco {
+  const [m, setM] = useState<Espaco>({ largura: 0, altura: 0 });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(entradas => {
+      const r = entradas[0]?.contentRect;
+      if (!r) return;
+      setM(x => (Math.abs(x.largura - r.width) < 1 && Math.abs(x.altura - r.height) < 1 ? x : { largura: r.width, altura: r.height }));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ref]);
+  return m;
+}
+
+/** último volume ouvido antes do mudo (o botão de mudo volta pra ele) */
+let volumeAntes = 0.6;
+function alternarMudo(v: number): void {
+  if (v > 0) {
+    volumeAntes = v;
+    acoes.configurar({ volume: 0 });
+  } else acoes.configurar({ volume: volumeAntes > 0 ? volumeAntes : 0.6 });
+}
+
 export function Conteudo() {
   const e = useAutobatalha();
   const [planejador, setPlanejador] = useState(false);
+  const [info, setInfo] = useState<{ aba?: AbaInfo; traco?: string } | null>(null);
+  const [config, setConfig] = useState(false);
   const abrirPlanejador = useCallback(() => setPlanejador(true), []);
   const fecharPlanejador = useCallback(() => setPlanejador(false), []);
+  const abrirInfo = useCallback((aba?: AbaInfo, traco?: string) => setInfo({ aba, traco }), []);
+  const fecharInfo = useCallback(() => setInfo(null), []);
+  useEscala();
+  useSons(e);
   useEffect(() => { void acoes.carregar(); }, []);
   // fechar a aba no meio de um arrasto ou com a dica aberta
   useEffect(() => () => fecharDica(0, true), []);
@@ -37,21 +97,93 @@ export function Conteudo() {
   return (
     <>
       {!p || !eu ? <Inicio e={e} abrirPlanejador={abrirPlanejador} /> : fim ? <Fim partida={p} eu={eu} /> : (
-        <Jogo e={e} p={p} eu={eu} abrirPlanejador={abrirPlanejador} />
+        <Jogo key={p.semente} e={e} p={p} eu={eu} abrirPlanejador={abrirPlanejador} abrirInfo={abrirInfo} abrirConfig={() => setConfig(true)} />
       )}
       {planejador && setCarregado() && <Planejador fechar={fecharPlanejador} />}
+      {info && setCarregado() && <Informacoes eu={eu ?? null} fechar={fecharInfo} aba={info.aba} traco={info.traco} />}
+      {config && <JanelaConfig cfg={e.config} fechar={() => setConfig(false)} />}
       {p && eu && !fim && p.fase !== 'carrossel' && <Janelas eu={eu} />}
       <Aviso texto={e.aviso} />
       <Fantasma />
       <Dica estado={e} />
+      <ImagemGrandeJanela />
     </>
+  );
+}
+
+// ---------- configuração ----------
+/** Relógio, velocidade, dificuldade e som. Na partida, a dificuldade vale pra próxima. */
+function PainelConfig({ cfg, naPartida }: { cfg: Config; naPartida: boolean }) {
+  return (
+    <div className="ab-config">
+      <Switch id="abRelogio" checked={cfg.relogio} onChange={v => acoes.configurar({ relogio: v })} title="Relógio no planejamento">
+        Desligado, a rodada espera você apertar Pronto.
+      </Switch>
+      <label className="ab-config-campo">
+        <span>Segundos de planejamento</span>
+        <Stepper id="abSegundos" value={cfg.segundos} min={10} max={120} disabled={!cfg.relogio} ariaLabel="Segundos de planejamento"
+          onChange={v => acoes.configurar({ segundos: v })} />
+      </label>
+      <div className="ab-config-campo">
+        <span>Velocidade da luta</span>
+        <Segmented id={naPartida ? 'abVelConfig' : 'abVelInicio'} ariaLabel="Velocidade da luta" value={cfg.velocidade} options={VELOCIDADES}
+          onChange={v => acoes.configurar({ velocidade: v })} />
+      </div>
+      <div className="ab-config-campo">
+        <span>Dificuldade dos bots{naPartida ? ' (vale na próxima partida)' : ''}</span>
+        <Segmented id="abDificuldade" ariaLabel="Dificuldade dos bots" value={cfg.dificuldade} options={DIFICULDADES}
+          onChange={v => acoes.configurar({ dificuldade: v })} />
+      </div>
+      <div className="ab-config-campo">
+        <span>Volume dos sons</span>
+        <span className="ab-volume">
+          <BotaoMudo volume={cfg.volume} id={naPartida ? 'abMudoConfig' : 'abMudoInicio'} />
+          <input id="abVolume" type="range" min={0} max={100} step={5} value={Math.round(cfg.volume * 100)} aria-label="Volume"
+            onChange={ev => acoes.configurar({ volume: Number(ev.target.value) / 100 })} />
+          <b>{Math.round(cfg.volume * 100)}%</b>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function BotaoMudo({ volume, id }: { volume: number; id: string }) {
+  const mudo = volume <= 0;
+  return (
+    <button type="button" id={id} className={'ab-ico ab-mudo' + (mudo ? ' on' : '')} aria-pressed={mudo}
+      title={mudo ? 'Ligar o som' : 'Desligar o som'} aria-label={mudo ? 'Ligar o som' : 'Desligar o som'} onClick={() => alternarMudo(volume)}>
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M3 8h3l4-3.5v11L6 12H3z" fill="currentColor" />
+        {mudo
+          ? <path d="M13 7.5l5 5M18 7.5l-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          : <path d="M13 7.2a4 4 0 0 1 0 5.6M15.3 5a7 7 0 0 1 0 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" />}
+      </svg>
+    </button>
+  );
+}
+
+function JanelaConfig({ cfg, fechar }: { cfg: Config; fechar: () => void }) {
+  useEffect(() => {
+    const tecla = (ev: KeyboardEvent) => { if (ev.key === 'Escape') fechar(); };
+    document.addEventListener('keydown', tecla);
+    return () => document.removeEventListener('keydown', tecla);
+  }, [fechar]);
+  return (
+    <div className="ab-sobreposto" onPointerDown={ev => { if (ev.target === ev.currentTarget) fechar(); }}>
+      <div id="abConfig" className="ab-janela ab-janela-config panel" role="dialog" aria-modal="true" aria-label="Configuração">
+        <div className="ab-janela-cab">
+          <h3>Configuração</h3>
+          <button type="button" id="abConfigFechar" className="btn mini" onClick={fechar}>Fechar</button>
+        </div>
+        <PainelConfig cfg={cfg} naPartida />
+      </div>
+    </div>
   );
 }
 
 // ---------- início ----------
 function Inicio({ e, abrirPlanejador }: { e: EstadoTela; abrirPlanejador: () => void }) {
   const pronto = !e.carregando && !e.erro && setCarregado();
-  const cfg = e.config;
   return (
     <div className="panel stack ab-inicio">
       <div>
@@ -73,28 +205,19 @@ function Inicio({ e, abrirPlanejador }: { e: EstadoTela; abrirPlanejador: () => 
         {e.temSalva && <button type="button" id="abContinuar" className="btn" disabled={!pronto} onClick={() => acoes.continuar()}>Continuar a partida salva</button>}
         <button type="button" id="abAbrirPlanejador" className="btn" disabled={!pronto} onClick={abrirPlanejador}>Planejador de times</button>
       </div>
-      <div className="ab-config">
-        <Switch id="abRelogio" checked={cfg.relogio} onChange={v => acoes.configurar({ relogio: v })} title="Relógio no planejamento">
-          Desligado, a rodada espera você apertar Pronto.
-        </Switch>
-        <label className="ab-config-campo">
-          <span>Segundos de planejamento</span>
-          <Stepper id="abSegundos" value={cfg.segundos} min={10} max={120} disabled={!cfg.relogio} ariaLabel="Segundos de planejamento"
-            onChange={v => acoes.configurar({ segundos: v })} />
-        </label>
-        <div className="ab-config-campo">
-          <span>Velocidade da luta</span>
-          <Segmented id="abVelInicio" ariaLabel="Velocidade da luta" value={cfg.velocidade} options={VELOCIDADES} onChange={v => acoes.configurar({ velocidade: v })} />
-        </div>
-      </div>
+      <PainelConfig cfg={e.config} naPartida={false} />
       <details className="ab-ajuda">
         <summary>Como jogar</summary>
         <ul>
           <li>Clique numa carta da loja pra comprar. Três cópias iguais viram uma de estrela acima (numa linha evolutiva, a forma seguinte).</li>
-          <li>Arraste do banco pro tabuleiro (o nível é o limite de unidades), entre casas, de volta pro banco ou pra loja (vende).</li>
-          <li>Arraste os itens soltos (Bakugan) pra uma unidade; dois componentes viram um item completo.</li>
-          <li>Passe o mouse em qualquer retrato pra ver atributos, habilidade, traços e a linha evolutiva.</li>
-          <li>Atalhos: <kbd>D</kbd> atualiza a loja, <kbd>F</kbd> compra XP, <kbd>E</kbd> vende a unidade debaixo do mouse.</li>
+          <li>Arraste do banco pro tabuleiro (o limite de unidades aparece em cima do tabuleiro), entre casas, de volta pro banco ou pra loja (vende).</li>
+          <li>Arraste os itens soltos (Bakugan, à esquerda do tabuleiro) pra uma unidade; um componente solto em cima de outro vira um item completo.</li>
+          <li>Passe o mouse em qualquer retrato pra ver atributos, habilidade, traços e a linha evolutiva; o botão direito deixa a dica fixa.</li>
+          <li>Moedas que caem no tabuleiro durante a luta ficam lá: passe o mouse em cima pra pegar.</li>
+          <li>
+            Atalhos: <kbd>D</kbd> atualiza a loja, <kbd>F</kbd> compra XP, <kbd>E</kbd> vende a unidade debaixo do mouse, <kbd>W</kbd> manda a
+            unidade debaixo do mouse do banco pro tabuleiro (ou de volta).
+          </li>
         </ul>
       </details>
     </div>
@@ -102,18 +225,55 @@ function Inicio({ e, abrirPlanejador }: { e: EstadoTela; abrirPlanejador: () => 
 }
 
 // ---------- partida ----------
-function Jogo({ e, p, eu, abrirPlanejador }: { e: EstadoTela; p: PartidaDados; eu: Jogador; abrirPlanejador: () => void }) {
+/** Ordem das colunas pra achar casa livre: do meio pras pontas. */
+const COLUNAS_DO_MEIO = Array.from({ length: COLUNAS }, (_, i) => i).sort((a, b) => Math.abs(a - (COLUNAS - 1) / 2) - Math.abs(b - (COLUNAS - 1) / 2) || a - b);
+
+/** Primeira casa livre pra unidade: corpo a corpo na frente, quem ataca de longe atrás; do meio pras pontas. */
+function casaLivre(j: Jogador, uid: number): CasaDono | null {
+  const u = j.unidades[uid];
+  const longe = u ? (atributosDe(u)?.alcance ?? 1) > 1 : false;
+  const linhas = Array.from({ length: LINHAS_DONO }, (_, i) => (longe ? LINHAS_DONO - 1 - i : i));
+  for (const lin of linhas) for (const col of COLUNAS_DO_MEIO) if (j.tabuleiro[chave({ col, lin })] == null) return { col, lin };
+  return null;
+}
+
+/** Tecla W: a unidade debaixo do mouse vai do banco pro tabuleiro (primeira casa livre) ou do tabuleiro pro banco. */
+function trocarComW(uid: number): void {
+  const p = estadoAutobatalha().partida;
+  if (!p) return;
+  const j = humano(p);
+  const onde = ondeEsta(j, uid);
+  if (onde?.tipo === 'banco') {
+    const casa = casaLivre(j, uid);
+    if (casa) acoes.mover(uid, { tipo: 'tabuleiro', casa });
+  } else if (onde?.tipo === 'tabuleiro') {
+    const i = j.banco.indexOf(null);
+    if (i >= 0) acoes.mover(uid, { tipo: 'banco', i });
+  }
+}
+
+function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
+  e: EstadoTela; p: PartidaDados; eu: Jogador; abrirPlanejador: () => void; abrirInfo: (aba?: AbaInfo, traco?: string) => void; abrirConfig: () => void;
+}) {
   const olhando = e.olhando && e.olhando !== p.voce ? p.jogadores.find(j => j.id === e.olhando) ?? null : null;
   const visto = olhando ?? eu;
   const rep = e.reproducao;
   const naLuta = !!rep && !olhando;
   const carrossel = p.fase === 'carrossel' && !olhando ? e.carrossel : null;
+  const palco = useRef<HTMLDivElement>(null);
+  const espaco = useMedida(palco);
+  // a última luta terminada, pro painel de dano (fica até a próxima terminar)
+  const [ultima, setUltima] = useState<LutaVista | null>(null);
+  if (rep?.acabou && ultima?.rep.resultado !== rep.resultado) {
+    setUltima({ rep, rotulo: `${p.estagio}-${p.rodada}`, adversario: ladoAdversario(p, rep.adversario).nome });
+  }
 
   // a vida no planejamento, pra mostrar no fim da luta quanto ela custou
   useEffect(() => { if (p.fase === 'planejamento') lembrarVida(p, eu.vida); });
-  // a partida ocupa a tela: rola até o topo dela ao começar
-  useEffect(() => { document.getElementById('autobatalha')?.scrollIntoView({ block: 'start' }); }, []);
-  // atalhos: D atualiza, F compra XP, E vende a unidade debaixo do mouse, Esc volta pro seu tabuleiro
+  // a partida ocupa a janela: volta pro topo da página
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+  // atalhos: D atualiza, F compra XP, E vende e W troca banco ⇄ tabuleiro a unidade debaixo do mouse, Esc volta pro
+  // seu tabuleiro
   useEffect(() => {
     const tecla = (ev: KeyboardEvent) => {
       const t = ev.target as HTMLElement | null;
@@ -124,10 +284,11 @@ function Jogo({ e, p, eu, abrirPlanejador }: { e: EstadoTela; p: PartidaDados; e
       const k = ev.key.toLowerCase();
       if (k === 'd') acoes.atualizarLoja();
       else if (k === 'f') acoes.comprarXp();
-      else if (k === 'e') {
+      else if (k === 'e' || k === 'w') {
         const a = alvoSobMouse();
         if (a?.tipo !== 'unidade' || !a.editavel) return;
-        acoes.vender(a.uid);
+        if (k === 'e') acoes.vender(a.uid);
+        else trocarComW(a.uid);
         fecharDica(0, true);
       } else if (k === 'escape') acoes.olhar(null);
       else return;
@@ -139,40 +300,64 @@ function Jogo({ e, p, eu, abrirPlanejador }: { e: EstadoTela; p: PartidaDados; e
 
   const noTab = unidadesNoTabuleiro(visto, false).length;
   const limite = limiteTabuleiro(visto);
+  const planejando = !naLuta && !carrossel;
+  const total = (p.estagio === 1 ? 2 / 3 : 1) * e.config.segundos;
   return (
     <div className={'ab-jogo fase-' + p.fase + (naLuta ? ' na-luta' : '') + (carrossel ? ' no-carrossel' : '')} data-fase={p.fase}>
-      <Topo e={e} p={p} abrirPlanejador={abrirPlanejador} />
-      <Tracos j={visto} />
+      <Topo e={e} p={p} abrirPlanejador={abrirPlanejador} abrirInfo={abrirInfo} abrirConfig={abrirConfig} />
+      <Tracos j={visto} eu={eu} abrirInfo={abrirInfo} />
       <div className="ab-centro">
+        <ItensSoltos j={visto} editavel={!olhando} />
         <div className="ab-area">
-          {naLuta ? <TabuleiroLuta partida={p} rep={rep} velocidade={e.config.velocidade} /> : carrossel ? <Carrossel c={carrossel} partida={p} /> : (
-            <>
-              <div className="ab-area-cab">
-                {olhando ? (
-                  <span className="ab-olhando">
-                    Tabuleiro de <b>{olhando.nome}</b> ({olhando.vida} de vida)
-                    <button type="button" id="abVoltar" className="btn mini" onClick={() => acoes.olhar(null)}>Voltar pro meu</button>
-                  </span>
-                ) : <span className="mute">Frente do seu lado (o adversário vem de cima)</span>}
-                <span id="abLimite" className={'ab-limite' + (noTab > limite ? ' acima' : noTab < limite ? ' sobra' : '')}
-                  title="Unidades no tabuleiro / limite do nível (Stands não contam)">{noTab}/{limite}</span>
-              </div>
-              <TabuleiroDono j={visto} editavel={!olhando && p.fase === 'planejamento'} />
-            </>
+          {planejando && (
+            <div className="ab-area-cab">
+              <span id="abLimite" className={'ab-limite' + (noTab > limite ? ' acima' : noTab < limite ? ' sobra' : '')}
+                title="Unidades no tabuleiro / limite (nível + 1; Stands não contam)">
+                <small>Unidades</small><b>{noTab}/{limite}</b>
+              </span>
+              {olhando ? (
+                <span className="ab-olhando">
+                  Tabuleiro de <b>{olhando.nome}</b> ({olhando.vida} de vida)
+                  <button type="button" id="abVoltar" className="btn mini" onClick={() => acoes.olhar(null)}>Voltar pro meu</button>
+                </span>
+              ) : <span className="ab-frente">Frente: o adversário vem de cima</span>}
+              {e.relogio != null && p.fase === 'planejamento' && !olhando
+                ? <Contagem s={Math.max(0, Math.ceil(e.relogio))} total={total} />
+                : <span className="ab-contagem-vazia" />}
+            </div>
           )}
+          <div className="ab-palco" ref={palco}>
+            {espaco.largura > 0 && (naLuta ? <TabuleiroLuta partida={p} rep={rep} velocidade={e.config.velocidade} espaco={espaco} />
+              : carrossel ? <Carrossel c={carrossel} partida={p} />
+                : <TabuleiroDono j={visto} editavel={!olhando && p.fase === 'planejamento'} espaco={espaco} />)}
+          </div>
         </div>
-        <div className="ab-baixo">
-          <Banco j={visto} editavel={!olhando} />
-          <ItensSoltos j={visto} editavel={!olhando} />
-        </div>
+        <Banco j={visto} editavel={!olhando} />
       </div>
-      <Jogadores partida={p} olhando={olhando?.id ?? null} />
+      <Jogadores partida={p} olhando={olhando?.id ?? null}>
+        {ultima && !(rep && !rep.acabou) && <DanoDaLuta luta={ultima} />}
+      </Jogadores>
       <Loja eu={eu} editavel={p.fase !== 'fim'} />
     </div>
   );
 }
 
-function Topo({ e, p, abrirPlanejador }: { e: EstadoTela; p: PartidaDados; abrirPlanejador: () => void }) {
+/** Contagem grande do planejamento, na área do tabuleiro: pulsa nos últimos 5 segundos. */
+function Contagem({ s, total }: { s: number; total: number }) {
+  const fim = s <= 5;
+  return (
+    <span id="abContagem" key={fim ? s : 'n'} className={'ab-contagem' + (fim ? ' fim' : '')} role="timer" aria-label={`${s} segundos pra luta`}
+      title="Segundos até a luta começar">
+      <small>luta em</small>
+      <b>{s}</b>
+      <i style={{ width: `${Math.max(0, Math.min(100, (s / Math.max(1, total)) * 100))}%` }} />
+    </span>
+  );
+}
+
+function Topo({ e, p, abrirPlanejador, abrirInfo, abrirConfig }: {
+  e: EstadoTela; p: PartidaDados; abrirPlanejador: () => void; abrirInfo: (aba?: AbaInfo) => void; abrirConfig: () => void;
+}) {
   const rodadas = rodadasDoEstagio(p.estagio);
   const rep = e.reproducao;
   const total = (p.estagio === 1 ? 2 / 3 : 1) * e.config.segundos;
@@ -204,7 +389,14 @@ function Topo({ e, p, abrirPlanejador }: { e: EstadoTela; p: PartidaDados; abrir
         </>
       )}
       {p.fase === 'planejamento' && <button type="button" id="abPronto" className="btn main" onClick={() => acoes.pronto()}>Pronto</button>}
+      <button type="button" id="abInfoBtn" className="btn" title="Traços, receitas dos Bakugan, chances da loja e regras" onClick={() => abrirInfo()}>Informações</button>
       <button type="button" id="abPlanejador" className="btn" onClick={abrirPlanejador}>Planejador</button>
+      <BotaoMudo volume={e.config.volume} id="abMudo" />
+      <button type="button" id="abConfigBtn" className="ab-ico ab-engrenagem" title="Configuração" aria-label="Configuração" onClick={abrirConfig}>
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M10 6.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8zm7.2 4.5l-1.6-.4a5.7 5.7 0 0 0 0-1.4l1.6-.4-.9-2.5-1.5.7a6 6 0 0 0-1-1l.7-1.5L12 3l-.4 1.6a5.7 5.7 0 0 0-1.4 0L9.7 3l-2.5.9.7 1.5a6 6 0 0 0-1 1l-1.5-.7-.9 2.5 1.6.4a5.7 5.7 0 0 0 0 1.4l-1.6.4.9 2.5 1.5-.7a6 6 0 0 0 1 1l-.7 1.5 2.5.9.4-1.6a5.7 5.7 0 0 0 1.4 0l.4 1.6 2.5-.9-.7-1.5a6 6 0 0 0 1-1l1.5.7z" fill="currentColor" fillRule="evenodd" />
+        </svg>
+      </button>
       <BotaoSair />
     </div>
   );
@@ -278,7 +470,7 @@ function Fim({ partida, eu }: { partida: PartidaDados; eu: Jogador }) {
       <ol className="ab-fim-lista">
         {ordem.map(j => (
           <li key={j.id} className={j.id === eu.id ? 'eu' : undefined}>
-            <Foto src={formaOuNada(j.avatar) ? imgForma(j.avatar) : ''} nome={j.nome} className="redonda" />
+            <Foto src={avatarDe(j)} nome={j.nome} className="redonda" />
             <span>{j.colocacao ? `${j.colocacao}º` : '—'}</span>
             <b>{j.nome}</b>
             <span className="mute">{j.vida > 0 ? `${j.vida} de vida` : 'eliminado'}</span>
