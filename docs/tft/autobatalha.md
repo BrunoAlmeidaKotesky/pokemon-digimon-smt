@@ -173,12 +173,16 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Dano na derrota:** base do estágio (2: 2, 3: 3, 4: 4, 5: 6, 6: 8, 7+: 11) + metade, arredondada pra cima, de (1
   por inimigo vivo + 1 por estrela acima da 1ª desses vivos). Contra monstros só a base (estágio 1 não tira vida). Com
   isso, partidas de 8 bots vão até o estágio 6 ou 7 (~35 rodadas; medido em src/autobatalha/integracao.test.ts).
-- **Ouro:** começa com 1. No começo de cada planejamento: 1-2 e 1-3 dão 2; do 2-1 em diante, 5 + juros (1 a cada 10,
-  até 5) + sequência (2–3 seguidas: +1; 4: +2; 5 ou mais: +3, de vitórias ou de derrotas). Vencer contra jogador: +1.
+- **Ouro** (mais generoso que o do gênero, porque o set tem muito mais campeões; pedido do usuário em 04/11): começa
+  com 1. No começo de cada planejamento: 1-2 e 1-3 dão 2; do 2-1 em diante, 6 + juros (1 a cada 10, até 5) + sequência
+  (2 seguidas: +1; 3: +2; 4: +3; 5 ou mais: +4, de vitórias ou de derrotas). Vencer contra jogador: +2.
+- **Ouro no chão:** alguns campeões derrubam moedas na luta (passiva no conteúdo). As do humano caem na metade dele do
+  tabuleiro e só viram ouro quando ele passa o mouse em cima (ficam de uma rodada pra outra); os bots recebem direto.
 - **Monstros:** vencer dá 1 componente + 1 de ouro (chefe: 2 componentes + 2 de ouro); perder dá 1 de ouro.
-- **Nível:** começa no 1; +2 de XP por rodada (a partir da 1-2); 4 de ouro = 4 XP. XP pro próximo nível: 2, 2, 6, 10,
-  20, 36, 48, 76, 84 (máximo 10). O nível é o limite de unidades no tabuleiro (Stands à parte). No começo da luta,
-  quem passar do limite volta pro banco, e vaga sobrando é preenchida com o banco.
+- **Nível:** começa no 1; +2 de XP por rodada (a partir da 1-2); 4 de ouro = 4 XP. XP pro próximo nível: 2, 2, 4, 8,
+  14, 24, 36, 56, 76, 96, 120 (máximo 12; mais barata nos níveis baixos e médios). O limite de unidades no tabuleiro é
+  o nível + 1 (Stands à parte). No começo da luta, quem passar do limite volta pro banco, e vaga sobrando é preenchida
+  com o banco.
 - **Loja:** 7 vagas, a última é a **vaga do time** (só campeões do custo sorteado que dividem origem ou classe com o
   seu tabuleiro). O custo de cada vaga sai da tabela do nível; dentro do custo, campeão que você já tem pesa 4 e os
   outros 1 (conta da loja em docs/tft/matematica). Atualizar: 2 de ouro; travar a loja; atualização grátis a cada
@@ -195,12 +199,18 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 | 8 | 18% | 25% | 32% | 22% | 3% |
 | 9 | 15% | 20% | 25% | 30% | 10% |
 | 10 | 5% | 10% | 20% | 40% | 25% |
+| 11 | 3% | 7% | 15% | 40% | 35% |
+| 12 | 2% | 5% | 13% | 35% | 45% |
 
 - **Pool compartilhado:** cópias de cada campeão por custo: 22, 20, 17, 10, 9. Vender devolve as cópias.
 - **Vender:** custo × cópias (1, 3, 9), menos 1 na estrela 2 ou 3 se o custo for 2 ou mais.
 - **Banco:** 9 vagas. Comprar com o banco cheio só se a compra fechar uma evolução.
+- **Dificuldade** (configuração, vale pra partida nova; padrão Fácil): no Fácil os bots sobem de nível um ponto
+  depois, rolam no máximo 2 vezes por rodada, às vezes compram ao acaso ou esquecem uma carta, posicionam e equipam
+  ao acaso; no Difícil sobem um nível antes e rolam até 20 vezes. Medido com 16 partidas cada: um jogador que joga
+  como o bot normal termina em média em 2,9º contra bots fáceis, 4,9º contra normais e 5,0º contra difíceis.
 - **Bots:** escolhem 1 ou 2 traços pelas primeiras unidades, compram o que encaixa ou evolui, sobem de nível em
-  pontos fixos (4 no 2-1, 5 no 2-5, 6 no 3-2, 7 no 4-1, 8 no 5-1), guardam 50 de ouro pelos juros e depois rolam;
+  pontos fixos (no normal: 4 no 2-1, 5 no 2-5, 6 no 3-2, 7 no 4-1, 8 no 5-1, 9 no 6-1, 10 no 7-1), guardam 50 de ouro pelos juros e depois rolam;
   tanques na frente, alcance atrás; itens no mais forte; Stand preso a um aliado qualquer.
 - **Salvar:** a partida é salva no localStorage (`pdx-autobatalha-v1`) no começo de cada planejamento (depois do
   carrossel: fechar a página no meio dele volta pro último planejamento salvo); os planos do planejador em
