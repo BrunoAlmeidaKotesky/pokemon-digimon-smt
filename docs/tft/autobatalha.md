@@ -102,7 +102,8 @@ desses).
 ## Traços (src/autobatalha/conteudo/tracos.ts)
 
 Conta campeões diferentes no tabuleiro (duas cópias do mesmo campeão contam uma vez), pela forma atual. Únicos não é
-traço. Escadas das classes 2/4/6 e dos elementos 2/3/4. As origens têm 5 degraus (6 nas maiores), pedido do usuário em
+traço. Escadas das classes 2/4/6 (Criaturinha Bizarra e Safada, as duas maiores, 3/5/7: pedido do usuário pra nem todo
+traço começar no 2) e dos elementos 2/3/4. As origens têm 5 degraus (6 nas maiores), pedido do usuário em
 04/11/2026, com as escadas da conta (docs/tft/matematica/resultado.md, seção 6b); o Pokémon, grande demais pra se
 igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
 
@@ -114,9 +115,9 @@ igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de bai
 | Porradeiro | (2) +15% de vida; (4) +30%, e abaixo de metade da vida causam 20% a mais; (6) +50%, e o resto do time ganha +10% de vida |
 | Assassino | saltam pra trás da linha inimiga. (2) +15% de chance e +15% de dano de crítico; (4) +30% e +30%; (6) +45% e +45%, e cada abate deixa 1 s sem poder ser alvo |
 | Demoníacos | (2) 10% de roubo de vida, e quando um Demoníaco morre os outros ganham 10% de dano; (4) 20% e 20%; (6) 25% e 25% |
-| Criaturinha Bizarra | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo); (4) o dobro; (6) 2,5 vezes e dois bônus |
+| Criaturinha Bizarra (3/5/7) | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo); (5) o dobro; (7) 2,5 vezes e dois bônus |
 | Fadinhas | a cada 4 s, cada Fadinha cura o aliado com menos vida em 4 / 8 / 14% da vida máxima dele |
-| Safada | os ataques têm 15 / 27 / 40% de chance de encantar o alvo por 1,5 s (atordoado) |
+| Safada (3/5/7) | os ataques têm 15 / 27 / 40% de chance de encantar o alvo por 1,5 s (atordoado) |
 | Atirador | +1 de alcance; cada ataque dá +3 / 6 / 8% de vel. ataque (até 15 vezes) |
 | Anjo | (2) o primeiro Anjo que morrer renasce com 40% da vida; (4) todos renascem uma vez com 50%; (6) com 80% |
 | Robô | +25 / 50 / 90% de armadura e escudo de 10 / 20 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |

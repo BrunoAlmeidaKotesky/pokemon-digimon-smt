@@ -143,7 +143,8 @@ const classes: Traco[] = [
     },
   },
   {
-    id: 'criaturinha-bizarra', nome: 'Criaturinha Bizarra', tipo: 'classe', degraus: [2, 4, 6],
+    // 3/5/7 (pedido do usuário em 04/11/2026: nem todo traço deve começar no 2; é a maior classe do set)
+    id: 'criaturinha-bizarra', nome: 'Criaturinha Bizarra', tipo: 'classe', degraus: [3, 5, 7],
     descricao: 'No começo da luta, cada uma ganha um bônus sorteado.',
     textos: [
       'No começo, cada uma ganha um bônus sorteado: escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura ' +
@@ -186,7 +187,8 @@ const classes: Traco[] = [
     },
   },
   {
-    id: 'safada', nome: 'Safada', tipo: 'classe', degraus: [2, 4, 6],
+    // 3/5/7 (pedido do usuário em 04/11/2026; a 2ª maior classe do set)
+    id: 'safada', nome: 'Safada', tipo: 'classe', degraus: [3, 5, 7],
     descricao: 'Os ataques encantam o alvo.',
     textos: SAFADA.map(v => `Os ataques têm ${pct(v)} de chance de encantar o alvo por ${num(SAFADA_CHARME)} s (atordoado).`),
     aoAtacar(ctx, n, de, alvo) {
