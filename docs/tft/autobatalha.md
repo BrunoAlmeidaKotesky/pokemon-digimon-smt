@@ -15,6 +15,7 @@ editar o arquivo citado.
 | Motor de combate e atributos | `src/autobatalha/combate/` |
 | Habilidades, traços e itens | `src/autobatalha/conteudo/` |
 | Partida: loja, economia, rodadas, bots, salvar | `src/autobatalha/partida/` e `src/autobatalha/controle.ts` |
+| Online (jogar com amigos): sala, protocolo, visão de cada um, convidado | `src/autobatalha/online/` e `src/autobatalha/sessao.ts` |
 | Tela | `src/modes/autobatalha/` |
 
 ## Set
@@ -165,7 +166,8 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 
 ## Partida (src/autobatalha/partida)
 
-- **8 jogadores**: você e 7 bots, 100 de vida cada. Acaba quando sobra um; a colocação é a ordem de eliminação.
+- **8 jogadores**: você e 7 bots (online: as pessoas da sala e bots nas vagas que sobram; seção "Online"), 100 de
+  vida cada. Acaba quando sobra um; a colocação é a ordem de eliminação.
 - **Rodadas:** estágio 1 = 1-1, 1-2, 1-3 contra monstros. Do estágio 2 em diante: x-1 a x-6 contra jogadores e x-7
   contra monstros (2-7 monstros comuns; 3-7 em diante um **chefe** do Final Fantasy, categoria Chefe, com escolta).
   Monstros e chefes sorteados a cada partida.
@@ -230,7 +232,7 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   carrossel: fechar a página no meio dele volta pro último planejamento salvo); os planos do planejador em
   `pdx-autobatalha-planos`; a configuração (regras da sala, as suas escolhas no lobby e as preferências) em
   `pdx-autobatalha-config` (config antiga, sem os campos do lobby, ganha os padrões). Chaves novas; as antigas do
-  site não mudam.
+  site não mudam. A partida online não é salva (nem apaga a solo salva).
 - **Jogadores e estilos:** cada jogador tem um ícone (`Jogador.avatar`, a imagem de uma forma) e um **estilo de
   tabuleiro** (`Jogador.estilo`, id de `src/autobatalha/estilos.ts`; partida salva antes disto = o padrão, o
   gramado). O humano leva o nome, o ícone e o estilo escolhidos no lobby (`novaPartida(semente, escolhas,
@@ -250,10 +252,10 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   segundos de planejamento e dificuldade dos bots: só o anfitrião muda, e a tela diz isso) e as **Suas preferências**
   (velocidade da luta e volume, só da sua tela). Embaixo: Planejador de times, "Continuar a partida salva" (se houver)
   e **Começar partida**, e o "Como jogar".
-- **Sala × jogador** (pensando num modo online): o contrato separa as `RegrasSala` (do anfitrião), as
-  `EscolhasJogador` (nome, ícone, estilo; tipos.ts) e as `Preferencias`; `EstadoTela.sala` tem a semente, o
-  anfitrião, você e os 8 `LugarSala`. Ações: `mudarRegras` (ignorada se você não for o anfitrião), `escolher` e
-  `configurar` (tudo salvo em `pdx-autobatalha-config`). Hoje o jogo é solo: você é sempre o anfitrião.
+- **Sala × jogador**: o contrato separa as `RegrasSala` (do anfitrião), as `EscolhasJogador` (nome, ícone,
+  estilo; tipos.ts) e as `Preferencias`; `EstadoTela.sala` tem a semente, o anfitrião, você e os 8 `LugarSala`.
+  Ações: `mudarRegras` (ignorada se você não for o anfitrião), `escolher` e `configurar` (tudo salvo em
+  `pdx-autobatalha-config`). No solo você é o anfitrião; online, quem criou a sala (seção "Online").
 - **Ícone** (Icones.tsx; lista e filtros em `src/autobatalha/icones.ts`): janela com a grade de todos os personagens
   do set (cada forma uma vez, inclusive as de transformação), retratos redondos com a arte inteira, borda da cor do
   custo; filtros por nome (sem acento), origem (botões nas cores das franquias) e custo. Clicar escolhe e fecha. O
@@ -350,3 +352,56 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   aparece com o avatar em cima da opção, que fica apagada. Ao lado, a ordem de escolha em duplas, com a vez atual, o
   tempo até cada dupla e o que cada um pegou. No meio, a sua situação ("Sua vez em 3 s", "Sua vez: clique num
   campeão", "Você pegou…") e quanto falta pra fechar.
+
+## Online (jogar com amigos; src/autobatalha/online)
+
+Pedido do usuário (prioridade): jogar com amigos, cada um no seu navegador. O solo continua igual, sem rede.
+
+- **Anfitrião autoritativo.** O navegador de quem cria a sala roda a partida de verdade: o mesmo controle do solo
+  (`controle.ts`, com os ganchos de `online/anfitriao.ts`), com o relógio, os bots nas vagas vazias, as lutas, o
+  carrossel e a votação do Pronto. Os convidados só mostram a visão deles e mandam ações. A tela fala com a sessão
+  (`sessao.ts`), que escolhe a fonte: o controle (solo e anfitrião) ou o convidado (`online/convidado.ts`).
+- **Rede.** O transporte da aba Online (`src/online/transport`): PeerJS no site e BroadcastChannel com
+  `?transporte=local` nos testes. O código da sala tem 4 letras; no transporte vira `ab-ABCD` (o id no PeerJS fica
+  `qvp-sala-ab-ABCD`), pra não bater com as salas da aba Online. O link é `?autobatalha=ABCD` (o `?sala=` continua
+  sendo da aba Online): abrir o link abre a aba Autobatalha e entra sozinho. Cada mensagem vai como texto JSON
+  (o empacotamento binário do PeerJS trocaria `undefined` por `null`, e a luta reproduzida tem de ver a mesma entrada).
+- **Lobby.** "Criar sala online" (bloco **Jogar com amigos**) mostra o código, o link (copiar, ou "Convidar" no
+  celular) e "Fechar a sala". Quem abre o link entra no primeiro lugar livre (o anfitrião é o `h1`, os convidados
+  `h2` a `h8`; até 8 pessoas), escolhe nome (vazio = "Jogador N"), ícone e tabuleiro, e todos veem. Só o anfitrião
+  muda as regras (relógio, segundos, dificuldade dos bots), tira alguém da sala (botão "Tirar", dois cliques) e
+  começa; as vagas que sobram até 8 viram bots. A partida em andamento não aceita gente nova (só quem volta).
+- **Versão.** O "ola" leva a versão do jogo: a do protocolo, a do código (carimbo do build, `__VERSAO_CODIGO__` no
+  vite.config.ts) e um hash do set1.json. Diferente = recusado com o aviso pra recarregar (os dois).
+- **Ações.** O convidado manda cada ação (comprar, vender, atualizar, XP, travar, mover, equipar, juntar itens, forma
+  da evolução, carrossel, moeda, ult, posição do Yu-Gi-Oh!, voto de pronto) sem dizer de quem é: o anfitrião aplica
+  no Jogador da conexão (`partida/acao.ts` confere a fase; as partes da partida conferem o resto) e manda o aviso
+  ("Ouro insuficiente") só pra ele. Olhar o tabuleiro dos outros é local.
+- **Visão de cada um** (`online/visao.ts`). O próprio Jogador inteiro; dos outros, o público (nome, ícone, estilo,
+  vida, nível, ouro, sequência, tabuleiro, banco e itens soltos), sem a loja e as escolhas de evolução. A partida vai
+  sem o pool e sem a semente (no lugar, um id da partida: com a semente dava pra prever a loja). O anfitrião junta as
+  mudanças de ~40 ms e manda só o que mudou pra cada um: a parte comum da partida, se mudou, e os jogadores que
+  mudaram.
+- **Tempo.** O relógio é do anfitrião: cada mensagem leva quanto falta do planejamento e o tempo do carrossel, e o
+  convidado conta daí (a rede atrasa uns milissegundos; quem decide o fim é o anfitrião). A votação do Pronto é a
+  mesma do solo: cada humano vota da sua tela, os bots votam ao jogar, todos os vivos prontos = a luta começa.
+- **Luta.** O anfitrião simula todas sem gravar e manda a cada humano só `{ entradaA, entradaB, semente }` da luta
+  dele; o navegador do convidado roda o mesmo motor gravando e mostra (mesmo código e mesmo set = a mesma luta;
+  `online/luta.test.ts` confere com o set de verdade, pela rede, dos dois lados). Quem está no lado B vê a luta
+  espelhada: giro de 180° no tabuleiro e lados trocados, com o time dele embaixo como sempre. Cada um vê na
+  velocidade dele e avisa quando terminou (ou pulou); a rodada segue quando todos os humanos viram, ou no limite (a
+  luta mais longa em 1× + a apresentação + 4 s).
+- **Queda.** O convidado que cai (ou fecha a aba) fica **fora do ar** (`Jogador.ausente`, uma marca "bot" na lista
+  de jogadores): um bot joga o planejamento dele, vota pronto, pega no carrossel e a luta não espera por ele. Ele
+  volta pro mesmo lugar abrindo o link de novo no mesmo aparelho (a senha do aparelho fica em
+  `pdx-autobatalha-aparelho`; só ele e o anfitrião sabem) ou, de outro aparelho, com o mesmo nome que tinha na
+  partida. A conexão tem ping (4 s; cai sem notícia em 12 s) e o convidado tenta voltar sozinho por uns 50 s. No
+  lobby, quem cai sai da sala.
+- **Anfitrião.** Se a página do anfitrião fechar, a sala acaba e todos veem o aviso (não há troca de anfitrião). Ele
+  deve deixar a aba aberta (de preferência visível: aba escondida tem os relógios do navegador mais lentos) até o
+  fim, mesmo eliminado: a tela de colocação avisa isso. "Sair" na partida, pro anfitrião, acaba a partida pra todos e
+  volta pra sala; pro convidado, sai da sala (um bot fica no lugar). No fim, o anfitrião joga de novo com a mesma
+  sala ou volta pro lobby. Eliminado, cada um vê a colocação e o placar ao vivo até a partida acabar.
+- **Testes.** Vitest em `src/autobatalha/online/` (protocolo, visão, sala de ponta a ponta com um transporte de
+  mentira: ação só do dono, voto, luta igual nos dois lados, limite da luta, queda e volta, tirar, fechar, relógio e
+  carrossel) e Playwright em `tests/autobatalha-online.spec.ts` (3 abas com o transporte local).

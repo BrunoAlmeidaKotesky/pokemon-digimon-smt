@@ -1,11 +1,13 @@
-// Interface entre a tela (src/modes/autobatalha) e o controle da partida (src/autobatalha/controle.ts).
-// O controle guarda a partida em andamento, roda o relógio, os bots e as lutas, e avisa a tela a cada mudança
-// (useSyncExternalStore, como src/state/app.ts). A tela só lê EstadoTela e chama Acoes.
+// Interface entre a tela (src/modes/autobatalha) e quem roda a partida. A tela lê EstadoTela e chama Acoes pela
+// sessão (src/autobatalha/sessao.ts), que escolhe a fonte: o controle (src/autobatalha/controle.ts: solo, ou o
+// anfitrião de uma sala online, que roda a partida de verdade) ou o convidado (src/autobatalha/online/convidado.ts: a
+// partida vem do anfitrião pela rede e as ações vão pra ele). Os dois avisam a tela a cada mudança
+// (useSyncExternalStore, como src/state/app.ts).
 import type { Dificuldade, EscolhasJogador, LugarSala, OpcaoCarrossel, Onde, Partida, ResultadoLuta } from './tipos';
 
 export type Velocidade = 1 | 2 | 4;
 
-/** Regras da sala: valem pra partida inteira e só o anfitrião muda (num modo online, valeriam pra todos). */
+/** Regras da sala: valem pra partida inteira e só o anfitrião muda (online, valem pra todos da sala). */
 export interface RegrasSala {
   /** relógio da fase de planejamento ligado (senão espera todos votarem "Pronto") */
   relogio: boolean;
@@ -34,8 +36,23 @@ export interface EstadoSala {
   anfitriao: string;
   /** id do jogador desta tela */
   voce: string;
-  /** os 8 lugares: você primeiro, depois os bots */
+  /** os 8 lugares: os humanos (no solo, só você) e depois os bots */
   lugares: LugarSala[];
+}
+
+/** A sala online desta tela (null = solo). Docs: docs/tft/autobatalha.md, seção "Online". */
+export interface EstadoOnline {
+  /** quem criou a sala roda a partida; os convidados recebem a visão deles */
+  papel: 'anfitriao' | 'convidado';
+  /** código de 4 letras ('' enquanto a sala é criada) */
+  codigo: string;
+  /** link pra mandar pros amigos ('' enquanto a sala é criada) */
+  link: string;
+  situacao: 'conectando' | 'na-sala' | 'reconectando' | 'encerrada';
+  /** aviso da conexão (reconectando, sem servidor de convites) ou o motivo de a sala ter acabado */
+  aviso: string;
+  /** a sua página e a do anfitrião estão em versões diferentes do jogo (recarregar resolve) */
+  versaoDiferente?: boolean;
 }
 
 export interface Reproducao {
@@ -101,6 +118,8 @@ export interface EstadoTela {
   olhando: string | null;
   /** última mensagem curta pro jogador ("Banco cheio", "Ouro insuficiente") */
   aviso: string | null;
+  /** sala online (null = solo) */
+  online: EstadoOnline | null;
 }
 
 export interface Acoes {
@@ -148,4 +167,16 @@ export interface Acoes {
   escolher(c: Partial<EscolhasJogador>): void;
   /** mostra o tabuleiro de outro jogador (null = volta pro seu) */
   olhar(id: string | null): void;
+}
+
+/** O que a sessão (sessao.ts) acrescenta pra sala online. */
+export interface AcoesOnline {
+  /** cria a sala online (você vira o anfitrião) e mostra o link pros amigos */
+  jogarComAmigos(): void;
+  /** entra na sala do código como convidado (o link ?autobatalha=ABCD chama sozinho) */
+  entrarNaSala(codigo: string): void;
+  /** convidado: sai da sala; anfitrião: fecha a sala pra todos. Depois de a sala acabar, volta pro solo */
+  sairDaSala(): void;
+  /** anfitrião: tira um convidado da sala (na partida, um bot fica no lugar dele) */
+  expulsar(id: string): void;
 }

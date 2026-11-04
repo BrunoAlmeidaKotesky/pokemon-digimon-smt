@@ -7,7 +7,7 @@ import type { CSSProperties } from 'react';
 import type { EstadoCarrossel } from '../../autobatalha/api';
 import type { Jogador, OpcaoCarrossel, Partida } from '../../autobatalha/tipos';
 import { S } from '../../autobatalha/dados';
-import { acoes } from '../../autobatalha/controle';
+import { acoes } from '../../autobatalha/sessao';
 import { propsDica } from './interacao';
 import { avatarDe } from './Lateral';
 import { Foto, IconeItem, custoAttr, formaOuNada, imgForma, nomeItem } from './comum';

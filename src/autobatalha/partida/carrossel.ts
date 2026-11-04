@@ -188,7 +188,8 @@ function pegarBot(p: Partida, j: Jogador, rng: Rng): void {
   levar(p, j, melhores[rng.int(melhores.length)]!);
 }
 
-/** Libera o próximo grupo: os bots dele pegam na hora. false = não havia grupo pra liberar. */
+/** Libera o próximo grupo: os bots dele (e os humanos fora do ar, que um bot joga por eles) pegam na hora. false = não
+ *  havia grupo pra liberar. */
 export function liberarProximoGrupo(p: Partida): boolean {
   const c = p.carrossel;
   if (!c || c.liberados >= c.grupos.length) return false;
@@ -197,7 +198,7 @@ export function liberarProximoGrupo(p: Partida): boolean {
   const rng = rngDa(p);
   for (const id of grupo) {
     const j = jogadorDe(p, id);
-    if (j.bot && estaVivo(j)) pegarBot(p, j, rng);
+    if ((j.bot || j.ausente) && estaVivo(j)) pegarBot(p, j, rng);
   }
   return true;
 }

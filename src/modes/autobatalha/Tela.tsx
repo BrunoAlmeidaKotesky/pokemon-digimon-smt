@@ -1,18 +1,19 @@
 // Tela da Autobatalha (carregada sob demanda pela aba, src/modes/autobatalha/Autobatalha.tsx): lobby (Lobby.tsx),
-// partida e fim. O estado da partida fica em src/autobatalha/controle.ts; a tela só lê EstadoTela e chama as ações
+// partida e fim. O estado vem da sessão (src/autobatalha/sessao.ts: o controle no solo e no anfitrião online, ou o
+// convidado online); a tela só lê EstadoTela e chama as ações
 // (src/autobatalha/api.ts). Design: docs/tft/autobatalha.md.
 //
 // A partida ocupa a janela inteira (abaixo das abas do site) e escala com ela: `--k` no #autobatalha (1 = 1280×720)
 // multiplica os tamanhos do CSS, e o tabuleiro mede o espaço que sobra pra escolher o tamanho das casas.
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { Segmented } from '../../components/Controls';
-import type { EstadoTela, EstadoVotacao } from '../../autobatalha/api';
+import type { EstadoOnline, EstadoTela, EstadoVotacao } from '../../autobatalha/api';
 import type { CasaDono, Jogador, Partida as PartidaDados } from '../../autobatalha/tipos';
 import { COLUNAS, LINHAS_DONO } from '../../autobatalha/tipos';
 import { setCarregado } from '../../autobatalha/dados';
 import { chave } from '../../autobatalha/hex';
-import { acoes, estadoAutobatalha, useAutobatalha } from '../../autobatalha/controle';
-import { humano, limiteTabuleiro, ondeEsta, rodadasDoEstagio, unidadesNoTabuleiro } from '../../autobatalha/partida';
+import { acoes, estadoAutobatalha, useAutobatalha } from '../../autobatalha/sessao';
+import { estaVivo, humano, limiteTabuleiro, ondeEsta, rodadasDoEstagio, unidadesNoTabuleiro } from '../../autobatalha/partida';
 import { alvoSobMouse, fecharDica, propsDica } from './interacao';
 import { Dica, ImagemGrandeJanela } from './Dica';
 import {
@@ -26,7 +27,7 @@ import { Carrossel } from './Carrossel';
 import { Informacoes, type AbaInfo } from './Info';
 import { useSons } from './sons';
 import { BotaoMudo, JanelaConfig, VELOCIDADES } from './Configuracao';
-import { Lobby } from './Lobby';
+import { Coroa, Lobby } from './Lobby';
 import { Foto, IconeRodada, avatarDe, estiloDe, formaOuNada, imgForma, nomeTraco, rotuloRodada } from './comum';
 
 const FASE: Record<PartidaDados['fase'], string> = {
@@ -84,11 +85,15 @@ export function Conteudo() {
   useEffect(() => () => fecharDica(0, true), []);
   const p = e.partida;
   const eu = p?.jogadores.find(j => j.id === p.voce);
-  // eliminado, o placar da última luta ainda aparece; o controle passa pra 'fim' depois
-  const fim = p?.fase === 'fim';
+  const on = e.online;
+  // eliminado, o placar da última luta ainda aparece; no solo o controle passa pra 'fim' depois. Online, a partida
+  // continua pros outros: quem saiu vê a colocação (e o placar ao vivo) enquanto ela corre.
+  const fora = !!on && !!p && !!eu && p.fase !== 'fim' && !estaVivo(eu) && !e.reproducao;
+  const fim = p?.fase === 'fim' || fora;
   return (
     <>
-      {!p || !eu ? <Lobby e={e} abrirPlanejador={abrirPlanejador} /> : fim ? <Fim partida={p} eu={eu} /> : (
+      {on && <FaixaOnline on={on} />}
+      {!p || !eu ? <Lobby e={e} abrirPlanejador={abrirPlanejador} /> : fim ? <Fim partida={p} eu={eu} online={on} /> : (
         <Jogo key={p.semente} e={e} p={p} eu={eu} abrirPlanejador={abrirPlanejador} abrirInfo={abrirInfo} abrirConfig={() => setConfig(true)} />
       )}
       {planejador && setCarregado() && <Planejador fechar={fecharPlanejador} />}
@@ -96,6 +101,7 @@ export function Conteudo() {
       {config && <JanelaConfig e={e} fechar={() => setConfig(false)} />}
       {p && eu && !fim && p.fase !== 'carrossel' && <Janelas eu={eu} />}
       <Aviso texto={e.aviso} />
+      {on?.situacao === 'encerrada' && <SalaEncerrada on={on} />}
       <Fantasma />
       <Dica estado={e} />
       <ImagemGrandeJanela />
@@ -256,6 +262,12 @@ function Topo({ e, p, abrirPlanejador, abrirInfo, abrirConfig }: {
         ))}
       </ol>
       <span className="ab-fase">{FASE[p.fase]}</span>
+      {e.online && (
+        <span id="abSalaTopo" className={'ab-sala-topo' + (e.online.situacao === 'reconectando' ? ' caiu' : '')}
+          title={e.online.papel === 'anfitriao' ? 'Você é o anfitrião: a partida de todos roda nesta página (deixe ela aberta)' : 'Partida online'}>
+          {e.online.papel === 'anfitriao' && <Coroa />}Sala <b>{e.online.codigo}</b>
+        </span>
+      )}
       {e.relogio != null && (
         <span id="abRelogioTopo" className={'ab-relogio' + (e.relogio <= 5 ? ' fim' : '')} title="Tempo de planejamento">
           <b>{Math.max(0, Math.ceil(e.relogio))}</b>s
@@ -278,7 +290,7 @@ function Topo({ e, p, abrirPlanejador, abrirInfo, abrirConfig }: {
           <path d="M10 6.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8zm7.2 4.5l-1.6-.4a5.7 5.7 0 0 0 0-1.4l1.6-.4-.9-2.5-1.5.7a6 6 0 0 0-1-1l.7-1.5L12 3l-.4 1.6a5.7 5.7 0 0 0-1.4 0L9.7 3l-2.5.9.7 1.5a6 6 0 0 0-1 1l-1.5-.7-.9 2.5 1.6.4a5.7 5.7 0 0 0 0 1.4l-1.6.4.9 2.5 1.5-.7a6 6 0 0 0 1 1l-.7 1.5 2.5.9.4-1.6a5.7 5.7 0 0 0 1.4 0l.4 1.6 2.5-.9-.7-1.5a6 6 0 0 0 1-1l1.5.7z" fill="currentColor" fillRule="evenodd" />
         </svg>
       </button>
-      <BotaoSair />
+      <BotaoSair online={e.online} />
     </div>
   );
 }
@@ -304,13 +316,39 @@ function Votacao({ v }: { v: EstadoVotacao | null }) {
   );
 }
 
-function BotaoSair() {
+function BotaoSair({ online }: { online: EstadoOnline | null }) {
   const [conf, setConf] = useState(false);
+  // online: o convidado sai da sala (um bot joga no lugar dele); o anfitrião acaba a partida pra todos (a sala fica)
+  const [titulo, confirmar] = !online ? ['Abandonar a partida e voltar pro início', 'Confirmar: abandonar']
+    : online.papel === 'convidado' ? ['Sair da sala (um bot joga no seu lugar até o fim)', 'Confirmar: sair da sala']
+      : ['Acabar a partida pra todos e voltar pra sala', 'Confirmar: acabar pra todos'];
   return (
     <button type="button" id="abSair" className={'btn' + (conf ? ' danger' : '')} onBlur={() => setConf(false)}
-      title="Abandonar a partida e voltar pro início" onClick={() => (conf ? acoes.abandonar() : setConf(true))}>
-      {conf ? 'Confirmar: abandonar' : 'Sair'}
+      title={titulo} onClick={() => (conf ? acoes.abandonar() : setConf(true))}>
+      {conf ? confirmar : 'Sair'}
     </button>
+  );
+}
+
+/** Aviso da conexão da sala online (reconectando, sem servidor de convites), em cima de tudo. */
+function FaixaOnline({ on }: { on: EstadoOnline }) {
+  if (on.situacao === 'encerrada' || !on.aviso) return null;
+  return <div id="abOnlineAviso" className={'ab-online-aviso' + (on.situacao === 'reconectando' ? ' caiu' : '')} role="status">{on.aviso}</div>;
+}
+
+/** A sala acabou (o anfitrião saiu, tirou você, a conexão não voltou) ou não deu pra criar: o motivo e voltar pro solo. */
+function SalaEncerrada({ on }: { on: EstadoOnline }) {
+  return (
+    <div className="ab-sobreposto">
+      <div id="abSalaEncerrada" className="ab-janela panel" role="alertdialog" aria-modal="true" aria-label="A sala acabou">
+        <h3>{on.papel === 'anfitriao' && !on.codigo ? 'Não deu pra criar a sala' : 'A sala acabou'}</h3>
+        <p id="abSalaMotivo">{on.aviso}</p>
+        <div className="ab-inicio-acoes">
+          {on.versaoDiferente && <button type="button" className="btn" onClick={() => location.reload()}>Recarregar a página</button>}
+          <button type="button" id="abSalaVoltar" className="btn main" onClick={() => acoes.sairDaSala()}>Voltar pro jogo sozinho</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -365,12 +403,20 @@ function Aviso({ texto }: { texto: string | null }) {
 }
 
 // ---------- fim ----------
-function Fim({ partida, eu }: { partida: PartidaDados; eu: Jogador }) {
+function Fim({ partida, eu, online }: { partida: PartidaDados; eu: Jogador; online: EstadoOnline | null }) {
   const col = eu.colocacao ?? partida.jogadores.filter(j => j.vida > eu.vida).length + 1;
   const ordem = [...partida.jogadores].sort((a, b) => (a.colocacao ?? 0) - (b.colocacao ?? 0) || b.vida - a.vida);
+  const acabou = partida.fase === 'fim';
   return (
-    <div id="abFim" className="panel stack ab-fim">
-      <h2>{col === 1 ? 'Você venceu a partida!' : `Você ficou em ${col}º lugar`}</h2>
+    <div id="abFim" className="panel stack ab-fim" data-acabou={acabou}>
+      <h2>{!acabou ? `Você foi eliminado: ${col}º lugar` : col === 1 ? 'Você venceu a partida!' : `Você ficou em ${col}º lugar`}</h2>
+      {!acabou && (
+        <p id="abFimSegue" className="mute">
+          A partida continua pros outros{online?.papel === 'anfitriao'
+            ? ': deixe esta página aberta até ela acabar, porque é ela que roda a partida de todos.'
+            : '. O placar aqui embaixo vai mudando até o fim.'}
+        </p>
+      )}
       <ol className="ab-fim-lista">
         {ordem.map(j => (
           <li key={j.id} className={j.id === eu.id ? 'eu' : undefined}>
@@ -382,8 +428,24 @@ function Fim({ partida, eu }: { partida: PartidaDados; eu: Jogador }) {
         ))}
       </ol>
       <div className="ab-inicio-acoes">
-        <button type="button" id="abDeNovo" className="btn main" onClick={() => acoes.novaPartida()}>Jogar de novo</button>
-        <button type="button" id="abVoltarInicio" className="btn" onClick={() => acoes.abandonar()}>Voltar ao início</button>
+        {!online && (
+          <>
+            <button type="button" id="abDeNovo" className="btn main" onClick={() => acoes.novaPartida()}>Jogar de novo</button>
+            <button type="button" id="abVoltarInicio" className="btn" onClick={() => acoes.abandonar()}>Voltar ao início</button>
+          </>
+        )}
+        {online?.papel === 'anfitriao' && acabou && (
+          <>
+            <button type="button" id="abDeNovo" className="btn main" onClick={() => acoes.novaPartida()}>Jogar de novo com a sala</button>
+            <button type="button" id="abVoltarInicio" className="btn" onClick={() => acoes.abandonar()}>Voltar pra sala</button>
+          </>
+        )}
+        {online?.papel === 'convidado' && (
+          <>
+            {acabou && <span id="abEsperandoAnfitriao" className="mute">Esperando o anfitrião começar outra partida…</span>}
+            <button type="button" id="abSairSalaFim" className="btn" onClick={() => acoes.sairDaSala()}>Sair da sala</button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -235,6 +235,18 @@
 .ab-lugar .estilo{display:grid;justify-items:center;gap:1px}
 .ab-lugar .estilo small{font-size:10px;color:var(--mute);white-space:nowrap}
 .ab-lugar .ab-mini-tab{width:54px;height:32px;border-radius:5px}
+/* sala online: quem caiu, tirar da sala (anfitrião), o bloco "Jogar com amigos" com o código e o link */
+.ab-lugar:has(.ab-tirar){grid-template-columns:40px minmax(0,1fr) auto auto}
+.ab-lugar.fora-do-ar{opacity:.6}
+.ab-tag.fora,.ab-tag.ausente{color:var(--bad);border-color:color-mix(in srgb, var(--bad) 55%, transparent)}
+.ab-amigos{display:grid;gap:8px;margin-top:4px;padding-top:10px;border-top:1px solid var(--line)}
+.ab-amigos h4{display:flex;align-items:baseline;gap:8px;margin:0;font:700 13px var(--display);text-transform:uppercase;letter-spacing:.7px;color:var(--mute)}
+.ab-amigos p{margin:0;font-size:13px}
+.ab-amigos>.btn{justify-self:start}
+.ab-codigo{font:800 22px var(--display);letter-spacing:3px;color:var(--fg);text-transform:none}
+.ab-amigos-link{display:flex;flex-wrap:wrap;gap:6px}
+.ab-amigos-link input{flex:1 1 160px;min-width:0;font-size:12px}
+.ab-esperando{font:600 15px var(--display);color:var(--mute)}
 /* prévia do estilo do tabuleiro: o chão e umas casas (as cores vêm do data-estilo) */
 .ab-mini-tab{display:block;position:relative;overflow:hidden;width:100px;height:60px;border-radius:7px;border:1px solid var(--campo-borda);
   background:var(--campo-padrao), repeating-linear-gradient(90deg, var(--campo1) 0 10px, var(--campo2) 10px 20px)}
@@ -306,6 +318,10 @@ body:has(#autobatalha .ab-jogo) nav button{padding:8px 11px;font-size:12px;white
 .ab-ic-rodada.chefe{color:var(--gold)}
 .ab-rodadas li.atual .ab-ic-rodada{color:inherit}
 .ab-fase{font:600 calc(12 * var(--u)) var(--display);text-transform:uppercase;letter-spacing:.7px;color:var(--mute)}
+.ab-sala-topo{display:inline-flex;align-items:center;gap:calc(4 * var(--u));padding:calc(2 * var(--u)) calc(8 * var(--u));border:1px solid var(--line);border-radius:999px;font:600 calc(12 * var(--u)) var(--display);color:var(--mute)}
+.ab-sala-topo b{color:var(--fg);letter-spacing:1px}
+.ab-sala-topo .ab-coroa{width:calc(12 * var(--u));height:calc(12 * var(--u))}
+.ab-sala-topo.caiu{border-color:var(--bad);color:var(--bad)}
 .ab-relogio{position:relative;display:inline-flex;align-items:baseline;gap:1px;min-width:calc(56 * var(--u));padding-bottom:calc(5 * var(--u));font:600 calc(13 * var(--u)) var(--display);color:var(--mute)}
 .ab-relogio b{font-size:calc(20 * var(--u));color:var(--fg)}
 .ab-relogio i{position:absolute;left:0;bottom:0;height:3px;border-radius:2px;background:var(--fg);transition:width .25s linear}
@@ -489,6 +505,8 @@ body.ab-arrastando .ab-vaga[data-solta]{border-color:color-mix(in srgb, var(--go
 .ab-jog .ab-jog-pronto{position:absolute;left:calc(24 * var(--u));top:calc(18 * var(--u));z-index:1;display:grid;place-items:center;width:calc(14 * var(--u));height:calc(14 * var(--u));border-radius:50%;background:var(--ok);color:var(--bg);border:2px solid var(--panel)}
 .ab-jog .ab-jog-pronto svg{width:80%;height:80%}
 .ab-jog .ab-tag.adv{position:absolute;left:2px;top:2px;padding:0 4px;font-size:calc(9 * var(--u));background:var(--bad);border-color:var(--bad);color:#fff}
+.ab-jog .ab-tag.ausente{position:absolute;right:2px;top:2px;padding:0 4px;font-size:calc(9 * var(--u));background:var(--panel)}
+.ab-jog.ausente .ab-foto{opacity:.55}
 .ab-dano{margin-top:calc(10 * var(--u));padding-top:calc(8 * var(--u));border-top:1px solid var(--line);display:grid;gap:calc(5 * var(--u))}
 .ab-dano .cab{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .ab-dano h3{margin:0}
@@ -713,6 +731,10 @@ body.ab-arrastando,body.ab-arrastando *{cursor:grabbing !important}
 @media (prefers-reduced-motion:reduce){.ab-car-roda,.ab-car-op .dentro{animation:none}}
 
 .ab-aviso{position:fixed;left:50%;bottom:calc(170 * var(--u));z-index:65;transform:translateX(-50%);padding:8px 18px;border-radius:999px;background:var(--fg);color:var(--bg);font:600 calc(14 * var(--u)) var(--display);box-shadow:0 8px 24px rgba(0,0,0,.35);animation:ab-aparece .18s ease-out}
+/* aviso da conexão da sala online, em cima de tudo */
+.ab-online-aviso{position:fixed;left:50%;top:8px;z-index:70;transform:translateX(-50%);max-width:min(90vw, 720px);padding:8px 16px;border-radius:10px;background:var(--panel);border:1px solid var(--gold);color:var(--fg);font:600 14px var(--display);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.ab-online-aviso.caiu{border-color:var(--bad)}
+#abSalaEncerrada p{margin:0 0 12px}
 
 .ab-plan{width:min(calc(1180 * var(--u)),100%);height:min(88vh,calc(760 * var(--u)));display:grid;grid-template-columns:minmax(0,1fr) calc(340 * var(--u));gap:14px;padding:14px;font-size:calc(14 * var(--u))}
 .ab-plan h2,.ab-plan h3{margin:0}

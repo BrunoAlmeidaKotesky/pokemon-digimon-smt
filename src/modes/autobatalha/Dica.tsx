@@ -4,7 +4,7 @@ import { Fragment, useEffect, useLayoutEffect, useRef, type ReactNode } from 're
 import type { EstadoTela } from '../../autobatalha/api';
 import type { Atributos, CampeaoDados, EstadoVisivel, Jogador, Partida, Unidade } from '../../autobatalha/tipos';
 import { S, urlImagem } from '../../autobatalha/dados';
-import { acoes } from '../../autobatalha/controle';
+import { acoes } from '../../autobatalha/sessao';
 import { atributosDaUnidade, separarId } from '../../autobatalha/combate';
 import { TRACOS, habilidadeDa, opcoesDeUlt, passivaDe } from '../../autobatalha/conteudo';
 import { abrirImagem, fecharDica, useDica, useImagemGrande, type AlvoDica } from './interacao';

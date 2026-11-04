@@ -200,7 +200,7 @@ export function jogarBot(p: Partida, j: Jogador): void {
   equiparItens(j, perfil, rng);
 }
 
-/** Todos os bots vivos jogam. */
+/** Todos os bots vivos jogam (e, online, um bot joga por quem está fora do ar). */
 export function jogarBots(p: Partida): void {
-  for (const j of vivos(p)) if (j.bot) jogarBot(p, j);
+  for (const j of vivos(p)) if (j.bot || j.ausente) jogarBot(p, j);
 }

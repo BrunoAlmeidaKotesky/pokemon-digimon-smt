@@ -5,7 +5,7 @@
 // lista dos campeões dele (os seus destacados).
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Jogador, Partida } from '../../autobatalha/tipos';
-import { acoes } from '../../autobatalha/controle';
+import { acoes } from '../../autobatalha/sessao';
 import { unidadesNoTabuleiro } from '../../autobatalha/partida';
 import { TRACOS, contarTracos, type TracoAtivo } from '../../autobatalha/conteudo';
 import { fecharDica, focarTraco, propsDica, useTracoEmFoco } from './interacao';
@@ -150,7 +150,7 @@ export function Jogadores({ partida, olhando, children }: { partida: Partida; ol
           const pronto = votando && !fora && !!j.pronto;
           return (
             <li key={j.id}>
-              <button type="button" className={'ab-jog' + (eu ? ' eu' : '') + (fora ? ' fora' : '') + (j.id === vendo ? ' vendo' : '') + (j.id === adv ? ' adv' : '') + (pronto ? ' pronto' : '')}
+              <button type="button" className={'ab-jog' + (eu ? ' eu' : '') + (fora ? ' fora' : '') + (j.id === vendo ? ' vendo' : '') + (j.id === adv ? ' adv' : '') + (pronto ? ' pronto' : '') + (j.ausente && !fora ? ' ausente' : '')}
                 data-jogador={j.id} aria-pressed={j.id === vendo} title={(eu ? 'Seu tabuleiro' : `Ver o tabuleiro de ${j.nome}`) + (pronto ? ' (pronto pra luta)' : '')}
                 onClick={() => acoes.olhar(eu ? null : j.id)}>
                 {pronto && (
@@ -166,6 +166,7 @@ export function Jogadores({ partida, olhando, children }: { partida: Partida; ol
                 </span>
                 <span className="vida">{fora && j.colocacao ? `${j.colocacao}º` : Math.max(0, j.vida)}</span>
                 {j.id === adv && !fora && <span className="ab-tag adv" title="Adversário desta rodada">vs</span>}
+                {j.ausente && !fora && <span className="ab-tag ausente" title="Fora do ar: um bot joga por ele até ele voltar">bot</span>}
               </button>
             </li>
           );

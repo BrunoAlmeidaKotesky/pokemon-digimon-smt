@@ -1,23 +1,32 @@
 // Controle da partida da Autobatalha: guarda a partida em andamento, roda o relógio do planejamento, os bots e as
-// lutas, e avisa a tela a cada mudança (useSyncExternalStore, como src/state/app.ts). A tela só lê EstadoTela
-// (useAutobatalha) e chama `acoes` (contrato em api.ts).
+// lutas, e avisa a tela a cada mudança (useSyncExternalStore, como src/state/app.ts). A tela lê EstadoTela e chama as
+// ações pela sessão (sessao.ts; contrato em api.ts).
 //
-// Ciclo: [carrossel no começo de cada estágio a partir do 2: as duplas são liberadas no tempo, o humano clica numa
-// opção] → planejamento (bots jogam e votam "Pronto" no começo; a partida é salva; acaba no relógio ou quando todos
-// os vivos votaram "Pronto") → luta (todas simuladas de uma vez; a do humano é reproduzida em tempo real ×
-// velocidade) → resultado (~1,5 s) → próxima rodada. Com o humano eliminado, o resto da partida corre sem mostrar e a
-// tela vai pro fim.
+// Ciclo: [carrossel no começo de cada estágio a partir do 2: as duplas são liberadas no tempo, os humanos clicam numa
+// opção] → planejamento (bots jogam e votam "Pronto" no começo; no solo a partida é salva; acaba no relógio ou quando
+// todos os vivos votaram "Pronto") → luta (todas simuladas de uma vez; a de quem joga nesta tela é reproduzida em
+// tempo real × velocidade) → resultado (~1,5 s) → próxima rodada. Sem nenhum humano vivo, o resto da partida corre
+// sem mostrar e a tela vai pro fim.
+//
+// Sala online: no navegador do anfitrião, este controle roda a partida de todos (online/anfitriao.ts liga os ganchos
+// com ligarAnfitriao). Os convidados são humanos da partida (Jogador.bot false); as ações deles chegam por acaoDe (com
+// o id que a conexão garante), quem cai fica `ausente` e um bot joga por ele, e a luta só acaba quando todos os
+// humanos terminaram de ver a sua (viuLuta) ou no limite de tempo. O anfitrião não pausa (a partida é de todos) e não
+// salva a partida online no lugar da solo.
 //
 // A partida é trocada por uma cópia a cada mudança (estado.partida muda de referência), então a tela pode
-// comparar referências. Sem ninguém olhando (aba fechada), o relógio, o carrossel e a luta ficam pausados.
+// comparar referências. No solo, sem ninguém olhando (aba fechada), o relógio, o carrossel e a luta ficam pausados.
 import { useSyncExternalStore } from 'react';
-import type { Acoes, Config, EstadoCarrossel, EstadoSala, EstadoTela, EstadoVotacao, RegrasSala, Velocidade } from './api';
+import type { Acoes, Config, EstadoOnline, EstadoSala, EstadoTela, RegrasSala, Velocidade } from './api';
 import { atributosDaUnidade, simularLuta } from './combate';
 import { combinar, contarTracos, ehComponente } from './conteudo';
 import { carregarSet, S, setCarregado } from './dados';
+import { estadoDaVotacao, estadoDoCarrossel, humanosPresentes } from './derivados';
 import { ESTILO_PADRAO, estiloOuPadrao } from './estilos';
+import { ID_ANFITRIAO, nomePadraoDoLugar, SUFIXO_TESTE } from './online/parametros';
+import type { TempoPartida } from './online/protocolo';
 import * as P from './partida';
-import type { EscolhasJogador, Fase, Onde, Partida } from './tipos';
+import type { AcaoJogador, EscolhasJogador, HumanoSala, Onde, Partida } from './tipos';
 
 P.definirMotor({ simularLuta, atributosDaUnidade, contarTracos, combinar, ehComponente });
 
@@ -42,10 +51,15 @@ export const MS_TICK_CARROSSEL = 200;
 /** todos já pegaram no carrossel: ele fecha este tanto de segundos depois */
 export const S_FECHAR_CARROSSEL = 1.5;
 const MS_AVISO = 2500;
+/** online: folga do limite da luta (todos já deviam ter visto a sua; quem não avisou é esperado só até aqui) */
+export const MS_FOLGA_LUTA = 4000;
+
+/** chave da configuração (`?transporte=local&jogador=N` dos testes separa a de cada aba; no site é sempre a mesma) */
+const chaveConfig = (): string => CHAVE_CONFIG + SUFIXO_TESTE;
 
 function lerConfig(): Config {
   try {
-    return normalizarConfig(JSON.parse(globalThis.localStorage?.getItem(CHAVE_CONFIG) ?? 'null'));
+    return normalizarConfig(JSON.parse(globalThis.localStorage?.getItem(chaveConfig()) ?? 'null'));
   } catch { return { ...CONFIG_PADRAO }; }
 }
 const numero = (x: unknown): number | null => (typeof x === 'number' && Number.isFinite(x) ? x : null);
@@ -67,7 +81,7 @@ export function normalizarConfig(bruto: unknown): Config {
   };
 }
 function gravarConfig(c: Config): void {
-  try { globalThis.localStorage?.setItem(CHAVE_CONFIG, JSON.stringify(c)); } catch { /* sem localStorage */ }
+  try { globalThis.localStorage?.setItem(chaveConfig(), JSON.stringify(c)); } catch { /* sem localStorage */ }
 }
 
 // ---------- estado e assinatura ----------
@@ -76,7 +90,7 @@ let partida: Partida | null = null;
 let pendente: P.ResultadoRodada | null = null;
 let estado: EstadoTela = {
   carregando: false, erro: null, partida: null, relogio: null, reproducao: null, config: lerConfig(), sala: null,
-  temSalva: false, carrossel: null, votacao: null, olhando: null, aviso: null,
+  temSalva: false, carrossel: null, votacao: null, olhando: null, aviso: null, online: null,
 };
 /** segundos desde o começo do carrossel, e o segundo em que ele acaba */
 let tCarrossel = 0;
@@ -84,18 +98,27 @@ let fimCarrossel = 0;
 
 // ---------- sala (lobby) ----------
 // A sala separa o que é do anfitrião (RegrasSala: relógio, segundos, dificuldade) do que é de cada jogador
-// (EscolhasJogador: nome, ícone, estilo). Hoje o jogo é solo e você é sempre o anfitrião; num modo online, as regras
-// viriam de quem criou a sala e as escolhas de cada um.
+// (EscolhasJogador: nome, ícone, estilo). No solo você é o anfitrião; online, quem criou a sala, e os convidados entram
+// nos lugares seguintes (os ganchos do anfitrião dizem quem são).
 
 /** semente da próxima partida: o lobby mostra os bots com o ícone e o estilo que vão ter nela */
 let sementeSala = Date.now() >>> 0;
 const novaSementeSala = () => { sementeSala = (Math.floor(Math.random() * 4294967296) ^ Date.now()) >>> 0; };
 
-const escolhasDe = (c: Config): EscolhasJogador => ({ nome: c.nome, avatar: c.avatar, estilo: c.estilo });
+export const escolhasDe = (c: Config): EscolhasJogador => ({ nome: c.nome, avatar: c.avatar, estilo: c.estilo });
+
+/** Os humanos da sala online: você (o anfitrião) e os convidados dos ganchos. */
+function humanosDaSala(config: Config, g: GanchosAnfitriao): HumanoSala[] {
+  const eu: HumanoSala = { id: ID_ANFITRIAO, escolhas: escolhasDe(config), nomePadrao: nomePadraoDoLugar(ID_ANFITRIAO), anfitriao: true, conectado: true };
+  return [eu, ...g.convidados()];
+}
 
 /** A sala da próxima partida (null sem o set: os ícones dos bots saem dele). */
 function montarSala(config: Config): EstadoSala | null {
   if (!setCarregado()) return null;
+  if (anfitriao) {
+    return { semente: sementeSala, anfitriao: ID_ANFITRIAO, voce: ID_ANFITRIAO, lugares: P.lugaresComHumanos(sementeSala, humanosDaSala(config, anfitriao)) };
+  }
   return { semente: sementeSala, anfitriao: P.ID_HUMANO, voce: P.ID_HUMANO, lugares: P.lugaresDaSala(sementeSala, escolhasDe(config)) };
 }
 
@@ -104,39 +127,45 @@ const souAnfitriao = (): boolean => !estado.sala || estado.sala.anfitriao === es
 
 const ouvintes = new Set<() => void>();
 
-function estadoDoCarrossel(p: Partida | null): EstadoCarrossel | null {
-  const c = p?.fase === 'carrossel' ? p.carrossel : undefined;
-  if (!p || !c) return null;
-  return {
-    opcoes: c.opcoes, grupos: c.grupos, liberados: c.liberados, horarios: c.grupos.map((_, k) => P.horarioDoGrupo(k)),
-    tempo: tCarrossel, fim: fimCarrossel, podePegar: P.podePegar(p, p.voce),
-  };
-}
+// ---------- sala online (anfitrião) ----------
 
-/** A votação do "Pronto" pra tela (null fora do planejamento). */
-function estadoDaVotacao(p: Partida | null): EstadoVotacao | null {
-  if (!p || p.fase !== 'planejamento') return null;
-  const vs = P.vivos(p);
-  return { prontos: vs.filter(j => j.pronto).map(j => j.id), total: vs.length, voce: !!P.humano(p).pronto };
+/** O que o anfitrião online (online/anfitriao.ts) liga no controle. */
+export interface GanchosAnfitriao {
+  /** os convidados da sala (sem você), na ordem dos lugares, com as escolhas e se estão conectados */
+  convidados(): HumanoSala[];
+  /** a partida, o tempo, a sala ou as regras mudaram: manda a visão de cada um (juntando mudanças seguidas) */
+  mudou(): void;
+  /** a luta da rodada começou (todas simuladas): manda a de cada convidado */
+  lutas(rr: P.ResultadoRodada): void;
+  /** mensagem curta pra um convidado (o resultado de uma ação dele) */
+  avisar(id: string, msg: string): void;
 }
+let anfitriao: GanchosAnfitriao | null = null;
+/** humanos que já viram a luta desta rodada: a rodada só segue quando todos viram (ou no limite, online) */
+const viram = new Set<string>();
+let timerLimiteLuta: ReturnType<typeof setTimeout> | null = null;
+/** id desta partida pros convidados (no lugar da semente, que deixaria prever a loja) */
+let idPartida = 0;
 
 /** Avisa a tela. `copiar` = a partida mudou (troca por uma cópia, pra mudar a referência). */
 function publicar(copiar = false): void {
   if (copiar && partida) partida = structuredClone(partida);
-  estado = { ...estado, partida, carrossel: estadoDoCarrossel(partida), votacao: estadoDaVotacao(partida) };
+  estado = { ...estado, partida, carrossel: estadoDoCarrossel(partida, tCarrossel, fimCarrossel), votacao: estadoDaVotacao(partida) };
   ouvintes.forEach(l => l());
+  anfitriao?.mudou();
 }
 function mudar(m: Partial<EstadoTela>, copiar = false): void {
   estado = { ...estado, ...m };
   publicar(copiar);
 }
 
-function assinar(l: () => void): () => void {
+/** Ouve as mudanças. No solo, sem ninguém ouvindo, a partida pausa; o anfitrião online nunca pausa. */
+export function assinar(l: () => void): () => void {
   ouvintes.add(l);
   if (ouvintes.size === 1) retomar();
   return () => {
     ouvintes.delete(l);
-    if (ouvintes.size === 0) pausar();
+    if (ouvintes.size === 0 && !anfitriao) pausar();
   };
 }
 
@@ -169,9 +198,11 @@ function pararLuta(): void {
 }
 function pararCarrossel(): void { if (timerCarrossel) clearInterval(timerCarrossel); timerCarrossel = null; }
 function pararResultado(): void { if (timerResultado) clearTimeout(timerResultado); timerResultado = null; }
+function pararLimiteLuta(): void { if (timerLimiteLuta) clearTimeout(timerLimiteLuta); timerLimiteLuta = null; }
 function pararTudo(): void {
-  pararRelogio(); pararLuta(); pararCarrossel(); pararResultado();
+  pararRelogio(); pararLuta(); pararCarrossel(); pararResultado(); pararLimiteLuta();
   prazo = null; restante = null; pendente = null; tCarrossel = 0; fimCarrossel = 0;
+  viram.clear();
 }
 
 const segundosDoPlanejamento = (p: Partida, c: Config) => (p.estagio <= 1 ? Math.round((c.segundos * 2) / 3) : c.segundos);
@@ -270,18 +301,25 @@ function comecarCarrossel(): void {
   publicar(true);
 }
 
+/** Mensagem pra um humano: você vê aqui; o convidado recebe pela rede. */
+function avisarJogador(id: string, msg: string): void {
+  if (id === partida?.voce) avisar(msg);
+  else anfitriao?.avisar(id, msg);
+}
+
 /** Fim do carrossel: quem não pegou leva uma ao acaso, o resto volta pro pool e começa o planejamento. */
 function fecharCarrossel(): void {
   pararCarrossel();
   const p = partida;
   if (!p) return;
   const c = p.carrossel;
-  const jaTinha = !c || P.jaPegou(c, p.voce);
+  const semPegar = c ? p.jogadores.filter(j => !j.bot && P.estaVivo(j) && !P.jaPegou(c, j.id)).map(j => j.id) : [];
   P.terminarCarrossel(p);
-  const minha = c?.opcoes.find(o => o.pegou === p.voce);
-  if (minha && !jaTinha) {
+  for (const id of semPegar) {
+    const minha = c?.opcoes.find(o => o.pegou === id);
+    if (!minha) continue;
     const nome = S().temForma(minha.forma) ? S().forma(minha.forma).nome : S().campeao(minha.campeao).nome;
-    avisar(`Você levou ${nome} do carrossel ao acaso${minha.vendido ? ' (banco cheio: vendido)' : ''}`);
+    avisarJogador(id, `Você levou ${nome} do carrossel ao acaso${minha.vendido ? ' (banco cheio: vendido)' : ''}`);
   }
   tCarrossel = 0;
   comecarPlanejamento();
@@ -291,13 +329,37 @@ function comecarPlanejamento(): void {
   const p = partida;
   if (!p) return;
   p.fase = 'planejamento';
+  // bots (e, online, quem está fora do ar) jogam o planejamento deles e votam "Pronto" (no solo, o voto do humano
+  // fecha a votação)
   P.jogarBots(p);
-  // os bots terminaram o planejamento deles: votam "Pronto" (no solo, o voto do humano fecha a votação)
   P.votarBots(p);
-  P.salvarPartida(p);
-  estado = { ...estado, temSalva: true, reproducao: null };
+  // a partida online não fica salva (não dá pra continuar ela sozinho); a solo, sim
+  if (!anfitriao) {
+    P.salvarPartida(p);
+    estado = { ...estado, temSalva: true };
+  }
+  estado = { ...estado, reproducao: null };
   ligarRelogio();
   publicar(true);
+  conferirVotos();
+}
+
+/** Todos os vivos votaram "Pronto": o planejamento acaba na hora. */
+function conferirVotos(): void {
+  const p = partida;
+  if (p?.fase === 'planejamento' && P.todosProntos(p)) terminarPlanejamento();
+}
+
+/** Humanos presentes que lutam nesta rodada (cada um vê a sua luta; a rodada espera todos). */
+function quemVeALuta(p: Partida, rr: P.ResultadoRodada): string[] {
+  const ids = new Set<string>();
+  for (const l of rr.lutas) {
+    for (const id of [l.a, l.b]) {
+      const j = p.jogadores.find(x => x.id === id);
+      if (j && !j.bot && !j.ausente) ids.add(id);
+    }
+  }
+  return [...ids];
 }
 
 function terminarPlanejamento(): void {
@@ -306,22 +368,62 @@ function terminarPlanejamento(): void {
   pararRelogio();
   prazo = null; restante = null;
   P.fimDoPlanejamento(p);
-  pendente = P.simularRodada(p);
-  const minha = pendente.lutas.find(l => l.a === p.voce);
-  if (!minha) { estado = { ...estado, relogio: null }; terminarLuta(); return; }
-  estado = { ...estado, relogio: null, reproducao: { resultado: minha.resultado, adversario: minha.b, t: 0, comecou: false, acabou: false } };
+  const rr = P.simularRodada(p);
+  pendente = rr;
+  viram.clear();
+  const minha = rr.lutas.find(l => l.a === p.voce);
+  estado = {
+    ...estado, relogio: null,
+    reproducao: minha ? { resultado: minha.resultado, adversario: minha.b, t: 0, comecou: false, acabou: false } : null,
+  };
   publicar(true);
-  ligarLuta();
+  if (anfitriao) {
+    anfitriao.lutas(rr);
+    // limite: a luta mais longa dos humanos em 1×, com a apresentação e uma folga (quem não avisar que viu não trava)
+    const humanos = new Set(p.jogadores.filter(j => !j.bot).map(j => j.id));
+    const maior = Math.max(0, ...rr.lutas.filter(l => humanos.has(l.a) || humanos.has(l.b)).map(l => l.resultado.duracao));
+    pararLimiteLuta();
+    timerLimiteLuta = setTimeout(aplicarLuta, MS_CLASH + maior * 1000 + MS_FOLGA_LUTA);
+  }
+  if (minha) ligarLuta();
+  else viuLuta(p.voce);
 }
 
+/** A reprodução desta tela acabou (chegou no fim ou pulou): você viu a sua luta. */
 function terminarLuta(): void {
+  pararLuta();
+  const r = estado.reproducao;
+  if (r && !r.acabou) estado = { ...estado, reproducao: { ...r, t: r.resultado.duracao, comecou: true, acabou: true } };
+  const p = partida;
+  if (!p || !pendente) return;
+  viuLuta(p.voce);
+}
+
+/** O humano `id` terminou de ver a luta desta rodada (online, o convidado avisa). Todos viram: a rodada segue. */
+export function viuLuta(id: string): void {
+  if (!pendente) return;
+  viram.add(id);
+  conferirLuta();
+}
+
+function conferirLuta(): void {
+  const p = partida;
+  if (!p || !pendente) return;
+  if (quemVeALuta(p, pendente).every(id => viram.has(id))) aplicarLuta();
+  else publicar();
+}
+
+/** Aplica a rodada (vida, ouro, eliminações) e mostra o resultado por um instante. */
+function aplicarLuta(): void {
+  pararLimiteLuta();
   pararLuta();
   const p = partida;
   if (!p || !pendente) return;
   const r = estado.reproducao;
-  if (r) estado = { ...estado, reproducao: { ...r, t: r.resultado.duracao, comecou: true, acabou: true } };
+  if (r && !r.acabou) estado = { ...estado, reproducao: { ...r, t: r.resultado.duracao, comecou: true, acabou: true } };
   P.aplicarRodada(p, pendente);
   pendente = null;
+  viram.clear();
   publicar(true);
   pararResultado();
   if (!pausado) timerResultado = setTimeout(depoisDoResultado, MS_RESULTADO);
@@ -344,11 +446,11 @@ function depoisDoResultado(): void {
   timerResultado = null;
   const p = partida;
   if (!p) return;
-  const eu = P.humano(p);
-  if (P.acabou(p) || eu.colocacao != null) {
+  // sem nenhum humano vivo e presente (no solo: você eliminado), o resto corre sem mostrar
+  if (P.acabou(p) || !humanosPresentes(p).length) {
     correrAteOFim(p);
-    P.apagarPartida();
-    mudar({ temSalva: false, reproducao: null, relogio: null }, true);
+    if (!anfitriao) P.apagarPartida();
+    mudar({ temSalva: anfitriao ? estado.temSalva : false, reproducao: null, relogio: null }, true);
     return;
   }
   P.avancarRodada(p);
@@ -367,25 +469,33 @@ function avisar(msg: string): void {
   }, MS_AVISO);
 }
 
-/** fases em que o humano mexe na loja, no banco e nos itens (o tabuleiro, só no planejamento) */
-const FASES_DE_JOGO: readonly Fase[] = ['carrossel', 'planejamento', 'luta', 'resultado'];
-
-/** Roda uma ação do humano (vivo, em fase de jogo) e mostra a mensagem se não deu. */
-function acao(f: (p: Partida, id: string) => string | null | void, fases: readonly Fase[] = FASES_DE_JOGO): void {
+/**
+ * Ação do humano `id` no próprio Jogador: você (p.voce) pela tela, ou um convidado pela rede (o id vem da conexão).
+ * A partida confere a fase (P.aplicarAcao); ação que não vale agora é ignorada. A mensagem ("Ouro insuficiente") vai
+ * pra quem agiu.
+ */
+export function acaoDe(id: string, a: AcaoJogador): void {
   const p = partida;
-  if (!p || !fases.includes(p.fase)) return;
-  if (!P.estaVivo(P.humano(p))) return;
-  const msg = f(p, p.voce);
-  if (msg) avisar(msg);
+  if (!p || !P.podeAgir(p, id, a)) return;
+  let msg = P.aplicarAcao(p, id, a);
+  if (a.tipo === 'carrossel' && !msg) {
+    encurtarCarrossel(p);
+    if (p.carrossel?.opcoes[a.i]?.vendido) msg = 'Banco cheio: o campeão foi vendido (o item ficou)';
+  }
+  if (msg) avisarJogador(id, msg);
   publicar(true);
+  if (a.tipo === 'pronto') conferirVotos();
+}
+
+/** Ação de quem joga nesta tela. */
+function acao(a: AcaoJogador): void {
+  if (partida) acaoDe(partida.voce, a);
 }
 
 /** O humano vota "Pronto" (true), desfaz (false) ou alterna (sem argumento). Com todos os vivos prontos, o
  *  planejamento acaba na hora. */
 function votar(voto?: boolean): void {
-  acao((p, id) => { P.votarPronto(p, id, voto); }, ['planejamento']);
-  const p = partida;
-  if (p?.fase === 'planejamento' && P.todosProntos(p)) terminarPlanejamento();
+  acao(voto === undefined ? { tipo: 'pronto' } : { tipo: 'pronto', valor: voto });
 }
 
 /** Confere se a partida salva ainda bate com o set carregado (campeões e formas existem). */
@@ -413,7 +523,12 @@ export const acoes: Acoes = {
     pararTudo();
     const c = estado.config;
     try {
-      partida = P.novaPartida(semente ?? sementeSala, escolhasDe(c), c.dificuldade);
+      if (anfitriao) {
+        // online: os humanos conectados nos primeiros lugares, bots no resto
+        const humanos = humanosDaSala(c, anfitriao).filter(h => h.conectado !== false);
+        partida = P.novaPartidaComHumanos(semente ?? sementeSala, humanos, c.dificuldade, ID_ANFITRIAO);
+        idPartida = (Math.floor(Math.random() * 0x7fffffff) ^ Date.now()) >>> 0;
+      } else partida = P.novaPartida(semente ?? sementeSala, escolhasDe(c), c.dificuldade);
     } catch (e) {
       partida = null;
       mudar({ erro: `Não deu pra começar a partida (${e instanceof Error ? e.message : String(e)})` });
@@ -426,6 +541,8 @@ export const acoes: Acoes = {
   },
 
   continuar() {
+    // a partida salva é solo: não continua numa sala online
+    if (anfitriao) return;
     const p = P.carregarPartida();
     if (!p || !partidaValida(p)) {
       if (p) P.apagarPartida();
@@ -447,41 +564,28 @@ export const acoes: Acoes = {
 
   abandonar() {
     pararTudo();
-    P.apagarPartida();
+    // online, a partida volta pro lobby da sala (pra todos) e a partida solo salva fica como estava
+    if (!anfitriao) P.apagarPartida();
     partida = null;
-    mudar({ temSalva: false, reproducao: null, relogio: null, olhando: null, aviso: null, sala: montarSala(estado.config) });
-  },
-
-  comprar: i => acao((p, id) => P.comprar(p, id, i)),
-  vender: uid => acao((p, id) => P.vender(p, id, uid)),
-  atualizarLoja: () => acao((p, id) => P.atualizarLoja(p, id)),
-  comprarXp: () => acao((p, id) => P.comprarXp(p, id)),
-  travarLoja: () => acao((p, id) => P.travarLoja(p, id)),
-
-  mover(uid: number, para: Onde) {
-    acao((p, id) => {
-      const j = P.jogadorDe(p, id);
-      const mexeNoTabuleiro = para.tipo === 'tabuleiro' || P.ondeEsta(j, uid)?.tipo === 'tabuleiro';
-      if (mexeNoTabuleiro && p.fase !== 'planejamento') return 'O tabuleiro só muda no planejamento';
-      return P.mover(p, id, uid, para);
+    mudar({
+      temSalva: anfitriao ? estado.temSalva : false, reproducao: null, relogio: null, olhando: null, aviso: null,
+      sala: montarSala(estado.config),
     });
   },
 
-  equipar: (i, uid) => acao((p, id) => P.equipar(p, id, i, uid)),
-  juntarItens: (i, k) => acao((p, id) => P.juntarItens(p, id, i, k)),
-  // recolhe passando o mouse: moeda que já sumiu não vira aviso
-  pegarMoeda: i => acao((p, id) => { P.pegarMoeda(p, id, i); }),
-  escolherEvolucao: forma => acao((p, id) => P.escolherEvolucao(p, id, forma)),
-  pegarCarrossel(i) {
-    acao((p, id) => {
-      const msg = P.pegarCarrossel(p, id, i);
-      if (msg) return msg;
-      encurtarCarrossel(p);
-      return p.carrossel?.opcoes[i]?.vendido ? 'Banco cheio: o campeão foi vendido (o item ficou)' : null;
-    }, ['carrossel']);
-  },
-  escolherUlt: (uid, ult) => acao((p, id) => P.escolherUlt(p, id, uid, ult)),
-  alternarPosicao: uid => acao((p, id) => P.alternarPosicao(p, id, uid)),
+  comprar: i => acao({ tipo: 'comprar', i }),
+  vender: uid => acao({ tipo: 'vender', uid }),
+  atualizarLoja: () => acao({ tipo: 'atualizar' }),
+  comprarXp: () => acao({ tipo: 'xp' }),
+  travarLoja: () => acao({ tipo: 'travar' }),
+  mover: (uid: number, para: Onde) => acao({ tipo: 'mover', uid, para }),
+  equipar: (i, uid) => acao({ tipo: 'equipar', i, uid }),
+  juntarItens: (i, k) => acao({ tipo: 'juntar', i, k }),
+  pegarMoeda: i => acao({ tipo: 'moeda', i }),
+  escolherEvolucao: forma => acao({ tipo: 'evolucao', forma }),
+  pegarCarrossel: i => acao({ tipo: 'carrossel', i }),
+  escolherUlt: (uid, ult) => acao({ tipo: 'ult', uid, ult }),
+  alternarPosicao: uid => acao({ tipo: 'posicao', uid }),
 
   votarPronto() { votar(); },
   pronto() { votar(true); },
@@ -528,3 +632,62 @@ export const acoes: Acoes = {
 
   olhar(id) { mudar({ olhando: id }); },
 };
+
+// ---------- ganchos pro anfitrião online (online/anfitriao.ts) ----------
+
+/** Liga o modo anfitrião: a sala do lobby passa a ter os convidados, a partida não pausa nem é salva. */
+export function ligarAnfitriao(g: GanchosAnfitriao): void {
+  anfitriao = g;
+  retomar();
+  mudar({ sala: montarSala(estado.config) });
+}
+
+/** Desliga o modo anfitrião (a sala fechou): a partida online acaba e volta o lobby solo. */
+export function desligarAnfitriao(): void {
+  if (!anfitriao) return;
+  anfitriao = null;
+  if (partida) { pararTudo(); partida = null; }
+  mudar({ reproducao: null, relogio: null, olhando: null, online: null, sala: montarSala(estado.config) });
+  if (ouvintes.size === 0) pausar();
+}
+
+/** A sala online desta tela (o anfitrião mostra o código, o link e a situação). */
+export function definirOnline(o: EstadoOnline | null): void { mudar({ online: o }); }
+
+/** Os convidados mudaram (entrou, saiu, trocou nome, ícone ou tabuleiro): refaz os lugares do lobby. */
+export function atualizarSala(): void { mudar({ sala: montarSala(estado.config) }); }
+
+/** Um convidado caiu (true) ou voltou (false). Fora do ar, um bot joga por ele: vota pronto, pega no carrossel e
+ *  joga os próximos planejamentos; a luta não espera por ele. */
+export function marcarAusente(id: string, fora: boolean): void {
+  const p = partida;
+  const j = p?.jogadores.find(x => x.id === id && !x.bot);
+  if (!p || !j || !!j.ausente === fora) return;
+  if (fora) {
+    j.ausente = true;
+    if (p.fase === 'planejamento' && P.estaVivo(j)) j.pronto = true;
+  } else {
+    delete j.ausente;
+    delete j.pronto;
+  }
+  publicar(true);
+  if (fora) { conferirVotos(); conferirLuta(); }
+}
+
+/** A partida desta tela (a de verdade, no anfitrião). */
+export const partidaAtual = (): Partida | null => partida;
+/** id da partida pros convidados (no lugar da semente). */
+export const idDaPartida = (): number => idPartida;
+/** A rodada em que a luta está rolando (null fora da luta). */
+export const lutaPendente = (): P.ResultadoRodada | null => pendente;
+
+/** O tempo da fase, pro anfitrião mandar aos convidados. */
+export function tempoDaPartida(): TempoPartida {
+  const p = partida;
+  return {
+    relogioMs: p?.fase === 'planejamento' && prazo != null ? Math.max(0, Math.round(prazo - Date.now())) : null,
+    carrossel: p?.fase === 'carrossel' && p.carrossel ? { tempo: tCarrossel, fim: fimCarrossel } : null,
+  };
+}
+/** O que muda o tempo dos convidados (a fase, o prazo do planejamento e o fim do carrossel). */
+export const marcaDoTempo = (): string => `${partida?.fase ?? '-'}|${prazo ?? '-'}|${fimCarrossel}`;

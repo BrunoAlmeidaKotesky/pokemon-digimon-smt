@@ -10,7 +10,7 @@ import {
 } from '../../autobatalha/tipos';
 import { S, urlImagem } from '../../autobatalha/dados';
 import { deChave } from '../../autobatalha/hex';
-import { acoes } from '../../autobatalha/controle';
+import { acoes } from '../../autobatalha/sessao';
 import { atributosDaUnidade, idLuta } from '../../autobatalha/combate';
 import { ehComponente } from '../../autobatalha/conteudo';
 import { ehFantasma, valorVenda } from '../../autobatalha/partida';

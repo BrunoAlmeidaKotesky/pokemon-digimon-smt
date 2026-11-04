@@ -33,6 +33,8 @@ export interface LutaDaRodada {
   b: string;
   entradaA: EntradaTime;
   entradaB: EntradaTime;
+  /** semente da luta: a mesma entrada com a mesma semente dá a mesma luta (o convidado online reproduz a dele) */
+  semente: number;
   resultado: ResultadoLuta;
 }
 export interface ResultadoRodada { estagio: number; rodada: number; lutas: LutaDaRodada[] }
@@ -115,7 +117,8 @@ export function fimDoPlanejamento(p: Partida): void {
   }
 }
 
-/** Simula as lutas da rodada (só a do humano é gravada). Não muda vida nem ouro: isso é aplicarRodada. */
+/** Simula as lutas da rodada (só a do humano desta tela, p.voce, é gravada; online, cada convidado reproduz a dele com a
+ *  semente). Não muda vida nem ouro: isso é aplicarRodada. */
 export function simularRodada(p: Partida, simular: SimularLuta = M().simularLuta): ResultadoRodada {
   const rng = rngDa(p);
   const lutas: LutaDaRodada[] = [];
@@ -126,8 +129,9 @@ export function simularRodada(p: Partida, simular: SimularLuta = M().simularLuta
     const entradaB = ehMonstros(b) ? timeMonstros(p)
       : ehFantasma(b) ? montarTime(jogadorDe(p, donoDoFantasma(b)), b)
       : montarTime(jogadorDe(p, b));
-    const resultado = simular(entradaA, entradaB, rng.semente(), a === p.voce);
-    lutas.push({ a, b, entradaA, entradaB, resultado });
+    const semente = rng.semente();
+    const resultado = simular(entradaA, entradaB, semente, a === p.voce);
+    lutas.push({ a, b, entradaA, entradaB, semente, resultado });
   }
   p.fase = 'luta';
   return { estagio: p.estagio, rodada: p.rodada, lutas };

@@ -391,8 +391,8 @@ export function init() {
   });
   customs.subscribe(syncCustoms);
   const busca = new URLSearchParams(location.search);
-  // link direto pra Autobatalha: ?aba=autobatalha
-  if (busca.get('aba') === 'autobatalha') app.mode = 'autobatalha';
+  // link direto pra Autobatalha: ?aba=autobatalha; link da sala online dela: ?autobatalha=ABCD (a aba entra sozinha)
+  if (busca.get('aba') === 'autobatalha' || busca.has('autobatalha')) app.mode = 'autobatalha';
   if (busca.has('sala')) app.mode = 'online';
   renderDuel();
   document.addEventListener('keydown', e => { onKey(e); emit(); });

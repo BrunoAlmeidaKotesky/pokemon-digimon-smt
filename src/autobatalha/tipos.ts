@@ -395,6 +395,9 @@ export interface Jogador {
   /** votou "Pronto" neste planejamento (partida/votacao.ts): com todos os vivos prontos, a luta começa na hora. Os
    *  bots votam assim que jogam; o fim do planejamento limpa. Sem = não votou. */
   pronto?: true;
+  /** humano fora do ar numa partida online (caiu ou saiu): um bot joga por ele (planejamento, carrossel, voto) até
+   *  ele voltar. Sem = presente (e sempre sem no solo). */
+  ausente?: true;
 }
 
 /** Forma pra escolher: na evolução (nível com alternativas) ou na compra (nível 1 com alternativas). */
@@ -447,13 +450,46 @@ export interface LugarSala {
   id: string;
   nome: string;
   bot: boolean;
-  /** quem muda as regras da sala (hoje, sempre você: o jogo é solo) */
+  /** quem muda as regras da sala (no solo, sempre você; online, quem criou a sala) */
   anfitriao: boolean;
   /** imagem do ícone (como Jogador.avatar) */
   avatar: string;
   /** id do estilo do tabuleiro */
   estilo: string;
+  /** sala online: a pessoa deste lugar está conectada (sem = solo ou bot) */
+  conectado?: boolean;
 }
+
+/** Um humano na sala, como a partida recebe (partida/nova.ts): id do lugar, as escolhas dele e o nome quando ele não
+ *  escolhe um. No solo é só você; online, o anfitrião e os convidados. */
+export interface HumanoSala {
+  id: string;
+  escolhas: Partial<EscolhasJogador>;
+  /** nome quando o escolhido está vazio (padrão: "Você") */
+  nomePadrao?: string;
+  anfitriao?: boolean;
+  /** sala online: está conectado */
+  conectado?: boolean;
+}
+
+/** Uma ação de um jogador sobre o próprio Jogador. É o que a tela faz no solo e o que o convidado manda pela rede
+ *  (partida/acao.ts aplica, conferindo a fase). */
+export type AcaoJogador =
+  | { tipo: 'comprar'; i: number }
+  | { tipo: 'vender'; uid: number }
+  | { tipo: 'atualizar' }
+  | { tipo: 'xp' }
+  | { tipo: 'travar' }
+  | { tipo: 'mover'; uid: number; para: Onde }
+  | { tipo: 'equipar'; i: number; uid: number }
+  | { tipo: 'juntar'; i: number; k: number }
+  | { tipo: 'evolucao'; forma: string }
+  | { tipo: 'carrossel'; i: number }
+  | { tipo: 'moeda'; i: number }
+  | { tipo: 'ult'; uid: number; ult: string }
+  | { tipo: 'posicao'; uid: number }
+  /** vota pronto (true), desfaz (false) ou alterna (sem valor) */
+  | { tipo: 'pronto'; valor?: boolean };
 
 export interface Partida {
   versao: 1;

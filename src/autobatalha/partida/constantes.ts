@@ -64,7 +64,9 @@ export const RENDA_ESTAGIO_1 = 2;
 /** juros: 1 de ouro a cada 10 guardados, até 5 */
 export const JUROS_MAX = 5;
 
-/** nomes dos 7 bots (os atributos dos Bakugan) */
+/** jogadores na partida (humanos + bots) */
+export const JOGADORES = 8;
+/** nomes dos bots (os atributos dos Bakugan), na ordem em que ocupam as vagas que sobram */
 export const NOMES_BOTS = ['Pyrus', 'Aquos', 'Haos', 'Darkus', 'Subterra', 'Ventus', 'Aurelus'] as const;
 export const ID_HUMANO = 'voce';
 /** nome do humano quando ele não escolhe um no lobby */

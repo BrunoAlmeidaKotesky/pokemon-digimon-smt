@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { Segmented, Stepper, Switch } from '../../components/Controls';
 import type { Config, EstadoTela, Velocidade } from '../../autobatalha/api';
 import type { Dificuldade } from '../../autobatalha/tipos';
-import { acoes } from '../../autobatalha/controle';
+import { acoes } from '../../autobatalha/sessao';
 
 export const VELOCIDADES: { value: Velocidade; label: string }[] = [{ value: 1, label: '1×' }, { value: 2, label: '2×' }, { value: 4, label: '4×' }];
 export const DIFICULDADES: { value: Dificuldade; label: string }[] = [{ value: 'facil', label: 'Fácil' }, { value: 'normal', label: 'Normal' }, { value: 'dificil', label: 'Difícil' }];
