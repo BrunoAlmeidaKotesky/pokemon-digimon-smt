@@ -10,8 +10,11 @@
 // - Quem está `intocavel` não vira alvo de ataque nem é escolhido por maisProximo/maisLonge/menosVida/maisVida, mas é
 //   atingido por área (emVolta, emLinha, emCone).
 // - dano/danoFixo: tipo padrão 'magico' durante o lançamento e 'fisico' fora; crítico padrão 'pode' no físico e
-//   'nunca' no resto. Durante `lancar` (e nos depois/aCada agendados nele) o dano dá +5 de mana a quem recebe, como
-//   um golpe, e, com RegrasMotor.poder, dano, cura e escudo multiplicam pelo poder do lançador.
+//   'nunca' no resto. Durante `lancar` (e nos depois/aCada agendados nele) o dano conta como golpe recebido (dá
+//   mana a quem recebe) e, com RegrasMotor.poder, dano, cura e escudo multiplicam pelo poder do lançador.
+// - Mana: +MANA_ATAQUE por ataque; golpe recebido (ataque ou habilidade) dá mana pela fração da vida máxima que
+//   tirou (MANA_POR_VIDA por vida inteira), até MANA_GOLPE_MAX por golpe. Quem tem mais vida enche mais devagar
+//   apanhando: tanque não lança mais rápido só por estar na frente.
 // - RegrasMotor: poder, LoL ★3 dobrado e +15% de vel. ataque na transformação podem ficar no motor ou no conteúdo
 //   (index.ts escolhe; hoje o conteúdo faz os três).
 // - status sem valor: lento 0,3; queimando 0,01; vulneravel, fraco e refletir 0,2. Reaplicar fica com o maior valor e
@@ -41,8 +44,11 @@ export const DURACAO_MAX = 30;
 const PASSOS_POR_SEGUNDO = 10;
 /** segundos pra andar uma casa */
 const TEMPO_POR_CASA = 0.5;
-const MANA_ATAQUE = 10;
-const MANA_GOLPE = 5;
+export const MANA_ATAQUE = 10;
+/** mana por apanhar: perder a vida máxima inteira daria isto (antes do teto por golpe) */
+export const MANA_POR_VIDA = 40;
+/** teto de mana por golpe recebido */
+export const MANA_GOLPE_MAX = 5;
 /** a transformação multiplica a vel. de ataque por isto (com RegrasMotor.velTransformar) */
 const VEL_TRANSFORMAR = 1.15;
 /** queimadura: cura recebida ×0,67 (33% a menos) */
@@ -84,11 +90,21 @@ export interface RegrasMotor {
 }
 export const REGRAS_TODAS: RegrasMotor = { poder: true, lolDobrado: true, velTransformar: true };
 
+/** De onde veio a mana: o próprio ataque, um golpe recebido (ataque ou habilidade inimiga) ou o conteúdo (ctx.mana). */
+export type FonteMana = 'ataque' | 'golpe' | 'conteudo';
+/** Quem olha a luta de fora (o playtest, src/autobatalha/equilibrio): não muda nada nela. */
+export interface ObservadorLuta {
+  /** mana que entrou de fato (depois do teto) */
+  mana?(l: Lutador, fonte: FonteMana, ganho: number): void;
+  morte?(l: Lutador, t: number): void;
+}
+
 /** Roda uma luta com o conteúdo dado. index.ts liga o conteúdo de verdade (simularLuta). */
 export function simularLutaCom(
   c: Conteudo, a: EntradaTime, b: EntradaTime, semente: number, gravar: boolean, regras: RegrasMotor = REGRAS_TODAS,
+  observador?: ObservadorLuta,
 ): ResultadoLuta {
-  return new Luta(c, regras, a, b, semente, gravar).rodar();
+  return new Luta(c, regras, a, b, semente, gravar, observador).rodar();
 }
 
 class Luta implements Contexto {
@@ -105,6 +121,7 @@ class Luta implements Contexto {
   private readonly danoPor: Record<string, number> = {};
   private readonly abatesPor: Record<string, number> = {};
   private readonly ouroPor = { a: 0, b: 0 };
+  private readonly moedas: NonNullable<ResultadoLuta['moedas']> = [];
   private readonly eventos: EventoLuta[] = [];
   private readonly quadros: Quadro[] = [];
   private temporizadores: Temporizador[] = [];
@@ -118,7 +135,7 @@ class Luta implements Contexto {
 
   constructor(
     private readonly c: Conteudo, private readonly regras: RegrasMotor, a: EntradaTime, b: EntradaTime, semente: number,
-    private readonly gravar: boolean,
+    private readonly gravar: boolean, private readonly obs?: ObservadorLuta,
   ) {
     this.rng = criarRng(semente);
     this.montarTime(a, 'a');
@@ -144,6 +161,7 @@ class Luta implements Contexto {
     const r: ResultadoLuta = {
       vencedor, vivosA: vivos('a'), vivosB: vivos('b'), duracao: this.t, dano: this.danoPor, abates: this.abatesPor, ouro: this.ouroPor,
     };
+    if (this.moedas.length) r.moedas = this.moedas;
     if (this.gravar) r.gravacao = { passo: PASSO, inicial, quadros: this.quadros, eventos: this.eventos };
     return r;
   }
@@ -206,6 +224,9 @@ class Luta implements Contexto {
       const item = this.c.ITENS[i];
       if (item) itens.push(item);
     }
+    // passiva do campeão: roda junto com os ganchos dos itens (sem atributos)
+    const passiva = this.c.passivaDe?.(camp.id);
+    if (passiva) itens.push({ ...passiva, id: `passiva:${camp.id}`, atributos: {} });
     return new LutadorInterno(this, {
       id: idLuta(lado, id), lado, forma: forma.id, campeao: camp.id, fr: forma.fr, classes: forma.classes, estrela: u.estrela,
       custo: camp.custo, nome: forma.nome, img: forma.img, papel: papelDe(forma), base: baseDaUnidade(u, habilidade),
@@ -437,7 +458,7 @@ class Luta implements Contexto {
 
   private atacar(l: LutadorInterno, alvo: LutadorInterno, d: number): void {
     if (this.gravar) this.eventos.push({ t: this.t, tipo: 'ataque', de: l.id, para: alvo.id, distancia: d });
-    this.ganharMana(l, MANA_ATAQUE);
+    this.ganharMana(l, MANA_ATAQUE, 'ataque');
     if (alvo.at.desvio > 0 && this.rng() < alvo.at.desvio) {
       if (this.gravar) this.eventos.push({ t: this.t, tipo: 'texto', para: alvo.id, texto: 'Desviou' });
       return;
@@ -489,7 +510,9 @@ class Luta implements Contexto {
     const causado = v - resto + tirado;
     if (de) this.danoPor[de.id] = (this.danoPor[de.id] ?? 0) + causado;
     if (this.gravar) this.eventos.push({ t: this.t, tipo: 'dano', para: para.id, valor: Math.round(v), critico, danoTipo: tipo });
-    if (fonte === 'ataque' || fonte === 'habilidade') this.ganharMana(para, MANA_GOLPE);
+    if ((fonte === 'ataque' || fonte === 'habilidade') && causado > 0) {
+      this.ganharMana(para, Math.min(MANA_GOLPE_MAX, (MANA_POR_VIDA * causado) / Math.max(1, para.at.vida)), 'golpe');
+    }
     if (de && fonte !== 'refletido') {
       if (de.vivo && de.at.rouboVida > 0 && causado > 0) this.curarInterno(de, causado * de.at.rouboVida);
       const refletir = para.valorStatus('refletir');
@@ -524,14 +547,17 @@ class Luta implements Contexto {
     return c;
   }
 
-  private ganharMana(l: LutadorInterno, n: number): void {
+  private ganharMana(l: LutadorInterno, n: number, fonte: FonteMana): void {
     if (!l.vivo || l.temStatus('semMana')) return;
+    const antes = l.mana;
     l.mana = Math.min(l.mana + n, l.habilidade ? l.at.mana * 2 : l.at.mana);
+    if (this.obs?.mana && l.mana > antes) this.obs.mana(l, fonte, l.mana - antes);
   }
 
   private morrer(l: LutadorInterno, abatedor: LutadorInterno | null): void {
     if (!l.vivo) return;
     l.vivo = false;
+    this.obs?.morte?.(l, this.t);
     l.vida = 0;
     if (this.ocup[l.idx] === l) this.ocup[l.idx] = null;
     if (!l.invocado) this.restam[l.lado]--;
@@ -755,7 +781,7 @@ class Luta implements Contexto {
 
   mana(u: Lutador, delta: number): void {
     const l = this.L(u);
-    if (delta > 0) this.ganharMana(l, delta);
+    if (delta > 0) this.ganharMana(l, delta, 'conteudo');
     else l.mana = Math.max(0, l.mana + delta);
   }
 
@@ -918,4 +944,12 @@ class Luta implements Contexto {
   }
 
   ouro(lado: Lado, n: number): void { this.ouroPor[lado] += n; }
+
+  moeda(lado: Lado, n: number, onde: Lutador | Casa): void {
+    if (!(n > 0)) return;
+    const casa = copiaCasa(casaDe(onde));
+    this.ouroPor[lado] += n;
+    this.moedas.push({ lado, casa, valor: n });
+    if (this.gravar) this.eventos.push({ t: this.t, tipo: 'moeda', lado, casa: copiaCasa(casa), valor: n });
+  }
 }

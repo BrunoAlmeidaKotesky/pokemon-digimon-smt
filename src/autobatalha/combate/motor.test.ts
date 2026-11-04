@@ -100,7 +100,7 @@ describe('motor de combate', () => {
     expect(quadros(r)[0]!.u[`a:${faca.uid}`]![1]).toBe(0);
   });
 
-  it('mana enche com os ataques e lança; a sobra passa; tanque começa com 20', () => {
+  it('mana enche com os ataques e lança; a sobra passa; tanque começa sem mana', () => {
     const c = conteudoFalso();
     const brigao = unidade('pokemon:brigao');
     const r = lutar(c, time('p1', em(brigao, 3, 0)), saco(4, 0));
@@ -116,7 +116,7 @@ describe('motor de combate', () => {
 
     const muralha = unidade('smt:muralha');
     const r2 = lutar(c, time('p1', em(muralha, 3, 0)), saco());
-    expect(r2.gravacao!.inicial[0]).toMatchObject({ mana: 20, manaMax: 60 });
+    expect(r2.gravacao!.inicial[0]).toMatchObject({ mana: 0, manaMax: 60 });
   });
 
   it('atordoado não age até passar', () => {
@@ -308,16 +308,42 @@ describe('motor de combate', () => {
     const brigao = unidade('pokemon:brigao', 1, { itens: ['haos'] }), jotaro = unidade('jojo:jotaro'), mira = unidade('overwatch:mira');
     const r = lutar(c, time('p1', em(brigao, 3, 0), em(jotaro, 4, 0), em(mira, 3, 3)), time('p2', ...[2, 3, 4].map(col => em(unidade('pokemon:brigao', 2), col, 0))));
     const ini = Object.fromEntries(r.gravacao!.inicial.map(e => [e.id, e]));
-    expect(ini[`a:${brigao.uid}`]!.vidaMax).toBe(Math.round(500 * 1.15 * 1.6));
+    expect(ini[`a:${brigao.uid}`]!.vidaMax).toBe(Math.round(450 * 1.15 * 1.6));
     expect(ini[`a:${jotaro.uid}`]!.vidaMax).toBe(Math.round(850 * 1.15 * 1.6));
-    expect(ini[`a:${mira.uid}`]!.vidaMax).toBe(Math.round(500 * 0.8 * 1.1));
+    expect(ini[`a:${mira.uid}`]!.vidaMax).toBe(Math.round(450 * 0.75 * 1.1));
     // os Brigões do lado B não têm o traço (é um campeão só)
-    expect(r.gravacao!.inicial.filter(e => e.lado === 'b').every(e => e.vidaMax === Math.round(500 * 1.8 * 1.15))).toBe(true);
+    expect(r.gravacao!.inicial.filter(e => e.lado === 'b').every(e => e.vidaMax === Math.round(450 * 1.8 * 1.15))).toBe(true);
     expect(quadros(r)[0]!.u[`a:${brigao.uid}`]![3]).toBe(100);
     expect(conta.atacar).toBeGreaterThan(0);
     expect(conta.receber).toBeGreaterThan(0);
     expect(conta.segundo).toBeGreaterThan(0);
     expect(conta.morrer).toBeGreaterThan(0);
+  });
+
+  it('moeda: soma no ouro do lado, guarda a casa e vira evento; a passiva do campeão roda como item', () => {
+    const base = conteudoFalso({
+      golpe: { id: 'golpe', nome: 'Golpe', texto: '', mana: 30, lancar(ctx, eu) { ctx.moeda(eu.lado, 2, eu); } },
+    });
+    const vistos: string[] = [];
+    const c: ConteudoFalso = {
+      ...base,
+      passivaDe: campeao => (campeao === 'pokemon:brigao'
+        ? { nome: 'Teste', texto: '', aoLancar(ctx, p) { vistos.push(p.id); ctx.moeda(p.lado, 1, p.casa); } }
+        : undefined),
+    };
+    const brigao = unidade('pokemon:brigao');
+    const r = lutar(c, time('p1', em(brigao, 3, 0)), saco());
+    const id = `a:${brigao.uid}`;
+    const lancou = eventos(r, 'habilidade').filter(e => e.de === id).length;
+    expect(lancou).toBeGreaterThan(0);
+    expect(vistos.length).toBe(lancou);
+    expect(r.ouro.a).toBe(3 * lancou);
+    expect(r.moedas!.length).toBe(2 * lancou);
+    expect(r.moedas!.every(m => m.lado === 'a' && m.casa.lin >= 4)).toBe(true);
+    const ev = eventos(r, 'moeda');
+    expect(ev.map(e => e.valor)).toEqual(r.moedas!.map(m => m.valor));
+    // sem moeda, o resultado não tem a lista
+    expect(lutar(conteudoFalso(), time('p1', em(unidade('pokemon:brigao'), 3, 0)), saco()).moedas).toBeUndefined();
   });
 
   it('desempenho: 100 lutas de 9 contra 9 sem gravar em menos de 2 s', () => {

@@ -13,6 +13,9 @@ export {
   type TracoAtivo,
 } from './tracos';
 export { ESCUDO_HAOS, ITENS, MULT_COMPLETO, RECEITAS, combinar, ehComponente } from './itens';
+export {
+  CHANCE_MOEDA_ABATE, CHANCE_MOEDA_ATAQUE_NUMEMON, CHANCE_MOEDA_LANCAR, PASSIVAS, TETO_MOEDAS, passivaDe, textoPassiva,
+} from './passivas';
 
 /** Multiplicador da transformação (Mega, Gigantamax, Primal, Hisui, Paradox, 4ª forma do Digimon). */
 export const MULT_TRANSFORMAR = 1.4;

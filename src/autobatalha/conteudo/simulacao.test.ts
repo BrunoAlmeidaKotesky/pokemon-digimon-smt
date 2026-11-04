@@ -2,7 +2,9 @@
 // coisa; e alguns comportamentos que são fáceis de errar.
 import { describe, expect, it } from 'vitest';
 import type { Estrela, Ganchos, Habilidade } from '../tipos';
-import { GOLPE, HABILIDADES_CLASSE, HABILIDADES_PROPRIAS, ITENS, TRACOS } from './index';
+import {
+  ESCUDO_HAOS, GOLPE, HABILIDADES_CLASSE, HABILIDADES_PROPRIAS, ITENS, PASSIVAS, TETO_MOEDAS, TRACOS, textoPassiva,
+} from './index';
 import { criarMundo, type LutadorFalso, type Mundo } from './test-helpers';
 
 /** Tabuleiro de teste: lançador e 2 aliados embaixo, 5 inimigos em cima (frente colada). */
@@ -93,6 +95,33 @@ describe('traços e itens rodam sem quebrar', () => {
       expect(() => rodarGanchos(m, [eu], inimigos, i, eu)).not.toThrow();
     });
   }
+  for (const [id, p] of Object.entries(PASSIVAS)) {
+    it(`passiva ${id}`, () => {
+      const { m, eu, inimigos } = montar(1, 13);
+      expect(() => rodarGanchos(m, [eu], inimigos, p, eu)).not.toThrow();
+      expect(textoPassiva(id)).toMatch(/^Passiva — /);
+    });
+  }
+});
+
+describe('ouro no chão', () => {
+  it('derruba ao lançar e no abate de quem tem a passiva, até o teto da estrela', () => {
+    for (const estrela of [1, 2, 3] as const) {
+      const { m, eu } = montar(estrela, 21);
+      const p = PASSIVAS['deadlock:rat-king']!;
+      for (let i = 0; i < 40; i++) p.aoLancar!(m.ctx, eu, eu);
+      expect(m.conta('moeda:a:1'), `★${estrela}`).toBe(TETO_MOEDAS[estrela - 1]);
+      // abate de outro aliado ou morte do próprio portador não derruba
+      const { m: m2, eu: eu2, aliado: al2, inimigos: in2 } = montar(estrela, 22);
+      for (let i = 0; i < 20; i++) {
+        p.aoMorrer!(m2.ctx, eu2, in2[0]!, al2);
+        p.aoMorrer!(m2.ctx, eu2, eu2, in2[0]!);
+      }
+      expect(m2.conta('moeda:'), `★${estrela}`).toBe(0);
+      for (let i = 0; i < 40; i++) p.aoMorrer!(m2.ctx, eu2, in2[0]!, eu2);
+      expect(m2.conta('moeda:a:1'), `★${estrela}`).toBe(TETO_MOEDAS[estrela - 1]);
+    }
+  });
 });
 
 describe('comportamentos', () => {
@@ -138,7 +167,7 @@ describe('comportamentos', () => {
     const alvo = m.add('alvo', 'b', { col: 3, lin: 3 }, { at: { vida: 1e9 } });
     for (let i = 0; i < 20; i++) TRACOS.atirador!.aoAtacar!(m.ctx, 2, eu, alvo, 1);
     expect(m.conta('buff:velAtaque')).toBe(15);
-    expect(eu.at.velAtaque).toBeCloseTo(1 + 15 * 0.1);
+    expect(eu.at.velAtaque).toBeCloseTo(1 + 15 * 0.08);
   });
 
   it('Raio: o raio pula a cada 3 ataques, pra 1/2/3 inimigos', () => {
@@ -202,7 +231,10 @@ describe('comportamentos', () => {
     const { m, eu, inimigos } = montar(3);
     const alvo = inimigos[0]!;
     alvo.at.vida = 1e9;
-    for (let i = 0; i < 3; i++) HABILIDADES_PROPRIAS['jojo:Boy II Man']!.lancar(m.ctx, eu, alvo);
+    // vence 90% das vezes na estrela 3: lança até a 3ª vitória
+    for (let i = 0; i < 12 && !m.registro.includes('texto:Habilidade roubada!'); i++) {
+      HABILIDADES_PROPRIAS['jojo:Boy II Man']!.lancar(m.ctx, eu, alvo);
+    }
     expect(m.registro).toContain('texto:Habilidade roubada!');
     m.rodar(100);
     expect(alvo.temStatus('semMana')).toBe(true);
@@ -222,9 +254,9 @@ describe('comportamentos', () => {
   it('Item Haos dá escudo no começo; Drago queima', () => {
     const { m, eu, inimigos } = montar();
     ITENS.haos!.aoComecar!(m.ctx, eu, [eu]);
-    expect(eu.escudo).toBeCloseTo(80);
+    expect(eu.escudo).toBeCloseTo(1000 * ESCUDO_HAOS);
     ITENS['haos+haos']!.aoComecar!(m.ctx, eu, [eu]);
-    expect(eu.escudo).toBeCloseTo(80 + 240);
+    expect(eu.escudo).toBeCloseTo(1000 * ESCUDO_HAOS * (1 + 2 * 1.5));
     ITENS['pyrus+pyrus']!.aoAtacar!(m.ctx, eu, eu, inimigos[0]!, 10);
     expect(inimigos[0]!.temStatus('queimando')).toBe(true);
   });

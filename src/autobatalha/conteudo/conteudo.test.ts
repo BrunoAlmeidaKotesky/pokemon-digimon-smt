@@ -280,11 +280,12 @@ describe('itens', () => {
   });
 
   it('completo soma os componentes ×1,5', () => {
-    expect(ITENS['pyrus+pyrus']!.atributos).toEqual({ dano: 0.45 });
-    expect(ITENS['pyrus+aquos']!.atributos).toEqual({ dano: 0.23, manaInicial: 23 });
-    expect(ITENS['subterra+ventus']!.atributos).toEqual({ armadura: 0.38, velAtaque: 0.18 });
-    expect(ITENS['haos+ventus']!.atributos).toEqual({ resist: 0.23, velAtaque: 0.18, desvio: 0.15 });
-    expect(ITENS.pyrus!.atributos).toEqual({ dano: 0.15 });
+    expect(ITENS['pyrus+pyrus']!.atributos).toEqual({ dano: 0.36 });
+    expect(ITENS['pyrus+aquos']!.atributos).toEqual({ dano: 0.18, manaInicial: 30 });
+    // 0,35 × 1,5 = 52,5% → 53%; 0,25 × 1,5 = 37,5% → 38%
+    expect(ITENS['subterra+ventus']!.atributos).toEqual({ armadura: 0.53, velAtaque: 0.15 });
+    expect(ITENS['haos+ventus']!.atributos).toEqual({ resist: 0.38, velAtaque: 0.15, desvio: 0.15 });
+    expect(ITENS.pyrus!.atributos).toEqual({ dano: 0.12 });
   });
 
   it('texto não vazio, com os números', () => {
@@ -293,8 +294,8 @@ describe('itens', () => {
       expect(i.texto, i.id).toMatch(/\d/);
       expect(i.texto, i.id).not.toMatch(/undefined|NaN/);
     }
-    expect(ITENS.haos!.texto).toBe('+15% de resistência e escudo de 8% da vida no começo da luta.');
-    expect(ITENS['pyrus+pyrus']!.texto).toBe('+45% de dano de ataque. Os ataques queimam o alvo por 3 s: 2% da vida máxima por segundo.');
+    expect(ITENS.haos!.texto).toBe('+25% de resistência e escudo de 10% da vida no começo da luta.');
+    expect(ITENS['pyrus+pyrus']!.texto).toBe('+36% de dano de ataque. Os ataques queimam o alvo por 3 s: 1,5% da vida máxima por segundo.');
   });
 });
 

@@ -9,19 +9,21 @@ type Efeito = Omit<Item, 'id' | 'nome' | 'bakugan' | 'componentes' | 'texto' | '
 
 export const MULT_COMPLETO = 1.5;
 /** Escudo do Haos no começo da luta (fração da vida), por componente. */
-export const ESCUDO_HAOS = 0.08;
+export const ESCUDO_HAOS = 0.1;
 
 const NOMES: Record<Componente, string> = {
   pyrus: 'Pyrus', aquos: 'Aquos', haos: 'Haos', darkus: 'Darkus', subterra: 'Subterra', ventus: 'Ventus', aurelus: 'Aurelus',
 };
+// Rebalanceados no playtest de 04/11/2026 (docs/tft/matematica/equilibrio.md): dano, vida e vel. ataque valiam o
+// dobro dos outros.
 const BONUS: Record<Componente, Bonus> = {
-  pyrus: { dano: 0.15 },
-  aquos: { manaInicial: 15 },
-  haos: { resist: 0.15 },
-  darkus: { rouboVida: 0.1 },
-  subterra: { armadura: 0.25 },
-  ventus: { velAtaque: 0.12 },
-  aurelus: { vida: 0.15 },
+  pyrus: { dano: 0.12 },
+  aquos: { manaInicial: 20 },
+  haos: { resist: 0.25 },
+  darkus: { rouboVida: 0.12 },
+  subterra: { armadura: 0.35 },
+  ventus: { velAtaque: 0.1 },
+  aurelus: { vida: 0.12 },
 };
 
 /** Receitas (a ordem de cada par segue COMPONENTES): par → nome do Bakugan em SetDados.bakugan. */
@@ -132,8 +134,8 @@ const cGoreene = contador();
 /** Efeito próprio de cada completo, pelo id `${a}+${b}`. */
 const EFEITOS: Record<string, Efeito> = {
   'pyrus+pyrus': {
-    texto: 'Os ataques queimam o alvo por 3 s: 2% da vida máxima por segundo.',
-    aoAtacar(ctx, _p, de, alvo) { if (alvo.vivo) ctx.status(de, alvo, 'queimando', 3, 0.02); },
+    texto: 'Os ataques queimam o alvo por 3 s: 1,5% da vida máxima por segundo.',
+    aoAtacar(ctx, _p, de, alvo) { if (alvo.vivo) ctx.status(de, alvo, 'queimando', 3, 0.015); },
   },
   'aquos+aquos': {
     texto: 'Depois de lançar a habilidade, recupera 20 de mana.',
@@ -162,20 +164,20 @@ const EFEITOS: Record<string, Efeito> = {
     },
   },
   'ventus+ventus': {
-    texto: 'A cada 2 s, +5% de velocidade de ataque (até 10 vezes).',
-    porSegundo(ctx, p) { if (p.vivo && aCadaS(ctx, 2) && cSkyress.acumular(p, 10)) ctx.buff(p, 'velAtaque', 0.05); },
+    texto: 'A cada 2 s, +4% de velocidade de ataque (até 10 vezes).',
+    porSegundo(ctx, p) { if (p.vivo && aCadaS(ctx, 2) && cSkyress.acumular(p, 10)) ctx.buff(p, 'velAtaque', 0.04); },
   },
   'aurelus+aurelus': {
-    texto: 'Regenera 2% da vida máxima por segundo.',
-    porSegundo(ctx, p) { if (p.vivo) ctx.curar(p, p, p.at.vida * 0.02); },
+    texto: 'Regenera 1,5% da vida máxima por segundo.',
+    porSegundo(ctx, p) { if (p.vivo) ctx.curar(p, p, p.at.vida * 0.015); },
   },
   'pyrus+aquos': {
-    texto: 'Depois de lançar a habilidade, solta vapor fervente: 100% do dano de ataque nos inimigos em volta (1 casa).',
+    texto: 'Depois de lançar a habilidade, solta vapor fervente: 150% do dano de ataque nos inimigos em volta (1 casa).',
     aoLancar(ctx, _p, u) {
       const perto = naArea(ctx, u, u, 1, 'inimigos');
       if (!perto.length) return;
       ctx.visual('fogo', [u, ...perto], u);
-      for (const x of perto) ctx.dano(u, x, 1, { tipo: 'magico', critico: 'nunca' });
+      for (const x of perto) ctx.dano(u, x, 1.5, { tipo: 'magico', critico: 'nunca' });
     },
   },
   'pyrus+haos': {
@@ -202,23 +204,23 @@ const EFEITOS: Record<string, Efeito> = {
     },
   },
   'pyrus+ventus': {
-    texto: 'A cada 4 ataques, uma rajada de fogo em linha: 100% do dano de ataque em todos no caminho.',
+    texto: 'A cada 4 ataques, uma rajada de fogo em linha: 80% do dano de ataque em todos no caminho.',
     aoAtacar(ctx, _p, de, alvo) {
       if (!cFalconeer.bateu(de, 4)) return;
       const linha = ctx.emLinha(de, alvo, 'inimigos');
       if (alvo.vivo && !linha.includes(alvo)) linha.unshift(alvo);
       ctx.visual('fogo', linha, de);
-      for (const x of linha) ctx.dano(de, x, 1, { tipo: 'magico', critico: 'nunca' });
+      for (const x of linha) ctx.dano(de, x, 0.8, { tipo: 'magico', critico: 'nunca' });
     },
   },
   'pyrus+aurelus': {
-    texto: 'Fênix: uma vez por luta, ao cair abaixo de 25% da vida, cura 40% da vida máxima e queima os inimigos em ' +
+    texto: 'Fênix: uma vez por luta, ao cair abaixo de 25% da vida, cura 30% da vida máxima e queima os inimigos em ' +
       'volta (1 casa) por 3 s (3% da vida máxima por segundo).',
     aoReceberDano(ctx, _p, u) {
       if (!u.vivo || fracVida(u) >= 0.25 || !cPyravian(u)) return;
       const perto = naArea(ctx, u, u, 1, 'inimigos');
       ctx.visual('fogo', [u, ...perto], u);
-      ctx.curar(u, u, u.at.vida * 0.4);
+      ctx.curar(u, u, u.at.vida * 0.3);
       for (const x of perto) ctx.status(u, x, 'queimando', 3, 0.03);
     },
   },
@@ -241,8 +243,12 @@ const EFEITOS: Record<string, Efeito> = {
     },
   },
   'aquos+subterra': {
-    texto: 'Os ataques envenenam o alvo: ele não recebe cura por 3 s.',
-    aoAtacar(ctx, _p, de, alvo) { if (alvo.vivo) ctx.status(de, alvo, 'semCura', 3); },
+    texto: 'Os ataques envenenam o alvo: por 3 s ele não recebe cura e fica 15% mais lento.',
+    aoAtacar(ctx, _p, de, alvo) {
+      if (!alvo.vivo) return;
+      ctx.status(de, alvo, 'semCura', 3);
+      ctx.status(de, alvo, 'lento', 3, 0.15);
+    },
   },
   'aquos+ventus': {
     texto: 'A cada 3 ataques, ganha 10 de mana.',
@@ -257,11 +263,11 @@ const EFEITOS: Record<string, Efeito> = {
     aoAtacar(ctx, _p, de, alvo) { if (alvo.vivo) ctx.status(de, alvo, 'vulneravel', 3, 0.1); },
   },
   'haos+subterra': {
-    texto: 'No começo da luta, os aliados em volta (1 casa) ganham escudo de 10% da vida deles.',
+    texto: 'No começo da luta, os aliados em volta (1 casa) ganham escudo de 15% da vida deles.',
     aoComecar(ctx, p) {
       const vizinhos = naArea(ctx, p, p, 1, 'aliados').filter(a => a !== p);
       if (vizinhos.length) ctx.visual('escudo', vizinhos, p);
-      for (const a of vizinhos) ctx.escudo(a, a.at.vida * 0.1, LUTA_TODA);
+      for (const a of vizinhos) ctx.escudo(a, a.at.vida * 0.15, LUTA_TODA);
     },
   },
   'haos+ventus': {
@@ -279,12 +285,12 @@ const EFEITOS: Record<string, Efeito> = {
     },
   },
   'darkus+subterra': {
-    texto: 'Depois de lançar a habilidade, os inimigos em volta (1 casa) ficam atordoados por 1 s.',
+    texto: 'Depois de lançar a habilidade, os inimigos em volta (1 casa) ficam atordoados por 1,5 s.',
     aoLancar(ctx, _p, u) {
       const perto = naArea(ctx, u, u, 1, 'inimigos');
       if (!perto.length) return;
       ctx.visual('terra', [u, ...perto], u);
-      for (const x of perto) ctx.status(u, x, 'atordoado', 1);
+      for (const x of perto) ctx.status(u, x, 'atordoado', 1.5);
     },
   },
   'darkus+ventus': {

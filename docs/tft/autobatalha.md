@@ -43,13 +43,14 @@ editar o arquivo citado.
 
 ## Atributos (src/autobatalha/combate/atributos.ts)
 
-Base da estrela 1 pelo custo; estrela multiplica vida (×1 / ×1,8 / ×3,24) e dano (×1 / ×1,5 / ×2,25).
+Base da estrela 1 pelo custo; estrela multiplica vida (×1 / ×1,8 / ×3,24) e dano (×1 / ×1,5 / ×2,25). Números
+calibrados no playtest automático ([matematica/equilibrio.md](matematica/equilibrio.md), com o antes → depois no fim).
 
 | Custo | Vida | Dano | Armadura | Resist. | Vel. ataque |
 |---|---|---|---|---|---|
-| 1 | 500 | 45 | 20 | 20 | 0,65 |
+| 1 | 450 | 42 | 20 | 20 | 0,65 |
 | 2 | 600 | 50 | 25 | 25 | 0,70 |
-| 3 | 700 | 60 | 30 | 30 | 0,75 |
+| 3 | 720 | 61 | 30 | 30 | 0,75 |
 | 4 | 850 | 75 | 40 | 40 | 0,80 |
 | 5 | 1000 | 90 | 50 | 50 | 0,85 |
 
@@ -57,23 +58,35 @@ O **papel** vem da primeira classe da forma nesta ordem de prioridade e ajusta o
 
 | Papel | Vida | Dano | Outros | Alcance | Mana |
 |---|---|---|---|---|---|
-| Tanque | ×1,30 | ×0,80 | +20 armadura e resist. | 1 | 60 (começa com 20) |
+| Tanque | ×1,25 | ×0,75 | +20 armadura e resist. | 1 | 70 |
 | Porradeiro | ×1,15 | ×1,05 | | 1 | 70 |
-| Assassino | ×0,85 | ×1,20 | +15% crítico | 1 | 60 |
-| Atirador | ×0,80 | ×1,10 | vel. ataque ×1,10 | 4 | 80 |
+| Assassino | ×1,00 | ×1,20 | +15% crítico | 1 | 60 |
+| Atirador | ×0,75 | ×1,00 | vel. ataque ×1,10 | 4 | 80 |
 | Dragão | ×1,05 | ×1,05 | | 2 | 80 |
 | Robô | ×1,00 | ×1,00 | +15 armadura | 2 | 70 |
-| Anjo | ×0,95 | ×1,00 | | 3 | 80 |
-| Fadinhas | ×0,85 | ×0,90 | | 3 | 70 |
-| Safada | ×0,90 | ×1,00 | | 2 | 70 |
+| Anjo | ×0,85 | ×1,00 | | 3 | 80 |
+| Fadinhas | ×0,90 | ×0,95 | | 3 | 70 |
+| Safada | ×1,00 | ×1,00 | | 2 | 70 |
 | Temporais | ×0,90 | ×1,00 | | 3 | 90 |
 | Demoníacos | ×1,00 | ×1,05 | | 2 | 80 |
-| Criaturinha Bizarra, Únicos | ×1,00 | ×1,00 | | 1 / 2 | 70 / 80 |
+| Criaturinha Bizarra | ×1,20 | ×1,05 | | 1 | 70 |
+| Únicos | ×1,00 | ×1,00 | | 2 | 80 |
 | Só elemento | Terra vida ×1,10; Vento vel. ×1,10 | | | Fogo, Água, Vento, Planta 2; Raio, Gelo 3; Terra 1 | 80 |
 
-Todos: 25% de chance de crítico (+40% de dano), mana +10 por ataque e +5 por golpe recebido (habilidades com mana
-própria mudam o máximo). Ataque básico é físico (armadura); habilidade é mágica (resistência), a não ser que diga
-outra coisa. Redução: dano × 100 / (100 + defesa).
+Forma que não lança nada (não final de Pokémon e Digimon) ganha +20% de vida e dano na estrela 1 e +25% na 2, no
+lugar da habilidade.
+
+Todos: 25% de chance de crítico (+40% de dano). **Mana:** +10 por ataque; golpe recebido (ataque ou habilidade) dá
+mana pela fração da vida máxima que tirou: 40 × dano ÷ vida máxima, até 5 por golpe (quem tem mais vida enche mais
+devagar apanhando, então tanque não lança mais rápido só por estar na frente). Ninguém começa com mana, a não ser por
+item ou traço; a habilidade define o máximo. Ataque básico é físico (armadura); habilidade é mágica (resistência), a
+não ser que diga outra coisa. Redução: dano × 100 / (100 + defesa).
+
+**Passivas** (`src/autobatalha/conteudo/passivas.ts`): poucos campeões têm uma, que age como item. Hoje, o ouro no
+chão: Harvest, Pro Pickpocket, Pseudotrash, a linha do Numemon e Rat King, ao lançar a habilidade e no golpe que
+derruba um inimigo, têm 50% de chance de derrubar 1 de ouro no chão (até 2/3/4 por luta, pela estrela; o Numemon também
+6% a cada ataque). A moeda fica no tabuleiro até o jogador passar o mouse em cima (dá ~1 de ouro por luta por campeão
+desses).
 
 ## Luta (src/autobatalha/combate)
 
@@ -100,22 +113,22 @@ igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de bai
 | Tanque | (2) +20% de armadura e resistência; (4) +40%, e começam com escudo de 15% da vida; (6) +70%, e no começo provocam os inimigos em volta por 3 s |
 | Porradeiro | (2) +15% de vida; (4) +30%, e abaixo de metade da vida causam 20% a mais; (6) +50%, e o resto do time ganha +10% de vida |
 | Assassino | saltam pra trás da linha inimiga. (2) +15% de chance e +15% de dano de crítico; (4) +30% e +30%; (6) +45% e +45%, e cada abate deixa 1 s sem poder ser alvo |
-| Demoníacos | (2) 10% de roubo de vida, e quando um Demoníaco morre os outros ganham 10% de dano; (4) 20% e 20%; (6) 35% e 35% |
-| Criaturinha Bizarra | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo); (4) o dobro; (6) o triplo e dois bônus |
+| Demoníacos | (2) 10% de roubo de vida, e quando um Demoníaco morre os outros ganham 10% de dano; (4) 20% e 20%; (6) 25% e 25% |
+| Criaturinha Bizarra | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo); (4) o dobro; (6) 2,5 vezes e dois bônus |
 | Fadinhas | a cada 4 s, cada Fadinha cura o aliado com menos vida em 4 / 8 / 14% da vida máxima dele |
-| Safada | os ataques têm 10 / 18 / 28% de chance de encantar o alvo por 1 s (atordoado) |
-| Atirador | +1 de alcance; cada ataque dá +3 / 6 / 10% de vel. ataque (até 15 vezes) |
-| Anjo | (2) o primeiro Anjo que morrer renasce com 30% da vida; (4) todos renascem uma vez com 30%; (6) com 60% |
+| Safada | os ataques têm 15 / 27 / 40% de chance de encantar o alvo por 1,5 s (atordoado) |
+| Atirador | +1 de alcance; cada ataque dá +3 / 6 / 8% de vel. ataque (até 15 vezes) |
+| Anjo | (2) o primeiro Anjo que morrer renasce com 40% da vida; (4) todos renascem uma vez com 50%; (6) com 80% |
 | Robô | +25 / 50 / 90% de armadura e escudo de 10 / 20 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |
 | Dragão | +10 / 20 / 32% de vida e dano; (6) o time inteiro ganha +5% de dano |
 | Temporais | a cada 5 s, o time ganha +6 / 12 / 20% de vel. ataque até o fim da luta (acumula); (6) uma vez por luta, o aliado que cairia abaixo de 20% da vida cura 40% |
 | Fogo (2/3/4) | ataques queimam (1 / 2 / 3% da vida máxima por s, 3 s, e 33% menos cura); (4) quem morre queimando passa o fogo pro inimigo mais perto |
-| Água (2/3/4) | recuperam 1 / 2 / 3% da vida por segundo; (4) a cada 4 s se livram dos efeitos ruins |
-| Terra (2/3/4) | +15 / 30 / 50% de armadura; (4) a cada 6 s um tremor atordoa por 0,5 s os inimigos em volta |
-| Vento (2/3/4) | +15 / 30 / 50% de vel. ataque; (3) desviam de 10% dos ataques; (4) 20% |
+| Água (2/3/4) | recuperam 1,5 / 3 / 4,5% da vida por segundo; (4) a cada 4 s se livram dos efeitos ruins |
+| Terra (2/3/4) | +30 / 60 / 100% de armadura e resistência; (4) a cada 4 s um tremor atordoa por 0,5 s os inimigos em volta |
+| Vento (2/3/4) | +15 / 30 / 45% de vel. ataque; (3) desviam de 10% dos ataques; (4) 15% |
 | Raio (2/3/4) | a cada 3 ataques, um raio pula do alvo pra 1 / 2 / 3 inimigos (60% do dano); (4) atordoa 0,5 s |
 | Gelo (2/3/4) | o alvo fica 15 / 25 / 35% mais lento; (4) o 5º ataque seguido no mesmo alvo congela 1 s |
-| Planta (2/3/4) | o 1º ataque em cada inimigo planta uma semente que suga 2 / 4 / 6% da vida dele por 4 s e cura quem plantou; (4) a cura vai também pro aliado mais perto |
+| Planta (2/3/4) | o 1º ataque em cada inimigo planta uma semente que suga 2 / 3,5 / 4,5% da vida dele por segundo, por 4 s, e cura quem plantou; (4) a cura vai também pro aliado mais perto |
 
 **Origens**
 
@@ -139,13 +152,13 @@ unidade carrega até 3; dois componentes na mesma unidade viram o completo na ho
 
 | Componente | Bônus |
 |---|---|
-| Pyrus | +15% de dano |
-| Aquos | +15 de mana inicial |
-| Haos | +15% de resistência e escudo de 8% da vida no começo |
-| Darkus | 10% de roubo de vida |
-| Subterra | +25% de armadura |
-| Ventus | +12% de vel. ataque |
-| Aurelus | +15% de vida |
+| Pyrus | +12% de dano |
+| Aquos | +20 de mana inicial |
+| Haos | +25% de resistência e escudo de 10% da vida no começo |
+| Darkus | 12% de roubo de vida |
+| Subterra | +35% de armadura |
+| Ventus | +10% de vel. ataque |
+| Aurelus | +12% de vida |
 
 O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no arquivo).
 
@@ -218,25 +231,64 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 
 ## Tela (src/modes/autobatalha)
 
-- Aba **Autobatalha** no site. Só monta o conteúdo com a aba aberta. Pensada pra computador (1280 px).
-- Em cima: estágio e rodada (ícones das rodadas do estágio), relógio. À esquerda: traços ativos com contagem e
-  degraus. No meio: o tabuleiro de hexágonos (só a sua metade no planejamento; o inteiro na luta), o banco e os itens
-  soltos. À direita: os 8 jogadores com vida (clique pra olhar o tabuleiro de outro). Embaixo: ouro, nível e XP,
-  "Comprar XP", "Atualizar", travar e as 7 cartas da loja (retrato, nome, custo, origem e classes, borda da cor do custo).
+- Aba **Autobatalha** no site. Só monta o conteúdo com a aba aberta; o jogo carrega só quando a aba abre (import com
+  lazy). Pensada pra computador, de 1280 a 2560 px.
+- **A partida ocupa a janela inteira**, abaixo das abas do site (o cabeçalho some e as abas ficam numa faixa fina).
+  Tudo escala com a janela: a tela põe `--k` no `#autobatalha` (1 = 1280×720, até 2,4) e o CSS mede tudo em
+  `calc(N * var(--u))` (`--u` = 1px × k); o tabuleiro mede o espaço que sobra (ResizeObserver) e escolhe o maior
+  tamanho de casa que cabe. As casas são um pouco achatadas (altura = largura; na luta, 0,8), como uma câmera inclinada.
+- Em cima: estágio e rodada (ícones das rodadas do estágio), fase, relógio, Pronto, **Informações**, Planejador, mudo,
+  **configuração** (engrenagem) e Sair. À esquerda: os traços. Depois, a **bolsa** (itens soltos) numa coluna à
+  esquerda do tabuleiro. No meio: o tabuleiro (só a sua metade no planejamento; o inteiro na luta) e o banco embaixo
+  (encolhe na luta). À direita: os 8 jogadores com vida (clique pra olhar o tabuleiro de outro) e, depois de cada
+  luta, o **dano por unidade** (causado, do motor, e recebido, somado dos eventos; seu lado ou o deles). Embaixo: ouro
+  com **juros** (+1 a cada 10) e **sequência** de vitórias ou derrotas, nível e XP, chances da loja, XP, Atualizar,
+  travar e as 7 cartas.
+- **Tabuleiro:** um gramado (faixas de grama, vinheta) com casas hexagonais de grama de aro claro; na luta a metade
+  do adversário é de outra grama (oliva) e a linha do meio é tracejada com um círculo central; no planejamento a
+  linha tracejada fica em cima da sua metade (o adversário vem de cima). Em cima da área: **unidades x/y** (limite da
+  partida, sem número fixo na tela; pisca quando sobra vaga) e a **contagem grande** dos segundos até a luta, que fica
+  vermelha e pulsa nos últimos 5.
 - **Unidade no tabuleiro:** foto redonda com borda da cor do custo (cinza, verde, azul, roxo, dourado), estrelas em
-  cima, barras de vida e mana, itens embaixo.
+  cima, barras de vida e mana, itens embaixo e o ícone do **alcance** (espada vermelha = de perto; arco azul = de
+  longe). Ao lançar a habilidade, a foto dá um pulinho com tremida.
+- **Imagens inteiras:** retratos, cartas, carrossel, planejador e dica com `object-fit: contain` sobre um fundo da cor
+  do custo (o redondo ainda pode cortar a pontinha de uma arte quadrada cheia).
+- **Cartas da loja:** retrato inteiro, nome e custo, traços em **etiquetas coloridas** (origem na cor da franquia;
+  cada classe e elemento com a sua cor, `COR_TRACO` em comum.tsx), as **cópias que você já tem** (bolinhas até 3,
+  e ★★ se já tem estrela 2), a marca **★★/★★★ que brilha quando a compra evolui**, o alcance, "plano" e "time".
+- **Traços:** hexágono com a forma do degrau (bronze, prata, ouro e prisma no último degrau das escadas longas) e a
+  cor do traço no meio, nome, contagem e próximo degrau, a escada com o atual em destaque e uma barra até o próximo.
+  Passar o mouse destaca no tabuleiro e no banco as unidades do traço (as outras apagam); o botão de lista abre os
+  campeões do traço (retrato, custo; os seus marcados, no tabuleiro mais forte) com "Detalhes" pras Informações.
 - **Tooltip** (passar o mouse em qualquer retrato: tabuleiro, banco, loja, planejador, inimigo na luta): nome,
-  imagem, origem, classes (com o que cada traço faz), custo, estrelas, atributos (vida, dano, armadura, resistência,
-  vel. ataque, alcance, mana, crítico), habilidade com os números da estrela atual em destaque, linha evolutiva
-  (imagens de cada nível, alternativas, a forma atual marcada, a transformação da ult), informações do Catálogo e itens.
-  Clicar numa unidade sua fixa o tooltip, com os botões de escolher a ult e a posição do Yu-Gi-Oh! (fecha com Esc ou
-  clique fora). O jogo carrega só quando a aba abre (import com lazy).
+  imagem, alcance, origem, classes (com o que cada traço faz), custo, estrelas, passiva (se tiver), atributos (vida,
+  dano, armadura, resistência, vel. ataque, alcance, mana, crítico), habilidade com os números da estrela atual em
+  destaque, linha evolutiva (imagens de cada nível, alternativas, a forma atual marcada, a transformação da ult),
+  informações do Catálogo e itens. **Botão direito** em qualquer retrato ou carta fixa o tooltip (o esquerdo continua
+  comprando e arrastando); clicar numa unidade sua também fixa, com os botões de escolher a ult e a posição do
+  Yu-Gi-Oh!. Fixo, clicar na imagem abre a arte grande. Fecha com Esc ou clique fora.
+- **Informações** (botão no topo; Info.tsx): todos os traços com degraus, efeitos e os campeões de cada um; a grade de
+  receitas dos Bakugan (componente × componente); as chances da loja por nível até o máximo da partida, com XP e
+  limite do tabuleiro; e as regras de ouro, juros, sequência, venda e dano, montadas das constantes da partida.
+- **Configuração** (tela inicial e engrenagem na partida): relógio e segundos, velocidade, dificuldade dos bots (vale
+  pra partida nova) e volume com mudo.
 - **Planejador de time:** escolher até 10 campeões (busca, filtro por origem, classe e custo), ver os traços que
   ativam, salvar planos; na loja, campeão do plano ganha marca. Abre durante a partida e fora dela.
-- Arrastar e soltar (banco, tabuleiro, vender na loja, item na unidade). Atalhos: D atualiza, F compra XP, E vende o
-  que está sob o mouse.
-- Luta: unidades andam entre casas, barras mudam, números de dano sobem, nome da habilidade aparece, efeitos simples
-  nas casas atingidas. Velocidade 1×/2×/4× e "Pular luta".
+- Arrastar e soltar: banco, tabuleiro, vender na loja (o valor de venda vai junto com o mouse e aparece na loja), item
+  na unidade, e **um componente solto em cima de outro** junta no Bakugan completo (`juntarItens`). Componente =
+  o símbolo do atributo; completo = a imagem do Bakugan. Atalhos: D atualiza, F compra XP, E vende e **W** manda a
+  unidade sob o mouse do banco pro tabuleiro (primeira casa livre: de perto na frente, de longe atrás, do meio pras
+  pontas) ou do tabuleiro pro banco.
+- **Ouro no chão:** moedas que caíram na luta ficam douradas na casa (canto de baixo) até você passar o mouse em
+  cima: o ouro entra e um "+N" sobe. Na luta, a moeda cai na casa na hora.
+- Luta: antes, a **apresentação** (~1,5 s, `MS_CLASH` no controle, que segura o tempo da luta): o seu avatar contra o
+  do adversário (ou o monstro, ou o chefe) com um "VS". Depois as unidades andam entre casas, barras mudam, números de
+  dano sobem, nome da habilidade aparece, efeitos simples nas casas atingidas. Velocidade 1×/2×/4× e "Pular luta".
+- **Sons** (som.ts, Web Audio gerado na hora, sem arquivos; sons.ts decide quando, comparando os estados da tela):
+  comprar, vender, atualizar, XP, nível, evoluir (★2 e ★3), posicionar, equipar, juntar, apresentação, começo da luta,
+  golpe (baixinho, com limite por segundo), crítico, habilidade (pelo efeito), morte, vitória, derrota, carrossel,
+  relógio nos últimos segundos, moeda, aviso e clique. O áudio só começa no primeiro gesto; volume 0 não toca nada.
 - Escolha da forma da evolução em janelinha (fica pra depois do carrossel); sem resposta no fim do relógio, sorteia.
 - **Carrossel** no lugar do tabuleiro: as 9 opções num círculo que gira devagar (para com o mouse em cima), cada uma
   com a foto redonda da cor do custo e o ícone do item; a dica mostra o campeão e o item que vem junto. Quem pegou

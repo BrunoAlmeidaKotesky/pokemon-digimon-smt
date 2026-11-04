@@ -77,7 +77,9 @@ Baba, Light Rod Stand, e as ults de classe Safada (encantado só fica parado) e 
 
 Números chutados que merecem revisão: mana de cada habilidade própria (60 a 110), The World Over Heaven, Star
 Platinum e The World parando o tempo de todos os inimigos, Tusk na estrela 1 (10 × 30%), Solgaleo, Planta (até 24%
-da vida de cada inimigo no degrau 4) e os efeitos dos 28 Bakugan.
+da vida de cada inimigo no degrau 4) e os efeitos dos 28 Bakugan. Revisados no playtest automático de 04/11/2026
+(atributos, papéis, mana, ults, Stands, traços de classe e elemento, Bakugan): números, antes → depois e o que ainda
+está fora no fim de [matematica/equilibrio.md](matematica/equilibrio.md).
 
 ## Pendente
 

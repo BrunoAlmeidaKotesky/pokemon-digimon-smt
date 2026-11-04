@@ -234,6 +234,7 @@ export function criarMundo(semente = 1): Mundo {
     visual(tipo) { registro.push(`visual:${tipo}`); },
     texto(_u, texto) { registro.push(`texto:${texto}`); },
     ouro(lado, n) { registro.push(`ouro:${lado}:${n}`); },
+    moeda(lado, n) { registro.push(`moeda:${lado}:${n}`); },
   };
 
   return {

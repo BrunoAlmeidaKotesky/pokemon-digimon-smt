@@ -4,7 +4,7 @@
 import type { Contexto, Habilidade, Lutador, PorEstrela } from '../tipos';
 import {
   alvejaveis, alvoDe, bater, baterFixo, copiaCasa, corrente, curarH, devolverMana, escudoH, fracVida, inimigosVivos,
-  naArea, pc, pe, porSegundos, repetir, semRepetir, seg, tirarMana, usuarioDe,
+  naArea, num, pc, pct, pe, porSegundos, repetir, semRepetir, seg, tirarMana, usuarioDe,
 } from './util';
 
 type Lancar = (ctx: Contexto, eu: Lutador, alvo: Lutador | null) => void;
@@ -56,7 +56,7 @@ const BANETTE: PorEstrela = [1, 1.5, 2.25];
 const BANETTE_MEDO: PorEstrela = [1.5, 1.75, 2];
 const LOPUNNY: PorEstrela = [1.5, 2.25, 3.4];
 const LOPUNNY_VEL: PorEstrela = [0.4, 0.5, 0.6];
-const SUKAMON: PorEstrela = [1.5, 2.25, 3.4];
+const SUKAMON: PorEstrela = [2.2, 3.3, 5];
 
 const pokemonEDigimon: Habilidade[] = [
   hab('pokemon:Exploud', 'Estrondo', 80,
@@ -239,15 +239,15 @@ const pokemonEDigimon: Habilidade[] = [
 // SMT, LoL, Deadlock e Sujimon
 // ---------------------------------------------------------------------------------------------------------------
 
-const ANUBIS: PorEstrela = [1.2, 1.8, 2.7];
+const ANUBIS: PorEstrela = [1.8, 2.7, 4];
 const ARAHABAKI: PorEstrela = [2, 2.5, 3];
 const MOT: PorEstrela = [2.5, 3.75, 5.6];
 const VELKOZ: PorEstrela = [3, 4.5, 7];
 const BABA: PorEstrela = [1.2, 1.8, 2.7];
 const ESCAPIST_CURA: PorEstrela = [0.2, 0.3, 0.45];
 const TWISTED: PorEstrela = [0.9, 1.35, 2];
-const DIEHARD: PorEstrela = [1, 1.5, 2.25];
-const MASCOT: PorEstrela = [2, 3, 4.5];
+const DIEHARD: PorEstrela = [1.4, 2.1, 3.2];
+const MASCOT: PorEstrela = [2.6, 3.9, 5.9];
 
 const outros: Habilidade[] = [
   hab('smt:Anubis', 'Pesagem do Coração', 80,
@@ -382,15 +382,17 @@ const outros: Habilidade[] = [
 // JoJo (Stands)
 // ---------------------------------------------------------------------------------------------------------------
 
-const BALL_BREAKER: PorEstrela = [2.2, 3.3, 5];
-const CIVIL_WAR: PorEstrela = [1.8, 2.7, 4];
+const BALL_BREAKER: PorEstrela = [1.5, 2.25, 3.4];
+const CIVIL_WAR: PorEstrela = [2.2, 3.3, 5];
 const D4C: PorEstrela = [2, 3, 4.5];
-const HEY_YA: PorEstrela = [0.3, 0.45, 0.7];
+const HEY_YA: PorEstrela = [0.4, 0.6, 0.9];
+const HEY_YA_DESVIO = 0.3;
+const HEY_YA_TEMPO = 6;
 const SCARY: PorEstrela = [1.6, 2.4, 3.6];
-const THE_WORLD_SBR: PorEstrela = [2, 3, 4.5];
-const THE_WORLD_SBR_TEMPO: PorEstrela = [1.5, 2, 2.5];
+const THE_WORLD_SBR: PorEstrela = [1.6, 2.4, 3.6];
+const THE_WORLD_SBR_TEMPO: PorEstrela = [1.5, 1.75, 2];
 const TUBULAR: PorEstrela = [1.5, 2.25, 3.4];
-const TUSK: PorEstrela = [0.3, 0.45, 0.7];
+const TUSK: PorEstrela = [0.22, 0.32, 0.5];
 const SILVER: PorEstrela = [0.4, 0.6, 0.9];
 const STAR_TEMPO: PorEstrela = [1, 1.5, 2];
 const STAR: PorEstrela = [2.5, 3.75, 5.6];
@@ -398,32 +400,34 @@ const STRENGTH_TEMPO: PorEstrela = [1.5, 2, 2.5];
 const STRENGTH: PorEstrela = [1.5, 2.25, 3.4];
 const HOLY: PorEstrela = [0.3, 0.45, 0.7];
 const SOFT: PorEstrela = [0.6, 0.9, 1.35];
-const WONDER: PorEstrela = [0.8, 1.2, 1.8];
-const BOY: PorEstrela = [0.7, 0.85, 1];
+const WONDER: PorEstrela = [1.2, 1.8, 2.7];
+const BOY: PorEstrela = [0.6, 0.75, 0.9];
 const PEARL: PorEstrela = [0.22, 0.33, 0.5];
-const BAD_COMPANY: PorEstrela = [0.4, 0.6, 0.9];
+const BAD_COMPANY: PorEstrela = [0.5, 0.75, 1.1];
 const CRAZY: PorEstrela = [1.8, 2.7, 4];
 const CRAZY_CURA: PorEstrela = [0.25, 0.35, 0.5];
 const HARVEST: PorEstrela = [0.4, 0.6, 0.9];
 const RHCP: PorEstrela = [1.3, 1.95, 2.9];
 const STRAY: PorEstrela = [1.4, 2.1, 3.1];
-const THE_HAND: PorEstrela = [2, 3, 4.5];
-const BABY: PorEstrela = [1.8, 2.7, 4];
+const THE_HAND: PorEstrela = [3, 4.5, 6.75];
+const BABY: PorEstrela = [2.2, 3.3, 5];
 const REQUIEM_SONO: PorEstrela = [1.5, 2, 2.5];
 const GOLD: PorEstrela = [1.6, 2.4, 3.6];
 const GER_TEMPO: PorEstrela = [3, 4, 5];
-const GER: PorEstrela = [2.5, 3.75, 5.6];
-const METALLICA: PorEstrela = [1.2, 1.8, 2.7];
+const GER: PorEstrela = [3, 4.5, 6.75];
+const METALLICA: PorEstrela = [2, 3, 4.5];
 const PRESIDENT: PorEstrela = [2, 3, 4];
-const PISTOLS: PorEstrela = [0.7, 1.05, 1.6];
+const PISTOLS: PorEstrela = [0.55, 0.8, 1.2];
 const TALKING: PorEstrela = [2, 2.5, 3];
-const CMOON: PorEstrela = [2.2, 3.3, 5];
+const TALKING_ESCUDO = 0.12;
+const CMOON: PorEstrela = [2, 3, 4.5];
 const MIH: PorEstrela = [0.6, 0.9, 1.5];
 const TWOH_TEMPO: PorEstrela = [2, 2.5, 3];
 const TWOH: PorEstrela = [3, 4.5, 7];
 const NOVEMBER: PorEstrela = [0.6, 0.9, 1.35];
-const LIGHT_ROD: PorEstrela = [1.5, 2.25, 3.4];
-const FOO: PorEstrela = [0.6, 0.9, 1.35];
+const LIGHT_ROD: PorEstrela = [1.8, 2.7, 4];
+const FOO: PorEstrela = [0.8, 1.2, 1.8];
+const ECHOES: PorEstrela = [2, 3, 4.5];
 const FOO_CURA: PorEstrela = [0.15, 0.22, 0.33];
 const WHITESNAKE: PorEstrela = [1.5, 2.25, 3.4];
 const WHITESNAKE_TEMPO: PorEstrela = [2, 3, 4];
@@ -483,14 +487,14 @@ const jojo: Habilidade[] = [
     }),
 
   hab('jojo:Hey Ya!', 'Torcida', 60,
-    `grita incentivo pra unidade do Stand. Por 5 s ela ganha ${pc(HEY_YA)} de chance de crítico e desvia de 20% dos ` +
-    'ataques, por pura sorte.',
+    `grita incentivo pra unidade do Stand. Por ${num(HEY_YA_TEMPO)} s ela ganha ${pc(HEY_YA)} de chance de crítico e ` +
+    `desvia de ${pct(HEY_YA_DESVIO)} dos ataques, por pura sorte.`,
     (ctx, eu) => {
       const u = usuarioDe(eu);
       ctx.texto(u, 'Vai dar certo!');
       ctx.visual('luz', [u], eu);
-      ctx.buff(u, 'critChance', pe(eu, HEY_YA), 5);
-      ctx.buff(u, 'desvio', 0.2, 5);
+      ctx.buff(u, 'critChance', pe(eu, HEY_YA), HEY_YA_TEMPO);
+      ctx.buff(u, 'desvio', HEY_YA_DESVIO, HEY_YA_TEMPO);
     }),
 
   hab('jojo:Scary Monsters', 'Mordida Jurássica', 80,
@@ -586,7 +590,7 @@ const jojo: Habilidade[] = [
       bater(ctx, eu, alvo, pe(eu, STAR), { tipo: 'fisico' });
     }),
 
-  hab('jojo:Strength', 'Navio do Orangotango', 90,
+  hab('jojo:Strength', 'Navio do Orangotango', 80,
     'o casco do navio se fecha sobre os inimigos numa área de 2 casas em volta do alvo: ficam presos (atordoados) por ' +
     `${seg(STRENGTH_TEMPO)} e levam ${pc(STRENGTH)} do dano de ataque de canos e correntes.`,
     comAlvo((ctx, eu, alvo) => {
@@ -598,7 +602,7 @@ const jojo: Habilidade[] = [
       }
     })),
 
-  hab("jojo:Holy's Stand", 'Vinhas da Maldição', 80,
+  hab("jojo:Holy's Stand", 'Vinhas da Maldição', 70,
     'por 4 s, as vinhas fazem a unidade do Stand perder 2% da vida máxima por segundo (sem chegar a matar), mas ' +
     'espalham o mesmo mal em dobro nos inimigos a até 2 casas dela: eles perdem 4% da vida máxima por segundo e ' +
     `levam ${pc(HOLY)} do dano de ataque por segundo.`,
@@ -715,11 +719,13 @@ const jojo: Habilidade[] = [
     }),
 
   hab('jojo:Echoes', 'Ecos', 70,
-    'muda de Act a cada estrela, e cada Act soma ao anterior. Estrela 1 (Act 1): gruda um som no alvo: 120% do dano de ' +
-    'ataque, e ele perde 30% da mana. Estrela 2 (Act 2): 180%, e o som explode e acerta também os inimigos em volta ' +
-    '(1 casa). Estrela 3 (Act 3, 3 Freeze): 270%, e o alvo fica pesadíssimo, com lentidão de 60% por 3 s.',
+    'muda de Act a cada estrela, e cada Act soma ao anterior. Estrela 1 (Act 1): gruda um som no alvo: ' +
+    `${num(ECHOES[0] * 100)}% ` +
+    `do dano de ataque, e ele perde 30% da mana. Estrela 2 (Act 2): ${num(ECHOES[1] * 100)}%, e o som explode e acerta ` +
+    `também os inimigos em volta (1 casa). Estrela 3 (Act 3, 3 Freeze): ${num(ECHOES[2] * 100)}%, e o alvo fica ` +
+    'pesadíssimo, com lentidão de 60% por 3 s.',
     comAlvo((ctx, eu, alvo) => {
-      const fracao = [1.2, 1.8, 2.7][eu.estrela - 1] ?? 1.2;
+      const fracao = pe(eu, ECHOES);
       const atingidos = eu.estrela >= 2 ? naArea(ctx, eu, alvo, 1, 'inimigos') : [alvo];
       ctx.visual('explosao', atingidos, eu);
       for (const x of atingidos) bater(ctx, eu, x, fracao);
@@ -730,7 +736,7 @@ const jojo: Habilidade[] = [
 
   hab('jojo:Harvest', 'Enxame', 80,
     'centenas de Harvests picam os inimigos numa área de 2 casas em volta do alvo por 4 s: ' +
-    `${pc(HARVEST)} do dano de ataque por segundo e lentidão de 20%. Uma vez por luta, eles ainda acham 1 de ouro no chão.`,
+    `${pc(HARVEST)} do dano de ataque por segundo e lentidão de 20%.`,
     comAlvo((ctx, eu, alvo) => {
       const centro = copiaCasa(alvo.casa);
       repetir(ctx, 4, 1, () => {
@@ -741,10 +747,6 @@ const jojo: Habilidade[] = [
           if (x.vivo) ctx.status(eu, x, 'lento', 1.1, 0.2);
         }
       });
-      if (eu.memoria.harvestOuro) return;
-      eu.memoria.harvestOuro = 1;
-      ctx.ouro(eu.lado, 1);
-      ctx.texto(eu, '+1 ouro');
     })),
 
   hab('jojo:Red Hot Chili Pepper', 'Fio Desencapado', 70,
@@ -838,7 +840,7 @@ const jojo: Habilidade[] = [
       ctx.status(eu, u, 'refletir', 2, 1);
     }),
 
-  hab('jojo:Gold Experience Requiem', 'Retorno a Zero', 100,
+  hab('jojo:Gold Experience Requiem', 'Retorno a Zero', 90,
     `zera tudo o que o alvo faz por ${seg(GER_TEMPO)}: ele perde a mana, os ataques dele não causam dano e ele não ` +
     `ganha mana. Ao fim, MUDA MUDA: ${pc(GER)} do dano de ataque.`,
     comAlvo((ctx, eu, alvo) => {
@@ -903,7 +905,8 @@ const jojo: Habilidade[] = [
     }),
 
   hab('jojo:Talking Head', 'Língua Mentirosa', 60,
-    `gruda a língua nos inimigos em volta (1 casa), provoca por ${seg(TALKING)} e ganha escudo de 20% da vida máxima. ` +
+    `gruda a língua nos inimigos em volta (1 casa), provoca por ${seg(TALKING)} e ganha escudo de ${pct(TALKING_ESCUDO)} da ` +
+    'vida máxima. ' +
     'Enquanto dura, a língua mente pra eles: não recebem cura.',
     (ctx, eu) => {
       const d = pe(eu, TALKING);
@@ -913,8 +916,8 @@ const jojo: Habilidade[] = [
         ctx.status(eu, x, 'provocado', d);
         ctx.status(eu, x, 'semCura', d);
       }
-      escudoH(ctx, eu, eu, eu.at.vida * 0.2, d);
-    }, 20),
+      escudoH(ctx, eu, eu, eu.at.vida * TALKING_ESCUDO, d);
+    }),
 
   hab('jojo:C-MOON', 'Gravidade ao Contrário', 80,
     `soca o alvo e vira ele do avesso: ${pc(CMOON)} do dano de ataque, ele perde 50% da mana e fica atordoado por 1 s. ` +

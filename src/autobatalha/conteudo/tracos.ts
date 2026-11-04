@@ -3,7 +3,7 @@
 // Estado entre ganchos fica em WeakMap por lutador (os lutadores são objetos novos a cada luta).
 import { S } from '../dados';
 import type { Contexto, Lutador, NomeAtributo, Traco } from '../tipos';
-import { LUTA_TODA, fracVida, maisPertoEm, naArea, pct } from './util';
+import { LUTA_TODA, fracVida, maisPertoEm, naArea, num, pct } from './util';
 
 type Bonus = Partial<Record<NomeAtributo, number>>;
 /** Valor do degrau `n` (0, 1, 2). */
@@ -42,12 +42,14 @@ function estadoDoLado<T>(mapa: WeakMap<Lutador, T>, criar: () => T) {
 const TANQUE = [0.2, 0.4, 0.7];
 const PORRADEIRO = [0.15, 0.3, 0.5];
 const ASSASSINO = [0.15, 0.3, 0.45];
-const DEMONIACOS = [0.1, 0.2, 0.35];
-const BIZARRA_MULT = [1, 2, 3];
+const DEMONIACOS = [0.1, 0.2, 0.25];
+const BIZARRA_MULT = [1, 2, 2.5];
 const FADINHAS = [0.04, 0.08, 0.14];
-const SAFADA = [0.1, 0.18, 0.28];
-const ATIRADOR = [0.03, 0.06, 0.1];
-const ANJO = [0.3, 0.3, 0.6];
+const SAFADA = [0.15, 0.27, 0.4];
+/** Safada: segundos de encantado */
+const SAFADA_CHARME = 1.5;
+const ATIRADOR = [0.03, 0.06, 0.08];
+const ANJO = [0.4, 0.5, 0.8];
 const ROBO_ARMADURA = [0.25, 0.5, 0.9];
 const ROBO_ESCUDO = [0.1, 0.2, 0.35];
 // Dragão levou nerf a pedido do usuário (04/11/2026): era 15/30/50% e +10% de dano pro time
@@ -126,11 +128,7 @@ const classes: Traco[] = [
   {
     id: 'demoniacos', nome: 'Demoníacos', tipo: 'classe', degraus: [2, 4, 6],
     descricao: 'Roubam vida, e a morte de um deixa os outros mais fortes.',
-    textos: [
-      '10% de roubo de vida; quando um Demoníaco morre, os outros ganham +10% de dano.',
-      '20% de roubo de vida; quando um Demoníaco morre, os outros ganham +20% de dano.',
-      '35% de roubo de vida; quando um Demoníaco morre, os outros ganham +35% de dano.',
-    ],
+    textos: DEMONIACOS.map(v => `${pct(v)} de roubo de vida; quando um Demoníaco morre, os outros ganham +${pct(v)} de dano.`),
     atributos: n => ({ rouboVida: deg(DEMONIACOS, n) }),
     aoComecar(_ctx, n, membros) {
       for (const m of membros) nivelDemoniaco.set(m, n);
@@ -151,7 +149,8 @@ const classes: Traco[] = [
       'No começo, cada uma ganha um bônus sorteado: escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura ' +
       'de 2% da vida por segundo.',
       'O bônus sorteado vale o dobro: escudo de 30%, +30% de vel. ataque, +30% de dano ou cura de 4% por segundo.',
-      'O bônus vale o triplo (45%, 45%, 45% ou 6% por segundo), e cada uma ganha dois bônus diferentes.',
+      `O bônus vale ${num(deg(BIZARRA_MULT, 2))} vezes (${pct(0.15 * deg(BIZARRA_MULT, 2))} de escudo, vel. ataque ou dano, ou ` +
+      `cura de ${pct(0.02 * deg(BIZARRA_MULT, 2))} por segundo), e cada uma ganha dois bônus diferentes.`,
     ],
     aoComecar(ctx, n, membros) {
       const mult = deg(BIZARRA_MULT, n);
@@ -189,11 +188,11 @@ const classes: Traco[] = [
   {
     id: 'safada', nome: 'Safada', tipo: 'classe', degraus: [2, 4, 6],
     descricao: 'Os ataques encantam o alvo.',
-    textos: SAFADA.map(v => `Os ataques têm ${pct(v)} de chance de encantar o alvo por 1 s (atordoado).`),
+    textos: SAFADA.map(v => `Os ataques têm ${pct(v)} de chance de encantar o alvo por ${num(SAFADA_CHARME)} s (atordoado).`),
     aoAtacar(ctx, n, de, alvo) {
       if (!alvo.vivo || !ctx.chance(deg(SAFADA, n))) return;
       ctx.visual('charme', [alvo], de);
-      ctx.status(de, alvo, 'atordoado', 1);
+      ctx.status(de, alvo, 'atordoado', SAFADA_CHARME);
     },
   },
   {
@@ -212,9 +211,9 @@ const classes: Traco[] = [
     id: 'anjo', nome: 'Anjo', tipo: 'classe', degraus: [2, 4, 6],
     descricao: 'Renascem depois de morrer.',
     textos: [
-      'O primeiro Anjo que morrer renasce com 30% da vida.',
-      'Todos os Anjos renascem uma vez com 30% da vida.',
-      'Todos os Anjos renascem uma vez com 60% da vida.',
+      `O primeiro Anjo que morrer renasce com ${pct(deg(ANJO, 0))} da vida.`,
+      `Todos os Anjos renascem uma vez com ${pct(deg(ANJO, 1))} da vida.`,
+      `Todos os Anjos renascem uma vez com ${pct(deg(ANJO, 2))} da vida.`,
     ],
     aoComecar(_ctx, n, membros) {
       const e = { nivel: n, usou: false };
@@ -292,13 +291,15 @@ const classes: Traco[] = [
 // ===================================================================================================
 
 const FOGO = [0.01, 0.02, 0.03];
-const AGUA = [0.01, 0.02, 0.03];
-const TERRA = [0.15, 0.3, 0.5];
-const VENTO = [0.15, 0.3, 0.5];
-const VENTO_DESVIO = [0, 0.1, 0.2];
+const AGUA = [0.015, 0.03, 0.045];
+const TERRA = [0.3, 0.6, 1];
+/** Terra (4): segundos entre os tremores */
+const TERRA_TREMOR = 4;
+const VENTO = [0.15, 0.3, 0.45];
+const VENTO_DESVIO = [0, 0.1, 0.15];
 const RAIO = [1, 2, 3];
 const GELO = [0.15, 0.25, 0.35];
-const PLANTA = [0.02, 0.04, 0.06];
+const PLANTA = [0.02, 0.035, 0.045];
 
 const fogo = estadoDoLado(new WeakMap<Lutador, Map<Lutador, { ate: number; de: Lutador }>>(), () => new Map());
 const raioAtaques = new WeakMap<Lutador, number>();
@@ -345,11 +346,8 @@ const elementos: Traco[] = [
   {
     id: 'agua', nome: 'Água', tipo: 'elemento', degraus: [2, 3, 4],
     descricao: 'Recuperam vida durante a luta.',
-    textos: [
-      'Recuperam 1% da vida máxima por segundo.',
-      'Recuperam 2% da vida máxima por segundo.',
-      'Recuperam 3% da vida máxima por segundo, e a cada 4 s se livram de queimadura, lentidão e outros efeitos ruins.',
-    ],
+    textos: AGUA.map((v, i) => `Recuperam ${pct(v)} da vida máxima por segundo` +
+      (i >= 2 ? ', e a cada 4 s se livram de queimadura, lentidão e outros efeitos ruins.' : '.')),
     porSegundo(ctx, n, membros) {
       const limpar = n >= 2 && aCadaS(ctx, 4);
       for (const m of membros) {
@@ -362,14 +360,11 @@ const elementos: Traco[] = [
   {
     id: 'terra', nome: 'Terra', tipo: 'elemento', degraus: [2, 3, 4],
     descricao: 'Pele de pedra.',
-    textos: [
-      '+15% de armadura.',
-      '+30% de armadura.',
-      '+50% de armadura, e a cada 6 s um tremor atordoa por 0,5 s os inimigos em volta (1 casa).',
-    ],
-    atributos: n => ({ armadura: deg(TERRA, n) }),
+    textos: TERRA.map((v, i) => `+${pct(v)} de armadura e resistência` +
+      (i >= 2 ? `, e a cada ${num(TERRA_TREMOR)} s um tremor atordoa por 0,5 s os inimigos em volta (1 casa).` : '.')),
+    atributos: n => ({ armadura: deg(TERRA, n), resist: deg(TERRA, n) }),
     porSegundo(ctx, n, membros) {
-      if (n < 2 || !aCadaS(ctx, 6)) return;
+      if (n < 2 || !aCadaS(ctx, TERRA_TREMOR)) return;
       for (const m of membros) {
         if (!m.vivo) continue;
         const perto = naArea(ctx, m, m, 1, 'inimigos');
@@ -382,11 +377,8 @@ const elementos: Traco[] = [
   {
     id: 'vento', nome: 'Vento', tipo: 'elemento', degraus: [2, 3, 4],
     descricao: 'Rápidos e difíceis de acertar.',
-    textos: [
-      '+15% de vel. ataque.',
-      '+30% de vel. ataque, e desviam de 10% dos ataques.',
-      '+50% de vel. ataque, e desviam de 20% dos ataques.',
-    ],
+    textos: VENTO.map((v, i) => `+${pct(v)} de vel. ataque` +
+      (deg(VENTO_DESVIO, i) > 0 ? `, e desviam de ${pct(deg(VENTO_DESVIO, i))} dos ataques.` : '.')),
     atributos: n => {
       const b: Bonus = { velAtaque: deg(VENTO, n) };
       if (deg(VENTO_DESVIO, n) > 0) b.desvio = deg(VENTO_DESVIO, n);
@@ -445,14 +437,9 @@ const elementos: Traco[] = [
   {
     id: 'planta', nome: 'Planta', tipo: 'elemento', degraus: [2, 3, 4],
     descricao: 'O primeiro ataque em cada inimigo planta uma semente que suga a vida dele.',
-    textos: [
-      'O 1º ataque do time em cada inimigo planta uma semente que suga 2% da vida máxima dele por segundo, por 4 s, ' +
-      'e cura quem plantou.',
-      'O 1º ataque do time em cada inimigo planta uma semente que suga 4% da vida máxima dele por segundo, por 4 s, ' +
-      'e cura quem plantou.',
-      'O 1º ataque do time em cada inimigo planta uma semente que suga 6% da vida máxima dele por segundo, por 4 s; ' +
-      'a cura vai pra quem plantou e pro aliado mais perto dele.',
-    ],
+    textos: PLANTA.map((v, i) => `O 1º ataque do time em cada inimigo planta uma semente que suga ${pct(v)} da vida ` +
+      'máxima dele por segundo, por 4 s' +
+      (i >= 2 ? '; a cura vai pra quem plantou e pro aliado mais perto dele.' : ', e cura quem plantou.')),
     aoComecar(_ctx, _n, membros) {
       planta.registrar(membros);
     },

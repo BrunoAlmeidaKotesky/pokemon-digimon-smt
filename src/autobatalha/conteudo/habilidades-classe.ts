@@ -2,8 +2,8 @@
 // A forma sem habilidade própria nem transformação lança a ult de uma das suas classes (o jogador escolhe).
 import type { Contexto, Habilidade, Lutador, PorEstrela } from '../tipos';
 import {
-  alvejaveis, alvoDe, bater, copiaCasa, corrente, curarH, devolverMana, escudoH, fracVida, naArea, pc, pe, poder, repetir,
-  semRepetir, seg,
+  alvejaveis, alvoDe, bater, copiaCasa, corrente, curarH, devolverMana, escudoH, fracVida, naArea, num, pc, pct, pe, poder,
+  repetir, semRepetir, seg,
 } from './util';
 
 type Lancar = (ctx: Contexto, eu: Lutador, alvo: Lutador | null) => void;
@@ -12,29 +12,42 @@ function ult(id: string, nome: string, mana: number, texto: string, lancar: Lanc
   return { id, nome, mana, texto: `${nome}: ${texto}`, lancar, ...(manaInicial != null ? { manaInicial } : {}) };
 }
 
-const DEMONIACOS: PorEstrela = [2, 3, 4.5];
-const BIZARRA_GOSMA: PorEstrela = [1.8, 2.7, 4];
-const BIZARRA_CURA: PorEstrela = [0.25, 0.35, 0.5];
-const FADINHAS: PorEstrela = [0.2, 0.3, 0.45];
-const SAFADA: PorEstrela = [1.5, 2.25, 3.4];
-const ATIRADOR: PorEstrela = [2.2, 3.3, 5];
+// Números rebalanceados no playtest de 04/11/2026 (docs/tft/matematica/equilibrio.md, histórico).
+const DEMONIACOS: PorEstrela = [2.6, 3.9, 5.9];
+/** fração da vida atual que o Pacto Sombrio gasta */
+const DEMONIACOS_CUSTO = 0.05;
+const BIZARRA_GOSMA: PorEstrela = [3, 4.5, 6.75];
+const BIZARRA_CURA: PorEstrela = [0.35, 0.5, 0.7];
+const BIZARRA_BERRO = 2;
+const FADINHAS: PorEstrela = [0.16, 0.18, 0.22];
+const FADINHAS_ESCUDO = 0.1;
+const SAFADA: PorEstrela = [2.5, 3.75, 5.6];
+/** segundos de encantado do Charme */
+const SAFADA_CHARME = 1.5;
+const ATIRADOR: PorEstrela = [1.8, 2.7, 4];
 const ANJO_DANO: PorEstrela = [1.6, 2.4, 3.6];
 const ANJO_CURA: PorEstrela = [0.15, 0.2, 0.3];
-const ROBO: PorEstrela = [1, 1.5, 2.25];
+const ROBO: PorEstrela = [0.6, 0.9, 1.35];
+const ROBO_ESCUDO = 0.12;
 const DRAGAO: PorEstrela = [2, 3, 4.5];
 const TEMPORAIS: PorEstrela = [1.5, 2, 2.5];
-const TANQUE: PorEstrela = [0.3, 0.45, 0.7];
-const PORRADEIRO: PorEstrela = [1.8, 2.7, 4];
-const ASSASSINO: PorEstrela = [2.5, 3.75, 5.6];
-const FOGO: PorEstrela = [1.7, 2.55, 3.8];
-const AGUA: PorEstrela = [1.6, 2.4, 3.6];
-const TERRA: PorEstrela = [1.4, 2.1, 3.2];
-const VENTO: PorEstrela = [1.5, 2.25, 3.4];
+const TEMPORAIS_DANO: PorEstrela = [0.6, 0.9, 1.35];
+const TANQUE: PorEstrela = [0.16, 0.18, 0.22];
+const PORRADEIRO: PorEstrela = [2, 3, 4.5];
+/** fração da própria vida máxima somada ao Pancadão */
+const PORRADEIRO_VIDA = 0.1;
+const ASSASSINO: PorEstrela = [3, 4.5, 6.75];
+const FOGO: PorEstrela = [2.1, 3.15, 4.7];
+const AGUA: PorEstrela = [1.9, 2.85, 4.3];
+const AGUA_CURA = 0.15;
+const TERRA: PorEstrela = [2.3, 3.45, 5.2];
+const VENTO: PorEstrela = [2.4, 3.6, 5.4];
 const RAIO: PorEstrela = [1.3, 1.95, 2.9];
-const GELO: PorEstrela = [1.8, 2.7, 4];
+const GELO: PorEstrela = [1.3, 1.95, 2.9];
+const GELO_CONGELA = 1;
 const PLANTA: PorEstrela = [1.4, 2.1, 3.2];
 
-export const GOLPE_DANO: PorEstrela = [2, 3, 4.5];
+export const GOLPE_DANO: PorEstrela = [3, 4.5, 6.75];
 
 /** Ult de quem não tem nenhuma classe com ult (só Únicos sem habilidade própria). */
 export const GOLPE: Habilidade = ult('golpe', 'Golpe', 70,
@@ -47,13 +60,14 @@ export const GOLPE: Habilidade = ult('golpe', 'Golpe', 70,
   });
 
 const lista: Habilidade[] = [
-  ult('demoniacos', 'Pacto Sombrio', 80,
-    `gasta 10% da própria vida e lança chamas negras no alvo e nos inimigos em volta (1 casa): ${pc(DEMONIACOS)} do dano de ` +
+  ult('demoniacos', 'Pacto Sombrio', 70,
+    `gasta ${pct(DEMONIACOS_CUSTO)} da própria vida e lança chamas negras no alvo e nos inimigos em volta (1 casa): ` +
+    `${pc(DEMONIACOS)} do dano de ` +
     'ataque. Ganha 15% de roubo de vida até o fim da luta, e isso acumula a cada vez.',
     (ctx, eu, alvo0) => {
       const alvo = alvoDe(ctx, eu, alvo0);
       if (!alvo) return;
-      ctx.definirFracaoVida(eu, Math.max(0.01, fracVida(eu) - 0.1));
+      ctx.definirFracaoVida(eu, Math.max(0.01, fracVida(eu) * (1 - DEMONIACOS_CUSTO)));
       const atingidos = naArea(ctx, eu, alvo, 1, 'inimigos');
       ctx.visual('trevas', atingidos, eu);
       for (const x of atingidos) bater(ctx, eu, x, pe(eu, DEMONIACOS));
@@ -62,7 +76,8 @@ const lista: Habilidade[] = [
 
   ult('criaturinha-bizarra', 'Coisa Esquisita', 70,
     `faz uma de três coisas, ao acaso: cospe gosma no alvo (${pc(BIZARRA_GOSMA)} do dano de ataque e lentidão de 30% por 3 s), ` +
-    `se cura em ${pc(BIZARRA_CURA)} da vida máxima ou dá um berro que atordoa os inimigos em volta (1 casa) por 1,5 s.`,
+    `se cura em ${pc(BIZARRA_CURA)} da vida máxima ou dá um berro que atordoa os inimigos em volta (1 casa) por ` +
+    `${num(BIZARRA_BERRO)} s.`,
     (ctx, eu, alvo0) => {
       const alvo = alvoDe(ctx, eu, alvo0);
       const r = ctx.aleatorio();
@@ -76,28 +91,30 @@ const lista: Habilidade[] = [
       } else {
         const perto = naArea(ctx, eu, eu, 1, 'inimigos');
         ctx.visual('sopro', [eu, ...perto], eu);
-        for (const x of perto) ctx.status(eu, x, 'atordoado', 1.5);
+        for (const x of perto) ctx.status(eu, x, 'atordoado', BIZARRA_BERRO);
       }
     }),
 
   ult('fadinhas', 'Pó de Fada', 70,
-    `cura o aliado com menos vida em ${pc(FADINHAS)} da vida máxima dele e dá a ele escudo de 15% da vida máxima por 4 s.`,
+    `cura o aliado com menos vida em ${pc(FADINHAS)} da vida máxima dele e dá a ele escudo de ${pct(FADINHAS_ESCUDO)} da ` +
+    'vida máxima por 4 s.',
     (ctx, eu) => {
       const a = ctx.menosVida(eu, 'aliados', true) ?? eu;
       ctx.visual('cura', [a], eu);
       curarH(ctx, eu, a, a.at.vida * pe(eu, FADINHAS));
-      escudoH(ctx, eu, a, a.at.vida * 0.15, 4);
+      escudoH(ctx, eu, a, a.at.vida * FADINHAS_ESCUDO, 4);
     }),
 
   ult('safada', 'Charme', 70,
-    `manda um beijo no inimigo mais próximo: ${pc(SAFADA)} do dano de ataque. Ele fica encantado por 2 s, sem agir ` +
+    `manda um beijo no inimigo mais próximo: ${pc(SAFADA)} do dano de ataque. Ele fica encantado por ` +
+    `${num(SAFADA_CHARME)} s, sem agir ` +
     '(vale como atordoar).',
     (ctx, eu, alvo0) => {
       const alvo = ctx.maisProximo(eu, 'inimigos') ?? alvoDe(ctx, eu, alvo0);
       if (!alvo) return;
       ctx.visual('charme', [alvo], eu);
       bater(ctx, eu, alvo, pe(eu, SAFADA));
-      if (alvo.vivo) ctx.status(eu, alvo, 'atordoado', 2);
+      if (alvo.vivo) ctx.status(eu, alvo, 'atordoado', SAFADA_CHARME);
     }),
 
   ult('atirador', 'Tiro Perfurante', 80,
@@ -127,7 +144,7 @@ const lista: Habilidade[] = [
 
   ult('robo', 'Bateria de Mísseis', 70,
     `dispara 4 mísseis em inimigos ao acaso, cada um com ${pc(ROBO)} do dano de ataque. Depois liga a blindagem: escudo ` +
-    'de 20% da vida máxima por 4 s.',
+    `de ${pct(ROBO_ESCUDO)} da vida máxima por 4 s.`,
     (ctx, eu) => {
       for (let i = 0; i < 4; i++) {
         const [x] = ctx.sortear(alvejaveis(ctx, eu), 1);
@@ -136,7 +153,7 @@ const lista: Habilidade[] = [
         bater(ctx, eu, x, pe(eu, ROBO));
       }
       ctx.visual('escudo', [eu], eu);
-      escudoH(ctx, eu, eu, eu.at.vida * 0.2, 4);
+      escudoH(ctx, eu, eu, eu.at.vida * ROBO_ESCUDO, 4);
     }),
 
   ult('dragao', 'Sopro de Dragão', 80,
@@ -154,9 +171,9 @@ const lista: Habilidade[] = [
       }
     }),
 
-  ult('temporais', 'Parar o Tempo', 90,
-    `para o tempo numa área de 2 casas em volta do alvo. Os inimigos ali ficam atordoados por ${seg(TEMPORAIS)} e levam ` +
-    '20% a mais de dano enquanto isso.',
+  ult('temporais', 'Parar o Tempo', 80,
+    `para o tempo numa área de 2 casas em volta do alvo. Os inimigos ali levam ${pc(TEMPORAIS_DANO)} do dano de ataque, ` +
+    `ficam atordoados por ${seg(TEMPORAIS)} e levam 20% a mais de dano enquanto isso.`,
     (ctx, eu, alvo0) => {
       const alvo = alvoDe(ctx, eu, alvo0);
       if (!alvo) return;
@@ -164,28 +181,31 @@ const lista: Habilidade[] = [
       const area = naArea(ctx, eu, alvo, 2, 'inimigos');
       ctx.visual('tempo', [alvo, ...area], eu);
       for (const x of area) {
+        bater(ctx, eu, x, pe(eu, TEMPORAIS_DANO));
+        if (!x.vivo) continue;
         ctx.status(eu, x, 'atordoado', d);
         ctx.status(eu, x, 'vulneravel', d, 0.2);
       }
     }),
 
-  ult('tanque', 'Muralha', 60,
+  ult('tanque', 'Muralha', 70,
     `ganha escudo de ${pc(TANQUE)} da vida máxima por 4 s e provoca os inimigos em volta (1 casa) por 2 s.`,
     (ctx, eu) => {
       ctx.visual('escudo', [eu], eu);
       escudoH(ctx, eu, eu, eu.at.vida * pe(eu, TANQUE), 4);
       for (const x of naArea(ctx, eu, eu, 1, 'inimigos')) ctx.status(eu, x, 'provocado', 2);
-    }, 20),
+    }),
 
   ult('porradeiro', 'Pancadão', 70,
-    `soca o alvo, causando ${pc(PORRADEIRO)} do dano de ataque mais 8% da própria vida máxima, e atordoa por 1 s. ` +
+    `soca o alvo, causando ${pc(PORRADEIRO)} do dano de ataque mais ${pct(PORRADEIRO_VIDA)} da própria vida máxima, e ` +
+    'atordoa por 1 s. ' +
     'Abaixo de metade da vida, o soco tem 30% de roubo de vida.',
     (ctx, eu, alvo0) => {
       const alvo = alvoDe(ctx, eu, alvo0);
       if (!alvo) return;
       ctx.visual('golpe', [alvo], eu);
       const p = poder(eu);
-      const d = ctx.dano(eu, alvo, pe(eu, PORRADEIRO) * p, { extra: eu.at.vida * 0.08 * p });
+      const d = ctx.dano(eu, alvo, pe(eu, PORRADEIRO) * p, { extra: eu.at.vida * PORRADEIRO_VIDA * p });
       if (alvo.vivo) ctx.status(eu, alvo, 'atordoado', 1);
       if (fracVida(eu) < 0.5 && d > 0) ctx.curar(eu, eu, d * 0.3);
     }),
@@ -217,8 +237,9 @@ const lista: Habilidade[] = [
       }
     }),
 
-  ult('agua', "Jato d'Água", 80,
-    `dispara um jato em linha: ${pc(AGUA)} do dano de ataque nos inimigos no caminho. Depois cura 15% da própria vida ` +
+  ult('agua', "Jato d'Água", 70,
+    `dispara um jato em linha: ${pc(AGUA)} do dano de ataque nos inimigos no caminho. Depois cura ${pct(AGUA_CURA)} da ` +
+    'própria vida ' +
     'máxima e se livra de queimadura, lentidão e outros efeitos ruins.',
     (ctx, eu, alvo0) => {
       const alvo = alvoDe(ctx, eu, alvo0);
@@ -227,7 +248,7 @@ const lista: Habilidade[] = [
         ctx.visual('agua', linha, eu);
         for (const x of linha) bater(ctx, eu, x, pe(eu, AGUA));
       }
-      curarH(ctx, eu, eu, eu.at.vida * 0.15);
+      curarH(ctx, eu, eu, eu.at.vida * AGUA_CURA);
       ctx.limparStatusRuins(eu);
     }),
 
@@ -276,7 +297,7 @@ const lista: Habilidade[] = [
 
   ult('gelo', 'Nevasca', 80,
     `cai uma nevasca numa área de 2 casas em volta do alvo por 3 s: ${pc(GELO)} do dano de ataque no total e lentidão ` +
-    'de 30% em quem está dentro. Quem ficar os 3 s inteiros congela: atordoado por 1,5 s.',
+    `de 30% em quem está dentro. Quem ficar os 3 s inteiros congela: atordoado por ${num(GELO_CONGELA)} s.`,
     (ctx, eu, alvo0) => {
       const alvo = alvoDe(ctx, eu, alvo0);
       if (!alvo) return;
@@ -292,7 +313,7 @@ const lista: Habilidade[] = [
           ctx.status(eu, x, 'lento', 1.1, 0.3);
           const n = (vezes.get(x) ?? 0) + 1;
           vezes.set(x, n);
-          if (i === 2 && n === 3) ctx.status(eu, x, 'atordoado', 1.5);
+          if (i === 2 && n === 3) ctx.status(eu, x, 'atordoado', GELO_CONGELA);
         }
       });
     }),

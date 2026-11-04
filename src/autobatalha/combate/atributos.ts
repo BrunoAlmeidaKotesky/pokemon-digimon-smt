@@ -8,9 +8,9 @@ interface BaseCusto { vida: number; dano: number; armadura: number; resist: numb
 
 /** Estrela 1 de cada custo. */
 export const BASE_POR_CUSTO: Record<Custo, BaseCusto> = {
-  1: { vida: 500, dano: 45, armadura: 20, resist: 20, velAtaque: 0.65 },
+  1: { vida: 450, dano: 42, armadura: 20, resist: 20, velAtaque: 0.65 },
   2: { vida: 600, dano: 50, armadura: 25, resist: 25, velAtaque: 0.7 },
-  3: { vida: 700, dano: 60, armadura: 30, resist: 30, velAtaque: 0.75 },
+  3: { vida: 720, dano: 61, armadura: 30, resist: 30, velAtaque: 0.75 },
   4: { vida: 850, dano: 75, armadura: 40, resist: 40, velAtaque: 0.8 },
   5: { vida: 1000, dano: 90, armadura: 50, resist: 50, velAtaque: 0.85 },
 };
@@ -39,18 +39,18 @@ export interface Papel {
 }
 
 export const PAPEIS: Record<string, Papel> = {
-  tanque: { vida: 1.3, dano: 0.8, armadura: 20, resist: 20, alcance: 1, mana: 60, manaInicial: 20 },
+  tanque: { vida: 1.25, dano: 0.75, armadura: 20, resist: 20, alcance: 1, mana: 70 },
   porradeiro: { vida: 1.15, dano: 1.05, alcance: 1, mana: 70 },
-  assassino: { vida: 0.85, dano: 1.2, crit: 0.15, alcance: 1, mana: 60 },
-  atirador: { vida: 0.8, dano: 1.1, velAtaque: 1.1, alcance: 4, mana: 80 },
+  assassino: { vida: 1, dano: 1.2, crit: 0.15, alcance: 1, mana: 60 },
+  atirador: { vida: 0.75, dano: 1, velAtaque: 1.1, alcance: 4, mana: 80 },
   dragao: { vida: 1.05, dano: 1.05, alcance: 2, mana: 80 },
   robo: { vida: 1, dano: 1, armadura: 15, alcance: 2, mana: 70 },
-  anjo: { vida: 0.95, dano: 1, alcance: 3, mana: 80 },
-  fadinhas: { vida: 0.85, dano: 0.9, alcance: 3, mana: 70 },
-  safada: { vida: 0.9, dano: 1, alcance: 2, mana: 70 },
+  anjo: { vida: 0.85, dano: 1, alcance: 3, mana: 80 },
+  fadinhas: { vida: 0.9, dano: 0.95, alcance: 3, mana: 70 },
+  safada: { vida: 1, dano: 1, alcance: 2, mana: 70 },
   temporais: { vida: 0.9, dano: 1, alcance: 3, mana: 90 },
   demoniacos: { vida: 1, dano: 1.05, alcance: 2, mana: 80 },
-  'criaturinha-bizarra': { vida: 1, dano: 1, alcance: 1, mana: 70 },
+  'criaturinha-bizarra': { vida: 1.2, dano: 1.05, alcance: 1, mana: 70 },
   unicos: { vida: 1, dano: 1, alcance: 2, mana: 80 },
   // só elemento
   fogo: { vida: 1, dano: 1, alcance: 2, mana: 80 },
@@ -148,13 +148,21 @@ export function aplicarBonus(a: Atributos, b: Bonus): Atributos {
 // Unidade do jogador
 // ---------------------------------------------------------------------------------------------------------------
 
-/** Base da unidade (custo + estrela + papel); a habilidade, quando tem, define a mana (e a inicial, se disser). */
+/** Forma que não lança nada (não final de Pokémon e Digimon): vida e dano a mais, por estrela, no lugar da
+ *  habilidade (na estrela 2 as habilidades dos outros crescem, então o bônus também). */
+export const BONUS_SEM_HABILIDADE: Record<Estrela, number> = { 1: 0.2, 2: 0.25, 3: 0.25 };
+
+/** Base da unidade (custo + estrela + papel); a habilidade, quando tem, define a mana (e a inicial, se disser). Sem
+ *  habilidade, ganha BONUS_SEM_HABILIDADE de vida e dano. */
 export function baseDaUnidade(u: Unidade, hab: Habilidade | null): Atributos {
   const s = S();
   const at = atributosBase(s.campeao(u.campeao).custo, u.estrela, papelDe(s.forma(u.forma)));
   if (hab) {
     at.mana = hab.mana;
     if (hab.manaInicial !== undefined) at.manaInicial = hab.manaInicial;
+  } else {
+    at.vida *= 1 + BONUS_SEM_HABILIDADE[u.estrela];
+    at.dano *= 1 + BONUS_SEM_HABILIDADE[u.estrela];
   }
   return at;
 }

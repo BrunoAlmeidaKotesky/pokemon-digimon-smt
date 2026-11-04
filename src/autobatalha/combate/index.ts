@@ -28,4 +28,6 @@ export {
 export { HABILIDADE_CHEFE } from './chefe';
 export type { Conteudo, TracoAtivo } from './contrato';
 export { idLuta, separarId } from './lutador';
-export { DURACAO_MAX, PASSO, REGRAS_TODAS, simularLutaCom, type RegrasMotor } from './motor';
+export {
+  DURACAO_MAX, PASSO, REGRAS_TODAS, simularLutaCom, type FonteMana, type ObservadorLuta, type RegrasMotor,
+} from './motor';

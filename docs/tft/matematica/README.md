@@ -91,6 +91,60 @@ o caminho em `EXPORTACAO` no `analise.mjs`.
 - **Tolerância:** 25% no custo de fechar o último breakpoint.
 - **Tabuleiro:** 9 campeões. O doc ainda não decide esse número.
 
+## Playtest (equilíbrio de atributos, habilidades, traços e itens)
+
+As contas acima são sobre o set e a loja. O equilíbrio da luta (atributos, papéis, habilidades, traços, itens, mana)
+sai de simulação: lutas com o set (`public/autobatalha/set1.json`), o motor e o conteúdo de verdade, determinísticas
+pela semente. O código fica em `src/autobatalha/equilibrio/` (o motor é TypeScript, então roda pelo Vitest), e a
+saída vai pra [equilibrio.md](equilibrio.md).
+
+```sh
+# tudo (uns 2 minutos); grava docs/tft/matematica/equilibrio.md
+node node_modules/vitest/vitest.mjs run --config src/autobatalha/equilibrio/playtest.config.ts
+# só uma parte, mais rápido, num arquivo à parte (Git Bash)
+EQUILIBRIO_PARTES=curva,campeoes EQUILIBRIO_RAPIDO=1 EQUILIBRIO_SAIDA=/tmp/eq.md \
+  node node_modules/vitest/vitest.mjs run --config src/autobatalha/equilibrio/playtest.config.ts
+# testes das funções de medida (rodam no `vitest run` normal e no CI)
+node node_modules/vitest/vitest.mjs run src/autobatalha/equilibrio
+```
+
+Variáveis: `EQUILIBRIO_PARTES` (`campeoes,curva,pacotes,tracos,itens,partidas`), `EQUILIBRIO_RAPIDO=1` (menos
+cenários), `EQUILIBRIO_SAIDA` (outro .md), `EQUILIBRIO_JSON` (grava os números crus) e `EQUILIBRIO_SEMENTE` (semente
+base, padrão 2026). O `*.playtest.ts` não entra no `vitest run` normal: só com a config própria.
+
+Arquivos:
+
+- `medidas.ts`: funções puras (placar e taxa de vitória, intervalo de Wilson, mediana, a bisseção do equivalente, as
+  faixas `FAIXAS` e o texto em Markdown), testadas em `medidas.test.ts`.
+- `laboratorio.ts`: as lutas controladas. O conteúdo passa por um embrulho que mede cada habilidade (lançamentos, 1º
+  lançamento, dano, cura, escudo) e pode desligar um traço de um lado só; o motor avisa de onde veio a mana (atacar,
+  apanhar, efeitos) e quando cada um morreu (`ObservadorLuta`, sem mudar a luta). `laboratorio.test.ts` confere que a
+  luta medida é idêntica à do motor de verdade.
+- `partidas.ts`: partidas inteiras de 8 bots (o laço de `src/autobatalha/integracao.test.ts`), contando cada luta.
+- `relatorio.ts`: monta o `equilibrio.md`; `equilibrio.playtest.ts` roda tudo e grava.
+
+Medidas (detalhes no topo de cada seção do equilibrio.md):
+
+1. **Curva por custo**: times de 5 campeões sorteados de um custo/estrela contra os de outro. Alvo: custo de cima
+   ganha na mesma estrela; uma estrela a mais briga com 1–2 custos acima.
+2. **Mana e lançamentos**: 1º lançamento, lançamentos por segundo vivo e de onde vem a mana, por papel, custo e
+   estrela, nas partidas de bots e na curva. Alvo: 1º lançamento de 3 a 6 s pra maioria; tanque não antes dos papéis
+   de dano; ninguém mais de 1 vez a cada 3 s.
+3. **Força por campeão**: rodízio. Cada campeão (forma da estrela, ult padrão) com 3 bonecos (monstros com os
+   atributos base do custo, sem habilidade nem traço) contra cada outro do mesmo custo e estrela com os mesmos
+   bonecos, 3 disposições, dos dois lados. Faixa: 35% a 65%. Stands num grupo à parte, presos ao mesmo usuário.
+4. **Habilidades**: das mesmas lutas, valor por lançamento (dano + cura + escudo, em múltiplos do dano de ataque) e a
+   média de vitórias de quem usa cada ult de classe.
+5. **Pacote de cada classe**: um campeão sintético só com a classe (papel + ult) contra um boneco no lugar dele.
+6. **Traços** e **itens**: o mesmo time com e sem o traço (desligado de um lado) ou o item. O resultado é o
+   **equivalente**: o bônus de vida e dano (no time todo, ou no portador do item) que o outro lado precisa pra empatar,
+   achado por bisseção com as mesmas sementes em cada passo.
+7. **Partidas de bots**: taxa de vitória dos times com cada traço/item, rodadas de monstros, duração. Mistura o efeito
+   com a força do tabuleiro: é sinal, não medida isolada.
+
+O histórico dos ajustes (antes → depois) fica no fim do equilibrio.md, embaixo do marcador; o playtest regrava só a
+parte de cima.
+
 ## Contas que ainda dá pra fazer aqui
 
 - Custo por campeão (quais formas entram em qual custo) e o efeito no custo de fechar cada traço.

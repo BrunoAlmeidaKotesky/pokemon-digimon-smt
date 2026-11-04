@@ -171,6 +171,6 @@ describe('contexto do motor', () => {
       vistos.push(eu.mana);
     });
     simularLutaCom(c, time('p1', em(unidade('smt:muralha'), 3, 0)), saco(), 1, false);
-    expect(vistos).toEqual([1.5, 0.5, 35, 1]);
+    expect(vistos).toEqual([1.5, 0.5, 15, 1]);
   });
 });

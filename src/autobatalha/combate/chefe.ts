@@ -5,7 +5,8 @@ export const HABILIDADE_CHEFE: Habilidade = {
   id: 'chefe',
   nome: 'Pancada do Chefe',
   texto: 'Golpeia o alvo e quem está em volta dele (1 casa): 200% do dano de ataque e atordoa por 1 s.',
-  mana: 100,
+  // com a mana por golpe proporcional à vida (motor.ts), o chefe quase não enche apanhando: mana menor mantém o ritmo
+  mana: 30,
   lancar(ctx, eu, alvo) {
     const centro = alvo ?? eu;
     const atingidos = ctx.emVolta(centro, 1, eu, 'inimigos');
