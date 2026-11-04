@@ -15,7 +15,9 @@ import {
   xpParaProximo,
 } from '../../autobatalha/partida';
 import { propsDica } from './interacao';
-import { Foto, IconeItem, MarcaDegrau, Moeda, corTraco, custoAttr, imgForma, nomeItem, nomeTraco, pct, textoItem } from './comum';
+import {
+  Foto, IconeItem, MarcaDegrau, Moeda, corTraco, custoAttr, formaOuNada, imgForma, nomeItem, nomeTraco, pct, textoItem,
+} from './comum';
 
 export type AbaInfo = 'tracos' | 'bakugan' | 'loja' | 'regras';
 const ABAS: { id: AbaInfo; nome: string }[] = [
@@ -30,12 +32,23 @@ const ESTRELAS: Estrela[] = [1, 2, 3];
 /** sem acento e minúsculo, pra busca */
 const normalizar = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
 
-/** Campeões do set que têm o traço (origem ou classe em qualquer forma da linha), por custo e nome. */
-function campeoesComTraco(id: string): CampeaoDados[] {
+/** Um campeão do traço: a menor estrela em que ele tem o traço e a forma que tem (o traço conta pela forma atual). */
+export interface CampeaoNoTraco { c: CampeaoDados; estrela: Estrela; forma: string }
+
+/** Campeões do set que têm o traço em alguma estrela (origem: já na loja; classe: a 1ª forma da linha que tem), por
+ *  estrela, custo e nome. */
+export function campeoesComTraco(id: string): CampeaoNoTraco[] {
   const s = S();
-  return s.dados.campeoes
-    .filter(c => s.tracosDoCampeao(c.id).includes(id))
-    .sort((a, b) => a.custo - b.custo || a.nome.localeCompare(b.nome, 'pt-BR'));
+  const out: CampeaoNoTraco[] = [];
+  for (const c of s.dados.campeoes) {
+    if (c.fr === id) { out.push({ c, estrela: 1, forma: c.niveis[0]![0]! }); continue; }
+    for (const e of ESTRELAS) {
+      const nivel = c.niveis[Math.min(e, c.niveis.length) - 1] ?? [];
+      const forma = nivel.find(f => s.temForma(f) && s.forma(f).classes.includes(id));
+      if (forma) { out.push({ c, estrela: e, forma }); break; }
+    }
+  }
+  return out.sort((a, b) => a.estrela - b.estrela || a.c.custo - b.c.custo || a.c.nome.localeCompare(b.c.nome, 'pt-BR'));
 }
 
 /** traços do tabuleiro do jogador (vazio sem jogador) */
@@ -167,29 +180,45 @@ function AbaTracos({ eu, inicial }: { eu: Jogador | null; inicial?: string }) {
   );
 }
 
-/** Grade dos campeões que têm o traço; os que o jogador tem ficam destacados (no tabuleiro mais forte que no banco). */
+/** Grade dos campeões do traço: primeiro os que já têm na forma da loja, depois os que só ganham ao evoluir (com a
+ *  estrela e a forma). Os que o jogador tem ficam destacados (no tabuleiro mais forte que no banco). */
 export function CampeoesDoTraco({ id, eu }: { id: string; eu: Jogador | null }) {
   const lista = useMemo(() => campeoesComTraco(id), [id]);
   const noTabuleiro = new Set(eu ? unidadesNoTabuleiro(eu, true).map(u => u.campeao) : []);
   const tem = new Set(eu ? Object.values(eu.unidades).map(u => u.campeao) : []);
   if (!lista.length) return <p className="ab-ct-vazio mute">Nenhum campeão do set tem esse traço.</p>;
-  return (
-    <ul className="ab-ct" aria-label={`Campeões de ${nomeTraco(id)}`} data-ct={id}>
-      {lista.map(c => {
-        const f1 = c.niveis[0]![0]!;
+  const ja = lista.filter(x => x.estrela === 1);
+  const depois = lista.filter(x => x.estrela > 1);
+  const grade = (itens: CampeaoNoTraco[], rotulo: string) => (
+    <ul className="ab-ct" aria-label={rotulo} data-ct={id}>
+      {itens.map(({ c, estrela, forma }) => {
         const onde = noTabuleiro.has(c.id) ? 'tabuleiro' : tem.has(c.id) ? 'banco' : null;
+        const nomeForma = formaOuNada(forma)?.nome ?? c.nome;
         return (
           <li key={c.id} className={'ab-ct-c' + (onde ? ' tem ' + onde : '')} {...custoAttr(c.custo)} data-campeao={c.id}
-            aria-label={`${c.nome}, custo ${c.custo}${onde === 'tabuleiro' ? ', no seu tabuleiro' : onde === 'banco' ? ', no seu banco' : ''}`}
-            {...propsDica({ tipo: 'campeao', campeao: c.id, forma: f1, etiqueta: 'campeão do traço' })}>
-            <Foto src={imgForma(f1)} nome={c.nome} className="redonda" />
+            data-estrela={estrela}
+            aria-label={`${c.nome}, custo ${c.custo}${estrela > 1 ? `, ganha o traço na estrela ${estrela}` : ''}${onde === 'tabuleiro' ? ', no seu tabuleiro' : onde === 'banco' ? ', no seu banco' : ''}`}
+            {...propsDica({ tipo: 'campeao', campeao: c.id, forma, estrela, etiqueta: estrela > 1 ? `tem o traço na estrela ${estrela}` : 'campeão do traço' })}>
+            <Foto src={imgForma(forma)} nome={nomeForma} className="redonda" />
             <span className="nm">{c.nome}</span>
             <span className="custo"><Moeda />{c.custo}</span>
+            {estrela > 1 && <span className="evolui">{'★'.repeat(estrela)} {nomeForma}</span>}
             {onde && <span className="onde">{onde === 'tabuleiro' ? 'no tabuleiro' : 'no banco'}</span>}
           </li>
         );
       })}
     </ul>
+  );
+  return (
+    <>
+      {ja.length > 0 && grade(ja, `Campeões de ${nomeTraco(id)}`)}
+      {depois.length > 0 && (
+        <>
+          <h4 className="ab-ct-sub">Ganham {nomeTraco(id)} ao evoluir</h4>
+          {grade(depois, `Ganham ${nomeTraco(id)} ao evoluir`)}
+        </>
+      )}
+    </>
   );
 }
 

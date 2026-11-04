@@ -22,6 +22,7 @@ import { confrontosDaRodada } from './rodadas';
 import { rngDa } from './sorteio';
 import { prepararTabuleiro } from './tabuleiro';
 import { moedasProChao } from './moedas';
+import { limparVotos } from './votacao';
 import { ALMAS_POR_ABATE, BONUS_DEADLOCK_POR_10_ALMAS, BONUS_OVERWATCH, CHANCE_SUJIMON, CUSTO_MAX_SUJIMON, porDegrau } from './origens';
 
 
@@ -103,10 +104,11 @@ function estrelasVivas(res: ResultadoLuta, lado: Lado, time: EntradaTime): numbe
 
 // ---------- fim do planejamento e simular ----------
 
-/** Fim do planejamento: escolhas sem resposta são sorteadas e cada tabuleiro é preparado. Carrossel que ficou aberto
- *  (simulação que pulou a fase) termina antes. */
+/** Fim do planejamento: escolhas sem resposta são sorteadas, cada tabuleiro é preparado e os votos de "Pronto" são
+ *  apagados. Carrossel que ficou aberto (simulação que pulou a fase) termina antes. */
 export function fimDoPlanejamento(p: Partida): void {
   if (p.carrossel) terminarCarrossel(p);
+  limparVotos(p);
   for (const j of vivos(p)) {
     sortearEscolhas(p, j);
     prepararTabuleiro(j);

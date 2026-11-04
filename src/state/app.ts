@@ -390,7 +390,10 @@ export function init() {
       });
   });
   customs.subscribe(syncCustoms);
-  if (new URLSearchParams(location.search).has('sala')) app.mode = 'online';
+  const busca = new URLSearchParams(location.search);
+  // link direto pra Autobatalha: ?aba=autobatalha
+  if (busca.get('aba') === 'autobatalha') app.mode = 'autobatalha';
+  if (busca.has('sala')) app.mode = 'online';
   renderDuel();
   document.addEventListener('keydown', e => { onKey(e); emit(); });
 }

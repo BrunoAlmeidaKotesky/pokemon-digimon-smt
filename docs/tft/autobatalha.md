@@ -102,7 +102,8 @@ desses).
 ## Traços (src/autobatalha/conteudo/tracos.ts)
 
 Conta campeões diferentes no tabuleiro (duas cópias do mesmo campeão contam uma vez), pela forma atual. Únicos não é
-traço. Escadas das classes 2/4/6 e dos elementos 2/3/4. As origens têm 5 degraus (6 nas maiores), pedido do usuário em
+traço. Escadas das classes 2/4/6 (Criaturinha Bizarra e Safada, as duas maiores, 3/5/7: pedido do usuário pra nem todo
+traço começar no 2) e dos elementos 2/3/4. As origens têm 5 degraus (6 nas maiores), pedido do usuário em
 04/11/2026, com as escadas da conta (docs/tft/matematica/resultado.md, seção 6b); o Pokémon, grande demais pra se
 igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
 
@@ -114,9 +115,9 @@ igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de bai
 | Porradeiro | (2) +15% de vida; (4) +30%, e abaixo de metade da vida causam 20% a mais; (6) +50%, e o resto do time ganha +10% de vida |
 | Assassino | saltam pra trás da linha inimiga. (2) +15% de chance e +15% de dano de crítico; (4) +30% e +30%; (6) +45% e +45%, e cada abate deixa 1 s sem poder ser alvo |
 | Demoníacos | (2) 10% de roubo de vida, e quando um Demoníaco morre os outros ganham 10% de dano; (4) 20% e 20%; (6) 25% e 25% |
-| Criaturinha Bizarra | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo); (4) o dobro; (6) 2,5 vezes e dois bônus |
+| Criaturinha Bizarra (3/5/7) | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo); (5) o dobro; (7) 2,5 vezes e dois bônus |
 | Fadinhas | a cada 4 s, cada Fadinha cura o aliado com menos vida em 4 / 8 / 14% da vida máxima dele |
-| Safada | os ataques têm 15 / 27 / 40% de chance de encantar o alvo por 1,5 s (atordoado) |
+| Safada (3/5/7) | os ataques têm 15 / 27 / 40% de chance de encantar o alvo por 1,5 s (atordoado) |
 | Atirador | +1 de alcance; cada ataque dá +3 / 6 / 8% de vel. ataque (até 15 vezes) |
 | Anjo | (2) o primeiro Anjo que morrer renasce com 40% da vida; (4) todos renascem uma vez com 50%; (6) com 80% |
 | Robô | +25 / 50 / 90% de armadura e escudo de 10 / 20 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |
@@ -267,11 +268,11 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   Tudo escala com a janela: a tela põe `--k` no `#autobatalha` (1 = 1280×720, até 2,4) e o CSS mede tudo em
   `calc(N * var(--u))` (`--u` = 1px × k); o tabuleiro mede o espaço que sobra (ResizeObserver) e escolhe o maior
   tamanho de casa que cabe. As casas são um pouco achatadas (altura = largura; na luta, 0,8), como uma câmera inclinada.
-- Em cima: estágio e rodada (ícones das rodadas do estágio), fase, relógio, Pronto, **Informações**, Planejador, mudo,
-  **configuração** (engrenagem) e Sair. À esquerda: os traços. Depois, a **bolsa** (itens soltos) numa coluna à
-  esquerda do tabuleiro. No meio: o tabuleiro (só a sua metade no planejamento; o inteiro na luta) e o banco embaixo
-  (encolhe na luta). À direita: os 8 jogadores com vida (clique pra olhar o tabuleiro de outro) e, depois de cada
-  luta, o **dano por unidade** (causado, do motor, e recebido, somado dos eventos; seu lado ou o deles). Embaixo: ouro
+- Em cima: estágio e rodada (ícones das rodadas do estágio), fase, relógio, a **votação do Pronto** (placar e
+  botão), **Informações**, Planejador, mudo, **configuração** (engrenagem) e Sair. À esquerda: os traços. Depois, a
+  **bolsa** (itens soltos) numa coluna à esquerda do tabuleiro. No meio: o tabuleiro (só a sua metade no
+  planejamento; o inteiro na luta) e o banco embaixo (encolhe na luta). À direita: os 8 jogadores com vida (clique pra
+  olhar o tabuleiro de outro; no planejamento, um ✓ verde no ícone de quem já votou Pronto) e, depois de cada luta, o **dano por unidade** (causado, do motor, e recebido, somado dos eventos; seu lado ou o deles). Embaixo: ouro
   com **juros** (+1 a cada 10) e **sequência** de vitórias ou derrotas, nível e XP, chances da loja, XP, Atualizar,
   travar e as 7 cartas.
 - **Tabuleiro:** no estilo padrão, um gramado (faixas de grama, vinheta) com casas hexagonais de grama de aro claro;
@@ -285,9 +286,20 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   longe). Ao lançar a habilidade, a foto dá um pulinho com tremida.
 - **Imagens inteiras:** retratos, cartas, carrossel, planejador e dica com `object-fit: contain` sobre um fundo da cor
   do custo (o redondo ainda pode cortar a pontinha de uma arte quadrada cheia).
-- **Cartas da loja:** retrato inteiro, nome e custo, traços em **etiquetas coloridas** (origem na cor da franquia;
-  cada classe e elemento com a sua cor, `COR_TRACO` em comum.tsx), as **cópias que você já tem** (bolinhas até 3,
-  e ★★ se já tem estrela 2), a marca **★★/★★★ que brilha quando a compra evolui**, o alcance, "plano" e "time".
+- **Cartas da loja:** retrato inteiro, nome e custo, **todos os traços em etiquetas coloridas** (origem na cor da
+  franquia; cada classe e elemento com a sua cor, `COR_TRACO` em comum.tsx), as **cópias que você já tem** (bolinhas
+  até 3, e ★★/★★★ se já tem estrela 2 ou 3), a marca **★★/★★★ que brilha quando a compra evolui**, o alcance, "plano"
+  e "time". As etiquetas ficam numa área de **duas linhas** (a mesma altura em toda carta, pra elas ficarem
+  alinhadas; a carta cresceu um pouco pra isso): a origem primeiro e os nomes compridos (mais de 12 letras, hoje só
+  Criaturinha Bizarra) no fim, que sozinhos numa linha quebram melhor. Medido com o CSS de verdade: toda forma de
+  nível 1 do set cabe em duas linhas. Se um dia não couber, a carta troca os compridos pelo nome curto
+  (`nomeCurtoTraco`: "Criat. Bizarra"), com o inteiro no title. Só a loja usa essas etiquetas (o carrossel e o
+  planejador mostram foto e nome; a dica lista os traços sem limite de altura).
+- **Campeão que você já tem na loja** (banco ou tabuleiro, qualquer estrela): um **anel dourado pulsando** em volta
+  da carta (atrás dela, `data-destaque="tem"` no item da lista). Se a compra **fecha uma evolução** (já tem 2 cópias
+  da mesma estrela), o destaque fica mais forte: um anel que gira com brilho intenso (★★: dourado, branco e laranja;
+  ★★★: prisma; `data-destaque="evolui2"` ou `"evolui3"`) e o ★★/★★★ no meio da arte. Com
+  `prefers-reduced-motion` o anel fica parado, com o brilho aceso. Visual próprio (anel em CSS, sem arte do TFT).
 - **Traços:** hexágono com a forma do degrau (bronze, prata, ouro e prisma no último degrau das escadas longas) e a
   cor do traço no meio, nome, contagem e próximo degrau, a escada com o atual em destaque e uma barra até o próximo.
   Passar o mouse destaca no tabuleiro e no banco as unidades do traço (as outras apagam); o botão de lista abre os
@@ -322,6 +334,16 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   comprar, vender, atualizar, XP, nível, evoluir (★2 e ★3), posicionar, equipar, juntar, apresentação, começo da luta,
   golpe (baixinho, com limite por segundo), crítico, habilidade (pelo efeito), morte, vitória, derrota, carrossel,
   relógio nos últimos segundos, moeda, aviso e clique. O áudio só começa no primeiro gesto; volume 0 não toca nada.
+- **Votação do "Pronto"** (pedido do usuário): o "Pronto" do planejamento é um voto. Cada jogador vivo vota que
+  está pronto e, quando **todos** votam, o planejamento acaba na hora (com ou sem relógio; sem todos, o relógio fecha
+  como sempre). Os bots votam assim que jogam o planejamento deles (no solo, logo no começo), então no solo o seu voto
+  fecha a votação. No topo, o placar **"Prontos 7/8"** com um ponto por jogador vivo; o botão vira **"✓ Pronto"**
+  (verde) depois do seu voto e clicar de novo **desfaz** enquanto o planejamento corre; na lista de jogadores, um ✓
+  em quem já votou. Pensando no online, o voto fica na partida: `Jogador.pronto` (tipos.ts; regras em
+  `partida/votacao.ts`: `votarPronto`, `votarBots`, `todosProntos`, `limparVotos`; o fim do planejamento limpa
+  tudo) e vai junto no salvo; a tela lê `EstadoTela.votacao` (`prontos`, ids de quem votou; `total`, os vivos;
+  `voce`) e chama `acoes.votarPronto()` (alterna) ou `acoes.pronto()` (vota, sem alternar). Partida salva antes da
+  votação: os bots votam ao carregar.
 - Escolha da forma da evolução em janelinha (fica pra depois do carrossel); sem resposta no fim do relógio, sorteia.
 - **Carrossel** no lugar do tabuleiro: as 9 opções num círculo que gira devagar (para com o mouse em cima), cada uma
   com a foto redonda da cor do custo e o ícone do item; a dica mostra o campeão e o item que vem junto. Quem pegou

@@ -1,5 +1,6 @@
-// Aba Autobatalha: lobby (regras da sala, nome, estilo do tabuleiro e ícone), partida (loja, banco, tabuleiro,
-// Pronto, apresentação e luta, próxima rodada, carrossel do 2-1), dica no hover e fixa, itens (equipar e juntar),
+// Aba Autobatalha: lobby (regras da sala, nome, estilo do tabuleiro e ícone), partida (loja com etiquetas e o anel de
+// quem você já tem, banco, tabuleiro, votação do Pronto, apresentação e luta, próxima rodada, carrossel do 2-1), dica
+// no hover e fixa, itens (equipar e juntar),
 // moedas no chão, atalhos, traços, informações, configuração e o planejador de times (pdx-autobatalha-planos).
 // O set é o public/autobatalha/set1.json de verdade
 // (servido junto com o site); as imagens externas viram o PNG cinza dos mocks. O relógio fica desligado
@@ -117,6 +118,96 @@ test.describe('Autobatalha', () => {
     await expect(page.locator('#abLuta')).toHaveCount(0);
     await expect(page.locator('#abTabuleiro')).toBeVisible();
     await expect(page.locator('#abPronto')).toBeVisible();
+  });
+
+  test('Pronto é uma votação: placar e marca de quem já votou; no solo o seu voto fecha e a luta começa', async ({ page }) => {
+    await inicio(page);
+    await page.locator('#abNova').click();
+    // os 7 bots votam assim que jogam o planejamento deles
+    const votos = page.locator('#abVotos');
+    await expect(votos).toContainText('Prontos 7/8');
+    await expect(votos.locator('.pontos i')).toHaveCount(8);
+    await expect(votos.locator('.pontos i.on')).toHaveCount(7);
+    await expect(page.locator('#abJogadores .ab-jog.pronto')).toHaveCount(7);
+    await expect(page.locator('#abJogadores .ab-jog:not(.eu) .ab-jog-pronto')).toHaveCount(7);
+    await expect(page.locator('#abJogadores .ab-jog.eu')).not.toHaveClass(/pronto/);
+    await expect(page.locator('#abPronto')).toHaveAttribute('aria-pressed', 'false');
+
+    // o seu voto fecha a votação: a luta começa na hora e as marcas somem
+    await page.locator('#abPronto').click();
+    await expect(page.locator('#abLuta')).toBeVisible();
+    await expect(votos).toHaveCount(0);
+    await expect(page.locator('#abPronto')).toHaveCount(0);
+    await expect(page.locator('#abJogadores .ab-jog.pronto')).toHaveCount(0);
+
+    // no próximo planejamento a votação recomeça
+    await page.locator('#abPular').click();
+    await expect(page.locator('#abRodada')).toHaveAttribute('data-rodada', '1-2', { timeout: 10000 });
+    await expect(votos).toContainText('Prontos 7/8');
+    await expect(page.locator('#abJogadores .ab-jog.eu')).not.toHaveClass(/pronto/);
+  });
+
+  test('loja: todas as etiquetas de traço aparecem; campeão que você já tem ganha o anel, e o que evolui, o mais forte', async ({ page }) => {
+    // a loja do salvo: 3 Bulbasaur (você já tem um, o de graça) e o Stray Cat (3 traços, um comprido)
+    await inicio(page);
+    await page.locator('#abNova').click();
+    await expect(page.locator('#abPronto')).toBeVisible();
+    await page.evaluate(() => {
+      interface J { id: string; ouro: number; unidades: Record<string, { campeao: string; forma: string }>; loja: (string | null)[]; lojaFormas?: (string | null)[] }
+      const p = JSON.parse(localStorage.getItem('pdx-autobatalha-v1')!) as { voce: string; jogadores: J[] };
+      const eu = p.jogadores.find(j => j.id === p.voce)!;
+      Object.assign(Object.values(eu.unidades)[0]!, { campeao: 'pokemon:bulbasaur', forma: 'pokemon:Bulbasaur' });
+      eu.loja = ['pokemon:bulbasaur', 'pokemon:bulbasaur', 'pokemon:bulbasaur', 'jojo:stray-cat', 'smt:mandrake', null, null];
+      // a forma de estrela 3 do Mandrake tem 4 traços com um comprido: não cabe em duas linhas nem com ele no fim
+      eu.lojaFormas = eu.loja.map((_, i) => (i === 4 ? 'smt:Cironnup' : null));
+      eu.ouro = 20;
+      localStorage.setItem('pdx-autobatalha-v1', JSON.stringify(p));
+    });
+    await abrir(page);
+    await aba(page, 'Autobatalha');
+    await page.locator('#abContinuar').click();
+    await expect(page.locator('#abPronto')).toBeVisible();
+
+    // etiquetas: as 3 do Stray Cat, a comprida no fim, todas dentro da área (nenhuma cortada)
+    const gato = page.locator('#abCartas .ab-carta[data-campeao="jojo:stray-cat"]');
+    await expect(gato.locator('.ab-etq')).toHaveText(['JoJo', 'Planta', 'Criaturinha Bizarra']);
+    await expect(gato.locator('.tracos')).not.toHaveAttribute('data-curto');
+    // 4 traços com um comprido: o comprido vira o nome curto, com o inteiro no title
+    const apertada = page.locator('#abCartas .ab-carta[data-campeao="smt:mandrake"] .ab-etq');
+    await expect(apertada).toHaveText(['SMT', 'Fadinhas', 'Atirador', 'Criat. Bizarra']);
+    await expect(apertada.last()).toHaveAttribute('title', 'Criaturinha Bizarra');
+    const dentro = await page.locator('#abCartas .ab-carta[data-campeao] .tracos').evaluateAll(els => els.every(t => {
+      const r = t.getBoundingClientRect();
+      return [...t.children].every(c => {
+        const b = c.getBoundingClientRect();
+        return b.top >= r.top - 0.5 && b.bottom <= r.bottom + 0.5 && b.left >= r.left - 0.5 && b.right <= r.right + 0.5 && c.scrollWidth <= c.clientWidth;
+      });
+    }));
+    expect(dentro).toBe(true);
+
+    // anel dourado pulsando em quem você já tem; o Stray Cat, não
+    const vagas = page.locator('#abCartas > li');
+    const anel = (i: number) => vagas.nth(i).evaluate(el => getComputedStyle(el, '::before').animationName);
+    await expect(page.locator('#abCartas > li[data-destaque="tem"]')).toHaveCount(3);
+    await expect(vagas.nth(3)).not.toHaveAttribute('data-destaque');
+    await expect(vagas.nth(0).locator('.marca.copias i.on')).toHaveCount(1);
+    expect(await anel(0)).toBe('ab-tem');
+
+    // comprar um: as outras duas fecham a evolução (anel girando e o ★★)
+    await vagas.nth(0).locator('.ab-carta').click();
+    await expect(page.locator('#abCartas > li[data-destaque="evolui2"]')).toHaveCount(2);
+    await expect(page.locator('#abCartas .ab-evolui')).toHaveText(['★★', '★★']);
+    expect(await anel(1)).toContain('ab-anel');
+    // sem movimento: o anel fica parado
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    expect(await anel(1)).toBe('none');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+
+    // comprar outro evolui (★★); o último volta pro anel dourado, com o ★★ nas cópias
+    await vagas.nth(1).locator('.ab-carta').click();
+    await expect(page.locator('#abCartas > li[data-destaque="tem"]')).toHaveCount(1);
+    await expect(vagas.nth(2).locator('.marca.copias')).toContainText('★★');
+    await expect(page.locator('#abCartas .ab-evolui')).toHaveCount(0);
   });
 
   test('carrossel no começo do estágio 2: ordem, dica, pega uma opção na sua vez e vai pro planejamento', async ({ page }) => {

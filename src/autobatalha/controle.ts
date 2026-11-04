@@ -3,14 +3,15 @@
 // (useAutobatalha) e chama `acoes` (contrato em api.ts).
 //
 // Ciclo: [carrossel no começo de cada estágio a partir do 2: as duplas são liberadas no tempo, o humano clica numa
-// opção] → planejamento (bots jogam no começo; a partida é salva; relógio ou "Pronto") → luta (todas simuladas de uma
-// vez; a do humano é reproduzida em tempo real × velocidade) → resultado (~1,5 s) → próxima rodada. Com o humano
-// eliminado, o resto da partida corre sem mostrar e a tela vai pro fim.
+// opção] → planejamento (bots jogam e votam "Pronto" no começo; a partida é salva; acaba no relógio ou quando todos
+// os vivos votaram "Pronto") → luta (todas simuladas de uma vez; a do humano é reproduzida em tempo real ×
+// velocidade) → resultado (~1,5 s) → próxima rodada. Com o humano eliminado, o resto da partida corre sem mostrar e a
+// tela vai pro fim.
 //
 // A partida é trocada por uma cópia a cada mudança (estado.partida muda de referência), então a tela pode
 // comparar referências. Sem ninguém olhando (aba fechada), o relógio, o carrossel e a luta ficam pausados.
 import { useSyncExternalStore } from 'react';
-import type { Acoes, Config, EstadoCarrossel, EstadoSala, EstadoTela, RegrasSala, Velocidade } from './api';
+import type { Acoes, Config, EstadoCarrossel, EstadoSala, EstadoTela, EstadoVotacao, RegrasSala, Velocidade } from './api';
 import { atributosDaUnidade, simularLuta } from './combate';
 import { combinar, contarTracos, ehComponente } from './conteudo';
 import { carregarSet, S, setCarregado } from './dados';
@@ -75,7 +76,7 @@ let partida: Partida | null = null;
 let pendente: P.ResultadoRodada | null = null;
 let estado: EstadoTela = {
   carregando: false, erro: null, partida: null, relogio: null, reproducao: null, config: lerConfig(), sala: null,
-  temSalva: false, carrossel: null, olhando: null, aviso: null,
+  temSalva: false, carrossel: null, votacao: null, olhando: null, aviso: null,
 };
 /** segundos desde o começo do carrossel, e o segundo em que ele acaba */
 let tCarrossel = 0;
@@ -112,10 +113,17 @@ function estadoDoCarrossel(p: Partida | null): EstadoCarrossel | null {
   };
 }
 
+/** A votação do "Pronto" pra tela (null fora do planejamento). */
+function estadoDaVotacao(p: Partida | null): EstadoVotacao | null {
+  if (!p || p.fase !== 'planejamento') return null;
+  const vs = P.vivos(p);
+  return { prontos: vs.filter(j => j.pronto).map(j => j.id), total: vs.length, voce: !!P.humano(p).pronto };
+}
+
 /** Avisa a tela. `copiar` = a partida mudou (troca por uma cópia, pra mudar a referência). */
 function publicar(copiar = false): void {
   if (copiar && partida) partida = structuredClone(partida);
-  estado = { ...estado, partida, carrossel: estadoDoCarrossel(partida) };
+  estado = { ...estado, partida, carrossel: estadoDoCarrossel(partida), votacao: estadoDaVotacao(partida) };
   ouvintes.forEach(l => l());
 }
 function mudar(m: Partial<EstadoTela>, copiar = false): void {
@@ -284,6 +292,8 @@ function comecarPlanejamento(): void {
   if (!p) return;
   p.fase = 'planejamento';
   P.jogarBots(p);
+  // os bots terminaram o planejamento deles: votam "Pronto" (no solo, o voto do humano fecha a votação)
+  P.votarBots(p);
   P.salvarPartida(p);
   estado = { ...estado, temSalva: true, reproducao: null };
   ligarRelogio();
@@ -370,6 +380,14 @@ function acao(f: (p: Partida, id: string) => string | null | void, fases: readon
   publicar(true);
 }
 
+/** O humano vota "Pronto" (true), desfaz (false) ou alterna (sem argumento). Com todos os vivos prontos, o
+ *  planejamento acaba na hora. */
+function votar(voto?: boolean): void {
+  acao((p, id) => { P.votarPronto(p, id, voto); }, ['planejamento']);
+  const p = partida;
+  if (p?.fase === 'planejamento' && P.todosProntos(p)) terminarPlanejamento();
+}
+
 /** Confere se a partida salva ainda bate com o set carregado (campeões e formas existem). */
 function partidaValida(p: Partida): boolean {
   try {
@@ -421,6 +439,8 @@ export const acoes: Acoes = {
     // a partida é salva no começo do planejamento, com os bots já jogados (carrossel aberto num salvo antigo: fecha)
     if (p.carrossel) P.terminarCarrossel(p);
     p.fase = 'planejamento';
+    // salva de antes da votação: os bots já tinham jogado, então já votam
+    P.votarBots(p);
     ligarRelogio();
     publicar(true);
   },
@@ -463,7 +483,8 @@ export const acoes: Acoes = {
   escolherUlt: (uid, ult) => acao((p, id) => P.escolherUlt(p, id, uid, ult)),
   alternarPosicao: uid => acao((p, id) => P.alternarPosicao(p, id, uid)),
 
-  pronto() { terminarPlanejamento(); },
+  votarPronto() { votar(); },
+  pronto() { votar(true); },
 
   velocidade(v) {
     const config = normalizarConfig({ ...estado.config, velocidade: v });

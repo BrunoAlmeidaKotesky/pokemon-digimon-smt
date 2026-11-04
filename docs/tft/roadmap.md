@@ -68,6 +68,11 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   Vulcão, Oceano, Noite estrelada, Floresta e Roxo arcano; na luta, a metade do adversário fica com o dele) e o seu
   **ícone** (grade de todos os personagens com busca, origem e custo). O estado já separa sala e jogador, pensando no
   online. **Pra você ver:** as cores de cada estilo e os desenhos por cima (prints do lobby e da partida).
+- **Loja e "Pronto":** **[você] pediu** todas as etiquetas de traço visíveis na carta (agora em até duas linhas, o
+  nome comprido no fim), destaque forte de campeão que você já tem (anel dourado pulsando; se a compra evolui, anel
+  girando com brilho mais forte e o ★★/★★★) e o "Pronto" como **votação** (placar "Prontos 7/8", ✓ em quem votou;
+  com todos prontos a luta começa na hora; no solo os bots votam no começo e o seu voto fecha; dá pra desfazer). O
+  voto fica na partida (`Jogador.pronto`), pensando no online. **Pra você ver:** as cores dos anéis (prints da loja).
 
 ## Pra você decidir
 

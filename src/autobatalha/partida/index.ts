@@ -40,6 +40,7 @@ export { apagarPartida, carregarPartida, CHAVE_PARTIDA, salvarPartida, temPartid
 export { jogarBot, jogarBots, nivelAlvo, perfilDa, PERFIS_BOT, type PerfilBot } from './bots';
 export { arrumarStands, contaNoLimite, MSG_LIMITE, prepararTabuleiro } from './tabuleiro';
 export { MSG_BANCO, MSG_OURO } from './loja';
+export { limparVotos, prontos, todosProntos, votarBots, votarPronto } from './votacao';
 
 // ---------- ações de um jogador (a tela usa com o id do humano) ----------
 

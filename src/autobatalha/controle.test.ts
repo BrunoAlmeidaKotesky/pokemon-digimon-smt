@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { acoes, CHAVE_CONFIG, CONFIG_PADRAO, estadoAutobatalha, MS_CLASH, MS_RESULTADO, normalizarConfig, S_FECHAR_CARROSSEL } from './controle';
 import { ehEstilo, ESTILO_PADRAO } from './estilos';
 import { S } from './dados';
-import { CHAVE_PARTIDA, definirMotor, horarioDoGrupo, humano, MAX_NOME, S_DEPOIS_DA_ULTIMA } from './partida';
+import { CHAVE_PARTIDA, definirMotor, horarioDoGrupo, humano, jogadorDe, MAX_NOME, S_DEPOIS_DA_ULTIMA } from './partida';
 import { lutaGanha, prepararTeste } from './partida/test-helpers';
 
 let guardado: Map<string, string>;
@@ -89,6 +89,89 @@ describe('controle', () => {
     expect(E().partida?.fase).toBe('resultado');
     vi.advanceTimersByTime(MS_RESULTADO);
     expect(E().partida?.rodada).toBe(2);
+  });
+
+  it('votação do "Pronto": os bots votam no começo e, no solo, o seu voto fecha e a luta começa na hora', () => {
+    acoes.novaPartida(16);
+    let e = E();
+    const bots = e.partida!.jogadores.filter(j => j.bot).map(j => j.id);
+    expect(e.votacao).toEqual({ prontos: bots, total: 8, voce: false });
+    expect(e.partida!.jogadores.filter(j => j.pronto).map(j => j.id)).toEqual(bots);
+    // a partida é salva com os votos dos bots
+    const salva = JSON.parse(guardado.get(CHAVE_PARTIDA)!) as { jogadores: { id: string; pronto?: true }[] };
+    expect(salva.jogadores.filter(j => j.pronto).map(j => j.id)).toEqual(bots);
+    expect(e.relogio).toBe(20);
+    acoes.votarPronto();
+    e = E();
+    expect(e.partida?.fase).toBe('luta');
+    expect(e.relogio).toBeNull();
+    expect(e.votacao).toBeNull();
+    // os votos valem só pra este planejamento
+    expect(e.partida!.jogadores.some(j => j.pronto)).toBe(false);
+    // fora do planejamento, votar não faz nada
+    acoes.votarPronto();
+    expect(E().partida?.fase).toBe('luta');
+    expect(E().votacao).toBeNull();
+    acoes.pularLuta();
+    vi.advanceTimersByTime(MS_RESULTADO);
+    // no próximo planejamento os bots votam de novo
+    expect(E().partida?.rodada).toBe(2);
+    expect(E().votacao).toMatchObject({ prontos: bots, total: 8, voce: false });
+  });
+
+  it('votação: com alguém sem votar o planejamento segue, dá pra desfazer o voto e o relógio ainda termina', () => {
+    acoes.novaPartida(17);
+    // um bot que ainda não votou (num modo online, outro jogador pensando)
+    delete jogadorDe(E().partida!, 'pyrus').pronto;
+    acoes.votarPronto();
+    let e = E();
+    expect(e.partida?.fase).toBe('planejamento');
+    expect(e.votacao).toMatchObject({ total: 8, voce: true });
+    expect(e.votacao!.prontos).toHaveLength(7);
+    expect(e.votacao!.prontos).toContain('voce');
+    expect(e.votacao!.prontos).not.toContain('pyrus');
+    expect(humano(e.partida!).pronto).toBe(true);
+    // desfaz
+    acoes.votarPronto();
+    e = E();
+    expect(e.votacao).toMatchObject({ voce: false });
+    expect(e.votacao!.prontos).toHaveLength(6);
+    expect(humano(e.partida!).pronto).toBeUndefined();
+    // pronto() vota sem alternar
+    acoes.pronto();
+    acoes.pronto();
+    expect(E().votacao).toMatchObject({ voce: true });
+    expect(E().partida?.fase).toBe('planejamento');
+    // sem todos os votos, o relógio fecha o planejamento como sempre
+    vi.advanceTimersByTime(20000);
+    expect(E().partida?.fase).toBe('luta');
+    expect(E().partida!.jogadores.some(j => j.pronto)).toBe(false);
+  });
+
+  it('votação sem relógio: o planejamento só acaba quando todos votam', () => {
+    acoes.configurar({ relogio: false });
+    acoes.novaPartida(18);
+    delete jogadorDe(E().partida!, 'pyrus').pronto;
+    acoes.pronto();
+    vi.advanceTimersByTime(120000);
+    expect(E().partida?.fase).toBe('planejamento');
+    expect(E().votacao!.prontos).toHaveLength(7);
+    acoes.votarPronto(); // desfaz
+    acoes.votarPronto(); // vota de novo: ainda falta o pyrus
+    expect(E().partida?.fase).toBe('planejamento');
+    expect(E().votacao).toMatchObject({ voce: true });
+  });
+
+  it('continuar uma salva de antes da votação (sem votos): os bots votam ao carregar', () => {
+    acoes.novaPartida(19);
+    const salva = JSON.parse(guardado.get(CHAVE_PARTIDA)!) as { jogadores: { pronto?: true }[] };
+    for (const j of salva.jogadores) delete j.pronto;
+    guardado.set(CHAVE_PARTIDA, JSON.stringify(salva));
+    acoes.continuar();
+    expect(E().votacao).toMatchObject({ total: 8, voce: false });
+    expect(E().votacao!.prontos).toHaveLength(7);
+    acoes.pronto();
+    expect(E().partida?.fase).toBe('luta');
   });
 
   /** joga as 3 rodadas do estágio 1 (sem relógio) e para no carrossel do estágio 2 */

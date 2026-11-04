@@ -392,6 +392,9 @@ export interface Jogador {
   lojaFormas?: (string | null)[];
   /** bots: traços que o bot decidiu montar (1 ou 2) */
   alvos?: string[];
+  /** votou "Pronto" neste planejamento (partida/votacao.ts): com todos os vivos prontos, a luta começa na hora. Os
+   *  bots votam assim que jogam; o fim do planejamento limpa. Sem = não votou. */
+  pronto?: true;
 }
 
 /** Forma pra escolher: na evolução (nível com alternativas) ou na compra (nível 1 com alternativas). */

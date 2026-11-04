@@ -184,7 +184,8 @@ describe('traços', () => {
       deadlock: [2, 3, 4, 5, 6], sujimon: [2, 3, 4, 5, 6],
     };
     for (const o of ORIGENS) expect(TRACOS[o]!.degraus, o).toEqual(escadas[o]);
-    for (const c of CLASSES) expect(TRACOS[c]!.degraus, c).toEqual([2, 4, 6]);
+    const comeca3 = ['criaturinha-bizarra', 'safada'];
+    for (const c of CLASSES) expect(TRACOS[c]!.degraus, c).toEqual(comeca3.includes(c) ? [3, 5, 7] : [2, 4, 6]);
     for (const e of ELEMENTOS) expect(TRACOS[e]!.degraus, e).toEqual([2, 3, 4]);
     for (const o of ORIGENS) expect(TRACOS[o]!.tipo).toBe('origem');
     for (const c of CLASSES) expect(TRACOS[c]!.tipo).toBe('classe');

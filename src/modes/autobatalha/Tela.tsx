@@ -6,7 +6,7 @@
 // multiplica os tamanhos do CSS, e o tabuleiro mede o espaço que sobra pra escolher o tamanho das casas.
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { Segmented } from '../../components/Controls';
-import type { EstadoTela } from '../../autobatalha/api';
+import type { EstadoTela, EstadoVotacao } from '../../autobatalha/api';
 import type { CasaDono, Jogador, Partida as PartidaDados } from '../../autobatalha/tipos';
 import { COLUNAS, LINHAS_DONO } from '../../autobatalha/tipos';
 import { setCarregado } from '../../autobatalha/dados';
@@ -269,7 +269,7 @@ function Topo({ e, p, abrirPlanejador, abrirInfo, abrirConfig }: {
           <button type="button" id="abPular" className="btn" onClick={() => acoes.pularLuta()}>Pular luta</button>
         </>
       )}
-      {p.fase === 'planejamento' && <button type="button" id="abPronto" className="btn main" onClick={() => acoes.pronto()}>Pronto</button>}
+      {p.fase === 'planejamento' && <Votacao v={e.votacao} />}
       <button type="button" id="abInfoBtn" className="btn" title="Traços, receitas dos Bakugan, chances da loja e regras" onClick={() => abrirInfo()}>Informações</button>
       <button type="button" id="abPlanejador" className="btn" onClick={abrirPlanejador}>Planejador</button>
       <BotaoMudo volume={e.config.volume} id="abMudo" />
@@ -280,6 +280,27 @@ function Topo({ e, p, abrirPlanejador, abrirInfo, abrirConfig }: {
       </button>
       <BotaoSair />
     </div>
+  );
+}
+
+/** "Pronto" do planejamento como votação: o placar (prontos/vivos, um ponto por jogador) e o botão que vota ou desfaz o
+ *  voto. Quando todos votam, a luta começa na hora (no solo os bots já votaram: o seu voto fecha). */
+function Votacao({ v }: { v: EstadoVotacao | null }) {
+  const voce = !!v?.voce;
+  const n = v?.prontos.length ?? 0;
+  const total = v?.total ?? 0;
+  return (
+    <span className="ab-votacao">
+      <span id="abVotos" className="ab-votos" role="status" title="Jogadores prontos pra luta: quando todos votam, ela começa na hora">
+        Prontos <b>{n}/{total}</b>
+        <span className="pontos" aria-hidden="true">{Array.from({ length: total }, (_, k) => <i key={k} className={k < n ? 'on' : undefined} />)}</span>
+      </span>
+      <button type="button" id="abPronto" className={'btn main ab-pronto' + (voce ? ' on' : '')} aria-pressed={voce}
+        title={voce ? 'Você votou pronto. Clique pra desfazer o voto' : 'Votar pronto: quando todos votam, a luta começa na hora'}
+        onClick={() => acoes.votarPronto()}>
+        {voce ? '✓ Pronto' : 'Pronto'}
+      </button>
+    </span>
   );
 }
 
