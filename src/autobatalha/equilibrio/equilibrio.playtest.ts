@@ -5,7 +5,7 @@
 //   node node_modules/vitest/vitest.mjs run --config src/autobatalha/equilibrio/playtest.config.ts
 //
 // Variáveis de ambiente (todas opcionais):
-//   EQUILIBRIO_PARTES   lista separada por vírgula: campeoes,curva,pacotes,tracos,itens,partidas (padrão: todas)
+//   EQUILIBRIO_PARTES   lista separada por vírgula: campeoes,curva,pacotes,tracos,itens,partidas,origens (padrão: todas)
 //   EQUILIBRIO_RAPIDO=1 menos cenários (pra conferir um ajuste rápido; os números ficam mais ruidosos)
 //   EQUILIBRIO_SAIDA    arquivo .md (padrão docs/tft/matematica/equilibrio.md)
 //   EQUILIBRIO_JSON     se definido, grava também os números crus nesse arquivo .json
@@ -14,9 +14,10 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { it } from 'vitest';
 import { definirSet } from '../dados';
 import { HABILIDADES_CLASSE, TRACOS } from '../conteudo';
-import type { Custo, Estrela, SetDados } from '../tipos';
+import { ORIGENS, type Custo, type Estrela, type SetDados } from '../tipos';
 import {
-  curva, estenderSet, forcaPorCampeao, idsDosItens, valorDoItem, valorDoPacote, valorDoTraco, type Grupo, type TabelaLanc,
+  curva, estenderSet, forcaPorCampeao, ganhoDeEvoluir, idsDosItens, origemContraOrigem, valorDoItem, valorDoPacote,
+  valorDoTraco, type Grupo, type TabelaLanc,
 } from './laboratorio';
 import { juntarComHistorico } from './medidas';
 import { jogarPartidas } from './partidas';
@@ -24,13 +25,17 @@ import { montarRelatorio, type Resultados } from './relatorio';
 
 const env = process.env;
 const RAPIDO = env.EQUILIBRIO_RAPIDO === '1';
-const PARTES = new Set((env.EQUILIBRIO_PARTES ?? 'campeoes,curva,pacotes,tracos,itens,partidas').split(',').map(s => s.trim()));
+const PARTES = new Set((env.EQUILIBRIO_PARTES ?? 'campeoes,curva,pacotes,tracos,itens,partidas,origens').split(',').map(s => s.trim()));
 const SAIDA = env.EQUILIBRIO_SAIDA ?? 'docs/tft/matematica/equilibrio.md';
 const BASE = Number(env.EQUILIBRIO_SEMENTE ?? 2026);
 const CENARIOS = RAPIDO
-  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, partidas: [1, 2, 3, 4, 5, 6] }
-  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, partidas: Array.from({ length: 24 }, (_, i) => i + 1) };
+  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, origens: 6, evolucao: 12, partidas: [1, 2, 3, 4, 5, 6] }
+  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, origens: 20, evolucao: 40, partidas: Array.from({ length: 24 }, (_, i) => i + 1) };
 
+/** Tabuleiro e estrela de cada coluna da comparação entre origens. */
+const PONTOS_ORIGENS: readonly (readonly [number, Estrela])[] = [[4, 1], [6, 2], [8, 2], [10, 2], [10, 3]];
+/** Origens em que a medida de evoluir olha só as linhas evolutivas. */
+const COM_LINHAS = new Set<string>(['pokemon', 'digimon', 'smt', 'persona', 'sujimon']);
 const G = (custo: Custo, estrela: Estrela): Grupo => ({ custo, estrela });
 /** Confrontos da curva: [time, contra]. */
 const CONFRONTOS: [Grupo, Grupo][] = [
@@ -87,6 +92,16 @@ it('playtest: mede e grava o equilibrio.md', () => {
   if (PARTES.has('partidas')) {
     log(`partidas de bots (${CENARIOS.partidas.length})`);
     r.partidas = jogarPartidas(CENARIOS.partidas.map(s => s + BASE));
+  }
+
+  if (PARTES.has('origens')) {
+    log('origem contra origem');
+    r.origens = PONTOS_ORIGENS.map(([limite, estrela]) => ({ limite, estrela, placares: origemContraOrigem(limite, estrela, CENARIOS.origens, BASE) }));
+    log('ganho de evoluir');
+    r.evolucao = ORIGENS.filter(fr => fr !== 'jojo').flatMap(fr => ([1, 2] as const).map(de => {
+      const soLinhas = COM_LINHAS.has(fr);
+      return { fr, de, soLinhas, eq: ganhoDeEvoluir(fr, de, 6, CENARIOS.evolucao, BASE, soLinhas) };
+    }));
   }
 
   const antigo = existsSync(SAIDA) ? readFileSync(SAIDA, 'utf8') : null;

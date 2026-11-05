@@ -3,7 +3,7 @@ import { S } from '../dados';
 import { chave, deChave } from '../hex';
 import type { Custo, Estrela, Jogador, Onde, Origem, Partida, TipoRodada, Unidade } from '../tipos';
 import {
-  CHANCES_LOJA, COPIAS_POR_ESTRELA, ID_MONSTROS, NIVEL_MAXIMO, PREFIXO_FANTASMA, UNIDADES_ALEM_DO_NIVEL, XP_POR_NIVEL,
+  CHANCES_LOJA, COPIAS_POR_ESTRELA, ID_MONSTROS, NIVEL_MAXIMO, PREFIXO_FANTASMA, XP_POR_NIVEL,
 } from './constantes';
 
 export function jogadorDe(p: Partida, id: string): Jogador {
@@ -50,8 +50,8 @@ export function rodadasDoEstagio(estagio: number): TipoRodada[] {
   return ['pvp', 'pvp', 'pvp', 'pvp', 'pvp', 'pvp', estagio === 2 ? 'monstros' : 'chefe'];
 }
 
-/** Limite de unidades no tabuleiro (Stands à parte). */
-export const limiteTabuleiro = (j: Jogador): number => j.nivel + UNIDADES_ALEM_DO_NIVEL;
+/** Limite de unidades no tabuleiro: o nível (pedido do usuário em 05/11/2026: começar com dois não foi boa ideia). */
+export const limiteTabuleiro = (j: Jogador): number => j.nivel;
 
 /** Unidades no tabuleiro, com ou sem os Stands. */
 export function unidadesNoTabuleiro(j: Jogador, comStands = true): Unidade[] {

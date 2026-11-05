@@ -117,16 +117,17 @@ test.describe('Autobatalha online (transporte local)', () => {
     }
     await expect(ana.locator('#abJogadores .ab-jog.eu')).toHaveAttribute('data-jogador', 'h2');
 
-    // a Ana compra uma carta de custo 1 e põe no tabuleiro
-    await ana.locator('#abCartas .ab-carta[data-custo="1"]').first().click();
+    // a Ana compra uma carta de custo 1 e troca com a do tabuleiro (no nível 1 só cabe uma)
+    await ana.locator('#abCartas .ab-carta[data-custo="1"]:not([data-campeao^="jojo:"])').first().click();
     await expect(ana.locator('#abOuro')).toHaveText('0');
     await expect(ana.locator('#abBanco .ab-peca')).toHaveCount(1);
-    await arrastar(ana, ana.locator('#abBanco .ab-peca').first(), ana.locator('#abTabuleiro .ab-casa[data-col="2"][data-lin="0"]'));
-    await expect(ana.locator('#abTabuleiro .ab-peca')).toHaveCount(2);
-    // o Caio olha o tabuleiro da Ana: as duas peças
+    const comprada = (await ana.locator('#abBanco .ab-peca').first().getAttribute('data-campeao'))!;
+    await arrastar(ana, ana.locator('#abBanco .ab-peca').first(), ana.locator('#abTabuleiro .ab-peca').first());
+    await expect(ana.locator('#abTabuleiro .ab-peca')).toHaveAttribute('data-campeao', comprada);
+    // o Caio olha o tabuleiro da Ana: a peça que ela pôs
     await caio.locator('#abJogadores .ab-jog[data-jogador="h2"]').click();
     await expect(caio.locator('.ab-olhando')).toContainText('Ana');
-    await expect(caio.locator('#abTabuleiro .ab-peca')).toHaveCount(2);
+    await expect(caio.locator('#abTabuleiro .ab-peca')).toHaveAttribute('data-campeao', comprada);
     await caio.locator('#abVoltar').click();
     // o anfitrião também compra
     await host.locator('#abCartas .ab-carta[data-custo="1"]').first().click();
@@ -145,7 +146,7 @@ test.describe('Autobatalha online (transporte local)', () => {
       await expect(p.locator('#abLuta .ab-peca[data-lado="a"]').first()).toBeVisible();
       await expect(p.locator('#abLuta .ab-peca[data-lado="b"]').first()).toBeVisible();
     }));
-    await expect(ana.locator('#abLuta .ab-peca[data-lado="a"]')).toHaveCount(2);
+    await expect(ana.locator('#abLuta .ab-peca[data-lado="a"]')).toHaveCount(1);
     // quem pula vê o placar e espera os outros; a rodada segue quando todos viram
     await host.locator('#abPular').click();
     await expect(host.locator('#abPlacar')).toBeVisible();

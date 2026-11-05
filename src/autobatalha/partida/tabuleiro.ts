@@ -38,8 +38,8 @@ export function casasLivresAoLado(j: Jogador, c: CasaDono): CasaDono[] {
   return vizinhas(c, LINHAS_DONO).filter(v => casaLivre(j, v)).sort((a, b) => b.lin - a.lin);
 }
 
-/** Unidades normais (sem Stands) no tabuleiro: o que conta no limite. */
-export const contaNoLimite = (j: Jogador): number => unidadesNoTabuleiro(j, false).length;
+/** Vagas que o tabuleiro gasta: toda unidade, Stand inclusive (decisão do usuário em 05/11/2026: Stand nunca excede a vaga). */
+export const contaNoLimite = (j: Jogador): number => unidadesNoTabuleiro(j).length;
 
 // ---------- Stands ----------
 
@@ -224,10 +224,10 @@ export function prepararTabuleiro(j: Jogador): void {
   arrumarStands(j);
   const lim = limiteTabuleiro(j);
   // excesso: os mais fracos voltam
-  const normais = unidadesNoTabuleiro(j, false).sort((a, b) => forca(a) - forca(b));
-  while (normais.length > lim) {
-    const u = normais.shift()!;
-    if (!paraOBanco(j, u.uid)) break;
+  while (contaNoLimite(j) > lim) {
+    const u = unidadesNoTabuleiro(j).sort((a, b) => forca(a) - forca(b))[0];
+    if (!u || !paraOBanco(j, u.uid)) break;
+    arrumarStands(j);
   }
   // preencher
   const banco = unidadesNoBanco(j).filter(u => !ehStand(u)).sort((a, b) => forca(b) - forca(a));

@@ -20,8 +20,8 @@ import {
 } from './interacao';
 import { eventosEntre, lutadoresEm } from './reproducao';
 import {
-  Estrelas, Foto, IconeAlcance, IconeItem, Moeda, RAZAO_LUTA, avatarDe, casaQueCabe, centroCasa, custoAttr, estiloDe, formaOuNada, geo, imgForma,
-  num, plural, tamanhoTabuleiro, type Geo,
+  Estrelas, Foto, IconeAlcance, IconeItem, Moeda, RAZAO_LUTA, SeloPosicao, avatarDe, casaQueCabe, centroCasa, custoAttr, estiloDe, formaOuNada, geo,
+  imgForma, num, plural, tamanhoTabuleiro, type Geo, type Posicao,
 } from './comum';
 
 // ---------- atributos (com memória: a peça redesenha muito na luta) ----------
@@ -63,17 +63,23 @@ export interface FichaDados {
   /** casas de alcance (o ícone de perto/longe); sem = não mostra */
   alcance?: number;
   stand?: boolean;
+  /** carta de Yu-Gi-Oh!: a posição (o selo na peça); sem = não é carta */
+  posicao?: Posicao;
   monstro?: boolean;
   chefe?: boolean;
   morto?: boolean;
   status?: readonly Status[];
 }
 
+/** Posição da unidade, se ela for uma carta de Yu-Gi-Oh! */
+const posicaoDe = (u: Unidade): Posicao | undefined => (S().campeao(u.campeao).fr === 'ygo' ? u.posicao ?? 'ataque' : undefined);
+
 const fr = (x: number) => `${Math.max(0, Math.min(1, x)) * 100}%`;
 
-export function Ficha({ d }: { d: FichaDados }) {
+/** `aoTrocarPosicao`: o selo da carta vira botão (a peça é sua, no planejamento). */
+export function Ficha({ d, aoTrocarPosicao }: { d: FichaDados; aoTrocarPosicao?: () => void }) {
   const total = Math.max(d.vidaMax, d.vida + d.escudo, 1);
-  const cls = ['ab-ficha', d.inimigo ? 'inimigo' : 'aliado', d.stand && 'stand', d.monstro && 'monstro', d.chefe && 'chefe', d.morto && 'morto', d.status?.includes('atordoado') && 'atordoado']
+  const cls = ['ab-ficha', d.inimigo ? 'inimigo' : 'aliado', d.stand && 'stand', d.monstro && 'monstro', d.chefe && 'chefe', d.morto && 'morto', d.status?.includes('atordoado') && 'atordoado', d.posicao === 'defesa' && 'defesa']
     .filter(Boolean).join(' ');
   return (
     <div className={cls} {...custoAttr(d.custo)}>
@@ -88,6 +94,7 @@ export function Ficha({ d }: { d: FichaDados }) {
       <Foto src={d.img} nome={d.nome} className="redonda" />
       {d.alcance != null && !d.monstro && <IconeAlcance alcance={d.alcance} />}
       {d.stand && <span className="ab-marca-stand" title="Stand">S</span>}
+      {d.posicao && <SeloPosicao posicao={d.posicao} aoTrocar={aoTrocarPosicao} />}
       {d.itens.length > 0 && <div className="itens">{d.itens.map((id, i) => <IconeItem key={i} id={id} />)}</div>}
     </div>
   );
@@ -100,7 +107,7 @@ export function fichaDaUnidade(u: Unidade, inimigo = false): FichaDados {
   return {
     nome: formaOuNada(u.forma)?.nome ?? c.nome, img: imgForma(u.forma), custo: c.custo, estrela: u.estrela,
     vida: at?.vida ?? 1, vidaMax: at?.vida ?? 1, escudo: 0, mana: at?.manaInicial ?? 0, manaMax: at?.mana ?? 100,
-    inimigo, itens: u.itens, alcance: at?.alcance, stand: !!c.stand,
+    inimigo, itens: u.itens, alcance: at?.alcance, stand: !!c.stand, posicao: posicaoDe(u),
   };
 }
 
@@ -126,10 +133,12 @@ export function soltar(c: Carga, alvo: HTMLElement | null): void {
 }
 
 /** Peça de unidade (tabuleiro ou banco): dica ao passar o mouse e, se for sua, arrasta. */
-function PecaUnidade({ u, dono, editavel, casa, style, className, foco }: {
+function PecaUnidade({ u, dono, editavel, trocaPosicao, casa, style, className, foco }: {
   u: Unidade;
   dono: string;
   editavel: boolean;
+  /** clicar no selo da carta troca a posição (só no planejamento, e só na sua peça) */
+  trocaPosicao: boolean;
   /** casa no tabuleiro (a peça também é alvo de soltar: troca de lugar) */
   casa?: Casa;
   style?: CSSProperties;
@@ -157,7 +166,7 @@ function PecaUnidade({ u, dono, editavel, casa, style, className, foco }: {
         const el = e.currentTarget;
         iniciarArrasto(e, { tipo: 'unidade', uid: u.uid, img: d.img, custo: d.custo, nome: d.nome, venda: valorVenda(u) }, soltar, () => clicar(el));
       } : undefined}>
-      <Ficha d={d} />
+      <Ficha d={d} aoTrocarPosicao={trocaPosicao ? () => acoes.alternarPosicao(u.uid) : undefined} />
     </div>
   );
 }
@@ -224,7 +233,7 @@ export function TabuleiroDono({ j, editavel, espaco }: { j: Jogador; editavel: b
           {ligacoes.map(l => <line key={l.id} x1={l.a.x} y1={l.a.y} x2={l.b.x} y2={l.b.y} />)}
         </svg>
       )}
-      {pecas.map(p => <PecaUnidade key={p.u.uid} u={p.u} dono={j.id} editavel={editavel} casa={p.casa} style={estiloPeca(p.casa, g)} className="no-tab" foco={foco} />)}
+      {pecas.map(p => <PecaUnidade key={p.u.uid} u={p.u} dono={j.id} editavel={editavel} trocaPosicao={editavel} casa={p.casa} style={estiloPeca(p.casa, g)} className="no-tab" foco={foco} />)}
       {moedas.map((m, i) => {
         const { x, y } = posMoeda(m.casa, i);
         return (
@@ -239,7 +248,7 @@ export function TabuleiroDono({ j, editavel, espaco }: { j: Jogador; editavel: b
   );
 }
 
-export function Banco({ j, editavel }: { j: Jogador; editavel: boolean }) {
+export function Banco({ j, editavel, planejando }: { j: Jogador; editavel: boolean; planejando: boolean }) {
   const foco = useTracoEmFoco();
   return (
     <div id="abBanco" className={'ab-banco' + (foco ? ' focando' : '')} aria-label="Banco">
@@ -247,7 +256,7 @@ export function Banco({ j, editavel }: { j: Jogador; editavel: boolean }) {
         const u = uid != null ? j.unidades[uid] : undefined;
         return (
           <div key={i} className={'ab-vaga' + (u ? ' ocupada' : '')} data-solta={editavel ? 'banco' : undefined} data-i={i}>
-            {u && <PecaUnidade u={u} dono={j.id} editavel={editavel} foco={foco} />}
+            {u && <PecaUnidade u={u} dono={j.id} editavel={editavel} trocaPosicao={editavel && planejando} foco={foco} />}
           </div>
         );
       })}
@@ -422,7 +431,7 @@ function fichaDoLutador(l: EstadoVisivel, u: Unidade | null): FichaDados {
   return {
     nome: l.nome, img: urlImagem(l.img), custo: l.custo, estrela: l.estrela, vida: l.vida, vidaMax: l.vidaMax, escudo: l.escudo,
     mana: l.mana, manaMax: l.manaMax, inimigo: l.lado === 'b', itens: l.itens, alcance: u ? atributosDe(u)?.alcance : undefined,
-    stand: l.stand, monstro: l.monstro, chefe: l.chefe, morto: !l.vivo, status: l.status,
+    stand: l.stand, posicao: u ? posicaoDe(u) : undefined, monstro: l.monstro, chefe: l.chefe, morto: !l.vivo, status: l.status,
   };
 }
 

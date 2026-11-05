@@ -2,7 +2,7 @@
 // equilíbrio ficam em FAIXAS (medidas.ts); aqui só monta as tabelas e as listas do que ficou fora.
 import { S } from '../dados';
 import { CHANCE_MOEDA_ABATE, CHANCE_MOEDA_LANCAR, HABILIDADES_CLASSE, ITENS, PASSIVAS, TETO_MOEDAS, TRACOS } from '../conteudo';
-import type { Estrela } from '../tipos';
+import { ORIGENS, type Estrela, type Origem } from '../tipos';
 import { somaLancVazia, type Equivalente, type Grupo, type LinhaCampeao, type SomaLanc, type TabelaLanc } from './laboratorio';
 import {
   FAIXAS, foraDaFaixa, foraDaMediana, media, mediana, num, pct, quantil, tabela, taxa, type Placar,
@@ -13,6 +13,8 @@ export interface ResultadoCurva { p: Grupo; q: Grupo; placar: Placar }
 export interface ResultadoPacote { classe: string; estrela: Estrela; eq: Equivalente }
 export interface ResultadoTraco { traco: string; nivel: number; estrela: Estrela; eq: Equivalente }
 export interface ResultadoItem { item: string; estrela: Estrela; eq: Equivalente }
+export interface ResultadoOrigens { limite: number; estrela: Estrela; placares: ReadonlyMap<Origem, Placar> }
+export interface ResultadoEvolucao { fr: Origem; de: 1 | 2; soLinhas: boolean; eq: Equivalente }
 
 export interface Resultados {
   /** AAAA-MM-DD */
@@ -20,7 +22,7 @@ export interface Resultados {
   /** semente base de tudo */
   base: number;
   /** quantos cenários em cada medida (curva, traço, item, pacote) e sementes das partidas */
-  cenarios: { curva: number; tracos: number; itens: number; pacotes: number; partidas: number[] };
+  cenarios: { curva: number; tracos: number; itens: number; pacotes: number; origens: number; evolucao: number; partidas: number[] };
   campeoes?: LinhaCampeao[];
   curva?: ResultadoCurva[];
   pacotes?: ResultadoPacote[];
@@ -29,6 +31,8 @@ export interface Resultados {
   partidas?: EstatPartidas;
   /** lançamentos nas lutas da curva por custo */
   lancCurva?: TabelaLanc;
+  origens?: ResultadoOrigens[];
+  evolucao?: ResultadoEvolucao[];
 }
 
 const g = (x: Grupo) => `★${x.estrela} custo ${x.custo}`;
@@ -300,9 +304,9 @@ function secaoTracos(r: Resultados): string {
     'mediana do mesmo degrau. Origens: só referência (as escadas e os números delas não mudam aqui); Overwatch, ' +
     'Deadlock e Sujimon agem também fora da luta, e isso não entra.',
     '',
-    bloco('Classes (2/4/6)', id => tipo(id) === 'classe', true),
+    bloco('Classes', id => tipo(id) === 'classe', true),
     '',
-    bloco('Elementos (2/3/4)', id => tipo(id) === 'elemento', true),
+    bloco('Elementos', id => tipo(id) === 'elemento', true),
     '',
     bloco('Origens', id => tipo(id) === 'origem', false),
   ].join('\n');
@@ -402,12 +406,67 @@ function secaoPartidas(r: Resultados): string {
     '### Rodadas de monstros (vitórias dos jogadores)',
     '',
     tabela(['Rodada', 'Lutas', 'Vitórias'], monstros),
+    '',
+    '### Colocação pela origem mais usada (do estágio 3 em diante)',
+    '',
+    tabela(['Origem', 'Jogadores', 'Colocação média', 'Entre os 4 primeiros'], [...e.colocacoes]
+      .sort((a, b) => media(a[1]) - media(b[1]))
+      .map(([fr, cs]) => [nomeOrigem(fr), cs.length, num(media(cs), 2), pct(cs.filter(c => c <= 4).length / cs.length)])),
+    '',
+    '### Em campo por nível',
+    '',
+    tabela(['Nível', 'Jogador-rodadas', 'Unidades em média', 'Stands em média', 'Máximo'], [...e.campo]
+      .sort((a, b) => a[0] - b[0])
+      .map(([n, c]) => [n, c.n, num(c.unidades / c.n, 1), num(c.stands / c.n, 1), c.maximo])),
   ].join('\n');
+}
+
+const nomeOrigem = (o: string) => nomeTraco(o);
+
+/** Colunas limite/estrela, uma linha por origem. */
+function tabelaOrigens(rs: readonly ResultadoOrigens[]): string {
+  const linhas = ORIGENS.map(o => [nomeOrigem(o), ...rs.map(x => pct(taxa(x.placares.get(o)!)))]);
+  return tabela(['Origem', ...rs.map(x => `${x.limite} no tabuleiro, ★${x.estrela}`)], linhas);
+}
+
+function secaoOrigens(r: Resultados): string {
+  const out: string[] = [];
+  if (r.origens?.length) {
+    out.push(
+      '## Origens',
+      '',
+      `Time cheio de cada origem contra os times cheios das outras (${r.cenarios.origens} cenários por par, dos dois lados), com os ` +
+      'custos da loja daquele nível e os traços valendo. JoJo: metade Stands, metade usuários de outras origens. ' +
+      'Digimon: um terço do time de fora, pro Parceiro. Overwatch, Deadlock e Sujimon agem também fora da luta, e isso não ' +
+      'entra aqui. Sem itens.',
+      '',
+      tabelaOrigens(r.origens),
+      '',
+    );
+  }
+  if (r.evolucao?.length) {
+    const frs = [...new Set(r.evolucao.map(e => e.fr))];
+    const linhas = frs.map(fr => {
+      const de = (d: 1 | 2) => r.evolucao!.find(e => e.fr === fr && e.de === d);
+      const x = de(1), y = de(2);
+      return [nomeOrigem(fr) + (x?.soLinhas ? ' (linhas)' : ''), x ? pct(x.eq.equivalente, 0, true) : '–', y ? pct(y.eq.equivalente, 0, true) : '–'];
+    });
+    out.push(
+      '### Quanto vale evoluir',
+      '',
+      `Os mesmos campeões numa estrela a mais: bônus de vida e dano no time da estrela de baixo que empata (${r.cenarios.evolucao} ` +
+      'cenários, tabuleiro de 6). Pokémon, Digimon, SMT, Persona e Sujimon: só as linhas evolutivas.',
+      '',
+      tabela(['Origem', '★1 → ★2', '★2 → ★3'], linhas),
+      '',
+    );
+  }
+  return out.join('\n').trimEnd();
 }
 
 /** O equilibrio.md inteiro (a parte gerada; o histórico escrito à mão é juntado por quem grava). */
 export function montarRelatorio(r: Resultados): string {
-  const secoes = [secaoCurva(r), secaoMana(r), secaoCampeoes(r), secaoHabilidades(r), secaoPacotes(r), secaoTracos(r), secaoItens(r), secaoMoedas(r), secaoPartidas(r)]
+  const secoes = [secaoCurva(r), secaoMana(r), secaoCampeoes(r), secaoHabilidades(r), secaoPacotes(r), secaoTracos(r), secaoOrigens(r), secaoItens(r), secaoMoedas(r), secaoPartidas(r)]
     .filter(Boolean);
   return [
     '# Equilíbrio: playtest automático',

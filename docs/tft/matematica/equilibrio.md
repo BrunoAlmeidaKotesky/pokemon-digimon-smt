@@ -1,6 +1,6 @@
 # Equilíbrio: playtest automático
 
-Gerado em 2026-11-04 por `src/autobatalha/equilibrio/equilibrio.playtest.ts` com o set, o motor e o conteúdo de verdade. Semente base 2026: a mesma semente e o mesmo código dão os mesmos números. Como rodar e o que cada medida quer dizer: [README.md](README.md), seção "Playtest". Não edite a parte gerada à mão: rode de novo.
+Gerado em 2026-11-05 por `src/autobatalha/equilibrio/equilibrio.playtest.ts` com o set, o motor e o conteúdo de verdade. Semente base 2026: a mesma semente e o mesmo código dão os mesmos números. Como rodar e o que cada medida quer dizer: [README.md](README.md), seção "Playtest". Não edite a parte gerada à mão: rode de novo.
 
 ## Curva por custo
 
@@ -13,21 +13,21 @@ Times de 5 campeões sorteados (sem Stands) de um custo e estrela contra os de o
 | ★1 custo 4 | ★1 custo 3 | 100% | 75%–100% |
 | ★1 custo 5 | ★1 custo 4 | 100% | 75%–100% |
 | ★2 custo 2 | ★2 custo 1 | 100% | 75%–100% |
-| ★2 custo 3 | ★2 custo 2 | 100% | 75%–100% |
+| ★2 custo 3 | ★2 custo 2 | 99% | 75%–100% |
 | ★2 custo 4 | ★2 custo 3 | 100% | 75%–100% |
 | ★2 custo 5 | ★2 custo 4 | 100% | 75%–100% |
 | ★2 custo 1 | ★1 custo 1 | 100% | – |
 | ★2 custo 1 | ★1 custo 2 | 100% | 60%–100% |
-| ★2 custo 1 | ★1 custo 3 | 57% | 35%–65% |
+| ★2 custo 1 | ★1 custo 3 | 63% | 35%–65% |
 | ★2 custo 2 | ★1 custo 3 | 100% | 60%–100% |
-| ★2 custo 2 | ★1 custo 4 | 63% | 35%–65% |
+| ★2 custo 2 | ★1 custo 4 | 72% | 35%–65% |
 | ★2 custo 3 | ★1 custo 4 | 100% | 60%–100% |
-| ★2 custo 3 | ★1 custo 5 | 66% | 35%–65% |
+| ★2 custo 3 | ★1 custo 5 | 77% | 35%–65% |
 | ★3 custo 1 | ★2 custo 2 | 100% | 60%–100% |
-| ★3 custo 1 | ★2 custo 3 | 64% | 35%–65% |
-| ★3 custo 2 | ★2 custo 4 | 69% | 35%–65% |
+| ★3 custo 1 | ★2 custo 3 | 71% | 35%–65% |
+| ★3 custo 2 | ★2 custo 4 | 77% | 35%–65% |
 
-**Fora do alvo:** ★2 custo 3 contra ★1 custo 5: 66% (alvo 35%–65%); ★3 custo 2 contra ★2 custo 4: 69% (alvo 35%–65%).
+**Fora do alvo:** ★2 custo 2 contra ★1 custo 4: 72% (alvo 35%–65%); ★2 custo 3 contra ★1 custo 5: 77% (alvo 35%–65%); ★3 custo 1 contra ★2 custo 3: 71% (alvo 35%–65%); ★3 custo 2 contra ★2 custo 4: 77% (alvo 35%–65%).
 
 ## Mana e lançamentos
 
@@ -35,38 +35,38 @@ Alvo: 1º lançamento entre 4 e 10 s pra maioria; tanque não lança antes dos p
 
 | Papel | Unidades-luta | 1º lanç. (s) | Antes de 3 s | 3–10 s | Depois de 10 s | Não lançou | Lanç./10 s vivo | Mana de atacar | de apanhar | de efeitos | 1º lanç. 5×5 (s) | Lanç./10 s 5×5 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Assassino | 1044 | 6,1 | 5% | 73% | 5% | 17% | 1,32 | 55% | 25% | 20% | 5,9 | 1,28 |
-| Planta | 133 | 7,8 | 13% | 35% | 35% | 17% | 0,89 | 74% | 20% | 5% | 10,7 | 0,54 |
-| Porradeiro | 2086 | 7,9 | 3% | 54% | 14% | 29% | 0,77 | 69% | 29% | 2% | 7,3 | 0,90 |
-| Atirador | 5152 | 7,9 | 2% | 77% | 7% | 14% | 1,01 | 90% | 8% | 2% | 9,1 | 0,85 |
-| Robô | 605 | 8,2 | 0% | 69% | 14% | 16% | 0,91 | 76% | 24% | 0% | 7,8 | 1,00 |
-| Terra | 83 | 8,3 | 0% | 53% | 12% | 35% | 0,71 | 67% | 33% | 0% | – | – |
-| Tanque | 2784 | 8,4 | 2% | 54% | 15% | 30% | 0,77 | 68% | 30% | 2% | 7,6 | 0,93 |
-| Dragão | 719 | 8,4 | 8% | 45% | 31% | 16% | 0,84 | 76% | 20% | 4% | 8,9 | 0,80 |
-| Criaturinha Bizarra | 4402 | 8,6 | 1% | 49% | 18% | 32% | 0,73 | 70% | 29% | 1% | 7,5 | 0,91 |
-| Vento | 299 | 8,6 | 0% | 67% | 17% | 16% | 0,81 | 81% | 19% | 0% | 8,6 | 0,88 |
-| Água | 343 | 8,7 | 2% | 68% | 12% | 18% | 0,81 | 80% | 20% | 0% | 8,8 | 0,80 |
-| Safada | 2724 | 8,8 | 1% | 49% | 27% | 22% | 0,79 | 78% | 17% | 5% | 8,4 | 0,87 |
-| Demoníacos | 1064 | 8,9 | 0% | 61% | 28% | 10% | 0,80 | 82% | 18% | 0% | 7,9 | 0,92 |
-| Fadinhas | 3126 | 9,1 | 1% | 58% | 31% | 10% | 0,86 | 82% | 17% | 1% | 9,3 | 0,83 |
-| Fogo | 104 | 9,4 | 8% | 24% | 61% | 8% | 0,77 | 81% | 19% | 0% | 9,9 | 0,58 |
-| Anjo | 547 | 9,7 | 0% | 43% | 48% | 9% | 0,74 | 88% | 11% | 1% | 9,5 | 0,80 |
-| Temporais | 670 | 10,0 | 3% | 28% | 60% | 9% | 0,76 | 85% | 11% | 4% | 10,3 | 0,71 |
-| Gelo | 80 | 10,0 | 0% | 14% | 85% | 1% | 0,76 | 88% | 12% | 0% | – | – |
-| Raio | 186 | 10,3 | 0% | 13% | 75% | 12% | 0,68 | 90% | 10% | 0% | 10,9 | 0,67 |
-| Únicos | 1451 | 10,5 | 0% | 23% | 41% | 36% | 0,56 | 85% | 13% | 1% | 9,9 | 0,71 |
-| **Todos** | 27602 | 8,5 | 2% | 56% | 21% | 21% | 0,83 | 79% | 19% | 3% | 8,4 | 0,88 |
+| Assassino | 1473 | 6,3 | 7% | 75% | 4% | 13% | 1,32 | 61% | 21% | 19% | 6,2 | 1,26 |
+| Safada | 1392 | 7,5 | 6% | 65% | 14% | 15% | 0,97 | 75% | 21% | 4% | 8,5 | 0,87 |
+| Tanque | 1603 | 7,5 | 6% | 69% | 14% | 11% | 0,98 | 69% | 27% | 4% | 7,7 | 0,94 |
+| Terra | 76 | 7,6 | 0% | 67% | 13% | 20% | 0,85 | 69% | 27% | 3% | – | – |
+| Água | 452 | 7,8 | 3% | 82% | 6% | 9% | 0,90 | 82% | 18% | 0% | 8,2 | 0,81 |
+| Criaturinha Bizarra | 2726 | 7,9 | 3% | 64% | 19% | 14% | 0,93 | 72% | 25% | 3% | 7,9 | 0,88 |
+| Porradeiro | 1614 | 7,9 | 1% | 66% | 17% | 16% | 0,85 | 73% | 26% | 1% | 7,6 | 0,91 |
+| Robô | 515 | 8,2 | 1% | 70% | 19% | 10% | 0,93 | 77% | 23% | 0% | 7,8 | 0,99 |
+| Atirador | 2773 | 8,3 | 1% | 74% | 11% | 14% | 0,96 | 87% | 12% | 1% | 9,3 | 0,84 |
+| Demoníacos | 988 | 8,3 | 3% | 61% | 25% | 11% | 0,89 | 75% | 23% | 2% | 7,8 | 0,94 |
+| Anjo | 504 | 8,6 | 2% | 59% | 33% | 6% | 0,89 | 84% | 14% | 2% | 9,4 | 0,80 |
+| Fadinhas | 2781 | 8,7 | 1% | 65% | 25% | 9% | 0,91 | 82% | 17% | 0% | 9,1 | 0,84 |
+| Vento | 332 | 9,1 | 0% | 77% | 11% | 11% | 0,84 | 90% | 10% | 0% | 8,8 | 0,89 |
+| Únicos | 500 | 9,1 | 0% | 47% | 29% | 24% | 0,72 | 76% | 23% | 0% | 9,4 | 0,71 |
+| Fogo | 174 | 9,2 | 0% | 37% | 52% | 11% | 0,71 | 83% | 16% | 1% | 9,9 | 0,58 |
+| Temporais | 660 | 9,5 | 5% | 30% | 56% | 9% | 0,76 | 87% | 12% | 1% | 10,0 | 0,72 |
+| Dragão | 1111 | 9,5 | 1% | 48% | 42% | 9% | 0,75 | 81% | 18% | 0% | 9,1 | 0,81 |
+| Planta | 91 | 10,1 | 0% | 23% | 77% | 0% | 0,76 | 88% | 12% | 0% | 11,2 | 0,52 |
+| Gelo | 53 | 10,3 | 0% | 9% | 79% | 11% | 0,80 | 84% | 16% | 0% | – | – |
+| Raio | 114 | 10,3 | 0% | 10% | 88% | 3% | 0,75 | 87% | 13% | 0% | 10,6 | 0,67 |
+| **Todos** | 19932 | 8,2 | 3% | 64% | 21% | 12% | 0,92 | 78% | 19% | 3% | 8,5 | 0,88 |
 
 | Custo | 1º lanç. ★1 (s) | ★2 | ★3 | Lanç./10 s ★1 | ★2 | ★3 |
 |---|---|---|---|---|---|---|
-| 1 | 9,3 | 8,7 | 7,5 | 0,68 | 0,81 | 0,79 |
-| 2 | 8,3 | 8,2 | 4,7 | 0,89 | 0,92 | 1,11 |
-| 3 | 8,7 | 7,7 | – | 0,86 | 0,96 | – |
-| 4 | 7,8 | 6,3 | – | 0,86 | 1,23 | – |
-| 5 | 7,9 | – | – | 0,94 | – | – |
+| 1 | 8,7 | 8,4 | 5,6 | 0,81 | 0,90 | 1,34 |
+| 2 | 8,3 | 8,1 | 4,3 | 0,90 | 0,94 | 1,15 |
+| 3 | 8,8 | 7,3 | 5,9 | 0,87 | 1,03 | 0,96 |
+| 4 | 7,6 | 5,9 | – | 1,01 | 1,27 | – |
+| 5 | 6,9 | – | – | 1,05 | – | – |
 
-- Tanque: 1º lançamento em 8,4 s; papéis de dano: 7,8 s.
-- Rodízio (seção seguinte, 4 contra 4 com bonecos): 1º lançamento dentro de 4–10 s em 85% dos campeões (mediana 8,9 s).
+- Tanque: 1º lançamento em 7,5 s; papéis de dano: 8,0 s (**tanque mais rápido**).
+- Rodízio (seção seguinte, 4 contra 4 com bonecos): 1º lançamento dentro de 4–10 s em 85% dos campeões (mediana 8,8 s).
 - Lançam mais de 1 vez a cada 3 s vivo no rodízio: ninguém.
 - Lançam em menos de 50% das lutas do rodízio (fora transformação): ninguém.
 
@@ -76,94 +76,126 @@ Cada campeão (forma da estrela, ult padrão) com 3 bonecos do custo dele (atrib
 
 | Custo | Estrela | Campeões | Vitórias (mín–máx) | 10% | 90% | Fora da faixa |
 |---|---|---|---|---|---|---|
-| 1 | ★1 | 60 | 31%–82% | 42% | 61% | 4 |
-| 1 | ★2 | 60 | 34%–83% | 37% | 63% | 8 |
-| 2 | ★1 | 48 | 32%–78% | 36% | 61% | 6 |
-| 2 | ★2 | 48 | 18%–85% | 30% | 67% | 21 |
-| 3 | ★1 | 50 | 28%–71% | 37% | 60% | 4 |
-| 3 | ★2 | 50 | 22%–71% | 36% | 61% | 7 |
-| 4 | ★1 | 44 | 26%–71% | 38% | 62% | 6 |
-| 4 | ★2 | 44 | 34%–66% | 37% | 63% | 6 |
-| 5 | ★1 | 35 | 33%–71% | 38% | 66% | 6 |
-| 5 | ★2 | 35 | 27%–66% | 35% | 61% | 5 |
+| 1 | ★1 | 60 | 17%–75% | 40% | 61% | 7 |
+| 1 | ★2 | 60 | 20%–91% | 32% | 74% | 18 |
+| 2 | ★1 | 48 | 33%–66% | 37% | 63% | 5 |
+| 2 | ★2 | 48 | 15%–91% | 33% | 79% | 19 |
+| 3 | ★1 | 50 | 24%–67% | 38% | 62% | 5 |
+| 3 | ★2 | 50 | 27%–90% | 34% | 75% | 15 |
+| 4 | ★1 | 44 | 24%–71% | 35% | 65% | 9 |
+| 4 | ★2 | 44 | 24%–93% | 31% | 72% | 17 |
+| 5 | ★1 | 35 | 32%–70% | 37% | 64% | 5 |
+| 5 | ★2 | 35 | 33%–72% | 39% | 64% | 5 |
 
 **Fora da faixa** (mais forte primeiro):
 
 | Campeão | Custo | ★ | Papel | Habilidade | Vitórias | Dano/luta | Vivo no fim | 1º lanç. (s) | Lanç./10 s | Valor/lanç. |
 |---|---|---|---|---|---|---|---|---|---|---|
-| McGinnis | 2 | ★2 | Tanque | Bateria de Mísseis | 85% | 1093 | 15% | 9,1 | 1,0 | 5,7 |
-| Tracer | 1 | ★2 | Atirador | Charme | 83% | 1641 | 92% | 9,4 | 1,0 | 2,8 |
-| Tracer | 1 | ★1 | Atirador | Charme | 82% | 891 | 80% | 9,4 | 1,0 | 1,9 |
-| Kai'Sa | 1 | ★2 | Atirador | Charme | 82% | 1648 | 91% | 9,4 | 1,0 | 2,9 |
-| Kai'Sa | 1 | ★1 | Atirador | Charme | 82% | 893 | 80% | 9,4 | 1,0 | 1,9 |
-| Widowmaker | 2 | ★1 | Atirador | Charme | 78% | 1168 | 80% | 8,9 | 1,0 | 1,9 |
-| Doctrine | 2 | ★2 | Anjo | Pacto Sombrio | 78% | 2071 | 85% | 9,9 | 1,0 | 4,1 |
-| Widowmaker | 2 | ★2 | Atirador | Charme | 77% | 2022 | 89% | 8,8 | 1,0 | 2,8 |
-| Abaddon | 3 | ★1 | Anjo | Pacto Sombrio | 71% | 1321 | 70% | 9,1 | 1,0 | 2,7 |
-| Clockwork Knight | 4 | ★1 | Temporais | Parar o Tempo | 71% | 1334 | 60% | 9,8 | 0,9 | 0,8 |
-| Orisa | 3 | ★2 | Robô | Bateria de Mísseis | 71% | 1666 | 35% | 8,7 | 1,0 | 4,4 |
-| Magearna | 5 | ★1 | Fadinhas | Vira Mega Magearna | 71% | 1796 | 68% | 9,3 | 0,4 | 0,0 |
-| Mercy | 4 | ★1 | Anjo | Pó de Fada | 71% | 1181 | 63% | 8,7 | 1,1 | 2,7 |
-| Chomp-and-Charger | 2 | ★2 | Tanque | Muralha | 70% | 774 | 29% | 9,2 | 1,0 | 4,3 |
-| D.Mon | 3 | ★2 | Robô | Bateria de Mísseis | 69% | 1676 | 38% | 8,7 | 1,0 | 4,4 |
-| Nami | 5 | ★1 | Fadinhas | Pó de Fada | 69% | 1346 | 68% | 8,3 | 1,2 | 2,9 |
-| Timestar Magician | 5 | ★1 | Temporais | Parar o Tempo | 68% | 1588 | 61% | 9,3 | 1,0 | 0,7 |
-| Doctrine | 2 | ★1 | Anjo | Pacto Sombrio | 68% | 1072 | 71% | 9,7 | 1,0 | 2,7 |
-| Barong | 3 | ★1 | Raio | Corrente Elétrica | 68% | 1239 | 64% | 10,5 | 0,8 | 2,2 |
-| Zoe | 5 | ★1 | Anjo | Pó de Fada | 68% | 1377 | 63% | 8,3 | 1,2 | 2,7 |
-| Reinhardt | 2 | ★2 | Tanque | Muralha | 67% | 778 | 27% | 9,2 | 1,0 | 4,3 |
-| Duosion | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 67% | 1120 | 6% | – | 0,0 | – |
-| Labrynth Cooclock | 4 | ★1 | Temporais | Parar o Tempo | 66% | 1334 | 60% | 9,8 | 0,9 | 0,8 |
-| Timestar Magician | 5 | ★2 | Temporais | Parar o Tempo | 66% | 2681 | 73% | 9,4 | 1,0 | 1,1 |
-| Grotle | 1 | ★2 | Tanque | (só ataca) | 66% | 675 | 4% | – | 0,0 | – |
-| Labrynth Cooclock | 4 | ★2 | Temporais | Parar o Tempo | 66% | 2309 | 77% | 9,9 | 0,9 | 1,2 |
-| Gate Guardian | 2 | ★2 | Tanque | Muralha | 66% | 774 | 26% | 9,2 | 1,0 | 4,3 |
-| Bystial Magnamhut | 1 | ★2 | Atirador | Tiro Perfurante | 66% | 1604 | 74% | 10,8 | 0,8 | 3,2 |
-| Clockwork Knight | 4 | ★2 | Temporais | Parar o Tempo | 66% | 2279 | 73% | 9,9 | 0,9 | 1,2 |
-| Heavy Machinery | 4 | ★2 | Robô | Bateria de Mísseis | 66% | 1946 | 32% | 8,2 | 1,1 | 4,2 |
-| Tyrant of the Tides | 4 | ★1 | Dragão | Sopro de Dragão | 65% | 990 | 23% | 8,6 | 0,9 | 2,5 |
-| Garen | 3 | ★2 | Tanque | Muralha | 65% | 936 | 24% | 8,7 | 1,0 | 4,2 |
-| Boldore | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 65% | 828 | 2% | – | 0,0 | – |
-| Lava Golem | 2 | ★2 | Tanque | Muralha | 65% | 778 | 28% | 9,2 | 1,0 | 4,3 |
-| Black Metal Dragon | 2 | ★2 | Dragão | Bateria de Mísseis | 65% | 1431 | 39% | 9,1 | 1,0 | 4,5 |
-| Tentomon | 2 | ★1 | Planta | (só ataca) | 35% | 614 | 18% | – | 0,0 | – |
-| Croconaw | 2 | ★2 | Água | (só ataca) | 35% | 1128 | 29% | – | 0,0 | – |
-| Revolmon | 5 | ★2 | Atirador | (só ataca) | 35% | 3190 | 60% | – | 0,0 | – |
-| Ahri | 2 | ★1 | Safada | Charme | 35% | 640 | 25% | 8,7 | 0,8 | 1,9 |
-| Dewott | 1 | ★2 | Água | (só ataca) | 34% | 840 | 25% | – | 0,0 | – |
-| Sukamon | 1 | ★2 | Criaturinha Bizarra | Vira Sukamon | 34% | 813 | 1% | 9,4 | 0,8 | 2,7 |
-| Mina | 5 | ★2 | Safada | Charme | 34% | 2024 | 20% | 7,8 | 1,0 | 2,3 |
-| Galgomon | 4 | ★2 | Atirador | (só ataca) | 34% | 2643 | 71% | – | 0,0 | – |
-| Cosmoem | 5 | ★2 | Fadinhas | (só ataca) | 34% | 2604 | 56% | – | 0,0 | – |
-| Rem | 4 | ★2 | Fadinhas | Coisa Esquisita | 34% | 2011 | 58% | 8,7 | 1,1 | 2,1 |
-| Prinplup | 1 | ★2 | Água | (só ataca) | 34% | 840 | 23% | – | 0,0 | – |
-| Izanagi | 5 | ★1 | Assassino | Golpe Fatal | 34% | 911 | 2% | 4,8 | 1,5 | 1,9 |
-| Volcarona | 4 | ★2 | Fogo | (só ataca) | 34% | 1627 | 23% | – | 0,0 | – |
-| Hatenna | 2 | ★1 | Safada | (só ataca) | 33% | 622 | 21% | – | 0,0 | – |
-| Baseball Diehard | 1 | ★1 | Únicos | Vira Baseball Diehard | 33% | 468 | 14% | 8,8 | 0,9 | 2,4 |
-| Sandile | 3 | ★1 | Terra | (só ataca) | 33% | 617 | 1% | – | 0,0 | – |
-| Quilava | 2 | ★2 | Fogo | (só ataca) | 33% | 1128 | 30% | – | 0,0 | – |
-| Mina | 5 | ★1 | Safada | Charme | 33% | 1046 | 20% | 7,4 | 1,1 | 1,6 |
-| Steenee | 3 | ★2 | Safada | (só ataca) | 33% | 1399 | 27% | – | 0,0 | – |
-| Apollo | 4 | ★1 | Assassino | Pacto Sombrio | 32% | 895 | 17% | 6,2 | 1,1 | 1,9 |
-| Litten | 2 | ★1 | Fogo | (só ataca) | 32% | 625 | 19% | – | 0,0 | – |
-| Krokorok | 3 | ★2 | Terra | (só ataca) | 32% | 1179 | 2% | – | 0,0 | – |
-| Hattrem | 2 | ★2 | Safada | (só ataca) | 32% | 1129 | 32% | – | 0,0 | – |
-| Bayleef | 2 | ★2 | Atirador | (só ataca) | 31% | 1782 | 90% | – | 0,0 | – |
-| Dartrix | 2 | ★2 | Planta | (só ataca) | 31% | 1130 | 33% | – | 0,0 | – |
-| Torracat | 2 | ★2 | Fogo | (só ataca) | 31% | 1137 | 30% | – | 0,0 | – |
-| Vyper | 2 | ★2 | Atirador | Coisa Esquisita | 31% | 1636 | 89% | 8,8 | 1,0 | 1,6 |
-| Mandrake | 1 | ★1 | Fadinhas | Coisa Esquisita | 31% | 625 | 36% | 10,3 | 0,9 | 1,5 |
-| Luxio | 2 | ★2 | Raio | (só ataca) | 29% | 1565 | 77% | – | 0,0 | – |
-| Kabuterimon | 2 | ★2 | Planta | (só ataca) | 28% | 1134 | 30% | – | 0,0 | – |
-| Aron | 3 | ★1 | Terra | (só ataca) | 28% | 614 | 1% | – | 0,0 | – |
-| Frogadier | 2 | ★2 | Água | (só ataca) | 27% | 1135 | 30% | – | 0,0 | – |
-| Mewtwo | 5 | ★2 | Únicos | (só ataca) | 27% | 1849 | 14% | – | 0,0 | – |
-| Abrams | 4 | ★1 | Tanque | Pacto Sombrio | 26% | 646 | 2% | 7,8 | 1,0 | 2,2 |
-| Kirlia | 3 | ★2 | Fadinhas | (só ataca) | 25% | 1841 | 67% | – | 0,0 | – |
-| Kadabra | 3 | ★2 | Fadinhas | (só ataca) | 22% | 1843 | 69% | – | 0,0 | – |
-| Angemon | 2 | ★2 | Anjo | (só ataca) | 21% | 1512 | 67% | – | 0,0 | – |
-| Anubis | 2 | ★2 | Únicos | Vira Anubis | 18% | 1176 | 10% | 10,1 | 0,7 | 3,2 |
+| Numemon | 4 | ★2 | Criaturinha Bizarra | (só ataca) | 93% | 2071 | 16% | – | 0,0 | – |
+| Garurumon | 2 | ★2 | Porradeiro | (só ataca) | 91% | 1404 | 16% | – | 0,0 | – |
+| Vegimon | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 91% | 1103 | 18% | – | 0,0 | – |
+| Devimon | 3 | ★2 | Demoníacos | (só ataca) | 90% | 1711 | 15% | – | 0,0 | – |
+| Togemon | 2 | ★2 | Porradeiro | (só ataca) | 88% | 1415 | 16% | – | 0,0 | – |
+| Leomon | 1 | ★2 | Porradeiro | (só ataca) | 86% | 1059 | 12% | – | 0,0 | – |
+| Tailmon | 4 | ★2 | Gelo | (só ataca) | 84% | 1893 | 9% | – | 0,0 | – |
+| Greymon | 2 | ★2 | Dragão | (só ataca) | 84% | 1493 | 39% | – | 0,0 | – |
+| Hagurumon | 3 | ★2 | Robô | (só ataca) | 84% | 1805 | 40% | – | 0,0 | – |
+| Vanillish | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 82% | 1277 | 11% | – | 0,0 | – |
+| Wizarmon | 4 | ★2 | Demoníacos | (só ataca) | 81% | 2151 | 33% | – | 0,0 | – |
+| Corvisquire | 3 | ★2 | Vento | (só ataca) | 80% | 1587 | 9% | – | 0,0 | – |
+| Doublade | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 79% | 1285 | 11% | – | 0,0 | – |
+| Bakemon | 4 | ★2 | Demoníacos | (só ataca) | 79% | 2166 | 34% | – | 0,0 | – |
+| Duosion | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 79% | 1278 | 11% | – | 0,0 | – |
+| Machoke | 3 | ★2 | Porradeiro | (só ataca) | 78% | 1511 | 7% | – | 0,0 | – |
+| Boldore | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 78% | 963 | 5% | – | 0,0 | – |
+| Bayleef | 2 | ★2 | Tanque | (só ataca) | 78% | 1041 | 11% | – | 0,0 | – |
+| Charjabug | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 77% | 962 | 5% | – | 0,0 | – |
+| Shellmon | 1 | ★2 | Água | (só ataca) | 76% | 1044 | 31% | – | 0,0 | – |
+| Grotle | 1 | ★2 | Tanque | (só ataca) | 76% | 796 | 7% | – | 0,0 | – |
+| Dragonair | 3 | ★2 | Dragão | (só ataca) | 76% | 1512 | 7% | – | 0,0 | – |
+| Sunflowmon | 3 | ★2 | Planta | (só ataca) | 75% | 1707 | 36% | – | 0,0 | – |
+| Escapist | 1 | ★1 | Únicos | Vira Escapist | 75% | 623 | 98% | 8,6 | 0,8 | 2,5 |
+| Wailord | 4 | ★2 | Tanque | (só ataca) | 74% | 1464 | 8% | – | 0,0 | – |
+| Sukamon | 1 | ★2 | Criaturinha Bizarra | Vira Sukamon | 73% | 1002 | 4% | 9,5 | 0,8 | 2,5 |
+| Dudunsparce | 5 | ★2 | Dragão | (só ataca) | 72% | 2008 | 3% | – | 0,0 | – |
+| Mercy | 4 | ★1 | Anjo | Pó de Fada | 71% | 1192 | 59% | 8,6 | 1,1 | 2,7 |
+| Revolmon | 5 | ★2 | Atirador | (só ataca) | 71% | 3646 | 88% | – | 0,0 | – |
+| McGinnis | 2 | ★2 | Tanque | Bateria de Mísseis | 70% | 1087 | 12% | 9,1 | 1,0 | 5,7 |
+| Agumon Hakase | 4 | ★1 | Criaturinha Bizarra | (só ataca) | 70% | 862 | 3% | – | 0,0 | – |
+| Monferno | 1 | ★2 | Porradeiro | (só ataca) | 70% | 926 | 5% | – | 0,0 | – |
+| Steenee | 3 | ★2 | Safada | (só ataca) | 70% | 1434 | 7% | – | 0,0 | – |
+| Gurdurr | 2 | ★2 | Porradeiro | (só ataca) | 70% | 1241 | 9% | – | 0,0 | – |
+| Magearna | 5 | ★1 | Fadinhas | Vira Mega Magearna | 70% | 1803 | 66% | 9,3 | 0,4 | 0,0 |
+| Sharpedo | 3 | ★2 | Água | (só ataca) | 69% | 1436 | 8% | – | 0,0 | – |
+| Roggenrola | 1 | ★1 | Criaturinha Bizarra | (só ataca) | 69% | 452 | 2% | – | 0,0 | – |
+| Kabuterimon | 2 | ★2 | Planta | (só ataca) | 68% | 1380 | 37% | – | 0,0 | – |
+| Blitzcrank | 5 | ★2 | Robô | Bateria de Mísseis | 68% | 2069 | 6% | 7,9 | 1,1 | 4,2 |
+| Zweilous | 4 | ★2 | Demoníacos | (só ataca) | 68% | 1760 | 6% | – | 0,0 | – |
+| Zoe | 5 | ★1 | Anjo | Pó de Fada | 68% | 1385 | 65% | 8,3 | 1,2 | 2,7 |
+| Terriermon | 4 | ★1 | Vento | (só ataca) | 68% | 984 | 23% | – | 0,0 | – |
+| Tyranitar | 4 | ★2 | Tanque | (só ataca) | 67% | 1459 | 7% | – | 0,0 | – |
+| Pignite | 1 | ★2 | Porradeiro | (só ataca) | 67% | 923 | 3% | – | 0,0 | – |
+| Guardromon | 3 | ★1 | Criaturinha Bizarra | (só ataca) | 67% | 732 | 3% | – | 0,0 | – |
+| Barong | 3 | ★1 | Raio | Corrente Elétrica | 67% | 1243 | 61% | 10,5 | 0,8 | 2,2 |
+| Grubbin | 1 | ★1 | Criaturinha Bizarra | (só ataca) | 67% | 450 | 2% | – | 0,0 | – |
+| Gabite | 4 | ★2 | Dragão | (só ataca) | 67% | 1760 | 6% | – | 0,0 | – |
+| Nami | 5 | ★1 | Fadinhas | Pó de Fada | 67% | 1340 | 66% | 8,3 | 1,2 | 2,9 |
+| Doctrine | 2 | ★1 | Anjo | Pacto Sombrio | 66% | 1071 | 70% | 9,7 | 1,0 | 2,6 |
+| Labrynth Cooclock | 4 | ★1 | Temporais | Parar o Tempo | 66% | 1342 | 60% | 9,8 | 0,9 | 0,8 |
+| Doctrine | 2 | ★2 | Anjo | Pacto Sombrio | 66% | 2026 | 79% | 9,8 | 1,0 | 3,9 |
+| Tynamo | 4 | ★1 | Raio | (só ataca) | 65% | 1435 | 57% | – | 0,0 | – |
+| Kuriboh | 1 | ★2 | Fadinhas | Pó de Fada | 35% | 644 | 6% | 9,3 | 0,9 | 4,3 |
+| Mei | 5 | ★2 | Safada | Charme | 35% | 2001 | 18% | 7,7 | 1,1 | 2,3 |
+| Warhead | 3 | ★2 | Demoníacos | Pacto Sombrio | 35% | 1448 | 7% | 8,5 | 0,9 | 3,5 |
+| Knight of the Cask | 1 | ★2 | Porradeiro | Pancadão | 34% | 853 | 1% | 9,4 | 0,8 | 3,9 |
+| Masked Demonling | 2 | ★1 | Demoníacos | Pacto Sombrio | 34% | 582 | 2% | 8,7 | 0,8 | 2,6 |
+| Jinx | 2 | ★2 | Atirador | Tiro Perfurante | 34% | 2033 | 78% | 10,1 | 0,9 | 3,2 |
+| Gwen | 3 | ★1 | Assassino | Charme | 34% | 780 | 13% | 6,6 | 1,0 | 1,9 |
+| Rem | 4 | ★1 | Fadinhas | Coisa Esquisita | 34% | 1194 | 35% | 8,7 | 1,1 | 1,4 |
+| Black Luster Soldier - Soldier of Chaos | 3 | ★2 | Assassino | Golpe Fatal | 34% | 1379 | 0% | 5,9 | 1,5 | 3,2 |
+| Vyper | 2 | ★1 | Atirador | Coisa Esquisita | 34% | 1019 | 65% | 8,9 | 1,0 | 1,2 |
+| Vanadis | 3 | ★2 | Safada | Charme | 34% | 1480 | 28% | 8,5 | 1,0 | 2,6 |
+| Mercurius | 2 | ★2 | Assassino | Golpe Fatal | 34% | 1144 | 0% | 6,2 | 1,5 | 3,2 |
+| Ahri | 2 | ★1 | Safada | Charme | 33% | 645 | 25% | 8,7 | 0,9 | 1,9 |
+| Mina | 5 | ★2 | Safada | Charme | 33% | 2045 | 21% | 7,8 | 1,0 | 2,3 |
+| Kodama | 2 | ★2 | Vento | Tornado | 33% | 1293 | 17% | 9,5 | 0,9 | 2,8 |
+| Drifter | 4 | ★2 | Assassino | Golpe Fatal | 33% | 1613 | 0% | 5,6 | 1,6 | 3,1 |
+| Ekko | 3 | ★1 | Temporais | Parar o Tempo | 33% | 577 | 0% | 9,0 | 0,7 | 0,9 |
+| Chernobog | 2 | ★1 | Fogo | Bola de Fogo | 33% | 688 | 22% | 9,5 | 0,8 | 2,0 |
+| Ahri | 2 | ★2 | Safada | Charme | 33% | 1254 | 30% | 9,0 | 0,9 | 2,8 |
+| Dark Magician Girl | 1 | ★2 | Safada | Charme | 32% | 920 | 28% | 9,3 | 0,8 | 2,9 |
+| Izanagi | 5 | ★1 | Assassino | Golpe Fatal | 32% | 908 | 2% | 4,8 | 1,5 | 1,9 |
+| Mina | 5 | ★1 | Safada | Charme | 32% | 1045 | 21% | 7,4 | 1,1 | 1,6 |
+| Profaner Demon | 2 | ★2 | Demoníacos | Pacto Sombrio | 32% | 1172 | 5% | 8,9 | 0,9 | 3,6 |
+| Kassadin | 4 | ★2 | Assassino | Golpe Fatal | 32% | 1595 | 0% | 5,6 | 1,5 | 3,1 |
+| Bugs | 1 | ★2 | Demoníacos | Pacto Sombrio | 32% | 855 | 1% | 9,3 | 0,8 | 3,8 |
+| Widowmaker | 2 | ★2 | Atirador | Tiro Perfurante | 32% | 2032 | 76% | 10,1 | 0,9 | 3,2 |
+| Armageddon Knight | 4 | ★2 | Assassino | Golpe Fatal | 32% | 1576 | 0% | 5,6 | 1,5 | 3,0 |
+| Loup-garou | 4 | ★2 | Assassino | Golpe Fatal | 31% | 1590 | 2% | 5,6 | 1,5 | 3,1 |
+| Kadabra | 3 | ★2 | Fadinhas | (só ataca) | 31% | 1990 | 72% | – | 0,0 | – |
+| Kirlia | 3 | ★2 | Fadinhas | (só ataca) | 31% | 1984 | 74% | – | 0,0 | – |
+| Apollo | 4 | ★2 | Assassino | Pacto Sombrio | 31% | 1825 | 16% | 6,3 | 1,1 | 2,8 |
+| Mandrake | 1 | ★1 | Fadinhas | Coisa Esquisita | 30% | 624 | 38% | 10,3 | 0,9 | 1,5 |
+| Baba | 1 | ★1 | Únicos | Vira Baba | 30% | 413 | 1% | 9,5 | 0,8 | 3,0 |
+| Hecate | 1 | ★2 | Safada | Charme | 30% | 912 | 23% | 9,3 | 0,8 | 2,9 |
+| Aatrox | 4 | ★2 | Demoníacos | Pacto Sombrio | 30% | 1642 | 5% | 8,1 | 1,0 | 3,1 |
+| Ishtar | 1 | ★2 | Safada | Charme | 30% | 909 | 23% | 9,2 | 0,8 | 3,0 |
+| Gwen | 3 | ★2 | Assassino | Charme | 29% | 1566 | 16% | 6,7 | 1,0 | 2,7 |
+| Ekko | 3 | ★2 | Temporais | Parar o Tempo | 27% | 1104 | 0% | 9,6 | 0,8 | 1,2 |
+| Rem | 4 | ★2 | Fadinhas | Coisa Esquisita | 27% | 2010 | 53% | 8,7 | 1,1 | 2,1 |
+| Aatrox | 4 | ★1 | Demoníacos | Pacto Sombrio | 26% | 803 | 2% | 7,8 | 1,0 | 2,2 |
+| Abrams | 4 | ★1 | Tanque | Pacto Sombrio | 26% | 645 | 1% | 7,8 | 1,0 | 2,1 |
+| Clockwork Knight | 4 | ★2 | Temporais | Parar o Tempo | 26% | 1290 | 2% | 9,0 | 0,8 | 1,1 |
+| Abaddon | 3 | ★1 | Anjo | Pacto Sombrio | 24% | 661 | 1% | 8,3 | 0,9 | 2,5 |
+| Apollo | 4 | ★1 | Assassino | Pacto Sombrio | 24% | 871 | 12% | 6,2 | 1,0 | 1,9 |
+| Abrams | 4 | ★2 | Tanque | Pacto Sombrio | 24% | 1316 | 2% | 8,2 | 1,0 | 3,1 |
+| Akali | 1 | ★1 | Safada | Charme | 23% | 381 | 0% | 8,6 | 0,8 | 2,1 |
+| Baba | 1 | ★2 | Únicos | Vira Baba | 22% | 807 | 0% | 10,2 | 0,7 | 4,5 |
+| Massacre Mascot | 1 | ★2 | Únicos | Vira Massacre Mascot | 21% | 778 | 1% | 9,3 | 0,7 | 3,8 |
+| Vyper | 2 | ★2 | Atirador | Coisa Esquisita | 21% | 1629 | 84% | 8,8 | 1,0 | 1,6 |
+| Akali | 1 | ★2 | Safada | Charme | 20% | 779 | 1% | 9,3 | 0,8 | 3,0 |
+| Baseball Diehard | 1 | ★1 | Únicos | Vira Baseball Diehard | 17% | 377 | 0% | 8,6 | 0,8 | 2,5 |
+| Anubis | 2 | ★2 | Únicos | Vira Anubis | 15% | 1175 | 7% | 10,1 | 0,7 | 3,2 |
 
 **Stands fora da faixa** (entre Stands do mesmo custo):
 
@@ -173,15 +205,14 @@ Cada campeão (forma da estrela, ult padrão) com 3 bonecos do custo dele (atrib
 | Ball Breaker | 2 | ★1 | Atirador | Vira Ball Breaker | 83% | 835 | 73% | 10,7 | 0,8 | 1,2 |
 | Tusk | 2 | ★1 | Atirador | Vira Tusk | 77% | 906 | 77% | 10,7 | 0,8 | 1,7 |
 | Ball Breaker | 2 | ★2 | Atirador | Vira Ball Breaker | 77% | 1519 | 83% | 10,5 | 0,7 | 1,7 |
-| The World (Steel Ball Run) | 5 | ★2 | Porradeiro | Vira The World (Steel Ball Run) | 75% | 1308 | 25% | 11,0 | 0,5 | 2,3 |
-| Boy II Man | 1 | ★2 | Tanque | Vira Boy II Man | 67% | 364 | 19% | 8,7 | 1,0 | 0,0 |
-| Talking Head | 1 | ★2 | Tanque | Vira Talking Head | 65% | 386 | 17% | 8,6 | 0,9 | 2,6 |
+| The World (Steel Ball Run) | 5 | ★2 | Porradeiro | Vira The World (Steel Ball Run) | 75% | 1291 | 17% | 10,8 | 0,5 | 2,5 |
+| Strength | 1 | ★1 | Únicos | Vira Strength | 67% | 386 | 28% | 9,8 | 0,5 | 2,5 |
+| Holy's Stand | 1 | ★2 | Safada | Vira Holy's Stand | 33% | 662 | 14% | 9,5 | 0,8 | 3,3 |
 | The Hand | 4 | ★1 | Porradeiro | Vira The Hand | 33% | 852 | 17% | 8,0 | 0,9 | 2,9 |
 | The Hand | 4 | ★2 | Porradeiro | Vira The Hand | 33% | 1687 | 17% | 8,3 | 0,9 | 4,3 |
-| Wonder of U | 5 | ★2 | Demoníacos | Vira Wonder of U | 29% | 1323 | 13% | 10,5 | 0,4 | 3,9 |
+| Wonder of U | 5 | ★2 | Demoníacos | Vira Wonder of U | 29% | 1328 | 13% | 10,2 | 0,5 | 4,1 |
+| Holy's Stand | 1 | ★1 | Safada | Vira Holy's Stand | 28% | 309 | 11% | 8,8 | 0,7 | 1,4 |
 | Foo Fighters (Stand) | 2 | ★2 | Água | Vira Foo Fighters (Stand) | 27% | 1257 | 17% | 10,0 | 0,9 | 4,1 |
-| Hey Ya! | 1 | ★2 | Criaturinha Bizarra | Vira Hey Ya! | 25% | 449 | 8% | 8,6 | 0,9 | 0,0 |
-| Gold Experience Requiem | 5 | ★2 | Temporais | Vira Gold Experience Requiem | 25% | 1316 | 17% | 10,2 | 0,6 | 0,8 |
 | Echoes | 2 | ★1 | Vento | Vira Echoes | 23% | 611 | 17% | 8,9 | 1,0 | 1,6 |
 | Echoes | 2 | ★2 | Vento | Vira Echoes | 23% | 1517 | 17% | 9,3 | 1,0 | 4,5 |
 | Metallica | 2 | ★2 | Únicos | Vira Metallica | 20% | 1208 | 20% | 11,1 | 0,7 | 3,2 |
@@ -191,298 +222,298 @@ Cada campeão (forma da estrela, ult padrão) com 3 bonecos do custo dele (atrib
 
 | Campeão | Custo | ★ | Papel | Habilidade | Vitórias | Dano/luta | Vivo no fim | 1º lanç. (s) | Lanç./10 s | Valor/lanç. | Stand |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Tracer | 1 | ★1 | Atirador | Charme | 82% | 891 | 80% | 9,4 | 1,0 | 1,9 |  |
-| Kai'Sa | 1 | ★1 | Atirador | Charme | 82% | 893 | 80% | 9,4 | 1,0 | 1,9 |  |
-| Orianna | 1 | ★1 | Robô | Bateria de Mísseis | 64% | 517 | 30% | 9,0 | 0,9 | 3,3 |  |
-| Jinzo | 1 | ★1 | Robô | Bateria de Mísseis | 63% | 518 | 29% | 9,0 | 0,9 | 3,3 |  |
-| Predaplant Verte Anaconda | 1 | ★1 | Dragão | Sopro de Dragão | 62% | 528 | 23% | 9,7 | 0,8 | 2,7 |  |
-| Grubbin | 1 | ★1 | Criaturinha Bizarra | (só ataca) | 61% | 425 | 2% | – | 0,0 | – |  |
-| Roggenrola | 1 | ★1 | Criaturinha Bizarra | (só ataca) | 61% | 423 | 1% | – | 0,0 | – |  |
-| Pro Pickpocket | 1 | ★1 | Assassino | Golpe Fatal | 60% | 522 | 16% | 6,1 | 1,4 | 2,1 |  |
-| Escapist | 1 | ★1 | Únicos | Vira Escapist | 60% | 632 | 85% | 8,8 | 0,9 | 2,1 |  |
-| Squirtle | 1 | ★1 | Atirador | (só ataca) | 58% | 858 | 61% | – | 0,0 | – |  |
-| Captain Kidd | 1 | ★1 | Atirador | Tiro Perfurante | 57% | 855 | 49% | 10,8 | 0,8 | 2,0 |  |
-| Dark Magician | 1 | ★1 | Demoníacos | Pacto Sombrio | 57% | 540 | 30% | 8,8 | 0,9 | 2,6 |  |
-| Sona | 1 | ★1 | Fadinhas | Pó de Fada | 57% | 598 | 65% | 10,3 | 0,9 | 2,7 |  |
-| Wraith | 1 | ★1 | Atirador | Tiro Perfurante | 56% | 859 | 46% | 10,8 | 0,8 | 2,0 |  |
-| Pichu | 1 | ★1 | Raio | (só ataca) | 56% | 729 | 58% | – | 0,0 | – |  |
-| Shion | 1 | ★1 | Atirador | Tiro Perfurante | 55% | 856 | 49% | 10,8 | 0,8 | 2,0 |  |
-| Elecmon | 1 | ★1 | Raio | (só ataca) | 55% | 733 | 60% | – | 0,0 | – |  |
-| Kuriboh | 1 | ★1 | Fadinhas | Pó de Fada | 54% | 600 | 65% | 10,3 | 0,9 | 2,7 |  |
-| Kiriko | 1 | ★1 | Fadinhas | Pó de Fada | 54% | 600 | 66% | 10,3 | 0,9 | 2,7 |  |
-| Ana | 1 | ★1 | Atirador | Tiro Perfurante | 53% | 854 | 46% | 10,8 | 0,8 | 2,0 |  |
-| Caitlyn | 1 | ★1 | Atirador | Tiro Perfurante | 53% | 858 | 47% | 10,8 | 0,8 | 2,0 |  |
-| Yuumi | 1 | ★1 | Fadinhas | Pó de Fada | 53% | 596 | 63% | 10,3 | 0,9 | 2,7 |  |
-| Pixie | 1 | ★1 | Fadinhas | Pó de Fada | 52% | 597 | 66% | 10,3 | 0,9 | 2,7 |  |
-| Bystial Magnamhut | 1 | ★1 | Atirador | Tiro Perfurante | 52% | 841 | 42% | 10,8 | 0,8 | 2,0 |  |
-| Idun | 1 | ★1 | Fadinhas | Pó de Fada | 51% | 600 | 64% | 10,4 | 0,9 | 2,7 |  |
-| Lash | 1 | ★1 | Porradeiro | Pancadão | 49% | 434 | 3% | 8,6 | 0,8 | 3,3 |  |
-| Chimchar | 1 | ★1 | Fogo | (só ataca) | 49% | 461 | 22% | – | 0,0 | – |  |
-| Hammered Man | 1 | ★1 | Porradeiro | Pancadão | 48% | 437 | 2% | 8,6 | 0,8 | 3,3 |  |
-| Carmen | 1 | ★1 | Safada | Charme | 48% | 480 | 25% | 8,7 | 0,8 | 2,0 |  |
-| Baba | 1 | ★1 | Únicos | Vira Baba | 48% | 507 | 23% | 9,7 | 0,8 | 2,8 |  |
-| Poppy | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 48% | 392 | 2% | 8,8 | 0,8 | 2,2 |  |
-| Torchic | 1 | ★1 | Fogo | (só ataca) | 47% | 459 | 21% | – | 0,0 | – |  |
-| Treecko | 1 | ★1 | Planta | (só ataca) | 47% | 463 | 21% | – | 0,0 | – |  |
-| Snivy | 1 | ★1 | Planta | (só ataca) | 47% | 467 | 22% | – | 0,0 | – |  |
-| Turtwig | 1 | ★1 | Planta | (só ataca) | 47% | 466 | 24% | – | 0,0 | – |  |
-| Ukobach | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 47% | 392 | 4% | 8,7 | 0,8 | 2,3 |  |
-| Oshawott | 1 | ★1 | Água | (só ataca) | 46% | 469 | 23% | – | 0,0 | – |  |
-| Popplio | 1 | ★1 | Água | (só ataca) | 46% | 465 | 23% | – | 0,0 | – |  |
-| Bulbasaur | 1 | ★1 | Planta | (só ataca) | 46% | 459 | 20% | – | 0,0 | – |  |
-| Palladion | 1 | ★1 | Anjo | Luz Divina | 46% | 744 | 34% | 11,8 | 0,7 | 2,5 |  |
-| Black Ooze | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 45% | 393 | 5% | 8,7 | 0,8 | 2,2 |  |
-| Cait Sith | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 45% | 392 | 4% | 8,7 | 0,8 | 2,2 |  |
-| Charmander | 1 | ★1 | Fogo | (só ataca) | 44% | 466 | 21% | – | 0,0 | – |  |
-| Punimon | 1 | ★1 | Únicos | (só ataca) | 44% | 460 | 23% | – | 0,0 | – |  |
-| Mudkip | 1 | ★1 | Água | (só ataca) | 44% | 461 | 24% | – | 0,0 | – |  |
-| Whismur | 1 | ★1 | Únicos | (só ataca) | 44% | 461 | 21% | – | 0,0 | – |  |
-| Piplup | 1 | ★1 | Água | (só ataca) | 44% | 461 | 20% | – | 0,0 | – |  |
-| Shakomon | 1 | ★1 | Água | (só ataca) | 44% | 465 | 22% | – | 0,0 | – |  |
-| Dark Magician Girl | 1 | ★1 | Safada | Charme | 44% | 479 | 23% | 8,8 | 0,8 | 1,9 |  |
-| Tepig | 1 | ★1 | Fogo | (só ataca) | 43% | 463 | 21% | – | 0,0 | – |  |
-| Chespin | 1 | ★1 | Planta | (só ataca) | 43% | 454 | 21% | – | 0,0 | – |  |
-| Rat King | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 43% | 390 | 4% | 8,7 | 0,8 | 2,3 |  |
-| Fennekin | 1 | ★1 | Fogo | (só ataca) | 42% | 465 | 22% | – | 0,0 | – |  |
-| Akali | 1 | ★1 | Safada | Charme | 42% | 476 | 22% | 8,8 | 0,8 | 2,0 |  |
-| Wild Hog | 1 | ★1 | Tanque | Muralha | 41% | 286 | 2% | 9,0 | 0,8 | 2,9 |  |
-| Roadhog | 1 | ★1 | Tanque | Muralha | 38% | 284 | 3% | 9,0 | 0,8 | 2,9 |  |
-| Yamato | 1 | ★1 | Tanque | Muralha | 36% | 283 | 4% | 9,0 | 0,8 | 2,9 |  |
-| Tyumon | 1 | ★1 | Terra | (só ataca) | 36% | 372 | 0% | – | 0,0 | – |  |
-| Baseball Diehard | 1 | ★1 | Únicos | Vira Baseball Diehard | 33% | 468 | 14% | 8,8 | 0,9 | 2,4 |  |
-| Mandrake | 1 | ★1 | Fadinhas | Coisa Esquisita | 31% | 625 | 36% | 10,3 | 0,9 | 1,5 |  |
-| Talking Head | 1 | ★1 | Tanque | Vira Talking Head | 61% | 243 | 14% | 8,3 | 0,9 | 2,1 | sim |
-| Tubular Bells | 1 | ★1 | Criaturinha Bizarra | Vira Tubular Bells | 58% | 406 | 8% | 8,9 | 0,7 | 3,6 | sim |
-| Boy II Man | 1 | ★1 | Tanque | Vira Boy II Man | 58% | 215 | 14% | 8,3 | 0,8 | 0,0 | sim |
-| Strength | 1 | ★1 | Únicos | Vira Strength | 50% | 327 | 11% | 11,2 | 0,3 | 2,1 | sim |
-| Hey Ya! | 1 | ★1 | Criaturinha Bizarra | Vira Hey Ya! | 44% | 255 | 8% | 8,0 | 0,8 | 0,0 | sim |
-| Holy's Stand | 1 | ★1 | Safada | Vira Holy's Stand | 42% | 341 | 14% | 10,0 | 0,6 | 2,5 | sim |
-| Baby Face | 1 | ★1 | Safada | Vira Baby Face | 36% | 323 | 11% | 10,0 | 0,5 | 1,5 | sim |
-| Tracer | 1 | ★2 | Atirador | Charme | 83% | 1641 | 92% | 9,4 | 1,0 | 2,8 |  |
-| Kai'Sa | 1 | ★2 | Atirador | Charme | 82% | 1648 | 91% | 9,4 | 1,0 | 2,9 |  |
-| Grotle | 1 | ★2 | Tanque | (só ataca) | 66% | 675 | 4% | – | 0,0 | – |  |
-| Bystial Magnamhut | 1 | ★2 | Atirador | Tiro Perfurante | 66% | 1604 | 74% | 10,8 | 0,8 | 3,2 |  |
-| Boldore | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 65% | 828 | 2% | – | 0,0 | – |  |
-| Charjabug | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 65% | 828 | 2% | – | 0,0 | – |  |
-| Ana | 1 | ★2 | Atirador | Tiro Perfurante | 63% | 1596 | 74% | 10,8 | 0,8 | 3,2 |  |
-| Orianna | 1 | ★2 | Robô | Bateria de Mísseis | 62% | 1003 | 33% | 9,4 | 0,9 | 4,4 |  |
-| Caitlyn | 1 | ★2 | Atirador | Tiro Perfurante | 61% | 1592 | 71% | 10,8 | 0,8 | 3,2 |  |
-| Predaplant Verte Anaconda | 1 | ★2 | Dragão | Sopro de Dragão | 60% | 1007 | 25% | 10,3 | 0,7 | 4,0 |  |
-| Yamato | 1 | ★2 | Tanque | Muralha | 60% | 576 | 18% | 9,4 | 0,9 | 3,9 |  |
-| Jinzo | 1 | ★2 | Robô | Bateria de Mísseis | 60% | 1006 | 30% | 9,5 | 0,9 | 4,4 |  |
-| Vegimon | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 60% | 822 | 3% | – | 0,0 | – |  |
-| Feast 'n Flyer | 1 | ★2 | Tanque | Muralha | 60% | 575 | 18% | 9,4 | 0,9 | 3,9 |  |
-| Shion | 1 | ★2 | Atirador | Tiro Perfurante | 59% | 1596 | 71% | 10,8 | 0,8 | 3,2 |  |
-| Wraith | 1 | ★2 | Atirador | Tiro Perfurante | 59% | 1606 | 73% | 10,8 | 0,8 | 3,3 |  |
-| Roadhog | 1 | ★2 | Tanque | Muralha | 58% | 570 | 17% | 9,5 | 0,9 | 3,9 |  |
-| Break-and-Entryman | 1 | ★2 | Assassino | Golpe Fatal | 57% | 913 | 1% | 6,2 | 1,5 | 3,3 |  |
-| Bugs | 1 | ★2 | Demoníacos | Pacto Sombrio | 56% | 1012 | 29% | 9,4 | 0,8 | 3,8 |  |
-| Feral Felon | 1 | ★2 | Assassino | Golpe Fatal | 55% | 911 | 1% | 6,2 | 1,5 | 3,3 |  |
-| Agathion | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 54% | 828 | 16% | 9,4 | 0,9 | 3,7 |  |
-| Dark Magician | 1 | ★2 | Demoníacos | Pacto Sombrio | 54% | 1022 | 29% | 9,3 | 0,8 | 3,8 |  |
-| Athena | 1 | ★2 | Anjo | Luz Divina | 53% | 1395 | 56% | 11,9 | 0,7 | 4,4 |  |
-| Hua Po | 1 | ★2 | Fadinhas | Pó de Fada | 53% | 958 | 74% | 10,6 | 0,9 | 3,6 |  |
-| Kiriko | 1 | ★2 | Fadinhas | Pó de Fada | 52% | 957 | 77% | 10,6 | 0,9 | 3,6 |  |
-| Poppy | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 52% | 825 | 13% | 9,4 | 0,9 | 3,5 |  |
-| Leomon | 1 | ★2 | Porradeiro | (só ataca) | 52% | 794 | 2% | – | 0,0 | – |  |
-| Monferno | 1 | ★2 | Porradeiro | (só ataca) | 51% | 794 | 1% | – | 0,0 | – |  |
-| Yuumi | 1 | ★2 | Fadinhas | Pó de Fada | 50% | 957 | 75% | 10,6 | 0,9 | 3,6 |  |
-| Kuriboh | 1 | ★2 | Fadinhas | Pó de Fada | 50% | 961 | 76% | 10,6 | 0,9 | 3,6 |  |
-| Rat King | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 50% | 808 | 12% | 9,4 | 0,9 | 3,5 |  |
-| Pignite | 1 | ★2 | Porradeiro | (só ataca) | 48% | 788 | 2% | – | 0,0 | – |  |
-| Sona | 1 | ★2 | Fadinhas | Pó de Fada | 48% | 954 | 74% | 10,6 | 0,9 | 3,6 |  |
-| Neko Shogun | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 47% | 808 | 12% | 9,5 | 0,9 | 3,5 |  |
-| Koropokguru | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 47% | 794 | 10% | 9,4 | 0,9 | 3,3 |  |
-| Pikachu | 1 | ★2 | Raio | (só ataca) | 46% | 1256 | 73% | – | 0,0 | – |  |
-| Lash | 1 | ★2 | Porradeiro | Pancadão | 46% | 863 | 3% | 9,4 | 0,8 | 4,0 |  |
-| Seiten Taisei - P5 | 1 | ★2 | Porradeiro | Pancadão | 45% | 869 | 2% | 9,4 | 0,8 | 4,0 |  |
-| Knight of the Cask | 1 | ★2 | Porradeiro | Pancadão | 45% | 863 | 3% | 9,4 | 0,8 | 4,0 |  |
-| Baba | 1 | ★2 | Únicos | Vira Baba | 44% | 961 | 27% | 10,2 | 0,7 | 4,3 |  |
-| Grovyle | 1 | ★2 | Planta | (só ataca) | 42% | 851 | 25% | – | 0,0 | – |  |
-| Wartortle | 1 | ★2 | Atirador | (só ataca) | 41% | 1424 | 83% | – | 0,0 | – |  |
-| Ivysaur | 1 | ★2 | Planta | (só ataca) | 41% | 838 | 25% | – | 0,0 | – |  |
-| Ishtar | 1 | ★2 | Safada | Charme | 40% | 904 | 26% | 9,3 | 0,8 | 2,9 |  |
-| Shellmon | 1 | ★2 | Água | (só ataca) | 39% | 843 | 24% | – | 0,0 | – |  |
-| Marshtomp | 1 | ★2 | Água | (só ataca) | 39% | 840 | 23% | – | 0,0 | – |  |
-| Combusken | 1 | ★2 | Fogo | (só ataca) | 39% | 837 | 24% | – | 0,0 | – |  |
-| Quilladin | 1 | ★2 | Planta | (só ataca) | 38% | 841 | 24% | – | 0,0 | – |  |
-| Braixen | 1 | ★2 | Safada | (só ataca) | 38% | 839 | 25% | – | 0,0 | – |  |
-| Hecate | 1 | ★2 | Safada | Charme | 38% | 894 | 23% | 9,3 | 0,8 | 2,9 |  |
-| Dark Magician Girl | 1 | ★2 | Safada | Charme | 38% | 907 | 27% | 9,3 | 0,8 | 2,9 |  |
-| Servine | 1 | ★2 | Planta | (só ataca) | 38% | 836 | 25% | – | 0,0 | – |  |
-| Akali | 1 | ★2 | Safada | Charme | 37% | 897 | 23% | 9,3 | 0,8 | 2,9 |  |
-| Brionne | 1 | ★2 | Água | (só ataca) | 37% | 841 | 22% | – | 0,0 | – |  |
-| Loudred | 1 | ★2 | Únicos | (só ataca) | 37% | 840 | 25% | – | 0,0 | – |  |
-| Massacre Mascot | 1 | ★2 | Únicos | Vira Massacre Mascot | 36% | 912 | 9% | 9,3 | 0,8 | 3,8 |  |
-| Charmeleon | 1 | ★2 | Fogo | (só ataca) | 36% | 832 | 25% | – | 0,0 | – |  |
-| Dewott | 1 | ★2 | Água | (só ataca) | 34% | 840 | 25% | – | 0,0 | – |  |
-| Sukamon | 1 | ★2 | Criaturinha Bizarra | Vira Sukamon | 34% | 813 | 1% | 9,4 | 0,8 | 2,7 |  |
-| Prinplup | 1 | ★2 | Água | (só ataca) | 34% | 840 | 23% | – | 0,0 | – |  |
-| Boy II Man | 1 | ★2 | Tanque | Vira Boy II Man | 67% | 364 | 19% | 8,7 | 1,0 | 0,0 | sim |
-| Talking Head | 1 | ★2 | Tanque | Vira Talking Head | 65% | 386 | 17% | 8,6 | 0,9 | 2,6 | sim |
-| Holy's Stand | 1 | ★2 | Safada | Vira Holy's Stand | 56% | 654 | 14% | 10,1 | 0,6 | 3,5 | sim |
-| Tubular Bells | 1 | ★2 | Criaturinha Bizarra | Vira Tubular Bells | 50% | 787 | 11% | 9,5 | 0,7 | 5,4 | sim |
-| Baby Face | 1 | ★2 | Safada | Vira Baby Face | 49% | 603 | 8% | 10,3 | 0,7 | 2,4 | sim |
-| Strength | 1 | ★2 | Únicos | Vira Strength | 39% | 582 | 8% | 11,5 | 0,4 | 3,1 | sim |
-| Hey Ya! | 1 | ★2 | Criaturinha Bizarra | Vira Hey Ya! | 25% | 449 | 8% | 8,6 | 0,9 | 0,0 | sim |
-| Widowmaker | 2 | ★1 | Atirador | Charme | 78% | 1168 | 80% | 8,9 | 1,0 | 1,9 |  |
-| Doctrine | 2 | ★1 | Anjo | Pacto Sombrio | 68% | 1072 | 71% | 9,7 | 1,0 | 2,7 |  |
-| McGinnis | 2 | ★1 | Tanque | Bateria de Mísseis | 64% | 527 | 6% | 8,8 | 1,0 | 4,3 |  |
-| Lava Golem | 2 | ★1 | Tanque | Muralha | 63% | 423 | 7% | 8,8 | 1,0 | 3,2 |  |
-| Reinhardt | 2 | ★1 | Tanque | Muralha | 62% | 418 | 6% | 8,8 | 1,0 | 3,2 |  |
-| Dine-and-Dasher | 2 | ★1 | Tanque | Muralha | 61% | 425 | 6% | 8,8 | 1,0 | 3,2 |  |
-| Vanillite | 2 | ★1 | Criaturinha Bizarra | (só ataca) | 60% | 585 | 3% | – | 0,0 | – |  |
-| Solosis | 2 | ★1 | Criaturinha Bizarra | (só ataca) | 59% | 580 | 3% | – | 0,0 | – |  |
-| Himiko | 2 | ★1 | Temporais | Parar o Tempo | 59% | 886 | 62% | 11,0 | 0,8 | 0,9 |  |
-| Lulu | 2 | ★1 | Fadinhas | Pó de Fada | 58% | 754 | 68% | 9,7 | 1,0 | 3,1 |  |
-| Gate Guardian | 2 | ★1 | Tanque | Muralha | 58% | 420 | 5% | 8,8 | 1,0 | 3,2 |  |
-| Honedge | 2 | ★1 | Criaturinha Bizarra | (só ataca) | 57% | 578 | 2% | – | 0,0 | – |  |
-| Black Metal Dragon | 2 | ★1 | Dragão | Bateria de Mísseis | 57% | 725 | 37% | 8,8 | 0,9 | 3,3 |  |
-| Ivy | 2 | ★1 | Fadinhas | Pó de Fada | 56% | 745 | 70% | 9,7 | 1,0 | 3,1 |  |
-| Mermaid | 2 | ★1 | Fadinhas | Pó de Fada | 55% | 747 | 69% | 9,7 | 1,0 | 3,1 |  |
-| Time Thief Redoer | 2 | ★1 | Temporais | Parar o Tempo | 55% | 883 | 58% | 11,0 | 0,8 | 0,9 |  |
-| Juno | 2 | ★1 | Fadinhas | Pó de Fada | 55% | 754 | 72% | 9,7 | 1,0 | 3,1 |  |
-| Jinx | 2 | ★1 | Atirador | Tiro Perfurante | 55% | 1143 | 61% | 10,2 | 0,9 | 2,1 |  |
-| Seraphine | 2 | ★1 | Fadinhas | Pó de Fada | 54% | 746 | 69% | 9,8 | 1,0 | 3,1 |  |
-| Shinx | 2 | ★1 | Raio | (só ataca) | 53% | 953 | 64% | – | 0,0 | – |  |
-| Agumon | 2 | ★1 | Dragão | (só ataca) | 53% | 670 | 26% | – | 0,0 | – |  |
-| Zilean | 2 | ★1 | Temporais | Parar o Tempo | 53% | 882 | 57% | 11,0 | 0,8 | 0,9 |  |
-| Jetpack Cat | 2 | ★1 | Fadinhas | Pó de Fada | 52% | 743 | 67% | 9,7 | 1,0 | 3,1 |  |
-| Zorro | 2 | ★1 | Assassino | Golpe Fatal | 52% | 616 | 7% | 5,8 | 1,6 | 2,1 |  |
-| Vindicta | 2 | ★1 | Atirador | Tiro Perfurante | 51% | 1133 | 55% | 10,2 | 0,9 | 2,0 |  |
-| Jack Frost | 2 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 50% | 549 | 6% | 8,8 | 0,9 | 2,2 |  |
-| Time Wizard | 2 | ★1 | Temporais | Parar o Tempo | 50% | 882 | 60% | 11,0 | 0,8 | 0,9 |  |
-| Gabumon | 2 | ★1 | Porradeiro | (só ataca) | 48% | 560 | 1% | – | 0,0 | – |  |
-| Kazejin | 2 | ★1 | Vento | Tornado | 47% | 679 | 17% | 9,1 | 0,8 | 2,0 |  |
-| Warwick | 2 | ★1 | Porradeiro | Pancadão | 47% | 593 | 4% | 8,7 | 0,8 | 3,0 |  |
-| Timburr | 2 | ★1 | Porradeiro | (só ataca) | 47% | 560 | 2% | – | 0,0 | – |  |
-| Masked Demonling | 2 | ★1 | Demoníacos | Pacto Sombrio | 47% | 715 | 34% | 8,7 | 0,9 | 2,5 |  |
-| Crabby Sentinel | 2 | ★1 | Porradeiro | Pancadão | 45% | 590 | 3% | 8,7 | 0,8 | 3,0 |  |
-| Sham Man Shaman | 2 | ★1 | Vento | Tornado | 44% | 672 | 16% | 9,1 | 0,9 | 2,0 |  |
-| Sudama | 2 | ★1 | Vento | Tornado | 44% | 676 | 19% | 9,1 | 0,9 | 2,0 |  |
-| Patamon | 2 | ★1 | Anjo | (só ataca) | 43% | 931 | 48% | – | 0,0 | – |  |
-| Chikorita | 2 | ★1 | Atirador | (só ataca) | 43% | 1086 | 70% | – | 0,0 | – |  |
-| Palmon | 2 | ★1 | Planta | (só ataca) | 41% | 624 | 20% | – | 0,0 | – |  |
-| Rowlet | 2 | ★1 | Planta | (só ataca) | 41% | 620 | 22% | – | 0,0 | – |  |
-| Cyndaquil | 2 | ★1 | Fogo | (só ataca) | 38% | 621 | 18% | – | 0,0 | – |  |
-| Chernobog | 2 | ★1 | Fogo | Bola de Fogo | 37% | 694 | 22% | 9,5 | 0,8 | 2,1 |  |
-| Froakie | 2 | ★1 | Água | (só ataca) | 36% | 626 | 19% | – | 0,0 | – |  |
-| Totodile | 2 | ★1 | Água | (só ataca) | 36% | 619 | 21% | – | 0,0 | – |  |
-| Vyper | 2 | ★1 | Atirador | Coisa Esquisita | 36% | 1012 | 67% | 8,9 | 1,0 | 1,2 |  |
-| Tentomon | 2 | ★1 | Planta | (só ataca) | 35% | 614 | 18% | – | 0,0 | – |  |
-| Ahri | 2 | ★1 | Safada | Charme | 35% | 640 | 25% | 8,7 | 0,8 | 1,9 |  |
-| Hatenna | 2 | ★1 | Safada | (só ataca) | 33% | 622 | 21% | – | 0,0 | – |  |
-| Litten | 2 | ★1 | Fogo | (só ataca) | 32% | 625 | 19% | – | 0,0 | – |  |
+| Escapist | 1 | ★1 | Únicos | Vira Escapist | 75% | 623 | 98% | 8,6 | 0,8 | 2,5 |  |
+| Roggenrola | 1 | ★1 | Criaturinha Bizarra | (só ataca) | 69% | 452 | 2% | – | 0,0 | – |  |
+| Grubbin | 1 | ★1 | Criaturinha Bizarra | (só ataca) | 67% | 450 | 2% | – | 0,0 | – |  |
+| Squirtle | 1 | ★1 | Atirador | (só ataca) | 65% | 879 | 68% | – | 0,0 | – |  |
+| Orianna | 1 | ★1 | Robô | Bateria de Mísseis | 64% | 533 | 31% | 9,0 | 0,9 | 3,3 |  |
+| Elecmon | 1 | ★1 | Raio | (só ataca) | 62% | 747 | 64% | – | 0,0 | – |  |
+| Pichu | 1 | ★1 | Raio | (só ataca) | 61% | 745 | 62% | – | 0,0 | – |  |
+| Predaplant Verte Anaconda | 1 | ★1 | Dragão | Sopro de Dragão | 58% | 528 | 22% | 9,7 | 0,8 | 2,5 |  |
+| Jinzo | 1 | ★1 | Robô | Bateria de Mísseis | 58% | 529 | 29% | 9,0 | 0,9 | 3,3 |  |
+| Bystial Magnamhut | 1 | ★1 | Dragão | Sopro de Dragão | 57% | 528 | 22% | 9,7 | 0,8 | 2,5 |  |
+| Sona | 1 | ★1 | Fadinhas | Pó de Fada | 57% | 595 | 65% | 10,3 | 0,9 | 2,7 |  |
+| Pro Pickpocket | 1 | ★1 | Assassino | Golpe Fatal | 57% | 512 | 12% | 6,1 | 1,4 | 2,2 |  |
+| Captain Kidd | 1 | ★1 | Atirador | Tiro Perfurante | 56% | 870 | 49% | 10,8 | 0,8 | 2,1 |  |
+| Tepig | 1 | ★1 | Fogo | (só ataca) | 55% | 408 | 1% | – | 0,0 | – |  |
+| Snivy | 1 | ★1 | Planta | (só ataca) | 54% | 491 | 26% | – | 0,0 | – |  |
+| Kiriko | 1 | ★1 | Fadinhas | Pó de Fada | 54% | 598 | 66% | 10,3 | 0,9 | 2,7 |  |
+| Popplio | 1 | ★1 | Água | (só ataca) | 54% | 490 | 25% | – | 0,0 | – |  |
+| Yuumi | 1 | ★1 | Fadinhas | Pó de Fada | 54% | 595 | 63% | 10,4 | 0,9 | 2,7 |  |
+| Ana | 1 | ★1 | Atirador | Tiro Perfurante | 54% | 871 | 47% | 10,8 | 0,8 | 2,1 |  |
+| Torchic | 1 | ★1 | Fogo | (só ataca) | 53% | 405 | 1% | – | 0,0 | – |  |
+| Oshawott | 1 | ★1 | Água | (só ataca) | 53% | 408 | 1% | – | 0,0 | – |  |
+| Chimchar | 1 | ★1 | Fogo | (só ataca) | 52% | 411 | 1% | – | 0,0 | – |  |
+| Shion | 1 | ★1 | Atirador | Tiro Perfurante | 52% | 874 | 49% | 10,8 | 0,8 | 2,1 |  |
+| Mudkip | 1 | ★1 | Água | (só ataca) | 52% | 408 | 1% | – | 0,0 | – |  |
+| Treecko | 1 | ★1 | Planta | (só ataca) | 52% | 412 | 1% | – | 0,0 | – |  |
+| Bulbasaur | 1 | ★1 | Planta | (só ataca) | 52% | 484 | 26% | – | 0,0 | – |  |
+| Dark Magician | 1 | ★1 | Demoníacos | Pacto Sombrio | 52% | 536 | 31% | 8,8 | 0,8 | 2,4 |  |
+| Shakomon | 1 | ★1 | Água | (só ataca) | 51% | 492 | 27% | – | 0,0 | – |  |
+| Piplup | 1 | ★1 | Água | (só ataca) | 51% | 406 | 1% | – | 0,0 | – |  |
+| Turtwig | 1 | ★1 | Planta | (só ataca) | 51% | 408 | 1% | – | 0,0 | – |  |
+| Pixie | 1 | ★1 | Fadinhas | Pó de Fada | 51% | 599 | 65% | 10,3 | 0,9 | 2,7 |  |
+| Wraith | 1 | ★1 | Atirador | Tiro Perfurante | 51% | 876 | 45% | 10,8 | 0,8 | 2,2 |  |
+| Chespin | 1 | ★1 | Planta | (só ataca) | 50% | 409 | 1% | – | 0,0 | – |  |
+| Idun | 1 | ★1 | Fadinhas | Pó de Fada | 50% | 598 | 63% | 10,3 | 0,9 | 2,7 |  |
+| Whismur | 1 | ★1 | Únicos | (só ataca) | 50% | 480 | 25% | – | 0,0 | – |  |
+| Tracer | 1 | ★1 | Atirador | Tiro Perfurante | 50% | 867 | 41% | 10,8 | 0,8 | 2,1 |  |
+| Charmander | 1 | ★1 | Fogo | (só ataca) | 50% | 486 | 26% | – | 0,0 | – |  |
+| Punimon | 1 | ★1 | Únicos | (só ataca) | 49% | 410 | 2% | – | 0,0 | – |  |
+| Lash | 1 | ★1 | Porradeiro | Pancadão | 48% | 440 | 2% | 8,6 | 0,8 | 3,3 |  |
+| Fennekin | 1 | ★1 | Fogo | (só ataca) | 48% | 486 | 27% | – | 0,0 | – |  |
+| Kai'Sa | 1 | ★1 | Atirador | Tiro Perfurante | 48% | 871 | 45% | 10,8 | 0,8 | 2,1 |  |
+| Caitlyn | 1 | ★1 | Atirador | Tiro Perfurante | 48% | 871 | 46% | 10,8 | 0,8 | 2,1 |  |
+| Hammered Man | 1 | ★1 | Porradeiro | Pancadão | 48% | 441 | 2% | 8,7 | 0,8 | 3,3 |  |
+| Carmen | 1 | ★1 | Safada | Charme | 47% | 488 | 26% | 8,8 | 0,8 | 2,0 |  |
+| Cait Sith | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 46% | 404 | 4% | 8,7 | 0,8 | 2,3 |  |
+| Ukobach | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 46% | 399 | 4% | 8,7 | 0,8 | 2,3 |  |
+| Rat King | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 44% | 400 | 4% | 8,7 | 0,8 | 2,3 |  |
+| Palladion | 1 | ★1 | Anjo | Luz Divina | 44% | 739 | 33% | 11,8 | 0,7 | 2,6 |  |
+| Black Ooze | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 44% | 402 | 4% | 8,8 | 0,8 | 2,2 |  |
+| Wild Hog | 1 | ★1 | Tanque | Muralha | 43% | 296 | 2% | 9,1 | 0,9 | 2,9 |  |
+| Poppy | 1 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 43% | 399 | 2% | 8,8 | 0,8 | 2,1 |  |
+| Yamato | 1 | ★1 | Tanque | Muralha | 41% | 293 | 4% | 9,1 | 0,9 | 2,9 |  |
+| Tyumon | 1 | ★1 | Terra | (só ataca) | 41% | 393 | 1% | – | 0,0 | – |  |
+| Dark Magician Girl | 1 | ★1 | Safada | Charme | 40% | 482 | 24% | 8,8 | 0,8 | 1,9 |  |
+| Roadhog | 1 | ★1 | Tanque | Muralha | 40% | 295 | 3% | 9,1 | 0,9 | 2,9 |  |
+| Kuriboh | 1 | ★1 | Fadinhas | Pó de Fada | 39% | 341 | 2% | 8,7 | 0,9 | 3,4 |  |
+| Mandrake | 1 | ★1 | Fadinhas | Coisa Esquisita | 30% | 624 | 38% | 10,3 | 0,9 | 1,5 |  |
+| Baba | 1 | ★1 | Únicos | Vira Baba | 30% | 413 | 1% | 9,5 | 0,8 | 3,0 |  |
+| Akali | 1 | ★1 | Safada | Charme | 23% | 381 | 0% | 8,6 | 0,8 | 2,1 |  |
+| Baseball Diehard | 1 | ★1 | Únicos | Vira Baseball Diehard | 17% | 377 | 0% | 8,6 | 0,8 | 2,5 |  |
+| Strength | 1 | ★1 | Únicos | Vira Strength | 67% | 386 | 28% | 9,8 | 0,5 | 2,5 | sim |
+| Tubular Bells | 1 | ★1 | Criaturinha Bizarra | Vira Tubular Bells | 58% | 466 | 31% | 9,0 | 0,7 | 3,4 | sim |
+| Hey Ya! | 1 | ★1 | Criaturinha Bizarra | Vira Hey Ya! | 56% | 319 | 19% | 8,0 | 0,9 | 0,0 | sim |
+| Boy II Man | 1 | ★1 | Tanque | Vira Boy II Man | 56% | 243 | 25% | 8,6 | 1,0 | 0,0 | sim |
+| Talking Head | 1 | ★1 | Tanque | Vira Talking Head | 50% | 254 | 31% | 8,5 | 0,9 | 2,1 | sim |
+| Baby Face | 1 | ★1 | Safada | Vira Baby Face | 36% | 318 | 14% | 8,9 | 0,6 | 1,7 | sim |
+| Holy's Stand | 1 | ★1 | Safada | Vira Holy's Stand | 28% | 309 | 11% | 8,8 | 0,7 | 1,4 | sim |
+| Vegimon | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 91% | 1103 | 18% | – | 0,0 | – |  |
+| Leomon | 1 | ★2 | Porradeiro | (só ataca) | 86% | 1059 | 12% | – | 0,0 | – |  |
+| Boldore | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 78% | 963 | 5% | – | 0,0 | – |  |
+| Charjabug | 1 | ★2 | Criaturinha Bizarra | (só ataca) | 77% | 962 | 5% | – | 0,0 | – |  |
+| Shellmon | 1 | ★2 | Água | (só ataca) | 76% | 1044 | 31% | – | 0,0 | – |  |
+| Grotle | 1 | ★2 | Tanque | (só ataca) | 76% | 796 | 7% | – | 0,0 | – |  |
+| Sukamon | 1 | ★2 | Criaturinha Bizarra | Vira Sukamon | 73% | 1002 | 4% | 9,5 | 0,8 | 2,5 |  |
+| Monferno | 1 | ★2 | Porradeiro | (só ataca) | 70% | 926 | 5% | – | 0,0 | – |  |
+| Pignite | 1 | ★2 | Porradeiro | (só ataca) | 67% | 923 | 3% | – | 0,0 | – |  |
+| Marshtomp | 1 | ★2 | Água | (só ataca) | 63% | 879 | 1% | – | 0,0 | – |  |
+| Prinplup | 1 | ★2 | Água | (só ataca) | 63% | 875 | 3% | – | 0,0 | – |  |
+| Combusken | 1 | ★2 | Fogo | (só ataca) | 62% | 873 | 3% | – | 0,0 | – |  |
+| Grovyle | 1 | ★2 | Planta | (só ataca) | 61% | 883 | 4% | – | 0,0 | – |  |
+| Dewott | 1 | ★2 | Água | (só ataca) | 59% | 879 | 4% | – | 0,0 | – |  |
+| Quilladin | 1 | ★2 | Planta | (só ataca) | 59% | 881 | 3% | – | 0,0 | – |  |
+| Ivysaur | 1 | ★2 | Planta | (só ataca) | 58% | 939 | 27% | – | 0,0 | – |  |
+| Pikachu | 1 | ★2 | Raio | (só ataca) | 56% | 1353 | 82% | – | 0,0 | – |  |
+| Orianna | 1 | ★2 | Robô | Bateria de Mísseis | 54% | 1027 | 31% | 9,3 | 0,9 | 4,5 |  |
+| Braixen | 1 | ★2 | Safada | (só ataca) | 53% | 931 | 28% | – | 0,0 | – |  |
+| Loudred | 1 | ★2 | Únicos | (só ataca) | 53% | 937 | 28% | – | 0,0 | – |  |
+| Wartortle | 1 | ★2 | Atirador | (só ataca) | 53% | 1534 | 88% | – | 0,0 | – |  |
+| Servine | 1 | ★2 | Planta | (só ataca) | 52% | 934 | 27% | – | 0,0 | – |  |
+| Brionne | 1 | ★2 | Água | (só ataca) | 52% | 936 | 27% | – | 0,0 | – |  |
+| Charmeleon | 1 | ★2 | Fogo | (só ataca) | 52% | 929 | 27% | – | 0,0 | – |  |
+| Ana | 1 | ★2 | Atirador | Tiro Perfurante | 51% | 1609 | 64% | 10,8 | 0,8 | 3,4 |  |
+| Break-and-Entryman | 1 | ★2 | Assassino | Golpe Fatal | 51% | 934 | 3% | 6,2 | 1,5 | 3,4 |  |
+| Agathion | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 50% | 837 | 14% | 9,4 | 0,9 | 3,7 |  |
+| Feral Felon | 1 | ★2 | Assassino | Golpe Fatal | 50% | 934 | 2% | 6,2 | 1,5 | 3,4 |  |
+| Jinzo | 1 | ★2 | Robô | Bateria de Mísseis | 48% | 1027 | 29% | 9,4 | 0,9 | 4,4 |  |
+| Yamato | 1 | ★2 | Tanque | Muralha | 48% | 581 | 15% | 9,4 | 0,9 | 3,9 |  |
+| Tracer | 1 | ★2 | Atirador | Tiro Perfurante | 48% | 1614 | 64% | 10,8 | 0,8 | 3,4 |  |
+| Wraith | 1 | ★2 | Atirador | Tiro Perfurante | 47% | 1626 | 67% | 10,8 | 0,8 | 3,4 |  |
+| Caitlyn | 1 | ★2 | Atirador | Tiro Perfurante | 47% | 1606 | 65% | 10,8 | 0,8 | 3,3 |  |
+| Bystial Magnamhut | 1 | ★2 | Dragão | Sopro de Dragão | 47% | 1016 | 25% | 10,3 | 0,7 | 3,9 |  |
+| Shion | 1 | ★2 | Atirador | Tiro Perfurante | 46% | 1614 | 64% | 10,8 | 0,8 | 3,4 |  |
+| Poppy | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 46% | 828 | 14% | 9,4 | 0,9 | 3,5 |  |
+| Kai'Sa | 1 | ★2 | Atirador | Tiro Perfurante | 45% | 1610 | 63% | 10,8 | 0,8 | 3,4 |  |
+| Athena | 1 | ★2 | Anjo | Luz Divina | 45% | 1393 | 49% | 11,9 | 0,7 | 4,5 |  |
+| Roadhog | 1 | ★2 | Tanque | Muralha | 45% | 578 | 15% | 9,4 | 0,9 | 3,9 |  |
+| Feast 'n Flyer | 1 | ★2 | Tanque | Muralha | 45% | 586 | 14% | 9,4 | 0,9 | 3,9 |  |
+| Predaplant Verte Anaconda | 1 | ★2 | Dragão | Sopro de Dragão | 44% | 999 | 23% | 10,3 | 0,7 | 3,9 |  |
+| Rat King | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 44% | 813 | 14% | 9,4 | 0,9 | 3,5 |  |
+| Koropokguru | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 43% | 805 | 10% | 9,4 | 0,9 | 3,3 |  |
+| Dark Magician | 1 | ★2 | Demoníacos | Pacto Sombrio | 40% | 1018 | 29% | 9,3 | 0,8 | 3,5 |  |
+| Hua Po | 1 | ★2 | Fadinhas | Pó de Fada | 40% | 961 | 72% | 10,6 | 0,9 | 3,6 |  |
+| Neko Shogun | 1 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 40% | 803 | 10% | 9,4 | 0,9 | 3,4 |  |
+| Yuumi | 1 | ★2 | Fadinhas | Pó de Fada | 39% | 959 | 73% | 10,6 | 0,9 | 3,6 |  |
+| Lash | 1 | ★2 | Porradeiro | Pancadão | 38% | 863 | 2% | 9,4 | 0,8 | 3,9 |  |
+| Seiten Taisei - P5 | 1 | ★2 | Porradeiro | Pancadão | 38% | 861 | 2% | 9,4 | 0,8 | 3,9 |  |
+| Sona | 1 | ★2 | Fadinhas | Pó de Fada | 37% | 956 | 73% | 10,6 | 0,9 | 3,6 |  |
+| Kiriko | 1 | ★2 | Fadinhas | Pó de Fada | 37% | 957 | 75% | 10,6 | 0,9 | 3,6 |  |
+| Kuriboh | 1 | ★2 | Fadinhas | Pó de Fada | 35% | 644 | 6% | 9,3 | 0,9 | 4,3 |  |
+| Knight of the Cask | 1 | ★2 | Porradeiro | Pancadão | 34% | 853 | 1% | 9,4 | 0,8 | 3,9 |  |
+| Dark Magician Girl | 1 | ★2 | Safada | Charme | 32% | 920 | 28% | 9,3 | 0,8 | 2,9 |  |
+| Bugs | 1 | ★2 | Demoníacos | Pacto Sombrio | 32% | 855 | 1% | 9,3 | 0,8 | 3,8 |  |
+| Hecate | 1 | ★2 | Safada | Charme | 30% | 912 | 23% | 9,3 | 0,8 | 2,9 |  |
+| Ishtar | 1 | ★2 | Safada | Charme | 30% | 909 | 23% | 9,2 | 0,8 | 3,0 |  |
+| Baba | 1 | ★2 | Únicos | Vira Baba | 22% | 807 | 0% | 10,2 | 0,7 | 4,5 |  |
+| Massacre Mascot | 1 | ★2 | Únicos | Vira Massacre Mascot | 21% | 778 | 1% | 9,3 | 0,7 | 3,8 |  |
+| Akali | 1 | ★2 | Safada | Charme | 20% | 779 | 1% | 9,3 | 0,8 | 3,0 |  |
+| Tubular Bells | 1 | ★2 | Criaturinha Bizarra | Vira Tubular Bells | 64% | 972 | 39% | 9,5 | 0,8 | 4,9 | sim |
+| Boy II Man | 1 | ★2 | Tanque | Vira Boy II Man | 61% | 453 | 39% | 8,8 | 0,9 | 0,0 | sim |
+| Strength | 1 | ★2 | Únicos | Vira Strength | 56% | 744 | 25% | 10,5 | 0,6 | 3,6 | sim |
+| Talking Head | 1 | ★2 | Tanque | Vira Talking Head | 50% | 448 | 28% | 8,7 | 0,9 | 2,6 | sim |
+| Hey Ya! | 1 | ★2 | Criaturinha Bizarra | Vira Hey Ya! | 47% | 579 | 28% | 8,5 | 0,9 | 0,0 | sim |
+| Baby Face | 1 | ★2 | Safada | Vira Baby Face | 39% | 659 | 17% | 9,6 | 0,8 | 2,7 | sim |
+| Holy's Stand | 1 | ★2 | Safada | Vira Holy's Stand | 33% | 662 | 14% | 9,5 | 0,8 | 3,3 | sim |
+| Doctrine | 2 | ★1 | Anjo | Pacto Sombrio | 66% | 1071 | 70% | 9,7 | 1,0 | 2,6 |  |
+| Honedge | 2 | ★1 | Criaturinha Bizarra | (só ataca) | 65% | 605 | 2% | – | 0,0 | – |  |
+| Solosis | 2 | ★1 | Criaturinha Bizarra | (só ataca) | 65% | 607 | 4% | – | 0,0 | – |  |
+| Vanillite | 2 | ★1 | Criaturinha Bizarra | (só ataca) | 64% | 609 | 4% | – | 0,0 | – |  |
+| Chikorita | 2 | ★1 | Tanque | (só ataca) | 64% | 503 | 3% | – | 0,0 | – |  |
+| McGinnis | 2 | ★1 | Tanque | Bateria de Mísseis | 63% | 528 | 6% | 8,8 | 0,9 | 4,3 |  |
+| Lava Golem | 2 | ★1 | Tanque | Muralha | 62% | 427 | 6% | 8,8 | 1,0 | 3,2 |  |
+| Dine-and-Dasher | 2 | ★1 | Tanque | Muralha | 60% | 429 | 6% | 8,8 | 1,0 | 3,2 |  |
+| Reinhardt | 2 | ★1 | Tanque | Muralha | 59% | 421 | 6% | 8,8 | 1,0 | 3,2 |  |
+| Gabumon | 2 | ★1 | Porradeiro | (só ataca) | 57% | 585 | 2% | – | 0,0 | – |  |
+| Himiko | 2 | ★1 | Temporais | Parar o Tempo | 56% | 887 | 60% | 11,0 | 0,8 | 0,9 |  |
+| Lulu | 2 | ★1 | Fadinhas | Pó de Fada | 56% | 754 | 69% | 9,7 | 1,0 | 3,1 |  |
+| Agumon | 2 | ★1 | Dragão | (só ataca) | 55% | 690 | 28% | – | 0,0 | – |  |
+| Black Metal Dragon | 2 | ★1 | Dragão | Bateria de Mísseis | 55% | 734 | 35% | 8,8 | 0,9 | 3,3 |  |
+| Gate Guardian | 2 | ★1 | Tanque | Muralha | 55% | 424 | 5% | 8,8 | 1,0 | 3,2 |  |
+| Mermaid | 2 | ★1 | Fadinhas | Pó de Fada | 55% | 749 | 69% | 9,7 | 1,0 | 3,1 |  |
+| Juno | 2 | ★1 | Fadinhas | Pó de Fada | 54% | 758 | 71% | 9,7 | 1,0 | 3,1 |  |
+| Time Thief Redoer | 2 | ★1 | Temporais | Parar o Tempo | 54% | 886 | 57% | 11,0 | 0,8 | 0,9 |  |
+| Widowmaker | 2 | ★1 | Atirador | Tiro Perfurante | 54% | 1151 | 58% | 10,2 | 0,9 | 2,1 |  |
+| Ivy | 2 | ★1 | Fadinhas | Pó de Fada | 54% | 748 | 69% | 9,7 | 1,0 | 3,1 |  |
+| Seraphine | 2 | ★1 | Fadinhas | Pó de Fada | 52% | 746 | 67% | 9,8 | 1,0 | 3,1 |  |
+| Timburr | 2 | ★1 | Porradeiro | (só ataca) | 52% | 585 | 3% | – | 0,0 | – |  |
+| Zilean | 2 | ★1 | Temporais | Parar o Tempo | 52% | 888 | 59% | 11,0 | 0,8 | 0,9 |  |
+| Jinx | 2 | ★1 | Atirador | Tiro Perfurante | 52% | 1154 | 60% | 10,2 | 0,9 | 2,1 |  |
+| Zorro | 2 | ★1 | Assassino | Golpe Fatal | 51% | 617 | 6% | 5,8 | 1,6 | 2,1 |  |
+| Jetpack Cat | 2 | ★1 | Fadinhas | Pó de Fada | 51% | 746 | 67% | 9,7 | 1,0 | 3,1 |  |
+| Time Wizard | 2 | ★1 | Temporais | Parar o Tempo | 49% | 884 | 57% | 11,0 | 0,8 | 0,9 |  |
+| Jack Frost | 2 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 48% | 550 | 5% | 8,8 | 0,9 | 2,2 |  |
+| Litten | 2 | ★1 | Fogo | (só ataca) | 48% | 554 | 1% | – | 0,0 | – |  |
+| Warwick | 2 | ★1 | Porradeiro | Pancadão | 48% | 598 | 3% | 8,7 | 0,8 | 2,9 |  |
+| Vindicta | 2 | ★1 | Atirador | Tiro Perfurante | 48% | 1138 | 54% | 10,2 | 0,9 | 2,0 |  |
+| Shinx | 2 | ★1 | Raio | (só ataca) | 47% | 551 | 1% | – | 0,0 | – |  |
+| Crabby Sentinel | 2 | ★1 | Porradeiro | Pancadão | 45% | 595 | 2% | 8,7 | 0,8 | 3,0 |  |
+| Rowlet | 2 | ★1 | Planta | (só ataca) | 45% | 636 | 23% | – | 0,0 | – |  |
+| Totodile | 2 | ★1 | Água | (só ataca) | 45% | 555 | 1% | – | 0,0 | – |  |
+| Kazejin | 2 | ★1 | Vento | Tornado | 43% | 676 | 17% | 9,1 | 0,8 | 1,9 |  |
+| Patamon | 2 | ★1 | Anjo | (só ataca) | 43% | 948 | 47% | – | 0,0 | – |  |
+| Froakie | 2 | ★1 | Água | (só ataca) | 41% | 646 | 21% | – | 0,0 | – |  |
+| Cyndaquil | 2 | ★1 | Fogo | (só ataca) | 40% | 640 | 21% | – | 0,0 | – |  |
+| Sham Man Shaman | 2 | ★1 | Vento | Tornado | 40% | 670 | 15% | 9,1 | 0,9 | 2,0 |  |
+| Palmon | 2 | ★1 | Planta | (só ataca) | 40% | 640 | 22% | – | 0,0 | – |  |
+| Sudama | 2 | ★1 | Vento | Tornado | 39% | 673 | 18% | 9,1 | 0,9 | 1,9 |  |
+| Hatenna | 2 | ★1 | Safada | (só ataca) | 38% | 638 | 22% | – | 0,0 | – |  |
+| Tentomon | 2 | ★1 | Planta | (só ataca) | 37% | 632 | 20% | – | 0,0 | – |  |
+| Masked Demonling | 2 | ★1 | Demoníacos | Pacto Sombrio | 34% | 582 | 2% | 8,7 | 0,8 | 2,6 |  |
+| Vyper | 2 | ★1 | Atirador | Coisa Esquisita | 34% | 1019 | 65% | 8,9 | 1,0 | 1,2 |  |
+| Ahri | 2 | ★1 | Safada | Charme | 33% | 645 | 25% | 8,7 | 0,9 | 1,9 |  |
+| Chernobog | 2 | ★1 | Fogo | Bola de Fogo | 33% | 688 | 22% | 9,5 | 0,8 | 2,0 |  |
 | Ball Breaker | 2 | ★1 | Atirador | Vira Ball Breaker | 83% | 835 | 73% | 10,7 | 0,8 | 1,2 | sim |
 | Tusk | 2 | ★1 | Atirador | Vira Tusk | 77% | 906 | 77% | 10,7 | 0,8 | 1,7 | sim |
 | Red Hot Chili Pepper | 2 | ★1 | Safada | Vira Red Hot Chili Pepper | 53% | 847 | 30% | 9,4 | 1,3 | 3,6 | sim |
 | Foo Fighters (Stand) | 2 | ★1 | Água | Vira Foo Fighters (Stand) | 50% | 611 | 30% | 9,4 | 0,8 | 2,3 | sim |
 | Echoes | 2 | ★1 | Vento | Vira Echoes | 23% | 611 | 17% | 8,9 | 1,0 | 1,6 | sim |
 | Metallica | 2 | ★1 | Únicos | Vira Metallica | 13% | 565 | 10% | 10,6 | 0,7 | 1,9 | sim |
-| McGinnis | 2 | ★2 | Tanque | Bateria de Mísseis | 85% | 1093 | 15% | 9,1 | 1,0 | 5,7 |  |
-| Doctrine | 2 | ★2 | Anjo | Pacto Sombrio | 78% | 2071 | 85% | 9,9 | 1,0 | 4,1 |  |
-| Widowmaker | 2 | ★2 | Atirador | Charme | 77% | 2022 | 89% | 8,8 | 1,0 | 2,8 |  |
-| Chomp-and-Charger | 2 | ★2 | Tanque | Muralha | 70% | 774 | 29% | 9,2 | 1,0 | 4,3 |  |
-| Reinhardt | 2 | ★2 | Tanque | Muralha | 67% | 778 | 27% | 9,2 | 1,0 | 4,3 |  |
-| Duosion | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 67% | 1120 | 6% | – | 0,0 | – |  |
-| Gate Guardian | 2 | ★2 | Tanque | Muralha | 66% | 774 | 26% | 9,2 | 1,0 | 4,3 |  |
-| Lava Golem | 2 | ★2 | Tanque | Muralha | 65% | 778 | 28% | 9,2 | 1,0 | 4,3 |  |
-| Black Metal Dragon | 2 | ★2 | Dragão | Bateria de Mísseis | 65% | 1431 | 39% | 9,1 | 1,0 | 4,5 |  |
-| Doublade | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 65% | 1126 | 7% | – | 0,0 | – |  |
-| Vanillish | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 61% | 1113 | 6% | – | 0,0 | – |  |
-| Juno | 2 | ★2 | Fadinhas | Pó de Fada | 58% | 1204 | 92% | 9,8 | 0,9 | 4,1 |  |
-| Garurumon | 2 | ★2 | Porradeiro | (só ataca) | 57% | 1085 | 6% | – | 0,0 | – |  |
-| Ivy | 2 | ★2 | Fadinhas | Pó de Fada | 57% | 1198 | 90% | 9,9 | 0,9 | 4,1 |  |
-| Mermaid | 2 | ★2 | Fadinhas | Pó de Fada | 57% | 1194 | 88% | 9,8 | 0,9 | 4,1 |  |
-| Seraphine | 2 | ★2 | Fadinhas | Pó de Fada | 56% | 1207 | 90% | 9,8 | 0,9 | 4,1 |  |
-| Lulu | 2 | ★2 | Fadinhas | Pó de Fada | 55% | 1199 | 88% | 9,9 | 0,9 | 4,1 |  |
-| Black Frost | 2 | ★2 | Demoníacos | Pacto Sombrio | 55% | 1437 | 38% | 9,1 | 0,9 | 3,6 |  |
-| Jinx | 2 | ★2 | Atirador | Tiro Perfurante | 54% | 2005 | 84% | 10,1 | 0,9 | 3,1 |  |
-| Jetpack Cat | 2 | ★2 | Fadinhas | Pó de Fada | 54% | 1208 | 89% | 9,8 | 0,9 | 4,1 |  |
-| Profaner Demon | 2 | ★2 | Demoníacos | Pacto Sombrio | 53% | 1401 | 35% | 9,1 | 0,9 | 3,5 |  |
-| Gurdurr | 2 | ★2 | Porradeiro | (só ataca) | 52% | 1090 | 6% | – | 0,0 | – |  |
-| Togemon | 2 | ★2 | Porradeiro | (só ataca) | 52% | 1088 | 5% | – | 0,0 | – |  |
-| Zilean | 2 | ★2 | Temporais | Parar o Tempo | 52% | 1509 | 79% | 11,4 | 0,7 | 1,4 |  |
-| Greymon | 2 | ★2 | Dragão | (só ataca) | 51% | 1241 | 34% | – | 0,0 | – |  |
-| Kanzeon | 2 | ★2 | Temporais | Parar o Tempo | 51% | 1504 | 79% | 11,4 | 0,7 | 1,4 |  |
-| Time Wizard | 2 | ★2 | Temporais | Parar o Tempo | 51% | 1506 | 79% | 11,4 | 0,7 | 1,4 |  |
-| Time Thief Redoer | 2 | ★2 | Temporais | Parar o Tempo | 51% | 1504 | 78% | 11,4 | 0,7 | 1,4 |  |
-| Vindicta | 2 | ★2 | Atirador | Tiro Perfurante | 50% | 2001 | 81% | 10,1 | 0,9 | 3,1 |  |
-| Pier Reviewer | 2 | ★2 | Porradeiro | Pancadão | 50% | 1192 | 7% | 8,9 | 0,8 | 3,8 |  |
-| Warwick | 2 | ★2 | Porradeiro | Pancadão | 50% | 1191 | 5% | 9,0 | 0,8 | 3,8 |  |
-| False Prophet | 2 | ★2 | Vento | Tornado | 48% | 1340 | 22% | 9,6 | 0,9 | 2,9 |  |
-| Kazejin | 2 | ★2 | Vento | Tornado | 45% | 1318 | 17% | 9,6 | 0,9 | 2,9 |  |
-| Ahri | 2 | ★2 | Safada | Charme | 43% | 1262 | 33% | 9,1 | 0,9 | 2,8 |  |
-| Kodama | 2 | ★2 | Vento | Tornado | 42% | 1294 | 19% | 9,6 | 0,9 | 2,9 |  |
-| Mercurius | 2 | ★2 | Assassino | Golpe Fatal | 41% | 1141 | 0% | 6,1 | 1,5 | 3,2 |  |
-| Croconaw | 2 | ★2 | Água | (só ataca) | 35% | 1128 | 29% | – | 0,0 | – |  |
-| Quilava | 2 | ★2 | Fogo | (só ataca) | 33% | 1128 | 30% | – | 0,0 | – |  |
-| Hattrem | 2 | ★2 | Safada | (só ataca) | 32% | 1129 | 32% | – | 0,0 | – |  |
-| Bayleef | 2 | ★2 | Atirador | (só ataca) | 31% | 1782 | 90% | – | 0,0 | – |  |
-| Dartrix | 2 | ★2 | Planta | (só ataca) | 31% | 1130 | 33% | – | 0,0 | – |  |
-| Torracat | 2 | ★2 | Fogo | (só ataca) | 31% | 1137 | 30% | – | 0,0 | – |  |
-| Vyper | 2 | ★2 | Atirador | Coisa Esquisita | 31% | 1636 | 89% | 8,8 | 1,0 | 1,6 |  |
-| Luxio | 2 | ★2 | Raio | (só ataca) | 29% | 1565 | 77% | – | 0,0 | – |  |
-| Kabuterimon | 2 | ★2 | Planta | (só ataca) | 28% | 1134 | 30% | – | 0,0 | – |  |
-| Frogadier | 2 | ★2 | Água | (só ataca) | 27% | 1135 | 30% | – | 0,0 | – |  |
-| Angemon | 2 | ★2 | Anjo | (só ataca) | 21% | 1512 | 67% | – | 0,0 | – |  |
-| Anubis | 2 | ★2 | Únicos | Vira Anubis | 18% | 1176 | 10% | 10,1 | 0,7 | 3,2 |  |
+| Garurumon | 2 | ★2 | Porradeiro | (só ataca) | 91% | 1404 | 16% | – | 0,0 | – |  |
+| Togemon | 2 | ★2 | Porradeiro | (só ataca) | 88% | 1415 | 16% | – | 0,0 | – |  |
+| Greymon | 2 | ★2 | Dragão | (só ataca) | 84% | 1493 | 39% | – | 0,0 | – |  |
+| Vanillish | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 82% | 1277 | 11% | – | 0,0 | – |  |
+| Doublade | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 79% | 1285 | 11% | – | 0,0 | – |  |
+| Duosion | 2 | ★2 | Criaturinha Bizarra | (só ataca) | 79% | 1278 | 11% | – | 0,0 | – |  |
+| Bayleef | 2 | ★2 | Tanque | (só ataca) | 78% | 1041 | 11% | – | 0,0 | – |  |
+| McGinnis | 2 | ★2 | Tanque | Bateria de Mísseis | 70% | 1087 | 12% | 9,1 | 1,0 | 5,7 |  |
+| Gurdurr | 2 | ★2 | Porradeiro | (só ataca) | 70% | 1241 | 9% | – | 0,0 | – |  |
+| Kabuterimon | 2 | ★2 | Planta | (só ataca) | 68% | 1380 | 37% | – | 0,0 | – |  |
+| Doctrine | 2 | ★2 | Anjo | Pacto Sombrio | 66% | 2026 | 79% | 9,8 | 1,0 | 3,9 |  |
+| Luxio | 2 | ★2 | Raio | (só ataca) | 62% | 1177 | 6% | – | 0,0 | – |  |
+| Torracat | 2 | ★2 | Fogo | (só ataca) | 62% | 1174 | 7% | – | 0,0 | – |  |
+| Croconaw | 2 | ★2 | Água | (só ataca) | 61% | 1171 | 7% | – | 0,0 | – |  |
+| Black Metal Dragon | 2 | ★2 | Dragão | Bateria de Mísseis | 54% | 1417 | 35% | 9,1 | 1,0 | 4,5 |  |
+| Chomp-and-Charger | 2 | ★2 | Tanque | Muralha | 53% | 783 | 27% | 9,2 | 1,0 | 4,3 |  |
+| Dartrix | 2 | ★2 | Planta | (só ataca) | 50% | 1276 | 34% | – | 0,0 | – |  |
+| Gate Guardian | 2 | ★2 | Tanque | Muralha | 50% | 780 | 26% | 9,1 | 1,0 | 4,3 |  |
+| Reinhardt | 2 | ★2 | Tanque | Muralha | 49% | 781 | 26% | 9,2 | 1,0 | 4,3 |  |
+| Angemon | 2 | ★2 | Anjo | (só ataca) | 48% | 1765 | 79% | – | 0,0 | – |  |
+| Lava Golem | 2 | ★2 | Tanque | Muralha | 48% | 779 | 26% | 9,1 | 1,0 | 4,3 |  |
+| Frogadier | 2 | ★2 | Água | (só ataca) | 47% | 1269 | 35% | – | 0,0 | – |  |
+| Hattrem | 2 | ★2 | Safada | (só ataca) | 46% | 1261 | 32% | – | 0,0 | – |  |
+| Quilava | 2 | ★2 | Fogo | (só ataca) | 46% | 1266 | 33% | – | 0,0 | – |  |
+| Warwick | 2 | ★2 | Porradeiro | Pancadão | 44% | 1201 | 4% | 8,9 | 0,8 | 3,8 |  |
+| Pier Reviewer | 2 | ★2 | Porradeiro | Pancadão | 43% | 1192 | 5% | 8,9 | 0,9 | 3,8 |  |
+| Juno | 2 | ★2 | Fadinhas | Pó de Fada | 43% | 1208 | 90% | 9,8 | 0,9 | 4,1 |  |
+| Black Frost | 2 | ★2 | Demoníacos | Pacto Sombrio | 42% | 1405 | 34% | 9,1 | 0,9 | 3,5 |  |
+| Ivy | 2 | ★2 | Fadinhas | Pó de Fada | 42% | 1203 | 87% | 9,8 | 0,9 | 4,1 |  |
+| Lulu | 2 | ★2 | Fadinhas | Pó de Fada | 41% | 1203 | 86% | 9,8 | 1,0 | 4,1 |  |
+| Mermaid | 2 | ★2 | Fadinhas | Pó de Fada | 40% | 1192 | 85% | 9,8 | 0,9 | 4,1 |  |
+| Seraphine | 2 | ★2 | Fadinhas | Pó de Fada | 40% | 1207 | 89% | 9,8 | 0,9 | 4,1 |  |
+| Kazejin | 2 | ★2 | Vento | Tornado | 39% | 1311 | 17% | 9,5 | 0,9 | 2,8 |  |
+| Kanzeon | 2 | ★2 | Temporais | Parar o Tempo | 38% | 1503 | 76% | 11,3 | 0,7 | 1,4 |  |
+| Time Wizard | 2 | ★2 | Temporais | Parar o Tempo | 38% | 1506 | 75% | 11,3 | 0,7 | 1,4 |  |
+| Jetpack Cat | 2 | ★2 | Fadinhas | Pó de Fada | 38% | 1204 | 88% | 9,8 | 1,0 | 4,0 |  |
+| Zilean | 2 | ★2 | Temporais | Parar o Tempo | 38% | 1509 | 77% | 11,4 | 0,7 | 1,4 |  |
+| Time Thief Redoer | 2 | ★2 | Temporais | Parar o Tempo | 37% | 1505 | 76% | 11,3 | 0,7 | 1,4 |  |
+| Vindicta | 2 | ★2 | Atirador | Tiro Perfurante | 35% | 2014 | 73% | 10,1 | 0,9 | 3,2 |  |
+| False Prophet | 2 | ★2 | Vento | Tornado | 35% | 1321 | 18% | 9,5 | 0,9 | 2,9 |  |
+| Jinx | 2 | ★2 | Atirador | Tiro Perfurante | 34% | 2033 | 78% | 10,1 | 0,9 | 3,2 |  |
+| Mercurius | 2 | ★2 | Assassino | Golpe Fatal | 34% | 1144 | 0% | 6,2 | 1,5 | 3,2 |  |
+| Kodama | 2 | ★2 | Vento | Tornado | 33% | 1293 | 17% | 9,5 | 0,9 | 2,8 |  |
+| Ahri | 2 | ★2 | Safada | Charme | 33% | 1254 | 30% | 9,0 | 0,9 | 2,8 |  |
+| Profaner Demon | 2 | ★2 | Demoníacos | Pacto Sombrio | 32% | 1172 | 5% | 8,9 | 0,9 | 3,6 |  |
+| Widowmaker | 2 | ★2 | Atirador | Tiro Perfurante | 32% | 2032 | 76% | 10,1 | 0,9 | 3,2 |  |
+| Vyper | 2 | ★2 | Atirador | Coisa Esquisita | 21% | 1629 | 84% | 8,8 | 1,0 | 1,6 |  |
+| Anubis | 2 | ★2 | Únicos | Vira Anubis | 15% | 1175 | 7% | 10,1 | 0,7 | 3,2 |  |
 | Tusk | 2 | ★2 | Atirador | Vira Tusk | 93% | 1772 | 87% | 10,6 | 0,8 | 3,8 | sim |
 | Ball Breaker | 2 | ★2 | Atirador | Vira Ball Breaker | 77% | 1519 | 83% | 10,5 | 0,7 | 1,7 | sim |
 | Red Hot Chili Pepper | 2 | ★2 | Safada | Vira Red Hot Chili Pepper | 60% | 1899 | 47% | 9,9 | 1,3 | 5,8 | sim |
 | Foo Fighters (Stand) | 2 | ★2 | Água | Vira Foo Fighters (Stand) | 27% | 1257 | 17% | 10,0 | 0,9 | 4,1 | sim |
 | Echoes | 2 | ★2 | Vento | Vira Echoes | 23% | 1517 | 17% | 9,3 | 1,0 | 4,5 | sim |
 | Metallica | 2 | ★2 | Únicos | Vira Metallica | 20% | 1208 | 20% | 11,1 | 0,7 | 3,2 | sim |
-| Abaddon | 3 | ★1 | Anjo | Pacto Sombrio | 71% | 1321 | 70% | 9,1 | 1,0 | 2,7 |  |
-| Barong | 3 | ★1 | Raio | Corrente Elétrica | 68% | 1239 | 64% | 10,5 | 0,8 | 2,2 |  |
-| Lifeweaver | 3 | ★1 | Anjo | Pó de Fada | 62% | 961 | 67% | 9,1 | 1,0 | 2,9 |  |
-| Tornado Dragon | 3 | ★1 | Dragão | Sopro de Dragão | 61% | 872 | 28% | 9,2 | 0,8 | 2,7 |  |
-| Sukuna-Hikona - P4 | 3 | ★1 | Fadinhas | Pó de Fada | 60% | 927 | 67% | 9,2 | 1,0 | 3,1 |  |
-| Big Shield Gardna | 3 | ★1 | Tanque | Muralha | 60% | 511 | 4% | 8,3 | 1,1 | 3,1 |  |
-| Soraka | 3 | ★1 | Anjo | Pó de Fada | 60% | 955 | 63% | 9,2 | 1,0 | 2,8 |  |
-| Milio | 3 | ★1 | Fadinhas | Pó de Fada | 59% | 932 | 67% | 9,2 | 1,0 | 3,1 |  |
-| Lillia | 3 | ★1 | Fadinhas | Pó de Fada | 59% | 920 | 66% | 9,2 | 1,0 | 3,1 |  |
-| Guardromon | 3 | ★1 | Criaturinha Bizarra | (só ataca) | 59% | 699 | 2% | – | 0,0 | – |  |
-| Demeter | 3 | ★1 | Fadinhas | Pó de Fada | 59% | 926 | 66% | 9,2 | 1,0 | 3,1 |  |
-| Garen | 3 | ★1 | Tanque | Muralha | 58% | 503 | 3% | 8,3 | 1,1 | 3,1 |  |
-| Venture | 3 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 57% | 684 | 10% | 8,3 | 1,0 | 2,3 |  |
-| Hydra | 3 | ★1 | Dragão | Sopro de Dragão | 57% | 869 | 25% | 9,1 | 0,8 | 2,6 |  |
-| Aurora | 3 | ★1 | Fadinhas | Pó de Fada | 57% | 930 | 65% | 9,2 | 1,0 | 3,1 |  |
-| Orisa | 3 | ★1 | Robô | Bateria de Mísseis | 57% | 851 | 33% | 8,4 | 1,0 | 3,2 |  |
-| Paige | 3 | ★1 | Fadinhas | Pó de Fada | 56% | 924 | 64% | 9,2 | 1,0 | 3,1 |  |
-| Michion, the Timelord | 3 | ★1 | Temporais | Parar o Tempo | 56% | 1096 | 63% | 10,4 | 0,9 | 0,8 |  |
-| D.Mon | 3 | ★1 | Robô | Bateria de Mísseis | 56% | 852 | 34% | 8,4 | 1,0 | 3,2 |  |
-| Ekko | 3 | ★1 | Temporais | Parar o Tempo | 55% | 1089 | 61% | 10,4 | 0,9 | 0,8 |  |
-| Niddhoggr | 3 | ★1 | Dragão | Sopro de Dragão | 54% | 874 | 27% | 9,2 | 0,8 | 2,7 |  |
-| Rookidee | 3 | ★1 | Vento | (só ataca) | 53% | 821 | 21% | – | 0,0 | – |  |
-| Machop | 3 | ★1 | Porradeiro | (só ataca) | 52% | 683 | 2% | – | 0,0 | – |  |
-| Dratini | 3 | ★1 | Dragão | (só ataca) | 51% | 809 | 24% | – | 0,0 | – |  |
-| Pseudotrash | 3 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 51% | 681 | 8% | 8,3 | 1,0 | 2,3 |  |
-| Venator | 3 | ★1 | Atirador | Tiro Perfurante | 51% | 1361 | 48% | 9,5 | 1,0 | 2,0 |  |
-| City Slicker | 3 | ★1 | Água | Jato d'Água | 51% | 809 | 32% | 8,4 | 1,0 | 3,3 |  |
-| Paradox | 3 | ★1 | Atirador | Tiro Perfurante | 49% | 1362 | 49% | 9,5 | 1,0 | 1,9 |  |
-| Black Luster Soldier - Soldier of Chaos | 3 | ★1 | Assassino | Golpe Fatal | 48% | 716 | 8% | 5,4 | 1,7 | 2,0 |  |
-| Gurr | 3 | ★1 | Porradeiro | Pancadão | 48% | 703 | 3% | 8,2 | 0,8 | 2,8 |  |
-| Chucklehead | 3 | ★1 | Demoníacos | Pacto Sombrio | 47% | 849 | 28% | 8,4 | 1,0 | 2,5 |  |
-| Evilswarm Exciton Knight | 3 | ★1 | Porradeiro | Pancadão | 46% | 712 | 4% | 8,2 | 0,9 | 2,8 |  |
-| Pico Devimon | 3 | ★1 | Demoníacos | (só ataca) | 46% | 794 | 22% | – | 0,0 | – |  |
-| Orpheus | 3 | ★1 | Anjo | Luz Divina | 46% | 1165 | 41% | 10,3 | 0,9 | 2,6 |  |
-| Shaman | 3 | ★1 | Anjo | Luz Divina | 45% | 1173 | 38% | 10,4 | 0,8 | 2,6 |  |
-| Shuppet | 3 | ★1 | Demoníacos | (só ataca) | 45% | 779 | 23% | – | 0,0 | – |  |
-| Graves | 3 | ★1 | Demoníacos | Pacto Sombrio | 45% | 861 | 31% | 8,4 | 1,0 | 2,4 |  |
-| La Jinn the Mystical Genie of the Lamp | 3 | ★1 | Vento | Tornado | 42% | 813 | 17% | 8,6 | 0,9 | 2,0 |  |
-| Genji | 3 | ★1 | Assassino | Golpe Fatal | 42% | 703 | 5% | 5,4 | 1,7 | 2,0 |  |
-| Cendrillon | 3 | ★1 | Safada | Charme | 40% | 780 | 24% | 8,4 | 0,9 | 1,9 |  |
-| Carvanha | 3 | ★1 | Água | (só ataca) | 39% | 755 | 20% | – | 0,0 | – |  |
-| Gwen | 3 | ★1 | Assassino | Charme | 39% | 784 | 14% | 6,5 | 1,0 | 1,9 |  |
-| Bounsweet | 3 | ★1 | Safada | (só ataca) | 38% | 741 | 18% | – | 0,0 | – |  |
-| Ralts | 3 | ★1 | Fadinhas | (só ataca) | 38% | 1080 | 42% | – | 0,0 | – |  |
-| Violet | 3 | ★1 | Safada | Charme | 37% | 788 | 25% | 8,4 | 0,9 | 1,8 |  |
-| Abra | 3 | ★1 | Fadinhas | (só ataca) | 37% | 1083 | 40% | – | 0,0 | – |  |
-| Lamia | 3 | ★1 | Safada | Charme | 36% | 779 | 23% | 8,4 | 0,9 | 1,9 |  |
-| Lalamon | 3 | ★1 | Planta | (só ataca) | 36% | 758 | 16% | – | 0,0 | – |  |
-| Sandile | 3 | ★1 | Terra | (só ataca) | 33% | 617 | 1% | – | 0,0 | – |  |
-| Aron | 3 | ★1 | Terra | (só ataca) | 28% | 614 | 1% | – | 0,0 | – |  |
+| Guardromon | 3 | ★1 | Criaturinha Bizarra | (só ataca) | 67% | 732 | 3% | – | 0,0 | – |  |
+| Barong | 3 | ★1 | Raio | Corrente Elétrica | 67% | 1243 | 61% | 10,5 | 0,8 | 2,2 |  |
+| Lifeweaver | 3 | ★1 | Anjo | Pó de Fada | 65% | 973 | 68% | 9,1 | 1,0 | 2,9 |  |
+| Rookidee | 3 | ★1 | Vento | (só ataca) | 64% | 756 | 2% | – | 0,0 | – |  |
+| Big Shield Gardna | 3 | ★1 | Tanque | Muralha | 64% | 519 | 4% | 8,3 | 1,1 | 3,1 |  |
+| Machop | 3 | ★1 | Porradeiro | (só ataca) | 62% | 714 | 2% | – | 0,0 | – |  |
+| Garen | 3 | ★1 | Tanque | Muralha | 61% | 514 | 3% | 8,3 | 1,1 | 3,1 |  |
+| Sukuna-Hikona - P4 | 3 | ★1 | Fadinhas | Pó de Fada | 60% | 936 | 66% | 9,2 | 1,0 | 3,1 |  |
+| Orisa | 3 | ★1 | Robô | Bateria de Mísseis | 60% | 870 | 33% | 8,4 | 1,0 | 3,2 |  |
+| Lillia | 3 | ★1 | Fadinhas | Pó de Fada | 60% | 930 | 66% | 9,2 | 1,0 | 3,1 |  |
+| Soraka | 3 | ★1 | Anjo | Pó de Fada | 60% | 960 | 63% | 9,1 | 1,0 | 2,8 |  |
+| D.Mon | 3 | ★1 | Robô | Bateria de Mísseis | 59% | 863 | 35% | 8,4 | 1,0 | 3,2 |  |
+| Milio | 3 | ★1 | Fadinhas | Pó de Fada | 58% | 937 | 66% | 9,2 | 1,0 | 3,1 |  |
+| Demeter | 3 | ★1 | Fadinhas | Pó de Fada | 57% | 932 | 66% | 9,2 | 1,0 | 3,1 |  |
+| Aurora | 3 | ★1 | Fadinhas | Pó de Fada | 57% | 933 | 67% | 9,2 | 1,0 | 3,1 |  |
+| Tornado Dragon | 3 | ★1 | Dragão | Sopro de Dragão | 57% | 868 | 27% | 9,2 | 0,8 | 2,5 |  |
+| Venture | 3 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 56% | 691 | 10% | 8,3 | 1,0 | 2,3 |  |
+| Hydra | 3 | ★1 | Dragão | Sopro de Dragão | 56% | 866 | 26% | 9,1 | 0,8 | 2,5 |  |
+| Michion, the Timelord | 3 | ★1 | Temporais | Parar o Tempo | 55% | 1099 | 62% | 10,4 | 0,9 | 0,8 |  |
+| Paige | 3 | ★1 | Fadinhas | Pó de Fada | 55% | 931 | 63% | 9,2 | 1,0 | 3,1 |  |
+| Pico Devimon | 3 | ★1 | Demoníacos | (só ataca) | 54% | 832 | 26% | – | 0,0 | – |  |
+| Dratini | 3 | ★1 | Dragão | (só ataca) | 54% | 707 | 2% | – | 0,0 | – |  |
+| Pseudotrash | 3 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 53% | 695 | 8% | 8,3 | 1,0 | 2,4 |  |
+| Venator | 3 | ★1 | Atirador | Tiro Perfurante | 52% | 1373 | 50% | 9,5 | 1,0 | 2,0 |  |
+| City Slicker | 3 | ★1 | Água | Jato d'Água | 51% | 709 | 5% | 8,3 | 1,0 | 3,6 |  |
+| Shuppet | 3 | ★1 | Demoníacos | (só ataca) | 51% | 810 | 26% | – | 0,0 | – |  |
+| Carvanha | 3 | ★1 | Água | (só ataca) | 49% | 677 | 1% | – | 0,0 | – |  |
+| Black Luster Soldier - Soldier of Chaos | 3 | ★1 | Assassino | Golpe Fatal | 48% | 713 | 6% | 5,4 | 1,7 | 2,1 |  |
+| Paradox | 3 | ★1 | Atirador | Tiro Perfurante | 47% | 1378 | 47% | 9,5 | 1,0 | 2,0 |  |
+| Bounsweet | 3 | ★1 | Safada | (só ataca) | 47% | 666 | 2% | – | 0,0 | – |  |
+| Evilswarm Exciton Knight | 3 | ★1 | Porradeiro | Pancadão | 47% | 716 | 4% | 8,3 | 0,9 | 2,8 |  |
+| Gurr | 3 | ★1 | Porradeiro | Pancadão | 47% | 712 | 2% | 8,3 | 0,9 | 2,8 |  |
+| Lalamon | 3 | ★1 | Planta | (só ataca) | 45% | 791 | 21% | – | 0,0 | – |  |
+| Orpheus | 3 | ★1 | Anjo | Luz Divina | 44% | 1175 | 41% | 10,4 | 0,9 | 2,6 |  |
+| Graves | 3 | ★1 | Demoníacos | Pacto Sombrio | 44% | 855 | 32% | 8,4 | 0,9 | 2,4 |  |
+| Shaman | 3 | ★1 | Anjo | Luz Divina | 43% | 1169 | 35% | 10,4 | 0,9 | 2,6 |  |
+| Niddhoggr | 3 | ★1 | Dragão | Sopro de Dragão | 42% | 703 | 1% | 9,0 | 0,8 | 2,7 |  |
+| Genji | 3 | ★1 | Assassino | Golpe Fatal | 41% | 699 | 4% | 5,4 | 1,7 | 2,0 |  |
+| Ralts | 3 | ★1 | Fadinhas | (só ataca) | 40% | 1103 | 47% | – | 0,0 | – |  |
+| Aron | 3 | ★1 | Terra | (só ataca) | 40% | 641 | 0% | – | 0,0 | – |  |
+| Chucklehead | 3 | ★1 | Demoníacos | Pacto Sombrio | 40% | 699 | 3% | 8,3 | 0,9 | 2,5 |  |
+| Abra | 3 | ★1 | Fadinhas | (só ataca) | 40% | 1103 | 45% | – | 0,0 | – |  |
+| La Jinn the Mystical Genie of the Lamp | 3 | ★1 | Vento | Tornado | 39% | 808 | 16% | 8,7 | 0,9 | 1,9 |  |
+| Sandile | 3 | ★1 | Terra | (só ataca) | 39% | 641 | 1% | – | 0,0 | – |  |
+| Cendrillon | 3 | ★1 | Safada | Charme | 38% | 784 | 25% | 8,3 | 0,9 | 1,9 |  |
+| Lamia | 3 | ★1 | Safada | Charme | 38% | 789 | 26% | 8,3 | 0,9 | 1,9 |  |
+| Violet | 3 | ★1 | Safada | Charme | 37% | 790 | 27% | 8,3 | 0,9 | 1,9 |  |
+| Gwen | 3 | ★1 | Assassino | Charme | 34% | 780 | 13% | 6,6 | 1,0 | 1,9 |  |
+| Ekko | 3 | ★1 | Temporais | Parar o Tempo | 33% | 577 | 0% | 9,0 | 0,7 | 0,9 |  |
+| Abaddon | 3 | ★1 | Anjo | Pacto Sombrio | 24% | 661 | 1% | 8,3 | 0,9 | 2,5 |  |
 | Silver Chariot | 3 | ★1 | Porradeiro | Vira Silver Chariot | 61% | 600 | 19% | 8,2 | 1,0 | 1,9 | sim |
 | Stray Cat | 3 | ★1 | Criaturinha Bizarra | Vira Stray Cat | 58% | 611 | 22% | 8,9 | 0,7 | 5,5 | sim |
 | Sex Pistols | 3 | ★1 | Atirador | Vira Sex Pistols | 58% | 630 | 19% | 8,0 | 0,7 | 2,5 | sim |
@@ -490,56 +521,56 @@ Cada campeão (forma da estrela, ult padrão) com 3 bonecos do custo dele (atrib
 | Civil War | 3 | ★1 | Atirador | Vira Civil War | 44% | 590 | 22% | 9,2 | 0,5 | 1,7 | sim |
 | Light Rod Stand | 3 | ★1 | Únicos | Vira Light Rod Stand | 44% | 533 | 17% | 10,2 | 0,5 | 3,0 | sim |
 | Pearl Jam | 3 | ★1 | Fadinhas | Vira Pearl Jam | 36% | 465 | 14% | 9,0 | 0,6 | 3,5 | sim |
-| Orisa | 3 | ★2 | Robô | Bateria de Mísseis | 71% | 1666 | 35% | 8,7 | 1,0 | 4,4 |  |
-| D.Mon | 3 | ★2 | Robô | Bateria de Mísseis | 69% | 1676 | 38% | 8,7 | 1,0 | 4,4 |  |
-| Garen | 3 | ★2 | Tanque | Muralha | 65% | 936 | 24% | 8,7 | 1,0 | 4,2 |  |
-| Big Shield Gardna | 3 | ★2 | Tanque | Muralha | 65% | 935 | 24% | 8,7 | 1,0 | 4,2 |  |
-| Lifeweaver | 3 | ★2 | Anjo | Pó de Fada | 62% | 1564 | 82% | 9,3 | 1,0 | 3,7 |  |
-| Hecatoncheires | 3 | ★2 | Tanque | Muralha | 61% | 932 | 23% | 8,7 | 1,0 | 4,2 |  |
-| Machoke | 3 | ★2 | Porradeiro | (só ataca) | 60% | 1311 | 3% | – | 0,0 | – |  |
-| Soraka | 3 | ★2 | Anjo | Pó de Fada | 60% | 1562 | 81% | 9,3 | 1,0 | 3,7 |  |
-| Paige | 3 | ★2 | Fadinhas | Pó de Fada | 60% | 1496 | 82% | 9,3 | 1,0 | 4,0 |  |
-| Milio | 3 | ★2 | Fadinhas | Pó de Fada | 59% | 1497 | 86% | 9,3 | 1,0 | 4,0 |  |
-| Michion, the Timelord | 3 | ★2 | Temporais | Parar o Tempo | 59% | 1890 | 80% | 10,7 | 0,8 | 1,3 |  |
-| Aurora | 3 | ★2 | Fadinhas | Pó de Fada | 58% | 1486 | 82% | 9,3 | 1,0 | 4,0 |  |
-| Kohryu | 3 | ★2 | Dragão | Sopro de Dragão | 58% | 1694 | 30% | 9,7 | 0,8 | 3,9 |  |
-| Venator | 3 | ★2 | Atirador | Tiro Perfurante | 57% | 2513 | 74% | 9,5 | 1,0 | 3,0 |  |
-| Warhead | 3 | ★2 | Demoníacos | Pacto Sombrio | 57% | 1696 | 36% | 8,7 | 1,0 | 3,5 |  |
-| Ekko | 3 | ★2 | Temporais | Parar o Tempo | 57% | 1894 | 81% | 10,7 | 0,8 | 1,3 |  |
-| Yamato-Takeru | 3 | ★2 | Fadinhas | Pó de Fada | 56% | 1493 | 83% | 9,3 | 1,0 | 4,0 |  |
-| Tornado Dragon | 3 | ★2 | Dragão | Sopro de Dragão | 56% | 1682 | 30% | 9,7 | 0,8 | 4,0 |  |
-| Venture | 3 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 56% | 1313 | 19% | 8,6 | 1,0 | 3,4 |  |
-| Graves | 3 | ★2 | Demoníacos | Pacto Sombrio | 56% | 1710 | 35% | 8,6 | 1,0 | 3,6 |  |
-| Paradox | 3 | ★2 | Atirador | Tiro Perfurante | 55% | 2502 | 72% | 9,5 | 1,0 | 3,0 |  |
-| Lillia | 3 | ★2 | Fadinhas | Pó de Fada | 55% | 1497 | 84% | 9,3 | 1,0 | 4,0 |  |
-| Grease Monk | 3 | ★2 | Água | Jato d'Água | 54% | 1528 | 33% | 8,6 | 1,0 | 4,3 |  |
-| Gifted Gatherer | 3 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 53% | 1312 | 19% | 8,6 | 1,0 | 3,3 |  |
-| Messiah | 3 | ★2 | Anjo | Luz Divina | 53% | 2198 | 57% | 10,7 | 0,9 | 4,0 |  |
-| Flauros | 3 | ★2 | Porradeiro | Pancadão | 52% | 1471 | 8% | 8,6 | 0,9 | 3,7 |  |
-| Corvisquire | 3 | ★2 | Vento | (só ataca) | 51% | 1530 | 30% | – | 0,0 | – |  |
-| Evilswarm Exciton Knight | 3 | ★2 | Porradeiro | Pancadão | 51% | 1452 | 7% | 8,6 | 0,9 | 3,7 |  |
-| Abdiel | 3 | ★2 | Anjo | Luz Divina | 51% | 2218 | 55% | 10,6 | 0,9 | 4,1 |  |
-| High Necromancer | 3 | ★2 | Anjo | Luz Divina | 51% | 2211 | 59% | 10,6 | 0,9 | 4,0 |  |
-| Hagurumon | 3 | ★2 | Robô | (só ataca) | 49% | 1441 | 30% | – | 0,0 | – |  |
-| Dragonair | 3 | ★2 | Dragão | (só ataca) | 48% | 1508 | 32% | – | 0,0 | – |  |
-| Genji | 3 | ★2 | Assassino | Golpe Fatal | 45% | 1412 | 1% | 5,9 | 1,5 | 3,2 |  |
-| Devimon | 3 | ★2 | Demoníacos | (só ataca) | 45% | 1458 | 27% | – | 0,0 | – |  |
-| La Jinn the Mystical Genie of the Lamp | 3 | ★2 | Vento | Tornado | 44% | 1564 | 16% | 9,1 | 1,0 | 2,8 |  |
-| Mother Harlot | 3 | ★2 | Safada | Charme | 43% | 1498 | 27% | 8,6 | 1,0 | 2,7 |  |
-| Cybele | 3 | ★2 | Safada | Charme | 42% | 1495 | 30% | 8,6 | 1,0 | 2,7 |  |
-| Banette | 3 | ★2 | Demoníacos | (só ataca) | 41% | 1462 | 28% | – | 0,0 | – |  |
-| Nuwa | 3 | ★2 | Safada | Charme | 41% | 1526 | 31% | 8,7 | 1,0 | 2,7 |  |
-| Black Luster Soldier - Soldier of Chaos | 3 | ★2 | Assassino | Golpe Fatal | 39% | 1383 | 0% | 5,9 | 1,5 | 3,2 |  |
-| Violet | 3 | ★2 | Safada | Charme | 39% | 1485 | 29% | 8,6 | 1,0 | 2,7 |  |
-| Vanadis | 3 | ★2 | Safada | Charme | 38% | 1486 | 27% | 8,6 | 1,0 | 2,6 |  |
-| Gwen | 3 | ★2 | Assassino | Charme | 38% | 1575 | 19% | 6,7 | 1,0 | 2,7 |  |
-| Lairon | 3 | ★2 | Terra | (só ataca) | 36% | 1174 | 2% | – | 0,0 | – |  |
-| Sharpedo | 3 | ★2 | Água | (só ataca) | 36% | 1405 | 26% | – | 0,0 | – |  |
-| Sunflowmon | 3 | ★2 | Planta | (só ataca) | 36% | 1389 | 28% | – | 0,0 | – |  |
-| Steenee | 3 | ★2 | Safada | (só ataca) | 33% | 1399 | 27% | – | 0,0 | – |  |
-| Krokorok | 3 | ★2 | Terra | (só ataca) | 32% | 1179 | 2% | – | 0,0 | – |  |
-| Kirlia | 3 | ★2 | Fadinhas | (só ataca) | 25% | 1841 | 67% | – | 0,0 | – |  |
-| Kadabra | 3 | ★2 | Fadinhas | (só ataca) | 22% | 1843 | 69% | – | 0,0 | – |  |
+| Devimon | 3 | ★2 | Demoníacos | (só ataca) | 90% | 1711 | 15% | – | 0,0 | – |  |
+| Hagurumon | 3 | ★2 | Robô | (só ataca) | 84% | 1805 | 40% | – | 0,0 | – |  |
+| Corvisquire | 3 | ★2 | Vento | (só ataca) | 80% | 1587 | 9% | – | 0,0 | – |  |
+| Machoke | 3 | ★2 | Porradeiro | (só ataca) | 78% | 1511 | 7% | – | 0,0 | – |  |
+| Dragonair | 3 | ★2 | Dragão | (só ataca) | 76% | 1512 | 7% | – | 0,0 | – |  |
+| Sunflowmon | 3 | ★2 | Planta | (só ataca) | 75% | 1707 | 36% | – | 0,0 | – |  |
+| Steenee | 3 | ★2 | Safada | (só ataca) | 70% | 1434 | 7% | – | 0,0 | – |  |
+| Sharpedo | 3 | ★2 | Água | (só ataca) | 69% | 1436 | 8% | – | 0,0 | – |  |
+| Banette | 3 | ★2 | Demoníacos | (só ataca) | 60% | 1621 | 33% | – | 0,0 | – |  |
+| D.Mon | 3 | ★2 | Robô | Bateria de Mísseis | 60% | 1680 | 36% | 8,7 | 1,0 | 4,4 |  |
+| Orisa | 3 | ★2 | Robô | Bateria de Mísseis | 60% | 1680 | 34% | 8,7 | 1,0 | 4,4 |  |
+| Krokorok | 3 | ★2 | Terra | (só ataca) | 59% | 1375 | 6% | – | 0,0 | – |  |
+| Garen | 3 | ★2 | Tanque | Muralha | 57% | 947 | 21% | 8,7 | 1,0 | 4,2 |  |
+| Lairon | 3 | ★2 | Terra | (só ataca) | 56% | 1370 | 3% | – | 0,0 | – |  |
+| Grease Monk | 3 | ★2 | Água | Jato d'Água | 55% | 1417 | 8% | 8,5 | 1,0 | 4,7 |  |
+| Big Shield Gardna | 3 | ★2 | Tanque | Muralha | 54% | 952 | 24% | 8,7 | 1,0 | 4,2 |  |
+| Venture | 3 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 53% | 1326 | 16% | 8,6 | 1,0 | 3,3 |  |
+| Hecatoncheires | 3 | ★2 | Tanque | Muralha | 53% | 948 | 22% | 8,7 | 1,0 | 4,2 |  |
+| Gifted Gatherer | 3 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 51% | 1332 | 20% | 8,6 | 1,0 | 3,5 |  |
+| Evilswarm Exciton Knight | 3 | ★2 | Porradeiro | Pancadão | 49% | 1459 | 5% | 8,5 | 0,9 | 3,6 |  |
+| Soraka | 3 | ★2 | Anjo | Pó de Fada | 49% | 1572 | 81% | 9,3 | 1,0 | 3,7 |  |
+| Lifeweaver | 3 | ★2 | Anjo | Pó de Fada | 49% | 1566 | 81% | 9,3 | 1,0 | 3,7 |  |
+| Venator | 3 | ★2 | Atirador | Tiro Perfurante | 47% | 2540 | 72% | 9,4 | 1,0 | 3,1 |  |
+| Messiah | 3 | ★2 | Anjo | Luz Divina | 47% | 2200 | 55% | 10,7 | 0,9 | 4,1 |  |
+| Michion, the Timelord | 3 | ★2 | Temporais | Parar o Tempo | 47% | 1893 | 80% | 10,6 | 0,9 | 1,3 |  |
+| Graves | 3 | ★2 | Demoníacos | Pacto Sombrio | 47% | 1695 | 34% | 8,6 | 1,0 | 3,4 |  |
+| Flauros | 3 | ★2 | Porradeiro | Pancadão | 46% | 1474 | 6% | 8,5 | 0,9 | 3,7 |  |
+| Kohryu | 3 | ★2 | Dragão | Sopro de Dragão | 46% | 1671 | 29% | 9,7 | 0,8 | 3,8 |  |
+| Tornado Dragon | 3 | ★2 | Dragão | Sopro de Dragão | 45% | 1675 | 28% | 9,6 | 0,8 | 3,8 |  |
+| Abdiel | 3 | ★2 | Anjo | Luz Divina | 44% | 2219 | 54% | 10,6 | 0,9 | 4,2 |  |
+| Aurora | 3 | ★2 | Fadinhas | Pó de Fada | 44% | 1491 | 80% | 9,2 | 1,0 | 4,0 |  |
+| Paige | 3 | ★2 | Fadinhas | Pó de Fada | 44% | 1500 | 81% | 9,2 | 1,0 | 4,0 |  |
+| High Necromancer | 3 | ★2 | Anjo | Luz Divina | 44% | 2214 | 56% | 10,6 | 0,9 | 4,2 |  |
+| Paradox | 3 | ★2 | Atirador | Tiro Perfurante | 43% | 2529 | 72% | 9,4 | 1,0 | 3,1 |  |
+| Milio | 3 | ★2 | Fadinhas | Pó de Fada | 43% | 1503 | 83% | 9,3 | 1,0 | 4,0 |  |
+| Yamato-Takeru | 3 | ★2 | Fadinhas | Pó de Fada | 42% | 1495 | 81% | 9,3 | 1,0 | 4,0 |  |
+| Genji | 3 | ★2 | Assassino | Golpe Fatal | 41% | 1406 | 1% | 5,9 | 1,5 | 3,2 |  |
+| Lillia | 3 | ★2 | Fadinhas | Pó de Fada | 40% | 1502 | 84% | 9,2 | 1,0 | 4,0 |  |
+| Cybele | 3 | ★2 | Safada | Charme | 39% | 1494 | 29% | 8,6 | 1,0 | 2,7 |  |
+| Mother Harlot | 3 | ★2 | Safada | Charme | 38% | 1488 | 26% | 8,6 | 1,0 | 2,7 |  |
+| La Jinn the Mystical Genie of the Lamp | 3 | ★2 | Vento | Tornado | 36% | 1547 | 13% | 9,1 | 1,0 | 2,8 |  |
+| Violet | 3 | ★2 | Safada | Charme | 36% | 1483 | 27% | 8,6 | 1,0 | 2,6 |  |
+| Nuwa | 3 | ★2 | Safada | Charme | 35% | 1507 | 29% | 8,6 | 1,0 | 2,6 |  |
+| Warhead | 3 | ★2 | Demoníacos | Pacto Sombrio | 35% | 1448 | 7% | 8,5 | 0,9 | 3,5 |  |
+| Black Luster Soldier - Soldier of Chaos | 3 | ★2 | Assassino | Golpe Fatal | 34% | 1379 | 0% | 5,9 | 1,5 | 3,2 |  |
+| Vanadis | 3 | ★2 | Safada | Charme | 34% | 1480 | 28% | 8,5 | 1,0 | 2,6 |  |
+| Kadabra | 3 | ★2 | Fadinhas | (só ataca) | 31% | 1990 | 72% | – | 0,0 | – |  |
+| Kirlia | 3 | ★2 | Fadinhas | (só ataca) | 31% | 1984 | 74% | – | 0,0 | – |  |
+| Gwen | 3 | ★2 | Assassino | Charme | 29% | 1566 | 16% | 6,7 | 1,0 | 2,7 |  |
+| Ekko | 3 | ★2 | Temporais | Parar o Tempo | 27% | 1104 | 0% | 9,6 | 0,8 | 1,2 |  |
 | Pearl Jam | 3 | ★2 | Fadinhas | Vira Pearl Jam | 58% | 857 | 31% | 8,9 | 0,8 | 5,7 | sim |
 | Sex Pistols | 3 | ★2 | Atirador | Vira Sex Pistols | 56% | 1314 | 22% | 8,0 | 1,0 | 3,7 | sim |
 | Chariot Requiem | 3 | ★2 | Porradeiro | Vira Chariot Requiem | 53% | 743 | 19% | 11,4 | 0,5 | 0,0 | sim |
@@ -547,186 +578,186 @@ Cada campeão (forma da estrela, ult padrão) com 3 bonecos do custo dele (atrib
 | Bad Company | 3 | ★2 | Atirador | Vira Bad Company | 47% | 1279 | 25% | 9,2 | 0,7 | 5,6 | sim |
 | Light Rod Stand | 3 | ★2 | Únicos | Vira Light Rod Stand | 44% | 1092 | 25% | 10,7 | 0,5 | 5,4 | sim |
 | Civil War | 3 | ★2 | Atirador | Vira Civil War | 39% | 1156 | 19% | 9,2 | 0,7 | 2,8 | sim |
-| Clockwork Knight | 4 | ★1 | Temporais | Parar o Tempo | 71% | 1334 | 60% | 9,8 | 0,9 | 0,8 |  |
-| Mercy | 4 | ★1 | Anjo | Pó de Fada | 71% | 1181 | 63% | 8,7 | 1,1 | 2,7 |  |
-| Labrynth Cooclock | 4 | ★1 | Temporais | Parar o Tempo | 66% | 1334 | 60% | 9,8 | 0,9 | 0,8 |  |
-| Tyrant of the Tides | 4 | ★1 | Dragão | Sopro de Dragão | 65% | 990 | 23% | 8,6 | 0,9 | 2,5 |  |
-| Winston | 4 | ★1 | Tanque | Muralha | 62% | 586 | 4% | 7,8 | 1,1 | 3,0 |  |
-| Bastion | 4 | ★1 | Atirador | Tiro Perfurante | 62% | 1647 | 51% | 8,9 | 1,0 | 1,9 |  |
-| Twitch | 4 | ★1 | Atirador | Tiro Perfurante | 61% | 1655 | 50% | 8,9 | 1,0 | 1,9 |  |
-| Red-Eyes Black Dragon | 4 | ★1 | Dragão | Sopro de Dragão | 60% | 988 | 21% | 8,6 | 0,9 | 2,5 |  |
-| Heavy Machinery | 4 | ★1 | Robô | Bateria de Mísseis | 60% | 971 | 27% | 7,8 | 1,1 | 3,0 |  |
-| Agumon Hakase | 4 | ★1 | Criaturinha Bizarra | (só ataca) | 59% | 817 | 3% | – | 0,0 | – |  |
-| D.Va | 4 | ★1 | Robô | Charme | 59% | 934 | 29% | 7,8 | 1,0 | 1,7 |  |
-| Tynamo | 4 | ★1 | Raio | (só ataca) | 59% | 1407 | 57% | – | 0,0 | – |  |
-| Terriermon | 4 | ★1 | Vento | (só ataca) | 59% | 948 | 20% | – | 0,0 | – |  |
-| Gible | 4 | ★1 | Dragão | (só ataca) | 59% | 935 | 22% | – | 0,0 | – |  |
-| Sojimaru Flying Beta Max | 4 | ★1 | Dragão | Bateria de Mísseis | 57% | 980 | 28% | 7,8 | 1,1 | 3,0 |  |
-| Cyber Dragon Nova | 4 | ★1 | Dragão | Bateria de Mísseis | 57% | 983 | 29% | 7,8 | 1,1 | 3,0 |  |
-| Volibear | 4 | ★1 | Tanque | Muralha | 56% | 583 | 4% | 7,8 | 1,1 | 3,0 |  |
-| Deino | 4 | ★1 | Demoníacos | (só ataca) | 55% | 898 | 21% | – | 0,0 | – |  |
-| Impmon | 4 | ★1 | Demoníacos | (só ataca) | 51% | 900 | 20% | – | 0,0 | – |  |
-| Mothman | 4 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 50% | 792 | 7% | 7,8 | 1,1 | 2,2 |  |
-| Baal Zebul | 4 | ★1 | Demoníacos | Pacto Sombrio | 49% | 981 | 29% | 7,7 | 1,0 | 2,2 |  |
-| Kintoki-Douji | 4 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 49% | 785 | 4% | 7,9 | 1,1 | 2,1 |  |
-| Malzahar | 4 | ★1 | Demoníacos | Pacto Sombrio | 49% | 976 | 28% | 7,7 | 1,0 | 2,2 |  |
-| Beach Baller | 4 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 47% | 787 | 4% | 7,8 | 1,1 | 2,1 |  |
-| Angel | 4 | ★1 | Anjo | Luz Divina | 47% | 1385 | 33% | 9,7 | 0,9 | 2,6 |  |
-| Dominion | 4 | ★1 | Anjo | Luz Divina | 47% | 1380 | 33% | 9,7 | 0,9 | 2,6 |  |
-| Candmon | 4 | ★1 | Demoníacos | (só ataca) | 46% | 892 | 17% | – | 0,0 | – |  |
-| Gragas | 4 | ★1 | Porradeiro | Pancadão | 46% | 835 | 1% | 7,8 | 0,9 | 2,6 |  |
-| Aatrox | 4 | ★1 | Demoníacos | Pacto Sombrio | 45% | 984 | 28% | 7,7 | 1,0 | 2,3 |  |
-| Plotmon | 4 | ★1 | Fadinhas | (só ataca) | 44% | 1303 | 36% | – | 0,0 | – |  |
-| Swordsman of Landstar | 4 | ★1 | Porradeiro | Pancadão | 43% | 832 | 1% | 7,8 | 0,9 | 2,6 |  |
-| Hanuman | 4 | ★1 | Porradeiro | Pancadão | 43% | 836 | 2% | 7,8 | 0,9 | 2,6 |  |
-| Buneary | 4 | ★1 | Safada | (só ataca) | 42% | 851 | 16% | – | 0,0 | – |  |
-| Vendetta | 4 | ★1 | Porradeiro | Pancadão | 41% | 828 | 1% | 7,8 | 0,9 | 2,6 |  |
-| Larvesta | 4 | ★1 | Fogo | (só ataca) | 41% | 862 | 17% | – | 0,0 | – |  |
-| Kassadin | 4 | ★1 | Assassino | Golpe Fatal | 39% | 809 | 3% | 5,1 | 1,4 | 2,2 |  |
-| Rem | 4 | ★1 | Fadinhas | Coisa Esquisita | 39% | 1202 | 38% | 8,7 | 1,1 | 1,5 |  |
-| Wailmer | 4 | ★1 | Água | (só ataca) | 38% | 862 | 17% | – | 0,0 | – |  |
-| Armageddon Knight | 4 | ★1 | Assassino | Golpe Fatal | 38% | 796 | 3% | 5,1 | 1,4 | 2,2 |  |
-| Drifter | 4 | ★1 | Assassino | Golpe Fatal | 38% | 799 | 3% | 5,1 | 1,4 | 2,1 |  |
-| Eevee | 4 | ★1 | Únicos | (só ataca) | 36% | 855 | 17% | – | 0,0 | – |  |
-| Pupitar | 4 | ★1 | Terra | (só ataca) | 36% | 719 | 1% | – | 0,0 | – |  |
-| Apollo | 4 | ★1 | Assassino | Pacto Sombrio | 32% | 895 | 17% | 6,2 | 1,1 | 1,9 |  |
-| Abrams | 4 | ★1 | Tanque | Pacto Sombrio | 26% | 646 | 2% | 7,8 | 1,0 | 2,2 |  |
+| Mercy | 4 | ★1 | Anjo | Pó de Fada | 71% | 1192 | 59% | 8,6 | 1,1 | 2,7 |  |
+| Agumon Hakase | 4 | ★1 | Criaturinha Bizarra | (só ataca) | 70% | 862 | 3% | – | 0,0 | – |  |
+| Terriermon | 4 | ★1 | Vento | (só ataca) | 68% | 984 | 23% | – | 0,0 | – |  |
+| Labrynth Cooclock | 4 | ★1 | Temporais | Parar o Tempo | 66% | 1342 | 60% | 9,8 | 0,9 | 0,8 |  |
+| Tynamo | 4 | ★1 | Raio | (só ataca) | 65% | 1435 | 57% | – | 0,0 | – |  |
+| Heavy Machinery | 4 | ★1 | Robô | Bateria de Mísseis | 64% | 893 | 4% | 7,8 | 1,0 | 3,3 |  |
+| Tyrant of the Tides | 4 | ★1 | Dragão | Sopro de Dragão | 63% | 993 | 23% | 8,6 | 0,9 | 2,3 |  |
+| Red-Eyes Black Dragon | 4 | ★1 | Dragão | Sopro de Dragão | 62% | 993 | 22% | 8,6 | 0,9 | 2,3 |  |
+| Sojimaru Flying Beta Max | 4 | ★1 | Dragão | Bateria de Mísseis | 62% | 1010 | 28% | 7,7 | 1,1 | 3,0 |  |
+| Winston | 4 | ★1 | Tanque | Muralha | 61% | 597 | 3% | 7,8 | 1,1 | 3,0 |  |
+| Cyber Dragon Nova | 4 | ★1 | Dragão | Bateria de Mísseis | 59% | 1004 | 29% | 7,8 | 1,1 | 3,0 |  |
+| Bastion | 4 | ★1 | Atirador | Tiro Perfurante | 59% | 1663 | 47% | 8,9 | 1,1 | 1,9 |  |
+| Impmon | 4 | ★1 | Demoníacos | (só ataca) | 59% | 947 | 22% | – | 0,0 | – |  |
+| D.Va | 4 | ★1 | Robô | Charme | 59% | 951 | 29% | 7,7 | 1,0 | 1,7 |  |
+| Deino | 4 | ★1 | Demoníacos | (só ataca) | 57% | 831 | 2% | – | 0,0 | – |  |
+| Volibear | 4 | ★1 | Tanque | Muralha | 57% | 596 | 3% | 7,8 | 1,1 | 3,0 |  |
+| Twitch | 4 | ★1 | Atirador | Tiro Perfurante | 56% | 1666 | 44% | 8,9 | 1,1 | 1,9 |  |
+| Gible | 4 | ★1 | Dragão | (só ataca) | 54% | 827 | 2% | – | 0,0 | – |  |
+| Candmon | 4 | ★1 | Demoníacos | (só ataca) | 52% | 933 | 20% | – | 0,0 | – |  |
+| Larvesta | 4 | ★1 | Fogo | (só ataca) | 50% | 901 | 21% | – | 0,0 | – |  |
+| Mothman | 4 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 50% | 797 | 6% | 7,8 | 1,0 | 2,2 |  |
+| Beach Baller | 4 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 50% | 796 | 3% | 7,8 | 1,1 | 2,1 |  |
+| Kintoki-Douji | 4 | ★1 | Criaturinha Bizarra | Coisa Esquisita | 49% | 794 | 3% | 7,9 | 1,1 | 2,0 |  |
+| Malzahar | 4 | ★1 | Demoníacos | Pacto Sombrio | 49% | 978 | 28% | 7,7 | 1,0 | 2,1 |  |
+| Eevee | 4 | ★1 | Únicos | (só ataca) | 49% | 785 | 2% | – | 0,0 | – |  |
+| Baal Zebul | 4 | ★1 | Demoníacos | Pacto Sombrio | 48% | 977 | 28% | 7,7 | 1,0 | 2,1 |  |
+| Angel | 4 | ★1 | Anjo | Luz Divina | 46% | 1394 | 32% | 9,7 | 0,9 | 2,6 |  |
+| Buneary | 4 | ★1 | Safada | (só ataca) | 46% | 779 | 2% | – | 0,0 | – |  |
+| Gragas | 4 | ★1 | Porradeiro | Pancadão | 45% | 841 | 1% | 7,8 | 0,9 | 2,5 |  |
+| Dominion | 4 | ★1 | Anjo | Luz Divina | 45% | 1397 | 33% | 9,7 | 0,9 | 2,6 |  |
+| Hanuman | 4 | ★1 | Porradeiro | Pancadão | 45% | 850 | 2% | 7,8 | 0,9 | 2,6 |  |
+| Wailmer | 4 | ★1 | Água | (só ataca) | 45% | 781 | 2% | – | 0,0 | – |  |
+| Vendetta | 4 | ★1 | Porradeiro | Pancadão | 45% | 840 | 1% | 7,8 | 0,9 | 2,6 |  |
+| Swordsman of Landstar | 4 | ★1 | Porradeiro | Pancadão | 42% | 845 | 1% | 7,8 | 0,9 | 2,5 |  |
+| Plotmon | 4 | ★1 | Fadinhas | (só ataca) | 39% | 746 | 0% | – | 0,0 | – |  |
+| Pupitar | 4 | ★1 | Terra | (só ataca) | 39% | 756 | 1% | – | 0,0 | – |  |
+| Kassadin | 4 | ★1 | Assassino | Golpe Fatal | 38% | 801 | 2% | 5,1 | 1,4 | 2,2 |  |
+| Armageddon Knight | 4 | ★1 | Assassino | Golpe Fatal | 36% | 793 | 3% | 5,1 | 1,4 | 2,2 |  |
+| Drifter | 4 | ★1 | Assassino | Golpe Fatal | 35% | 792 | 3% | 5,1 | 1,4 | 2,2 |  |
+| Clockwork Knight | 4 | ★1 | Temporais | Parar o Tempo | 35% | 679 | 2% | 8,5 | 0,8 | 0,8 |  |
+| Rem | 4 | ★1 | Fadinhas | Coisa Esquisita | 34% | 1194 | 35% | 8,7 | 1,1 | 1,4 |  |
+| Aatrox | 4 | ★1 | Demoníacos | Pacto Sombrio | 26% | 803 | 2% | 7,8 | 1,0 | 2,2 |  |
+| Abrams | 4 | ★1 | Tanque | Pacto Sombrio | 26% | 645 | 1% | 7,8 | 1,0 | 2,1 |  |
+| Apollo | 4 | ★1 | Assassino | Pacto Sombrio | 24% | 871 | 12% | 6,2 | 1,0 | 1,9 |  |
 | Crazy Diamond | 4 | ★1 | Porradeiro | Vira Crazy Diamond | 63% | 789 | 17% | 8,0 | 1,0 | 3,4 | sim |
 | November Rain | 4 | ★1 | Criaturinha Bizarra | Vira November Rain | 60% | 912 | 20% | 9,1 | 0,8 | 2,6 | sim |
 | Harvest | 4 | ★1 | Criaturinha Bizarra | Vira Harvest | 53% | 886 | 23% | 9,0 | 0,9 | 2,2 | sim |
 | Soft & Wet | 4 | ★1 | Porradeiro | Vira Soft & Wet | 50% | 783 | 27% | 8,0 | 0,9 | 1,3 | sim |
 | Star Platinum | 4 | ★1 | Porradeiro | Vira Star Platinum | 40% | 752 | 17% | 10,8 | 0,5 | 1,7 | sim |
 | The Hand | 4 | ★1 | Porradeiro | Vira The Hand | 33% | 852 | 17% | 8,0 | 0,9 | 2,9 | sim |
-| Labrynth Cooclock | 4 | ★2 | Temporais | Parar o Tempo | 66% | 2309 | 77% | 9,9 | 0,9 | 1,2 |  |
-| Clockwork Knight | 4 | ★2 | Temporais | Parar o Tempo | 66% | 2279 | 73% | 9,9 | 0,9 | 1,2 |  |
-| Heavy Machinery | 4 | ★2 | Robô | Bateria de Mísseis | 66% | 1946 | 32% | 8,2 | 1,1 | 4,2 |  |
-| Winston | 4 | ★2 | Tanque | Muralha | 64% | 1114 | 19% | 8,2 | 1,1 | 4,1 |  |
-| Volibear | 4 | ★2 | Tanque | Muralha | 63% | 1109 | 19% | 8,3 | 1,1 | 4,1 |  |
-| Sojimaru Flying Beta Max | 4 | ★2 | Dragão | Bateria de Mísseis | 63% | 1994 | 31% | 8,2 | 1,1 | 4,2 |  |
-| Cyber Dragon Nova | 4 | ★2 | Dragão | Bateria de Mísseis | 62% | 1993 | 31% | 8,2 | 1,1 | 4,2 |  |
-| Mercy | 4 | ★2 | Anjo | Pó de Fada | 60% | 1888 | 79% | 8,8 | 1,1 | 3,5 |  |
-| Numemon | 4 | ★2 | Criaturinha Bizarra | (só ataca) | 59% | 1586 | 4% | – | 0,0 | – |  |
-| Twitch | 4 | ★2 | Atirador | Tiro Perfurante | 58% | 3007 | 67% | 8,9 | 1,0 | 2,8 |  |
-| Kamui | 4 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 58% | 1542 | 18% | 8,1 | 1,1 | 3,0 |  |
-| Tyranitar | 4 | ★2 | Tanque | (só ataca) | 58% | 1258 | 3% | – | 0,0 | – |  |
-| Sandalphon | 4 | ★2 | Anjo | Luz Divina | 57% | 2658 | 55% | 9,9 | 1,0 | 3,9 |  |
-| Wailord | 4 | ★2 | Tanque | (só ataca) | 56% | 1258 | 4% | – | 0,0 | – |  |
-| Red-Eyes Black Dragon | 4 | ★2 | Dragão | Sopro de Dragão | 55% | 1969 | 25% | 9,1 | 0,9 | 3,7 |  |
-| Basket Case | 4 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 55% | 1560 | 15% | 8,2 | 1,1 | 3,1 |  |
-| Tyrant of the Tides | 4 | ★2 | Dragão | Sopro de Dragão | 54% | 1978 | 24% | 9,1 | 0,9 | 3,7 |  |
-| Camael | 4 | ★2 | Anjo | Luz Divina | 52% | 2667 | 54% | 9,9 | 1,0 | 3,9 |  |
-| Bastion | 4 | ★2 | Atirador | Tiro Perfurante | 52% | 3010 | 67% | 8,9 | 1,0 | 2,8 |  |
-| Vendetta | 4 | ★2 | Porradeiro | Pancadão | 52% | 1687 | 7% | 8,1 | 1,0 | 3,4 |  |
-| Baal | 4 | ★2 | Demoníacos | Pacto Sombrio | 52% | 1960 | 31% | 8,1 | 1,0 | 3,3 |  |
-| Gabite | 4 | ★2 | Dragão | (só ataca) | 51% | 1751 | 24% | – | 0,0 | – |  |
-| Malzahar | 4 | ★2 | Demoníacos | Pacto Sombrio | 51% | 1913 | 30% | 8,1 | 1,0 | 3,2 |  |
-| D.Va | 4 | ★2 | Robô | Charme | 50% | 1817 | 29% | 8,2 | 1,0 | 2,5 |  |
-| Swordsman of Landstar | 4 | ★2 | Porradeiro | Pancadão | 50% | 1710 | 8% | 8,1 | 1,0 | 3,4 |  |
-| Seiten Taisei | 4 | ★2 | Porradeiro | Pancadão | 49% | 1694 | 8% | 8,1 | 1,0 | 3,4 |  |
-| Aatrox | 4 | ★2 | Demoníacos | Pacto Sombrio | 47% | 1917 | 29% | 8,1 | 1,0 | 3,2 |  |
-| Zweilous | 4 | ★2 | Demoníacos | (só ataca) | 45% | 1725 | 23% | – | 0,0 | – |  |
-| Gragas | 4 | ★2 | Porradeiro | Pancadão | 44% | 1667 | 8% | 8,1 | 1,0 | 3,3 |  |
-| Jolteon | 4 | ★2 | Raio | (só ataca) | 43% | 2355 | 66% | – | 0,0 | – |  |
-| Bakemon | 4 | ★2 | Demoníacos | (só ataca) | 43% | 1703 | 21% | – | 0,0 | – |  |
-| Eelektrik | 4 | ★2 | Raio | (só ataca) | 42% | 2350 | 66% | – | 0,0 | – |  |
-| Tailmon | 4 | ★2 | Gelo | (só ataca) | 42% | 2365 | 69% | – | 0,0 | – |  |
-| Armageddon Knight | 4 | ★2 | Assassino | Golpe Fatal | 42% | 1595 | 0% | 5,5 | 1,5 | 3,1 |  |
-| Wizarmon | 4 | ★2 | Demoníacos | (só ataca) | 41% | 1711 | 22% | – | 0,0 | – |  |
-| Drifter | 4 | ★2 | Assassino | Golpe Fatal | 41% | 1611 | 0% | 5,6 | 1,5 | 3,1 |  |
-| Kassadin | 4 | ★2 | Assassino | Golpe Fatal | 40% | 1601 | 0% | 5,5 | 1,5 | 3,1 |  |
-| Loup-garou | 4 | ★2 | Assassino | Golpe Fatal | 39% | 1593 | 2% | 5,5 | 1,5 | 3,1 |  |
-| Apollo | 4 | ★2 | Assassino | Pacto Sombrio | 39% | 1856 | 24% | 6,3 | 1,1 | 2,8 |  |
-| Lopunny | 4 | ★2 | Safada | (só ataca) | 36% | 1613 | 21% | – | 0,0 | – |  |
-| Abrams | 4 | ★2 | Tanque | Pacto Sombrio | 35% | 1360 | 2% | 8,3 | 1,0 | 3,3 |  |
-| Galgomon | 4 | ★2 | Atirador | (só ataca) | 34% | 2643 | 71% | – | 0,0 | – |  |
-| Rem | 4 | ★2 | Fadinhas | Coisa Esquisita | 34% | 2011 | 58% | 8,7 | 1,1 | 2,1 |  |
-| Volcarona | 4 | ★2 | Fogo | (só ataca) | 34% | 1627 | 23% | – | 0,0 | – |  |
+| Numemon | 4 | ★2 | Criaturinha Bizarra | (só ataca) | 93% | 2071 | 16% | – | 0,0 | – |  |
+| Tailmon | 4 | ★2 | Gelo | (só ataca) | 84% | 1893 | 9% | – | 0,0 | – |  |
+| Wizarmon | 4 | ★2 | Demoníacos | (só ataca) | 81% | 2151 | 33% | – | 0,0 | – |  |
+| Bakemon | 4 | ★2 | Demoníacos | (só ataca) | 79% | 2166 | 34% | – | 0,0 | – |  |
+| Wailord | 4 | ★2 | Tanque | (só ataca) | 74% | 1464 | 8% | – | 0,0 | – |  |
+| Zweilous | 4 | ★2 | Demoníacos | (só ataca) | 68% | 1760 | 6% | – | 0,0 | – |  |
+| Tyranitar | 4 | ★2 | Tanque | (só ataca) | 67% | 1459 | 7% | – | 0,0 | – |  |
+| Gabite | 4 | ★2 | Dragão | (só ataca) | 67% | 1760 | 6% | – | 0,0 | – |  |
+| Heavy Machinery | 4 | ★2 | Robô | Bateria de Mísseis | 64% | 1819 | 10% | 8,1 | 1,1 | 4,4 |  |
+| Galgomon | 4 | ★2 | Atirador | (só ataca) | 64% | 3069 | 94% | – | 0,0 | – |  |
+| Lopunny | 4 | ★2 | Safada | (só ataca) | 62% | 1665 | 4% | – | 0,0 | – |  |
+| Labrynth Cooclock | 4 | ★2 | Temporais | Parar o Tempo | 54% | 2305 | 72% | 9,9 | 0,9 | 1,2 |  |
+| Eelektrik | 4 | ★2 | Raio | (só ataca) | 54% | 2573 | 76% | – | 0,0 | – |  |
+| Jolteon | 4 | ★2 | Raio | (só ataca) | 53% | 2562 | 74% | – | 0,0 | – |  |
+| Volcarona | 4 | ★2 | Fogo | (só ataca) | 52% | 1830 | 27% | – | 0,0 | – |  |
+| Kamui | 4 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 51% | 1541 | 16% | 8,1 | 1,1 | 3,0 |  |
+| Volibear | 4 | ★2 | Tanque | Muralha | 51% | 1117 | 18% | 8,2 | 1,1 | 4,1 |  |
+| Sojimaru Flying Beta Max | 4 | ★2 | Dragão | Bateria de Mísseis | 50% | 1981 | 29% | 8,1 | 1,1 | 4,2 |  |
+| Basket Case | 4 | ★2 | Criaturinha Bizarra | Coisa Esquisita | 50% | 1570 | 17% | 8,1 | 1,1 | 3,1 |  |
+| Sandalphon | 4 | ★2 | Anjo | Luz Divina | 50% | 2676 | 47% | 9,9 | 1,0 | 4,1 |  |
+| Mercy | 4 | ★2 | Anjo | Pó de Fada | 49% | 1886 | 76% | 8,7 | 1,1 | 3,5 |  |
+| Cyber Dragon Nova | 4 | ★2 | Dragão | Bateria de Mísseis | 48% | 1987 | 29% | 8,1 | 1,1 | 4,2 |  |
+| Winston | 4 | ★2 | Tanque | Muralha | 48% | 1120 | 16% | 8,2 | 1,1 | 4,1 |  |
+| Vendetta | 4 | ★2 | Porradeiro | Pancadão | 47% | 1679 | 5% | 8,1 | 1,0 | 3,3 |  |
+| Camael | 4 | ★2 | Anjo | Luz Divina | 46% | 2675 | 49% | 9,9 | 0,9 | 4,2 |  |
+| Twitch | 4 | ★2 | Atirador | Tiro Perfurante | 45% | 3023 | 59% | 8,9 | 1,0 | 2,9 |  |
+| Bastion | 4 | ★2 | Atirador | Tiro Perfurante | 45% | 3045 | 62% | 8,9 | 1,0 | 2,9 |  |
+| Seiten Taisei | 4 | ★2 | Porradeiro | Pancadão | 43% | 1696 | 6% | 8,1 | 1,0 | 3,4 |  |
+| Red-Eyes Black Dragon | 4 | ★2 | Dragão | Sopro de Dragão | 43% | 1949 | 24% | 9,1 | 0,9 | 3,5 |  |
+| Baal | 4 | ★2 | Demoníacos | Pacto Sombrio | 43% | 1953 | 30% | 8,1 | 1,0 | 3,2 |  |
+| Swordsman of Landstar | 4 | ★2 | Porradeiro | Pancadão | 43% | 1705 | 6% | 8,1 | 1,0 | 3,4 |  |
+| D.Va | 4 | ★2 | Robô | Charme | 43% | 1808 | 27% | 8,1 | 1,0 | 2,5 |  |
+| Tyrant of the Tides | 4 | ★2 | Dragão | Sopro de Dragão | 42% | 1954 | 23% | 9,1 | 0,9 | 3,6 |  |
+| Malzahar | 4 | ★2 | Demoníacos | Pacto Sombrio | 42% | 1917 | 29% | 8,1 | 1,0 | 3,1 |  |
+| Gragas | 4 | ★2 | Porradeiro | Pancadão | 39% | 1673 | 7% | 8,1 | 1,0 | 3,3 |  |
+| Drifter | 4 | ★2 | Assassino | Golpe Fatal | 33% | 1613 | 0% | 5,6 | 1,6 | 3,1 |  |
+| Kassadin | 4 | ★2 | Assassino | Golpe Fatal | 32% | 1595 | 0% | 5,6 | 1,5 | 3,1 |  |
+| Armageddon Knight | 4 | ★2 | Assassino | Golpe Fatal | 32% | 1576 | 0% | 5,6 | 1,5 | 3,0 |  |
+| Loup-garou | 4 | ★2 | Assassino | Golpe Fatal | 31% | 1590 | 2% | 5,6 | 1,5 | 3,1 |  |
+| Apollo | 4 | ★2 | Assassino | Pacto Sombrio | 31% | 1825 | 16% | 6,3 | 1,1 | 2,8 |  |
+| Aatrox | 4 | ★2 | Demoníacos | Pacto Sombrio | 30% | 1642 | 5% | 8,1 | 1,0 | 3,1 |  |
+| Rem | 4 | ★2 | Fadinhas | Coisa Esquisita | 27% | 2010 | 53% | 8,7 | 1,1 | 2,1 |  |
+| Clockwork Knight | 4 | ★2 | Temporais | Parar o Tempo | 26% | 1290 | 2% | 9,0 | 0,8 | 1,1 |  |
+| Abrams | 4 | ★2 | Tanque | Pacto Sombrio | 24% | 1316 | 2% | 8,2 | 1,0 | 3,1 |  |
 | Star Platinum | 4 | ★2 | Porradeiro | Vira Star Platinum | 57% | 1543 | 27% | 11,4 | 0,6 | 2,6 | sim |
 | Crazy Diamond | 4 | ★2 | Porradeiro | Vira Crazy Diamond | 57% | 1425 | 20% | 8,4 | 0,9 | 5,1 | sim |
 | Soft & Wet | 4 | ★2 | Porradeiro | Vira Soft & Wet | 53% | 1517 | 37% | 8,3 | 0,9 | 1,8 | sim |
 | Harvest | 4 | ★2 | Criaturinha Bizarra | Vira Harvest | 50% | 1574 | 27% | 9,2 | 0,8 | 3,1 | sim |
 | November Rain | 4 | ★2 | Criaturinha Bizarra | Vira November Rain | 50% | 1707 | 33% | 9,2 | 0,8 | 3,5 | sim |
 | The Hand | 4 | ★2 | Porradeiro | Vira The Hand | 33% | 1687 | 17% | 8,3 | 0,9 | 4,3 | sim |
-| Magearna | 5 | ★1 | Fadinhas | Vira Mega Magearna | 71% | 1796 | 68% | 9,3 | 0,4 | 0,0 |  |
-| Nami | 5 | ★1 | Fadinhas | Pó de Fada | 69% | 1346 | 68% | 8,3 | 1,2 | 2,9 |  |
-| Timestar Magician | 5 | ★1 | Temporais | Parar o Tempo | 68% | 1588 | 61% | 9,3 | 1,0 | 0,7 |  |
-| Zoe | 5 | ★1 | Anjo | Pó de Fada | 68% | 1377 | 63% | 8,3 | 1,2 | 2,7 |  |
-| Darkrai | 5 | ★1 | Demoníacos | Vira Mega Darkrai | 63% | 1133 | 34% | 8,3 | 0,6 | 0,0 |  |
-| The Winged Dragon of Ra | 5 | ★1 | Dragão | Sopro de Dragão | 61% | 1192 | 23% | 8,3 | 0,9 | 2,5 |  |
-| Slifer the Sky Dragon | 5 | ★1 | Dragão | Sopro de Dragão | 57% | 1199 | 23% | 8,4 | 0,9 | 2,4 |  |
-| Seven | 5 | ★1 | Robô | Bateria de Mísseis | 57% | 1136 | 28% | 7,5 | 1,1 | 2,9 |  |
-| Legendary Excavators ft. Lam-chan & Lun-chan | 5 | ★1 | Robô | Bateria de Mísseis | 56% | 1134 | 28% | 7,5 | 1,1 | 2,9 |  |
-| Blessed Leviathan | 5 | ★1 | Dragão | Sopro de Dragão | 55% | 1186 | 17% | 8,3 | 0,9 | 2,5 |  |
-| Echo | 5 | ★1 | Robô | Bateria de Mísseis | 55% | 1174 | 28% | 7,5 | 1,1 | 2,9 |  |
-| Toy Agumon | 5 | ★1 | Criaturinha Bizarra | (só ataca) | 54% | 945 | 1% | – | 0,0 | – |  |
-| Obelisk the Tormentor | 5 | ★1 | Tanque | Muralha | 53% | 660 | 1% | 7,5 | 1,2 | 3,0 |  |
-| Zygarde (10%) | 5 | ★1 | Vento | (só ataca) | 53% | 1092 | 19% | – | 0,0 | – |  |
-| Blue-Eyes White Dragon | 5 | ★1 | Dragão | Sopro de Dragão | 53% | 1181 | 21% | 8,4 | 0,9 | 2,5 |  |
-| Blitzcrank | 5 | ★1 | Robô | Bateria de Mísseis | 52% | 1124 | 27% | 7,5 | 1,1 | 2,9 |  |
-| Mauga | 5 | ★1 | Tanque | Muralha | 51% | 656 | 1% | 7,5 | 1,2 | 3,0 |  |
-| Orpheus Picaro | 5 | ★1 | Anjo | Luz Divina | 51% | 1623 | 40% | 9,3 | 1,0 | 2,4 |  |
-| Maria | 5 | ★1 | Anjo | Luz Divina | 49% | 1610 | 37% | 9,3 | 1,0 | 2,5 |  |
-| Dunsparce | 5 | ★1 | Dragão | (só ataca) | 48% | 1077 | 18% | – | 0,0 | – |  |
-| The Doorman | 5 | ★1 | Anjo | Luz Divina | 48% | 1626 | 37% | 9,4 | 1,0 | 2,4 |  |
-| Sojimaru v2.1 | 5 | ★1 | Robô | Pacto Sombrio | 48% | 1150 | 28% | 7,5 | 1,1 | 2,1 |  |
-| Ramattra | 5 | ★1 | Robô | Pacto Sombrio | 45% | 1156 | 26% | 7,5 | 1,1 | 2,1 |  |
-| Cupimon | 5 | ★1 | Anjo | (só ataca) | 43% | 1563 | 25% | – | 0,0 | – |  |
-| Daemon | 5 | ★1 | Demoníacos | Pacto Sombrio | 42% | 1157 | 27% | 7,5 | 1,1 | 2,1 |  |
-| Cosmog | 5 | ★1 | Fadinhas | (só ataca) | 41% | 1498 | 27% | – | 0,0 | – |  |
-| Arsène | 5 | ★1 | Demoníacos | Pacto Sombrio | 41% | 1145 | 28% | 7,4 | 1,1 | 2,1 |  |
-| Fiddlesticks | 5 | ★1 | Demoníacos | Pacto Sombrio | 41% | 1177 | 27% | 7,5 | 1,1 | 2,2 |  |
-| Vel'Koz | 5 | ★1 | Únicos | Vira Vel'Koz | 39% | 1115 | 14% | 8,9 | 0,9 | 3,1 |  |
-| Incubus | 5 | ★1 | Safada | Pacto Sombrio | 38% | 1121 | 23% | 7,5 | 1,1 | 2,2 |  |
-| Mew | 5 | ★1 | Fadinhas | (só ataca) | 38% | 1518 | 24% | – | 0,0 | – |  |
-| Mara | 5 | ★1 | Safada | Charme | 38% | 1056 | 20% | 7,5 | 1,1 | 1,6 |  |
-| Mei | 5 | ★1 | Safada | Charme | 36% | 1038 | 21% | 7,4 | 1,1 | 1,6 |  |
-| Izanagi | 5 | ★1 | Assassino | Golpe Fatal | 34% | 911 | 2% | 4,8 | 1,5 | 1,9 |  |
-| Mina | 5 | ★1 | Safada | Charme | 33% | 1046 | 20% | 7,4 | 1,1 | 1,6 |  |
-| Gold Experience | 5 | ★1 | Temporais | Vira Gold Experience | 58% | 813 | 25% | 7,8 | 1,1 | 1,1 | sim |
-| Scary Monsters | 5 | ★1 | Criaturinha Bizarra | Vira Scary Monsters | 54% | 630 | 8% | 8,9 | 0,7 | 2,0 | sim |
-| Wonder of U | 5 | ★1 | Demoníacos | Vira Wonder of U | 50% | 751 | 13% | 10,5 | 0,5 | 2,3 | sim |
-| Dirty Deeds Done Dirt Cheap | 5 | ★1 | Porradeiro | Vira Dirty Deeds Done Dirt Cheap | 46% | 589 | 8% | 8,6 | 0,6 | 1,2 | sim |
-| Whitesnake | 5 | ★1 | Porradeiro | Vira Whitesnake | 42% | 579 | 8% | 8,6 | 0,7 | 1,0 | sim |
-| Timestar Magician | 5 | ★2 | Temporais | Parar o Tempo | 66% | 2681 | 73% | 9,4 | 1,0 | 1,1 |  |
-| Blitzcrank | 5 | ★2 | Robô | Bateria de Mísseis | 65% | 2326 | 30% | 7,9 | 1,2 | 4,0 |  |
-| Zoe | 5 | ★2 | Anjo | Pó de Fada | 63% | 2242 | 79% | 8,3 | 1,2 | 3,4 |  |
-| Echo | 5 | ★2 | Robô | Bateria de Mísseis | 62% | 2265 | 28% | 7,9 | 1,2 | 4,0 |  |
-| Legendary Excavators ft. Lam-chan & Lun-chan | 5 | ★2 | Robô | Bateria de Mísseis | 58% | 2326 | 30% | 7,9 | 1,2 | 3,9 |  |
-| Darkrai | 5 | ★2 | Demoníacos | Vira Mega Darkrai | 58% | 2161 | 29% | 8,6 | 0,5 | 0,0 |  |
-| Mauga | 5 | ★2 | Tanque | Muralha | 58% | 1228 | 19% | 8,0 | 1,2 | 4,0 |  |
-| Seven | 5 | ★2 | Robô | Bateria de Mísseis | 58% | 2313 | 32% | 7,9 | 1,2 | 3,9 |  |
-| Nami | 5 | ★2 | Fadinhas | Pó de Fada | 57% | 2147 | 83% | 8,3 | 1,2 | 3,7 |  |
-| Magearna | 5 | ★2 | Fadinhas | Vira Mega Magearna | 56% | 3028 | 79% | 9,5 | 0,3 | 0,0 |  |
-| Blue-Eyes White Dragon | 5 | ★2 | Dragão | Sopro de Dragão | 56% | 2349 | 28% | 8,7 | 0,9 | 3,4 |  |
-| Slifer the Sky Dragon | 5 | ★2 | Dragão | Sopro de Dragão | 56% | 2302 | 25% | 8,7 | 0,9 | 3,4 |  |
-| Izanagi-no-Okami | 5 | ★2 | Assassino | Golpe Fatal | 56% | 1941 | 0% | 5,2 | 1,7 | 3,0 |  |
-| Sojimaru v2.1 | 5 | ★2 | Robô | Pacto Sombrio | 56% | 2333 | 34% | 7,9 | 1,1 | 3,1 |  |
-| The Winged Dragon of Ra | 5 | ★2 | Dragão | Sopro de Dragão | 55% | 2316 | 24% | 8,7 | 0,9 | 3,5 |  |
-| Obelisk the Tormentor | 5 | ★2 | Tanque | Muralha | 55% | 1215 | 16% | 8,0 | 1,2 | 4,0 |  |
-| Blessed Leviathan | 5 | ★2 | Dragão | Sopro de Dragão | 55% | 2323 | 23% | 8,7 | 0,9 | 3,5 |  |
-| The Doorman | 5 | ★2 | Anjo | Luz Divina | 51% | 3055 | 50% | 9,4 | 1,0 | 3,7 |  |
-| Ramattra | 5 | ★2 | Robô | Pacto Sombrio | 51% | 2272 | 29% | 7,9 | 1,1 | 3,1 |  |
-| Lucifer | 5 | ★2 | Demoníacos | Pacto Sombrio | 50% | 2342 | 33% | 7,8 | 1,1 | 3,1 |  |
-| Maria | 5 | ★2 | Anjo | Luz Divina | 50% | 3057 | 54% | 9,4 | 1,0 | 3,7 |  |
-| Vel'Koz | 5 | ★2 | Únicos | Vira Vel'Koz | 48% | 2267 | 15% | 9,4 | 0,8 | 5,0 |  |
-| Satanael | 5 | ★2 | Demoníacos | Pacto Sombrio | 46% | 2288 | 28% | 7,8 | 1,1 | 3,1 |  |
-| Fiddlesticks | 5 | ★2 | Demoníacos | Pacto Sombrio | 46% | 2264 | 29% | 7,8 | 1,0 | 3,1 |  |
-| Belial | 5 | ★2 | Demoníacos | Pacto Sombrio | 45% | 2271 | 31% | 7,8 | 1,0 | 3,1 |  |
-| Thanatos | 5 | ★2 | Demoníacos | Pacto Sombrio | 45% | 2232 | 27% | 7,8 | 1,1 | 3,1 |  |
-| Dudunsparce | 5 | ★2 | Dragão | (só ataca) | 41% | 2007 | 18% | – | 0,0 | – |  |
-| Zygarde (50%) | 5 | ★2 | Dragão | (só ataca) | 41% | 2006 | 16% | – | 0,0 | – |  |
-| Arioch | 5 | ★2 | Safada | Pacto Sombrio | 39% | 2171 | 27% | 7,8 | 1,0 | 3,2 |  |
-| Lucemon | 5 | ★2 | Anjo | (só ataca) | 38% | 2687 | 51% | – | 0,0 | – |  |
-| Mei | 5 | ★2 | Safada | Charme | 35% | 1987 | 19% | 7,8 | 1,0 | 2,3 |  |
-| Revolmon | 5 | ★2 | Atirador | (só ataca) | 35% | 3190 | 60% | – | 0,0 | – |  |
-| Mina | 5 | ★2 | Safada | Charme | 34% | 2024 | 20% | 7,8 | 1,0 | 2,3 |  |
-| Cosmoem | 5 | ★2 | Fadinhas | (só ataca) | 34% | 2604 | 56% | – | 0,0 | – |  |
-| Mewtwo | 5 | ★2 | Únicos | (só ataca) | 27% | 1849 | 14% | – | 0,0 | – |  |
-| The World (Steel Ball Run) | 5 | ★2 | Porradeiro | Vira The World (Steel Ball Run) | 75% | 1308 | 25% | 11,0 | 0,5 | 2,3 | sim |
-| Dirty Deeds Done Dirt Cheap | 5 | ★2 | Porradeiro | Vira Dirty Deeds Done Dirt Cheap | 60% | 1187 | 13% | 9,6 | 0,7 | 1,8 | sim |
-| C-MOON | 5 | ★2 | Porradeiro | Vira C-MOON | 60% | 1195 | 8% | 9,5 | 0,7 | 2,0 | sim |
-| Wonder of U | 5 | ★2 | Demoníacos | Vira Wonder of U | 29% | 1323 | 13% | 10,5 | 0,4 | 3,9 | sim |
-| Gold Experience Requiem | 5 | ★2 | Temporais | Vira Gold Experience Requiem | 25% | 1316 | 17% | 10,2 | 0,6 | 0,8 | sim |
+| Magearna | 5 | ★1 | Fadinhas | Vira Mega Magearna | 70% | 1803 | 66% | 9,3 | 0,4 | 0,0 |  |
+| Zoe | 5 | ★1 | Anjo | Pó de Fada | 68% | 1385 | 65% | 8,3 | 1,2 | 2,7 |  |
+| Nami | 5 | ★1 | Fadinhas | Pó de Fada | 67% | 1340 | 66% | 8,3 | 1,2 | 2,9 |  |
+| Timestar Magician | 5 | ★1 | Temporais | Parar o Tempo | 65% | 1587 | 57% | 9,3 | 1,0 | 0,7 |  |
+| Zygarde (10%) | 5 | ★1 | Vento | (só ataca) | 64% | 1011 | 1% | – | 0,0 | – |  |
+| Darkrai | 5 | ★1 | Demoníacos | Vira Mega Darkrai | 63% | 1158 | 34% | 8,3 | 0,6 | 0,0 |  |
+| Blitzcrank | 5 | ★1 | Robô | Bateria de Mísseis | 61% | 1016 | 3% | 7,5 | 1,1 | 3,1 |  |
+| Toy Agumon | 5 | ★1 | Criaturinha Bizarra | (só ataca) | 61% | 985 | 1% | – | 0,0 | – |  |
+| Seven | 5 | ★1 | Robô | Bateria de Mísseis | 60% | 1155 | 30% | 7,5 | 1,1 | 2,9 |  |
+| Legendary Excavators ft. Lam-chan & Lun-chan | 5 | ★1 | Robô | Bateria de Mísseis | 60% | 1015 | 4% | 7,5 | 1,1 | 3,1 |  |
+| Slifer the Sky Dragon | 5 | ★1 | Dragão | Sopro de Dragão | 56% | 1204 | 23% | 8,4 | 0,9 | 2,4 |  |
+| Blessed Leviathan | 5 | ★1 | Dragão | Sopro de Dragão | 54% | 1186 | 18% | 8,3 | 0,9 | 2,4 |  |
+| The Winged Dragon of Ra | 5 | ★1 | Dragão | Sopro de Dragão | 53% | 1194 | 22% | 8,3 | 0,9 | 2,4 |  |
+| Echo | 5 | ★1 | Robô | Bateria de Mísseis | 53% | 1181 | 29% | 7,5 | 1,1 | 2,9 |  |
+| Obelisk the Tormentor | 5 | ★1 | Tanque | Muralha | 52% | 667 | 1% | 7,5 | 1,2 | 3,0 |  |
+| Mauga | 5 | ★1 | Tanque | Muralha | 50% | 666 | 1% | 7,5 | 1,2 | 3,0 |  |
+| Blue-Eyes White Dragon | 5 | ★1 | Dragão | Sopro de Dragão | 49% | 1173 | 21% | 8,3 | 0,9 | 2,4 |  |
+| Dunsparce | 5 | ★1 | Dragão | (só ataca) | 48% | 963 | 2% | – | 0,0 | – |  |
+| Orpheus Picaro | 5 | ★1 | Anjo | Luz Divina | 48% | 1616 | 38% | 9,3 | 1,0 | 2,4 |  |
+| Sojimaru v2.1 | 5 | ★1 | Robô | Pacto Sombrio | 48% | 1155 | 28% | 7,5 | 1,1 | 2,1 |  |
+| The Doorman | 5 | ★1 | Anjo | Luz Divina | 46% | 1618 | 34% | 9,4 | 1,0 | 2,4 |  |
+| Fiddlesticks | 5 | ★1 | Demoníacos | Pacto Sombrio | 44% | 1183 | 30% | 7,5 | 1,1 | 2,1 |  |
+| Ramattra | 5 | ★1 | Robô | Pacto Sombrio | 44% | 1167 | 28% | 7,5 | 1,1 | 2,1 |  |
+| Daemon | 5 | ★1 | Demoníacos | Pacto Sombrio | 44% | 1173 | 28% | 7,5 | 1,1 | 2,1 |  |
+| Maria | 5 | ★1 | Anjo | Luz Divina | 44% | 1595 | 34% | 9,3 | 1,0 | 2,5 |  |
+| Arsène | 5 | ★1 | Demoníacos | Pacto Sombrio | 44% | 1150 | 29% | 7,4 | 1,1 | 2,1 |  |
+| Cupimon | 5 | ★1 | Anjo | (só ataca) | 43% | 1586 | 28% | – | 0,0 | – |  |
+| Cosmog | 5 | ★1 | Fadinhas | (só ataca) | 40% | 1521 | 29% | – | 0,0 | – |  |
+| Mara | 5 | ★1 | Safada | Charme | 39% | 1064 | 22% | 7,4 | 1,1 | 1,6 |  |
+| Incubus | 5 | ★1 | Safada | Pacto Sombrio | 38% | 1117 | 24% | 7,5 | 1,1 | 2,1 |  |
+| Vel'Koz | 5 | ★1 | Únicos | Vira Vel'Koz | 37% | 1117 | 15% | 8,9 | 0,9 | 3,0 |  |
+| Mew | 5 | ★1 | Fadinhas | (só ataca) | 37% | 1541 | 27% | – | 0,0 | – |  |
+| Mei | 5 | ★1 | Safada | Charme | 36% | 1052 | 22% | 7,4 | 1,1 | 1,6 |  |
+| Izanagi | 5 | ★1 | Assassino | Golpe Fatal | 32% | 908 | 2% | 4,8 | 1,5 | 1,9 |  |
+| Mina | 5 | ★1 | Safada | Charme | 32% | 1045 | 21% | 7,4 | 1,1 | 1,6 |  |
+| Gold Experience | 5 | ★1 | Temporais | Vira Gold Experience | 63% | 545 | 8% | 7,8 | 0,8 | 1,1 | sim |
+| Scary Monsters | 5 | ★1 | Criaturinha Bizarra | Vira Scary Monsters | 58% | 631 | 13% | 8,8 | 0,7 | 2,0 | sim |
+| Wonder of U | 5 | ★1 | Demoníacos | Vira Wonder of U | 46% | 757 | 8% | 10,2 | 0,5 | 2,5 | sim |
+| Dirty Deeds Done Dirt Cheap | 5 | ★1 | Porradeiro | Vira Dirty Deeds Done Dirt Cheap | 42% | 562 | 0% | 8,4 | 0,7 | 1,2 | sim |
+| Whitesnake | 5 | ★1 | Porradeiro | Vira Whitesnake | 42% | 569 | 8% | 8,4 | 0,7 | 0,9 | sim |
+| Dudunsparce | 5 | ★2 | Dragão | (só ataca) | 72% | 2008 | 3% | – | 0,0 | – |  |
+| Revolmon | 5 | ★2 | Atirador | (só ataca) | 71% | 3646 | 88% | – | 0,0 | – |  |
+| Blitzcrank | 5 | ★2 | Robô | Bateria de Mísseis | 68% | 2069 | 6% | 7,9 | 1,1 | 4,2 |  |
+| Legendary Excavators ft. Lam-chan & Lun-chan | 5 | ★2 | Robô | Bateria de Mísseis | 64% | 2092 | 9% | 7,9 | 1,1 | 4,2 |  |
+| Zygarde (50%) | 5 | ★2 | Dragão | (só ataca) | 63% | 2264 | 28% | – | 0,0 | – |  |
+| Timestar Magician | 5 | ★2 | Temporais | Parar o Tempo | 62% | 2698 | 72% | 9,4 | 1,0 | 1,1 |  |
+| Lucemon | 5 | ★2 | Anjo | (só ataca) | 60% | 3176 | 73% | – | 0,0 | – |  |
+| Zoe | 5 | ★2 | Anjo | Pó de Fada | 57% | 2239 | 78% | 8,3 | 1,2 | 3,4 |  |
+| Echo | 5 | ★2 | Robô | Bateria de Mísseis | 53% | 2271 | 28% | 7,8 | 1,2 | 4,0 |  |
+| Darkrai | 5 | ★2 | Demoníacos | Vira Mega Darkrai | 52% | 2187 | 28% | 8,6 | 0,5 | 0,0 |  |
+| Izanagi-no-Okami | 5 | ★2 | Assassino | Golpe Fatal | 52% | 1927 | 0% | 5,2 | 1,7 | 3,0 |  |
+| Sojimaru v2.1 | 5 | ★2 | Robô | Pacto Sombrio | 51% | 2311 | 32% | 7,9 | 1,1 | 3,1 |  |
+| Mauga | 5 | ★2 | Tanque | Muralha | 51% | 1222 | 16% | 8,0 | 1,2 | 4,0 |  |
+| Slifer the Sky Dragon | 5 | ★2 | Dragão | Sopro de Dragão | 50% | 2304 | 23% | 8,7 | 0,9 | 3,4 |  |
+| Seven | 5 | ★2 | Robô | Bateria de Mísseis | 50% | 2317 | 32% | 7,9 | 1,2 | 3,9 |  |
+| Blessed Leviathan | 5 | ★2 | Dragão | Sopro de Dragão | 50% | 2330 | 24% | 8,7 | 0,9 | 3,4 |  |
+| The Winged Dragon of Ra | 5 | ★2 | Dragão | Sopro de Dragão | 49% | 2321 | 21% | 8,7 | 0,9 | 3,4 |  |
+| Blue-Eyes White Dragon | 5 | ★2 | Dragão | Sopro de Dragão | 49% | 2365 | 26% | 8,7 | 0,9 | 3,4 |  |
+| Magearna | 5 | ★2 | Fadinhas | Vira Mega Magearna | 49% | 3011 | 76% | 9,4 | 0,4 | 0,0 |  |
+| Nami | 5 | ★2 | Fadinhas | Pó de Fada | 49% | 2147 | 83% | 8,3 | 1,2 | 3,7 |  |
+| Satanael | 5 | ★2 | Demoníacos | Pacto Sombrio | 46% | 2307 | 29% | 7,8 | 1,1 | 3,0 |  |
+| Obelisk the Tormentor | 5 | ★2 | Tanque | Muralha | 46% | 1211 | 15% | 7,9 | 1,2 | 4,0 |  |
+| Lucifer | 5 | ★2 | Demoníacos | Pacto Sombrio | 46% | 2350 | 34% | 7,8 | 1,1 | 3,0 |  |
+| Ramattra | 5 | ★2 | Robô | Pacto Sombrio | 46% | 2237 | 28% | 7,9 | 1,1 | 3,1 |  |
+| The Doorman | 5 | ★2 | Anjo | Luz Divina | 46% | 3066 | 47% | 9,4 | 1,0 | 3,9 |  |
+| Maria | 5 | ★2 | Anjo | Luz Divina | 45% | 3048 | 49% | 9,4 | 1,0 | 3,8 |  |
+| Fiddlesticks | 5 | ★2 | Demoníacos | Pacto Sombrio | 43% | 2280 | 29% | 7,8 | 1,1 | 3,0 |  |
+| Mewtwo | 5 | ★2 | Únicos | (só ataca) | 43% | 2095 | 21% | – | 0,0 | – |  |
+| Belial | 5 | ★2 | Demoníacos | Pacto Sombrio | 42% | 2276 | 30% | 7,8 | 1,1 | 3,1 |  |
+| Vel'Koz | 5 | ★2 | Únicos | Vira Vel'Koz | 42% | 2242 | 16% | 9,4 | 0,8 | 4,9 |  |
+| Thanatos | 5 | ★2 | Demoníacos | Pacto Sombrio | 41% | 2226 | 25% | 7,8 | 1,1 | 3,1 |  |
+| Cosmoem | 5 | ★2 | Fadinhas | (só ataca) | 38% | 2831 | 66% | – | 0,0 | – |  |
+| Arioch | 5 | ★2 | Safada | Pacto Sombrio | 37% | 2167 | 27% | 7,8 | 1,0 | 3,1 |  |
+| Mei | 5 | ★2 | Safada | Charme | 35% | 2001 | 18% | 7,7 | 1,1 | 2,3 |  |
+| Mina | 5 | ★2 | Safada | Charme | 33% | 2045 | 21% | 7,8 | 1,0 | 2,3 |  |
+| The World (Steel Ball Run) | 5 | ★2 | Porradeiro | Vira The World (Steel Ball Run) | 75% | 1291 | 17% | 10,8 | 0,5 | 2,5 | sim |
+| Gold Experience Requiem | 5 | ★2 | Temporais | Vira Gold Experience Requiem | 50% | 881 | 0% | 9,9 | 0,6 | 0,5 | sim |
+| Dirty Deeds Done Dirt Cheap | 5 | ★2 | Porradeiro | Vira Dirty Deeds Done Dirt Cheap | 48% | 1104 | 4% | 9,5 | 0,6 | 2,0 | sim |
+| C-MOON | 5 | ★2 | Porradeiro | Vira C-MOON | 48% | 1136 | 4% | 9,5 | 0,7 | 2,1 | sim |
+| Wonder of U | 5 | ★2 | Demoníacos | Vira Wonder of U | 29% | 1328 | 13% | 10,2 | 0,5 | 4,1 | sim |
 
 </details>
 
@@ -736,47 +767,47 @@ Ult de classe pela média de quem a usa como padrão (todas as estrelas e custos
 
 | Ult | Classe | Campeões (★1 e ★2) | Vitórias (média) | Valor/lanç. (mediana) | Lanç./10 s |
 |---|---|---|---|---|---|
-| Corrente Elétrica | Raio | 1 | 68% | 2,21 | 0,8 |
-| Bateria de Mísseis | Robô | 26 | 62% | 3,95 | 1,1 |
-| Muralha | Tanque | 27 | 58% | 3,86 | 1,0 |
-| Parar o Tempo | Temporais | 18 | 58% | 1,01 | 0,8 |
-| Sopro de Dragão | Dragão | 19 | 57% | 2,67 | 0,9 |
-| Pó de Fada | Fadinhas | 44 | 57% | 3,13 | 1,0 |
-| Tiro Perfurante | Atirador | 23 | 56% | 2,07 | 0,9 |
-| Jato d'Água | Água | 2 | 52% | 3,79 | 1,0 |
-| Luz Divina | Anjo | 16 | 50% | 3,17 | 0,9 |
-| Pacto Sombrio | Demoníacos | 37 | 49% | 3,08 | 1,0 |
-| Charme | Safada | 32 | 48% | 2,29 | 1,0 |
-| Pancadão | Porradeiro | 21 | 47% | 3,30 | 0,9 |
-| Coisa Esquisita | Criaturinha Bizarra | 25 | 47% | 2,31 | 1,0 |
-| Golpe Fatal | Assassino | 18 | 45% | 3,02 | 1,5 |
-| Tornado | Vento | 8 | 44% | 2,41 | 0,9 |
-| Bola de Fogo | Fogo | 1 | 37% | 2,07 | 0,8 |
+| Corrente Elétrica | Raio | 1 | 67% | 2,24 | 0,8 |
+| Bateria de Mísseis | Robô | 26 | 59% | 3,95 | 1,1 |
+| Jato d'Água | Água | 2 | 53% | 4,15 | 1,0 |
+| Muralha | Tanque | 27 | 52% | 3,86 | 1,0 |
+| Sopro de Dragão | Dragão | 21 | 51% | 2,65 | 0,9 |
+| Pó de Fada | Fadinhas | 44 | 50% | 3,25 | 1,0 |
+| Tiro Perfurante | Atirador | 27 | 48% | 2,15 | 0,9 |
+| Parar o Tempo | Temporais | 18 | 46% | 1,01 | 0,8 |
+| Luz Divina | Anjo | 16 | 45% | 3,22 | 0,9 |
+| Coisa Esquisita | Criaturinha Bizarra | 25 | 44% | 2,30 | 1,0 |
+| Pancadão | Porradeiro | 21 | 44% | 3,32 | 0,9 |
+| Pacto Sombrio | Demoníacos | 37 | 41% | 2,99 | 1,0 |
+| Golpe Fatal | Assassino | 18 | 41% | 3,01 | 1,5 |
+| Tornado | Vento | 8 | 38% | 2,36 | 0,9 |
+| Charme | Safada | 26 | 36% | 2,31 | 1,0 |
+| Bola de Fogo | Fogo | 1 | 33% | 1,99 | 0,8 |
 
 Valor por lançamento (em múltiplos do dano de ataque) mais de 2,0× acima ou abaixo da mediana do custo e estrela (transformações fora). Abaixo nem sempre é fraco: controle (atordoar, provocar) e buff não entram no valor; olhe as vitórias.
 
 | Campeão | Custo | ★ | Habilidade | Valor/lanç. | Mediana do grupo | Onde | Vitórias |
 |---|---|---|---|---|---|---|---|
-| Himiko | 2 | ★1 | Parar o Tempo | 0,89 | 2,49 | abaixo | 59% |
-| Time Thief Redoer | 2 | ★1 | Parar o Tempo | 0,90 | 2,49 | abaixo | 55% |
-| Time Wizard | 2 | ★1 | Parar o Tempo | 0,89 | 2,49 | abaixo | 50% |
-| Zilean | 2 | ★1 | Parar o Tempo | 0,88 | 2,49 | abaixo | 53% |
-| Vyper | 2 | ★1 | Coisa Esquisita | 1,20 | 2,49 | abaixo | 36% |
-| Kanzeon | 2 | ★2 | Parar o Tempo | 1,44 | 3,73 | abaixo | 51% |
-| Time Thief Redoer | 2 | ★2 | Parar o Tempo | 1,43 | 3,73 | abaixo | 51% |
-| Time Wizard | 2 | ★2 | Parar o Tempo | 1,45 | 3,73 | abaixo | 51% |
-| Zilean | 2 | ★2 | Parar o Tempo | 1,42 | 3,73 | abaixo | 52% |
-| Vyper | 2 | ★2 | Coisa Esquisita | 1,60 | 3,73 | abaixo | 31% |
-| Michion, the Timelord | 3 | ★1 | Parar o Tempo | 0,84 | 2,63 | abaixo | 56% |
-| Ekko | 3 | ★1 | Parar o Tempo | 0,84 | 2,63 | abaixo | 55% |
-| Michion, the Timelord | 3 | ★2 | Parar o Tempo | 1,30 | 3,69 | abaixo | 59% |
-| Ekko | 3 | ★2 | Parar o Tempo | 1,31 | 3,69 | abaixo | 57% |
-| Clockwork Knight | 4 | ★1 | Parar o Tempo | 0,76 | 2,25 | abaixo | 71% |
-| Labrynth Cooclock | 4 | ★1 | Parar o Tempo | 0,77 | 2,25 | abaixo | 66% |
-| Clockwork Knight | 4 | ★2 | Parar o Tempo | 1,17 | 3,29 | abaixo | 66% |
-| Labrynth Cooclock | 4 | ★2 | Parar o Tempo | 1,19 | 3,29 | abaixo | 66% |
-| Timestar Magician | 5 | ★1 | Parar o Tempo | 0,73 | 2,43 | abaixo | 68% |
-| Timestar Magician | 5 | ★2 | Parar o Tempo | 1,12 | 3,41 | abaixo | 66% |
+| Himiko | 2 | ★1 | Parar o Tempo | 0,89 | 2,59 | abaixo | 56% |
+| Time Thief Redoer | 2 | ★1 | Parar o Tempo | 0,89 | 2,59 | abaixo | 54% |
+| Time Wizard | 2 | ★1 | Parar o Tempo | 0,89 | 2,59 | abaixo | 49% |
+| Zilean | 2 | ★1 | Parar o Tempo | 0,88 | 2,59 | abaixo | 52% |
+| Vyper | 2 | ★1 | Coisa Esquisita | 1,23 | 2,59 | abaixo | 34% |
+| Kanzeon | 2 | ★2 | Parar o Tempo | 1,42 | 3,72 | abaixo | 38% |
+| Time Thief Redoer | 2 | ★2 | Parar o Tempo | 1,42 | 3,72 | abaixo | 37% |
+| Time Wizard | 2 | ★2 | Parar o Tempo | 1,43 | 3,72 | abaixo | 38% |
+| Zilean | 2 | ★2 | Parar o Tempo | 1,41 | 3,72 | abaixo | 38% |
+| Vyper | 2 | ★2 | Coisa Esquisita | 1,62 | 3,72 | abaixo | 21% |
+| Michion, the Timelord | 3 | ★1 | Parar o Tempo | 0,83 | 2,54 | abaixo | 55% |
+| Ekko | 3 | ★1 | Parar o Tempo | 0,87 | 2,54 | abaixo | 33% |
+| Michion, the Timelord | 3 | ★2 | Parar o Tempo | 1,30 | 3,69 | abaixo | 47% |
+| Ekko | 3 | ★2 | Parar o Tempo | 1,24 | 3,69 | abaixo | 27% |
+| Clockwork Knight | 4 | ★1 | Parar o Tempo | 0,80 | 2,23 | abaixo | 35% |
+| Labrynth Cooclock | 4 | ★1 | Parar o Tempo | 0,76 | 2,23 | abaixo | 66% |
+| Clockwork Knight | 4 | ★2 | Parar o Tempo | 1,12 | 3,14 | abaixo | 26% |
+| Labrynth Cooclock | 4 | ★2 | Parar o Tempo | 1,19 | 3,14 | abaixo | 54% |
+| Timestar Magician | 5 | ★1 | Parar o Tempo | 0,72 | 2,39 | abaixo | 65% |
+| Timestar Magician | 5 | ★2 | Parar o Tempo | 1,12 | 3,36 | abaixo | 62% |
 
 ## Pacote de cada classe (papel + ult)
 
@@ -811,38 +842,38 @@ Mediana ★2: +35%. Todas perto da mediana.
 
 O time tem exatamente os campeões do degrau com o traço (sorteados, ★2) e mais 2 sem ele (JoJo: um usuário pra cada Stand); o outro lado é o mesmo time com o traço desligado. "Vale" = bônus de vida e dano no time todo que empata (60 cenários). Em negrito: mais de 1,6× longe da mediana do mesmo degrau. Origens: só referência (as escadas e os números delas não mudam aqui); Overwatch, Deadlock e Sujimon agem também fora da luta, e isso não entra.
 
-### Classes (2/4/6)
+### Classes
 
-| Traço | Degraus | Degrau 1 | Degrau 2 | Degrau 3 |
-|---|---|---|---|---|
-| Tanque | 2/4/6 | +3% | +12% | +22% |
-| Porradeiro | 2/4/6 | +5% | +12% | +20% |
-| Assassino | 2/4/6 | +5% | +11% | +22% |
-| Demoníacos | 2/4/6 | +5% | +17% | +30% |
-| Criaturinha Bizarra | 2/4/6 | +5% | +11% | +31% |
-| Fadinhas | 2/4/6 | +6% | +17% | +30% |
-| Safada | 2/4/6 | +5% | +11% | +19% |
-| Atirador | 2/4/6 | +9% | +17% | +26% |
-| Anjo | 2/4/6 | +5% | +11% | +17% |
-| Robô | 2/4/6 | +5% | +11% | +23% |
-| Dragão | 2/4/6 | +6% | +15% | +28% |
-| Temporais | 2/4/6 | +6% | +9% | +22% |
-| **Mediana** |  | +5% | +12% | +23% |
+| Traço | Degraus | Degrau 1 | Degrau 2 | Degrau 3 | Degrau 4 | Degrau 5 | Degrau 6 |
+|---|---|---|---|---|---|---|---|
+| Tanque | 2/3/4/6/8 | +3% | +3% | +12% | +23% | +28% | – |
+| Porradeiro | 2/3/4/6/8/10 | +3% | +8% | +11% | +20% | +25% | +31% |
+| Assassino | 2/3/4/5/6 | +3% | +6% | +9% | +14% | +23% | – |
+| Demoníacos | 2/3/4/6/8/10 | +3% | +8% | +17% | +30% | +44% | +62% |
+| Criaturinha Bizarra | 3/4/5/7/9/10 | +5% | +9% | +11% | +34% | +40% | +47% |
+| Fadinhas | 2/3/4/6/8/10 | +6% | +12% | +14% | +26% | +34% | +44% |
+| Safada | 3/4/5/7/9/10 | +8% | +9% | +14% | +17% | +23% | +25% |
+| Atirador | 2/3/4/5/7 | +8% | +14% | +22% | +22% | +30% | – |
+| Anjo | 2/3/4/5/6 | +5% | +3% | +11% | +14% | +19% | – |
+| Robô | 2/3/4/5/6 | +5% | +8% | +12% | +17% | +22% | – |
+| Dragão | 2/3/4/5/7 | +5% | +11% | +14% | +20% | +33% | – |
+| Temporais | 2/3/4/5 | +6% | +8% | +9% | +22% | – | – |
+| **Mediana** |  | +5% | +8% | +12% | +21% | +28% | +44% |
 
 Todos perto da mediana do degrau.
 
-### Elementos (2/3/4)
+### Elementos
 
-| Traço | Degraus | Degrau 1 | Degrau 2 | Degrau 3 |
-|---|---|---|---|---|
-| Fogo | 2/3/4 | +6% | +12% | +19% |
-| Água | 2/3/4 | +3% | +11% | +15% |
-| Terra | 2/3/4 | +3% | +5% | +12% |
-| Vento | 2/3/4 | +6% | +14% | +23% |
-| Raio | 2/3/4 | +3% | +6% | +22% |
-| Gelo | 2/3/4 | +3% | +6% | +12% |
-| Planta | 2/3/4 | +5% | +11% | +20% |
-| **Mediana** |  | +3% | +11% | +19% |
+| Traço | Degraus | Degrau 1 | Degrau 2 | Degrau 3 | Degrau 4 | Degrau 5 |
+|---|---|---|---|---|---|---|
+| Fogo | 2/3/4/5/6 | +6% | +14% | +20% | +25% | +26% |
+| Água | 2/3/4/5/6 | +5% | +9% | +19% | +22% | +25% |
+| Terra | 2/3/4 | +3% | +5% | +12% | – | – |
+| Vento | 2/3/4/5/6 | +5% | +14% | +25% | +33% | +36% |
+| Raio | 2/3/4/5 | +3% | +8% | +22% | +31% | – |
+| Gelo | 2/3/4 | +5% | +8% | +11% | – | – |
+| Planta | 2/3/4/5 | +6% | +11% | +22% | +30% | – |
+| **Mediana** |  | +5% | +9% | +20% | +30% | +26% |
 
 Todos perto da mediana do degrau.
 
@@ -850,18 +881,51 @@ Todos perto da mediana do degrau.
 
 | Traço | Degraus | Degrau 1 | Degrau 2 | Degrau 3 | Degrau 4 | Degrau 5 | Degrau 6 |
 |---|---|---|---|---|---|---|---|
-| Pokémon | 2/4/6/8/9/10 | 0% | +3% | +9% | +15% | +22% | +28% |
-| Digimon | 2/3/4/5/6 | +1% | +5% | +9% | +9% | +15% | – |
+| Pokémon | 2/4/6/8/9/10 | +1% | +5% | +9% | +15% | +22% | +30% |
+| Digimon | 2/3/4/5/6 | +3% | +5% | +8% | +12% | +14% | – |
 | SMT | 2/3/4/6/8 | +5% | +6% | +11% | +15% | +19% | – |
-| Persona | 1/2/3/4/5 | 0% | +1% | +3% | +6% | +11% | – |
-| JoJo | 2/3/5/7/9/10 | +6% | +9% | +15% | +33% | +36% | +45% |
-| Yu-Gi-Oh! | 2/3/5/7/9/10 | +3% | +5% | +8% | +26% | +36% | +47% |
-| LoL | 2/3/5/7/9/10 | +1% | +1% | +5% | +6% | +9% | +9% |
-| Overwatch | 2/3/4/5/7 | +3% | +3% | +6% | +11% | +15% | – |
+| Persona | 1/2/3/4/5 | 0% | +1% | +3% | +8% | +11% | – |
+| JoJo | 2/3/4/5/6 | +25% | +30% | +39% | +56% | +64% | – |
+| Yu-Gi-Oh! | 2/3/5/7/9/10 | +1% | +5% | +8% | +26% | +36% | +45% |
+| LoL | 2/3/5/7/9/10 | 0% | +3% | +3% | +8% | +9% | +11% |
+| Overwatch | 2/3/4/5/7 | +3% | +3% | +6% | +9% | +15% | – |
 | Deadlock | 2/3/4/5/6 | 0% | 0% | 0% | 0% | 0% | – |
-| Sujimon | 2/3/4/5/6 | +6% | +9% | +15% | +23% | +31% | – |
+| Sujimon | 2/3/4/5/6 | +5% | +9% | +14% | +22% | +31% | – |
 
 
+
+## Origens
+
+Time cheio de cada origem contra os times cheios das outras (20 cenários por par, dos dois lados), com os custos da loja daquele nível e os traços valendo. JoJo: metade Stands, metade usuários de outras origens. Digimon: um terço do time de fora, pro Parceiro. Overwatch, Deadlock e Sujimon agem também fora da luta, e isso não entra aqui. Sem itens.
+
+| Origem | 4 no tabuleiro, ★1 | 6 no tabuleiro, ★2 | 8 no tabuleiro, ★2 | 10 no tabuleiro, ★2 | 10 no tabuleiro, ★3 |
+|---|---|---|---|---|---|
+| Pokémon | 53% | 50% | 39% | 55% | 57% |
+| Digimon | 42% | 50% | 41% | 41% | 46% |
+| SMT | 70% | 64% | 64% | 54% | 46% |
+| Persona | 37% | 48% | 44% | 48% | 53% |
+| JoJo | 34% | 37% | 41% | 52% | 60% |
+| Yu-Gi-Oh! | 51% | 45% | 78% | 98% | 93% |
+| LoL | 38% | 36% | 36% | 29% | 51% |
+| Overwatch | 58% | 53% | 56% | 41% | 23% |
+| Deadlock | 36% | 28% | 22% | 5% | 3% |
+| Sujimon | 82% | 90% | 80% | 78% | 68% |
+
+### Quanto vale evoluir
+
+Os mesmos campeões numa estrela a mais: bônus de vida e dano no time da estrela de baixo que empata (40 cenários, tabuleiro de 6). Pokémon, Digimon, SMT, Persona e Sujimon: só as linhas evolutivas.
+
+| Origem | ★1 → ★2 | ★2 → ★3 |
+|---|---|---|
+| Pokémon (linhas) | +91% | +91% |
+| Digimon (linhas) | +97% | +84% |
+| SMT (linhas) | +66% | +84% |
+| Persona (linhas) | +78% | +91% |
+| Yu-Gi-Oh! | +84% | +84% |
+| LoL | +72% | +97% |
+| Overwatch | +72% | +78% |
+| Deadlock | +72% | +78% |
+| Sujimon (linhas) | +109% | +109% |
 
 ## Itens
 
@@ -872,45 +936,45 @@ Um portador sorteado (custo 2 a 4, ★2, sem Stands) com 3 bonecos; o outro lado
 | Item | Id | Vitórias | Vale |
 |---|---|---|---|
 | Ventus | ventus | 73% | +7% |
-| Pyrus | pyrus | 75% | +5% |
+| Pyrus | pyrus | 76% | +5% |
 | Haos | haos | 69% | +5% |
+| Subterra | subterra | 66% | +5% |
 | Aurelus | aurelus | 71% | +5% |
-| Darkus | darkus | 63% | +3% |
-| Subterra | subterra | 66% | +3% |
-| Aquos | aquos | 56% | +1% |
+| Darkus | darkus | 64% | +3% |
+| Aquos | aquos | 57% | +1% |
 
 ### Completos (mediana +21%)
 
 | Item | Id | Vitórias | Vale |
 |---|---|---|---|
+| Pyravian | pyrus+aurelus | 97% | +36% |
 | Drago | pyrus+pyrus | 99% | +34% |
-| Pyravian | pyrus+aurelus | 97% | +34% |
-| Skyress | ventus+ventus | 97% | +34% |
-| Griffon | pyrus+haos | 99% | +32% |
+| Skyress | ventus+ventus | 98% | +34% |
 | Falconeer | pyrus+ventus | 99% | +32% |
-| Nobilious | aurelus+aurelus | 94% | +32% |
-| Saurus | pyrus+subterra | 99% | +30% |
-| Tigrerra | haos+haos | 95% | +28% |
+| Nobilious | aurelus+aurelus | 96% | +32% |
+| Griffon | pyrus+haos | 99% | +30% |
+| Saurus | pyrus+subterra | 99% | +28% |
+| Tigrerra | haos+haos | 96% | +28% |
 | Pegatrix X Aurelus | haos+aurelus | 97% | +28% |
+| Gargonoid | darkus+ventus | 98% | +28% |
 | Fear Ripper | pyrus+darkus | 97% | +27% |
-| Monarus | haos+ventus | 97% | +27% |
-| Gargonoid | darkus+ventus | 98% | +27% |
+| Monarus | haos+ventus | 98% | +27% |
 | Hammersaur | haos+darkus | 96% | +25% |
-| Jelldon | aquos+haos | 90% | +21% |
-| Limulus | aquos+darkus | 85% | +21% |
-| Hydranoid | darkus+darkus | 90% | +21% |
-| Gorem | subterra+subterra | 89% | +21% |
-| Tayghen | aquos+ventus | 93% | +19% |
-| Hydorous X Aurelus | aquos+aurelus | 89% | +19% |
-| Dragonoid X Darkus | darkus+aurelus | 89% | +19% |
-| El Condor | subterra+ventus | 93% | +19% |
-| Goreene | subterra+aurelus | 86% | +18% |
-| Howlkor X Aurelus | ventus+aurelus | 94% | +18% |
-| Serpenoid | aquos+subterra | 92% | +16% |
-| Hynoid | haos+subterra | 88% | +16% |
-| Wormquake | darkus+subterra | 86% | +16% |
-| Siege | pyrus+aquos | 84% | +14% |
-| Preyas | aquos+aquos | 78% | +14% |
+| Jelldon | aquos+haos | 94% | +21% |
+| Limulus | aquos+darkus | 88% | +21% |
+| Gorem | subterra+subterra | 91% | +21% |
+| Tayghen | aquos+ventus | 96% | +19% |
+| Hydorous X Aurelus | aquos+aurelus | 92% | +19% |
+| Hydranoid | darkus+darkus | 93% | +19% |
+| Dragonoid X Darkus | darkus+aurelus | 91% | +19% |
+| El Condor | subterra+ventus | 94% | +19% |
+| Howlkor X Aurelus | ventus+aurelus | 95% | +18% |
+| Preyas | aquos+aquos | 79% | +16% |
+| Serpenoid | aquos+subterra | 93% | +16% |
+| Hynoid | haos+subterra | 89% | +16% |
+| Goreene | subterra+aurelus | 87% | +16% |
+| Siege | pyrus+aquos | 87% | +14% |
+| Wormquake | darkus+subterra | 88% | +14% |
 
 Todos perto da mediana.
 
@@ -920,143 +984,226 @@ Regra: ao lançar a habilidade (50%) e no golpe que derruba um inimigo (50%), ch
 
 | Campeão | Passiva | Ouro/luta rodízio ★1 | ★2 | Lutas nas partidas | Ouro/luta partidas |
 |---|---|---|---|---|---|
-| Harvest | Achados | 0,80 | 1,03 | 4 | 0,00 |
-| Pro Pickpocket | Mão Leve | 1,30 | 1,33 | 198 | 1,18 |
-| Pseudotrash | Catador | 1,02 | 1,38 | 62 | 1,42 |
-| Agumon Hakase | Ouro de Numemon | 0,86 | 1,16 | 120 | 0,94 |
-| Rat King | Tesouro do Rei Rato | 0,90 | 1,13 | 370 | 0,70 |
+| Harvest | Achados | 0,80 | 1,03 | 32 | 0,76 |
+| Pro Pickpocket | Mão Leve | 1,25 | 1,32 | 213 | 1,42 |
+| Pseudotrash | Catador | 1,05 | 1,41 | 121 | 1,27 |
+| Agumon Hakase | Ouro de Numemon | 0,90 | 1,49 | 37 | 0,73 |
+| Rat King | Tesouro do Rei Rato | 0,90 | 1,15 | 321 | 0,83 |
 
 ## Partidas de bots
 
-24 partidas de 8 bots (sementes 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24); duram 32,9 rodadas em média e acabam no estágio 5,8. 13% das lutas entre jogadores vão até os 30 s. As taxas misturam o efeito do traço/item com a força do tabuleiro de quem o tem (sinal, não medida isolada; essa é a das seções acima).
+24 partidas de 8 bots (sementes 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24); duram 35,5 rodadas em média e acabam no estágio 6,0. 20% das lutas entre jogadores vão até os 30 s. As taxas misturam o efeito do traço/item com a força do tabuleiro de quem o tem (sinal, não medida isolada; essa é a das seções acima).
 
 ### Vitórias com o traço ativo (degrau mais alto atingido; 30 lutas ou mais)
 
 | Traço | Degrau | Lutas | Vitórias |
 |---|---|---|---|
-| JoJo | 5 | 71 | 87% |
-| Vento | 2 | 58 | 84% |
-| Deadlock | 6 | 60 | 80% |
-| Demoníacos | 2 | 80 | 71% |
-| Yu-Gi-Oh! | 7 | 84 | 70% |
-| Sujimon | 5 | 47 | 70% |
-| Planta | 4 | 49 | 69% |
-| Gelo | 2 | 39 | 69% |
-| Atirador | 6 | 200 | 69% |
-| Deadlock | 3 | 63 | 68% |
-| JoJo | 3 | 374 | 67% |
-| Porradeiro | 6 | 86 | 66% |
-| Temporais | 2 | 70 | 66% |
-| Atirador | 4 | 176 | 65% |
-| Raio | 4 | 51 | 63% |
-| Criaturinha Bizarra | 6 | 292 | 63% |
-| Safada | 6 | 116 | 62% |
-| SMT | 3 | 117 | 62% |
-| Robô | 2 | 51 | 61% |
-| Tanque | 2 | 313 | 60% |
-| SMT | 4 | 52 | 60% |
-| Deadlock | 2 | 151 | 58% |
-| Planta | 3 | 117 | 58% |
-| Fogo | 4 | 119 | 55% |
-| Porradeiro | 4 | 58 | 55% |
-| Fadinhas | 2 | 329 | 55% |
-| LoL | 2 | 302 | 55% |
-| Atirador | 2 | 391 | 54% |
-| Safada | 4 | 95 | 54% |
-| JoJo | 2 | 453 | 54% |
-| Raio | 2 | 225 | 53% |
-| Assassino | 2 | 196 | 53% |
-| Deadlock | 5 | 34 | 53% |
-| Pokémon | 2 | 1019 | 53% |
-| Persona | 2 | 44 | 52% |
-| Dragão | 2 | 93 | 52% |
-| Sujimon | 2 | 86 | 51% |
-| Safada | 2 | 579 | 51% |
-| Yu-Gi-Oh! | 5 | 85 | 51% |
-| Overwatch | 2 | 184 | 51% |
-| Digimon | 2 | 212 | 50% |
-| SMT | 2 | 331 | 50% |
-| Criaturinha Bizarra | 4 | 187 | 50% |
-| LoL | 3 | 171 | 49% |
-| Persona | 1 | 608 | 49% |
-| Água | 4 | 125 | 47% |
-| Criaturinha Bizarra | 2 | 570 | 46% |
-| Pokémon | 4 | 656 | 46% |
-| Overwatch | 3 | 62 | 45% |
-| Raio | 3 | 38 | 45% |
-| Porradeiro | 2 | 299 | 43% |
-| Pokémon | 6 | 452 | 43% |
-| Fogo | 3 | 148 | 43% |
-| Água | 2 | 406 | 42% |
-| Terra | 2 | 95 | 42% |
-| Planta | 2 | 479 | 42% |
-| Fadinhas | 6 | 55 | 42% |
-| LoL | 5 | 106 | 42% |
-| Deadlock | 4 | 34 | 41% |
-| Fadinhas | 4 | 145 | 41% |
-| Fogo | 2 | 312 | 39% |
-| Água | 3 | 188 | 37% |
-| Pokémon | 8 | 195 | 34% |
-| Yu-Gi-Oh! | 3 | 87 | 33% |
-| Yu-Gi-Oh! | 2 | 52 | 33% |
-| Pokémon | 9 | 46 | 30% |
+| Deadlock | 6 | 41 | 93% |
+| Yu-Gi-Oh! | 7 | 44 | 80% |
+| Temporais | 2 | 61 | 79% |
+| Vento | 2 | 61 | 75% |
+| Robô | 2 | 81 | 74% |
+| Sujimon | 6 | 33 | 73% |
+| Anjo | 2 | 33 | 73% |
+| Tanque | 2 | 178 | 72% |
+| Sujimon | 2 | 164 | 71% |
+| Assassino | 4 | 52 | 71% |
+| Safada | 7 | 34 | 71% |
+| Água | 5 | 39 | 69% |
+| Assassino | 3 | 70 | 69% |
+| Fogo | 4 | 54 | 67% |
+| Água | 4 | 47 | 66% |
+| Criaturinha Bizarra | 7 | 34 | 65% |
+| Fadinhas | 6 | 45 | 64% |
+| Fogo | 5 | 44 | 64% |
+| Água | 6 | 45 | 62% |
+| Gelo | 2 | 65 | 62% |
+| Porradeiro | 6 | 44 | 61% |
+| Assassino | 2 | 131 | 61% |
+| Porradeiro | 4 | 64 | 61% |
+| Safada | 5 | 51 | 61% |
+| Porradeiro | 3 | 77 | 58% |
+| Demoníacos | 2 | 105 | 58% |
+| Yu-Gi-Oh! | 5 | 125 | 56% |
+| SMT | 4 | 34 | 56% |
+| Yu-Gi-Oh! | 3 | 146 | 55% |
+| Yu-Gi-Oh! | 2 | 96 | 55% |
+| Atirador | 2 | 214 | 54% |
+| Persona | 1 | 571 | 54% |
+| Planta | 3 | 180 | 54% |
+| Atirador | 3 | 82 | 54% |
+| Overwatch | 3 | 108 | 53% |
+| Dragão | 2 | 146 | 51% |
+| Pokémon | 2 | 957 | 51% |
+| Overwatch | 2 | 146 | 50% |
+| Safada | 3 | 144 | 50% |
+| Persona | 2 | 40 | 50% |
+| Deadlock | 4 | 30 | 50% |
+| SMT | 3 | 34 | 50% |
+| Fadinhas | 2 | 282 | 50% |
+| Fadinhas | 3 | 152 | 49% |
+| Pokémon | 4 | 731 | 49% |
+| Água | 3 | 182 | 48% |
+| Pokémon | 6 | 479 | 47% |
+| Planta | 2 | 445 | 47% |
+| Água | 2 | 349 | 47% |
+| Safada | 4 | 61 | 46% |
+| Deadlock | 2 | 136 | 46% |
+| Raio | 2 | 178 | 46% |
+| Porradeiro | 2 | 242 | 45% |
+| Fogo | 2 | 516 | 45% |
+| Fadinhas | 4 | 86 | 45% |
+| LoL | 5 | 89 | 45% |
+| Digimon | 2 | 95 | 44% |
+| Fogo | 3 | 86 | 44% |
+| LoL | 3 | 168 | 44% |
+| Criaturinha Bizarra | 4 | 141 | 43% |
+| SMT | 2 | 349 | 43% |
+| Pokémon | 8 | 112 | 43% |
+| Atirador | 4 | 95 | 42% |
+| Criaturinha Bizarra | 3 | 192 | 42% |
+| Criaturinha Bizarra | 5 | 135 | 41% |
+| LoL | 2 | 176 | 41% |
+| JoJo | 2 | 129 | 38% |
+| Terra | 2 | 106 | 38% |
+| Raio | 3 | 37 | 30% |
+| JoJo | 3 | 47 | 28% |
+| Deadlock | 3 | 66 | 26% |
+| Atirador | 5 | 61 | 25% |
+| Digimon | 3 | 37 | 24% |
+| Tanque | 3 | 32 | 16% |
 
 ### Vitórias com o item em alguém do time (30 lutas ou mais)
 
 | Item | Lutas | Vitórias |
 |---|---|---|
-| Goreene | 335 | 59% |
-| Saurus | 401 | 58% |
-| Gorem | 250 | 58% |
-| Preyas | 171 | 58% |
-| Pegatrix X Aurelus | 340 | 56% |
-| Tayghen | 430 | 55% |
-| Hydorous X Aurelus | 510 | 55% |
-| Subterra | 685 | 55% |
-| Griffon | 335 | 55% |
-| Gargonoid | 258 | 54% |
-| Hammersaur | 319 | 54% |
-| Hynoid | 441 | 54% |
-| Jelldon | 441 | 54% |
-| Dragonoid X Darkus | 509 | 53% |
-| Serpenoid | 393 | 52% |
-| Skyress | 217 | 52% |
-| Limulus | 406 | 52% |
-| Howlkor X Aurelus | 395 | 52% |
-| Nobilious | 147 | 52% |
-| Aquos | 668 | 52% |
-| Wormquake | 389 | 51% |
-| Ventus | 650 | 51% |
-| Pyrus | 800 | 51% |
-| Tigrerra | 337 | 50% |
-| Drago | 154 | 50% |
-| Falconeer | 338 | 50% |
-| Haos | 723 | 49% |
-| Monarus | 431 | 49% |
-| Pyravian | 419 | 49% |
-| Aurelus | 832 | 49% |
-| Darkus | 663 | 48% |
-| Fear Ripper | 336 | 48% |
-| Hydranoid | 200 | 48% |
-| El Condor | 490 | 45% |
-| Siege | 256 | 42% |
+| Saurus | 474 | 61% |
+| Preyas | 224 | 59% |
+| Hammersaur | 450 | 59% |
+| Howlkor X Aurelus | 397 | 56% |
+| Falconeer | 436 | 56% |
+| El Condor | 440 | 55% |
+| Pyravian | 446 | 55% |
+| Tayghen | 558 | 55% |
+| Jelldon | 406 | 52% |
+| Pyrus | 609 | 52% |
+| Siege | 372 | 52% |
+| Drago | 298 | 52% |
+| Ventus | 701 | 51% |
+| Dragonoid X Darkus | 517 | 50% |
+| Limulus | 417 | 50% |
+| Aquos | 618 | 50% |
+| Wormquake | 572 | 50% |
+| Hydranoid | 296 | 50% |
+| Haos | 675 | 50% |
+| Skyress | 250 | 50% |
+| Hynoid | 438 | 50% |
+| Subterra | 897 | 49% |
+| Hydorous X Aurelus | 413 | 49% |
+| Griffon | 492 | 49% |
+| Monarus | 615 | 49% |
+| Aurelus | 728 | 49% |
+| Goreene | 291 | 49% |
+| Darkus | 637 | 49% |
+| Gorem | 332 | 48% |
+| Serpenoid | 346 | 47% |
+| Tigrerra | 297 | 47% |
+| Pegatrix X Aurelus | 481 | 47% |
+| Gargonoid | 313 | 46% |
+| Fear Ripper | 416 | 46% |
+| Nobilious | 258 | 42% |
 
 ### Rodadas de monstros (vitórias dos jogadores)
 
 | Rodada | Lutas | Vitórias |
 |---|---|---|
-| 1-1 | 192 | 100% |
-| 1-2 | 192 | 100% |
+| 1-1 | 192 | 98% |
+| 1-2 | 192 | 99% |
 | 1-3 | 192 | 100% |
-| 2-7 | 192 | 100% |
-| 3-7 | 192 | 62% |
-| 4-7 | 144 | 44% |
-| 5-7 | 55 | 44% |
+| 2-7 | 192 | 98% |
+| 3-7 | 192 | 60% |
+| 4-7 | 167 | 29% |
+| 5-7 | 81 | 36% |
+| 6-7 | 2 | 0% |
+
+### Colocação pela origem mais usada (do estágio 3 em diante)
+
+| Origem | Jogadores | Colocação média | Entre os 4 primeiros |
+|---|---|---|---|
+| Persona | 4 | 3,00 | 75% |
+| Sujimon | 8 | 3,00 | 75% |
+| Overwatch | 9 | 3,11 | 78% |
+| Yu-Gi-Oh! | 16 | 3,69 | 69% |
+| Deadlock | 8 | 3,88 | 63% |
+| SMT | 14 | 4,50 | 50% |
+| Pokémon | 97 | 4,61 | 46% |
+| Digimon | 7 | 5,00 | 43% |
+| LoL | 19 | 5,58 | 32% |
+| JoJo | 10 | 5,90 | 30% |
+
+### Em campo por nível
+
+| Nível | Jogador-rodadas | Unidades em média | Stands em média | Máximo |
+|---|---|---|---|---|
+| 1 | 192 | 1,0 | 0,0 | 1 |
+| 2 | 192 | 2,0 | 0,0 | 2 |
+| 3 | 192 | 3,0 | 0,1 | 3 |
+| 4 | 576 | 4,0 | 0,1 | 4 |
+| 5 | 960 | 5,0 | 0,2 | 5 |
+| 6 | 1152 | 6,0 | 0,3 | 6 |
+| 7 | 1311 | 7,0 | 0,3 | 7 |
+| 8 | 883 | 8,0 | 0,3 | 8 |
+| 9 | 159 | 9,0 | 0,2 | 9 |
 
 <!-- histórico: daqui pra baixo é escrito à mão; o playtest mantém -->
 
 
 ## Histórico de ajustes
+
+### 05/11/2026: depois de jogar
+
+Feedback do usuário: começar com dois campeões não foi boa ideia; gente demais de longe; JoJo forte demais porque o
+tabuleiro passa do limite; vale um buff no escalonamento de Pokémon e Digimon; traços grandes merecem mais degraus. O
+"antes" é o código do começo desta rodada, com as mesmas sementes. Mudanças, em `combate/atributos.ts`,
+`partida/consultas.ts`, `partida/monstros.ts` e `conteudo/tracos.ts`; decisões e motivos no roadmap.
+
+| Medida | Antes | Depois |
+|---|---|---|
+| Limite do tabuleiro | nível + 1 | nível, com todo Stand ocupando vaga |
+| Bônus do JoJo por degrau | +6 / 10 / 13 / 16 / 18% (2/3/5/7/9/10) | +25 / 30 / 40 / 48 / 55% (2/3/4/5/6) |
+| Máximo de unidades em campo nas partidas de bots | 19 | 12 |
+| Formas de longe | 408 de 592 (69%) | 306 de 592 (52%) |
+| Time cheio de JoJo (4 ★1, 6 ★2, 8 ★2, 10 ★2, 10 ★3) | 99 / 99 / 99 / 99 / 99% | 34 / 37 / 41 / 52 / 60% |
+| Colocação de quem mais usa JoJo (bots quase não usam Stand) | 2,79 | 5,90 |
+| Time cheio de Pokémon | 46 / 38 / 31 / 42 / 39% | 53 / 50 / 39 / 55 / 57% |
+| Time cheio de Digimon | 34 / 30 / 28 / 26 / 16% | 42 / 50 / 41 / 41 / 46% |
+| Evoluir no Pokémon (★1 → ★2, ★2 → ★3) | +84%, +84% | +91%, +91% |
+| Evoluir no Digimon | +78%, +53% | +97%, +84% |
+| Chefe na 3-7, 4-7 e 5-7 (vitória dos jogadores) | 64 / 31 / 37% | 60 / 29 / 36% |
+| Duração | 33,6 rodadas | 35,5 rodadas |
+| Campeões fora de 35%–65% no rodízio | 54 de 474 | 105 de 474 |
+
+Parte da subida de Pokémon e Digimon vem do JoJo parar de ganhar de todo mundo. Só o buff de evoluir, com o resto
+igual: Pokémon 53 / 41 / 33 / 48 / 45% → 53 / 48 / 39 / 57 / 59%; Digimon 40 / 31 / 29 / 29 / 19% → 40 / 46 / 41 / 41 / 48%.
+
+Quem virou corpo a corpo ganha vida até o multiplicador do Porradeiro (`VIDA_DE_PERTO`, ×1,15). Varredura no rodízio,
+campeões fora da faixa: sem bônus 128; ×1,10 81; **×1,15 74**; ×1,20 84; ×1,25 99. Um bônus fixo por cima do papel ficou
+pior (+15% de vida: 80; +25%: 113), porque Anjo e Fadinhas têm papel de vida baixa e Dragão, alta. Chefe: com vida 4000 e
+dano 260 e o tabuleiro menor, 3-7 caiu pra 38%; vida 3400 e dano 220 volta pro que era (3000 e 200 passava: 73%).
+
+Escadas novas: nos degraus que já existiam o valor não mudou (Tanque +22% e +23% no 6, Porradeiro +20% e +20%, Fadinhas
++28% e +26%). Dois topos saíram da mediana na primeira tentativa e foram corrigidos: Demoníacos 35% → 30% no 10 (+75% →
++62%) e Safada 55% → 70% no 10 (+22% → +25%).
+
+#### O que continua fora e por quê
+
+- **Rodízio de 54 pra 105 fora da faixa.** 20 vêm do alcance e o resto do buff de evoluir: as formas que só atacam na ★2
+  somam os dois bônus (Digimon: +12% e +28%) e ganham de quem tem habilidade nesse teste, que é uma peça com bonecos.
+  No time cheio o Digimon continua abaixo do meio.
+- **Estrela contra custo:** ★2 de custo 3 contra ★1 de custo 5, 77%; ★3 de custo 2 contra ★2 de custo 4, 77% (alvo até
+  65%). As duas já estavam fora, e o buff de evoluir aumentou.
+- **Yu-Gi-Oh! e Sujimon** no topo do time cheio, Deadlock embaixo (só conta o que acontece na luta). Não foi pedido mexer:
+  está no roadmap.
 
 ### 04/11/2026: primeira rodada
 

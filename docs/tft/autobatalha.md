@@ -39,8 +39,9 @@ editar o arquivo citado.
   - forma com habilidade própria (JoJo, Únicos e as que você escreveu no Catálogo): a própria;
   - o resto: a ult de uma das suas classes. O jogador escolhe qual no tooltip, e pode trocar em qualquer rodada.
 - **Stands de JoJo:** comprados na loja como os outros. No tabuleiro ficam presos a uma unidade de outra origem (a
-  casa ao lado), no máximo um por unidade, e **não contam no limite do tabuleiro**. Se um morre, o outro morre junto.
-  Stand sem usuário volta pro banco no começo da luta.
+  casa ao lado), no máximo um por unidade. **Todo Stand ocupa vaga**, como qualquer unidade: com o usuário são duas
+  vagas, então cabem até 6 (nível 12). Se um morre, o outro morre junto. Stand sem usuário volta
+  pro banco no começo da luta.
 
 ## Atributos (src/autobatalha/combate/atributos.ts)
 
@@ -74,8 +75,20 @@ O **papel** vem da primeira classe da forma nesta ordem de prioridade e ajusta o
 | Únicos | ×1,00 | ×1,00 | | 2 | 80 |
 | Só elemento | Terra vida ×1,10; Vento vel. ×1,10 | | | Fogo, Água, Vento, Planta 2; Raio, Gelo 3; Terra 1 | 80 |
 
-Forma que não lança nada (não final de Pokémon e Digimon) ganha +20% de vida e dano na estrela 1 e +25% na 2, no
+Forma que não lança nada (não final de Pokémon e Digimon) ganha +22% de vida e dano na estrela 1 e +28% na 2 e na 3, no
 lugar da habilidade.
+
+**Evoluir** (`BONUS_EVOLUCAO` em atributos.ts; pedido do usuário em 05/11/2026): nas linhas de Pokémon e Digimon, além da
+estrela, a forma evoluída ganha vida e dano: Pokémon +5% na estrela 2 e +10% na 3, Digimon +12% e +30%. Solto da mesma
+origem não ganha. Medido na seção "Origens" do equilibrio.md: evoluir de ★1 pra ★2 valia +84% no Pokémon e +78% no
+Digimon, e agora +91% e +97%; de ★2 pra ★3, +84% e +59%, agora +91% e +84%.
+
+**Quem luta de perto apesar do papel** (`CORPO_A_CORPO` em atributos.ts; pedido do usuário em 05/11/2026: gente demais
+de longe). O alcance do papel é o padrão, e a tabela põe em alcance 1 quem na obra bate, morde ou corta no contato; quem
+tem ataque de longe de verdade (sopro, tiro, magia) fica com o do papel. Eram 408 das 592 formas de longe; agora são
+306. Sem o alcance a forma toma os golpes da frente, então a vida dela sobe pelo menos até a de um Porradeiro (×1,15, em
+vez do multiplicador do papel; medido: sem isso, 128 campeões fora da faixa no rodízio; com isso, 74). Transformar troca
+o alcance pelo da forma nova (War Greymon bate de perto, mesmo vindo do Metal Greymon).
 
 Todos: 25% de chance de crítico (+40% de dano). **Mana:** +10 por ataque; golpe recebido (ataque ou habilidade) dá
 mana pela fração da vida máxima que tirou: 40 × dano ÷ vida máxima, até 5 por golpe (quem tem mais vida enche mais
@@ -103,34 +116,59 @@ desses).
 ## Traços (src/autobatalha/conteudo/tracos.ts)
 
 Conta campeões diferentes no tabuleiro (duas cópias do mesmo campeão contam uma vez), pela forma atual. Únicos não é
-traço. Escadas das classes 2/4/6 (Criaturinha Bizarra e Safada, as duas maiores, 3/5/7: pedido do usuário pra nem todo
-traço começar no 2) e dos elementos 2/3/4. As origens têm 5 degraus (6 nas maiores), pedido do usuário em
-04/11/2026, com as escadas da conta (docs/tft/matematica/resultado.md, seção 6b); o Pokémon, grande demais pra se
-igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
+traço. **Quantos degraus cada traço tem sai do tamanho dele** (pedido do usuário em 05/11/2026: Fogo com 2/3/4 tendo muito
+mais gente): 3 até 13 campeões, 4 de 14 a 17, 5 de 18 a 29 e 6 de 30 em diante (`degrausPorTamanho`; contas e custo de
+cada degrau em docs/tft/matematica/resultado.md, seção 6c). A escada guarda os degraus de antes quando dá, e todo último
+degrau cabe no tabuleiro: com limite = nível, o degrau b fecha no nível b (o mais alto é 10).
+Criaturinha Bizarra e Safada começam no 3 (pedido do usuário pra nem todo traço começar no 2). As origens têm 5 degraus (6
+nas maiores), pedido do usuário em 04/11/2026, com as escadas da conta (seção 6b); o Pokémon, grande demais pra se igualar
+com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
+
+| Traço | Campeões | Antes | Agora |
+|---|---|---|---|
+| Safada | 37 | 3/5/7 | 3/4/5/7/9/10 |
+| Porradeiro | 35 | 2/4/6 | 2/3/4/6/8/10 |
+| Criaturinha Bizarra | 34 | 3/5/7 | 3/4/5/7/9/10 |
+| Fadinhas | 34 | 2/4/6 | 2/3/4/6/8/10 |
+| Demoníacos | 32 | 2/4/6 | 2/3/4/6/8/10 |
+| Tanque | 27 | 2/4/6 | 2/3/4/6/8 |
+| Atirador | 24 | 2/4/6 | 2/3/4/5/7 |
+| Dragão | 24 | 2/4/6 | 2/3/4/5/7 |
+| Robô | 23 | 2/4/6 | 2/3/4/5/6 |
+| Assassino | 20 | 2/4/6 | 2/3/4/5/6 |
+| Anjo | 20 | 2/4/6 | 2/3/4/5/6 |
+| Fogo | 20 | 2/3/4 | 2/3/4/5/6 |
+| Vento | 19 | 2/3/4 | 2/3/4/5/6 |
+| Água | 18 | 2/3/4 | 2/3/4/5/6 |
+| Temporais | 17 | 2/4/6 | 2/3/4/5 |
+| Planta | 16 | 2/3/4 | 2/3/4/5 |
+| Raio | 15 | 2/3/4 | 2/3/4/5 |
+| Terra | 11 | 2/3/4 | 2/3/4 |
+| Gelo | 11 | 2/3/4 | 2/3/4 |
 
 **Classes**
 
 | Classe | Efeito |
 |---|---|
-| Tanque | (2) +20% de armadura e resistência; (4) +40%, e começam com escudo de 15% da vida; (6) +70%, e no começo provocam os inimigos em volta por 3 s |
-| Porradeiro | (2) +15% de vida; (4) +30%, e abaixo de metade da vida causam 20% a mais; (6) +50%, e o resto do time ganha +10% de vida |
-| Assassino | saltam pra trás da linha inimiga. (2) +15% de chance e +15% de dano de crítico; (4) +30% e +30%; (6) +45% e +45%, e cada abate deixa 1 s sem poder ser alvo |
-| Demoníacos | (2) 10% de roubo de vida, e quando um Demoníaco morre os outros ganham 10% de dano; (4) 20% e 20%; (6) 25% e 25% |
-| Criaturinha Bizarra (3/5/7) | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo); (5) o dobro; (7) 2,5 vezes e dois bônus |
-| Fadinhas | a cada 4 s, cada Fadinha cura o aliado com menos vida em 4 / 8 / 14% da vida máxima dele |
-| Safada (3/5/7) | os ataques têm 15 / 27 / 40% de chance de encantar o alvo por 1,5 s (atordoado) |
-| Atirador | +1 de alcance; cada ataque dá +3 / 6 / 8% de vel. ataque (até 15 vezes) |
-| Anjo | (2) o primeiro Anjo que morrer renasce com 40% da vida; (4) todos renascem uma vez com 50%; (6) com 80% |
-| Robô | +25 / 50 / 90% de armadura e escudo de 10 / 20 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |
-| Dragão | +10 / 20 / 32% de vida e dano; (6) o time inteiro ganha +5% de dano |
-| Temporais | a cada 5 s, o time ganha +6 / 12 / 20% de vel. ataque até o fim da luta (acumula); (6) uma vez por luta, o aliado que cairia abaixo de 20% da vida cura 40% |
-| Fogo (2/3/4) | ataques queimam (1 / 2 / 3% da vida máxima por s, 3 s, e 33% menos cura); (4) quem morre queimando passa o fogo pro inimigo mais perto |
-| Água (2/3/4) | recuperam 1,5 / 3 / 4,5% da vida por segundo; (4) a cada 4 s se livram dos efeitos ruins |
+| Tanque (2/3/4/6/8) | +20 / 30 / 40 / 70 / 100% de armadura e resistência; (4) começam com escudo de 15% da vida; (6) no começo provocam os inimigos em volta por 3 s |
+| Porradeiro (2/3/4/6/8/10) | +15 / 22 / 30 / 50 / 65 / 80% de vida; (4) abaixo de metade da vida causam 20% a mais; (6) o resto do time ganha +10% de vida |
+| Assassino (2/3/4/5/6) | saltam pra trás da linha inimiga. +15 / 22 / 30 / 37 / 45% de chance e de dano de crítico; (6) cada abate deixa 1 s sem poder ser alvo |
+| Demoníacos (2/3/4/6/8/10) | 10 / 15 / 20 / 25 / 27 / 30% de roubo de vida, e quando um Demoníaco morre os outros ganham o mesmo em dano |
+| Criaturinha Bizarra (3/4/5/7/9/10) | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo), que vale 1 / 1,5 / 2 / 2,5 / 3 / 3,5 vezes isso; (7) dois bônus |
+| Fadinhas (2/3/4/6/8/10) | a cada 4 s, cada Fadinha cura o aliado com menos vida em 4 / 6 / 8 / 14 / 18 / 22% da vida máxima dele |
+| Safada (3/4/5/7/9/10) | os ataques têm 15 / 21 / 27 / 40 / 55 / 70% de chance de encantar o alvo por 1,5 s (atordoado) |
+| Atirador (2/3/4/5/7) | +1 de alcance; cada ataque dá +3 / 4,5 / 6 / 7 / 9% de vel. ataque (até 15 vezes) |
+| Anjo (2/3/4/5/6) | (2) o primeiro Anjo que morrer renasce com 40% da vida; (3) com 45%; (4) todos renascem uma vez com 50%; (5) 65%; (6) 80% |
+| Robô (2/3/4/5/6) | +25 / 38 / 50 / 70 / 90% de armadura e escudo de 10 / 15 / 20 / 27 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |
+| Dragão (2/3/4/5/7) | +10 / 15 / 20 / 26 / 36% de vida e dano; (7) o time inteiro ganha +5% de dano |
+| Temporais (2/3/4/5) | a cada 5 s, o time ganha +6 / 9 / 12 / 18% de vel. ataque até o fim da luta (acumula); (5) uma vez por luta, o aliado que cairia abaixo de 20% da vida cura 40% |
+| Fogo (2/3/4/5/6) | ataques queimam (1 / 2 / 3 / 3,5 / 4% da vida máxima por s, 3 s, e 33% menos cura); (4) quem morre queimando passa o fogo pro inimigo mais perto |
+| Água (2/3/4/5/6) | recuperam 1,5 / 3 / 4,5 / 5,5 / 6,5% da vida por segundo; (4) a cada 4 s se livram dos efeitos ruins |
 | Terra (2/3/4) | +30 / 60 / 100% de armadura e resistência; (4) a cada 4 s um tremor atordoa por 0,5 s os inimigos em volta |
-| Vento (2/3/4) | +15 / 30 / 45% de vel. ataque; (3) desviam de 10% dos ataques; (4) 15% |
-| Raio (2/3/4) | a cada 3 ataques, um raio pula do alvo pra 1 / 2 / 3 inimigos (60% do dano); (4) atordoa 0,5 s |
+| Vento (2/3/4/5/6) | +15 / 30 / 45 / 55 / 65% de vel. ataque; desviam de 0 / 10 / 15 / 18 / 20% dos ataques |
+| Raio (2/3/4/5) | a cada 3 ataques, um raio pula do alvo pra 1 / 2 / 3 / 4 inimigos (60% do dano); (4) atordoa 0,5 s |
 | Gelo (2/3/4) | o alvo fica 15 / 25 / 35% mais lento; (4) o 5º ataque seguido no mesmo alvo congela 1 s |
-| Planta (2/3/4) | o 1º ataque em cada inimigo planta uma semente que suga 2 / 3,5 / 4,5% da vida dele por segundo, por 4 s, e cura quem plantou; (4) a cura vai também pro aliado mais perto |
+| Planta (2/3/4/5) | o 1º ataque em cada inimigo planta uma semente que suga 2 / 3,5 / 4,5 / 5,5% da vida dele por segundo, por 4 s, e cura quem plantou; (4) a cura vai também pro aliado mais perto |
 
 **Origens**
 
@@ -140,7 +178,7 @@ igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de bai
 | Digimon | 2/3/4/5/6 | Parceiro: Digimon com aliado de outra origem do lado ganha +8 / 12 / 18 / 25 / 35% de vida e dano; (3) o parceiro ganha metade; (5) o Digimon com parceiro começa com a mana cheia |
 | SMT | 2/3/4/6/8 | Invocadores: no começo, cada demônio invoca um monstro do Final Fantasy (sorteado) ao lado, com 20 / 25 / 32 / 45 / 60% dos atributos dele |
 | Persona | 1/2/3/4/5 | cada Persona dá aos aliados em volta +8 / 14 / 20 / 28 / 38% de um atributo, pela 1ª classe dela (dano: Atirador, Assassino, Porradeiro, Fogo, Raio; vida: Tanque, Terra, Anjo, Água; vel. ataque: Vento, Safada, Temporais; armadura e resist.: Robô, Gelo, Planta; poder de habilidade: Fadinhas, Demoníacos, Dragão, Criaturinha Bizarra) |
-| JoJo | 2/3/5/7/9/10 | Stands e seus usuários ganham +6 / 10 / 16 / 24 / 32 / 42% de dano e vida; (7) os Stands lançam com 25% menos mana |
+| JoJo | 2/3/4/5/6 | Stands e seus usuários ganham +25 / 30 / 40 / 48 / 55% de dano e vida; (5) os Stands lançam com 25% menos mana |
 | Yu-Gi-Oh! | 2/3/5/7/9/10 | cada carta fica em ataque (+10 / 15 / 22 / 30 / 40 / 50% de dano) ou em defesa (o mesmo em vida e armadura, e provoca os inimigos em volta por 2 s no começo); (7) ganham os dois |
 | LoL | 2/3/5/7/9/10 | +10 / 15 / 22 / 30 / 40 / 50% de poder de habilidade. Regra da franquia, com ou sem traço: na estrela 3, a cada 2 lançamentos a habilidade sai duas vezes (a "ultimate") |
 | Overwatch | 2/3/4/5/7 | +6 / 10 / 15 / 20 / 28% de vel. ataque. Jogada da Partida: depois de cada luta, o herói que mais causou dano ganha +2 / 3 / 5 / 7 / 10% de dano e vida pro resto da partida |
@@ -197,8 +235,8 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Monstros:** vencer dá 1 componente + 1 de ouro (chefe: 2 componentes + 2 de ouro); perder dá 1 de ouro.
 - **Nível:** começa no 1; +2 de XP por rodada (a partir da 1-2); 4 de ouro = 4 XP. XP pro próximo nível: 2, 2, 4, 8,
   14, 24, 36, 56, 76, 96, 120 (máximo 12; mais barata nos níveis baixos e médios). O limite de unidades no tabuleiro é
-  o nível + 1 (Stands à parte). No começo da luta, quem passar do limite volta pro banco, e vaga sobrando é preenchida
-  com o banco.
+  o nível: 1 no nível 1, até 12 (Stands: seção Set). No começo da luta, quem passar do limite volta pro banco (o mais
+  fraco primeiro), e vaga sobrando é preenchida com o banco.
 - **Loja:** 7 vagas, a última é a **vaga do time** (só campeões do custo sorteado que dividem origem ou classe com o
   seu tabuleiro). O custo de cada vaga sai da tabela do nível; dentro do custo, campeão que você já tem pesa 4 e os
   outros 1 (conta da loja em docs/tft/matematica). Atualizar: 2 de ouro; travar a loja; atualização grátis a cada
@@ -227,7 +265,8 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   como o bot normal termina em média em 2,9º contra bots fáceis, 4,9º contra normais e 5,0º contra difíceis.
 - **Bots:** escolhem 1 ou 2 traços pelas primeiras unidades, compram o que encaixa ou evolui, sobem de nível em
   pontos fixos (no normal: 4 no 2-1, 5 no 2-5, 6 no 3-2, 7 no 4-1, 8 no 5-1, 9 no 6-1, 10 no 7-1), guardam 50 de ouro pelos juros e depois rolam;
-  tanques na frente, alcance atrás; itens no mais forte; Stand preso a um aliado qualquer.
+  tanques na frente, alcance atrás; itens no mais forte; Stand preso a um aliado qualquer (um Stand só
+  entra na vaga que sobrar ou no lugar da pior titular, se tiver nota melhor).
 - **Salvar:** a partida é salva no localStorage (`pdx-autobatalha-v1`) no começo de cada planejamento (depois do
   carrossel: fechar a página no meio dele volta pro último planejamento salvo); os planos do planejador em
   `pdx-autobatalha-planos`; a configuração (regras da sala, as suas escolhas no lobby e as preferências) em
@@ -286,6 +325,12 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Unidade no tabuleiro:** foto redonda com borda da cor do custo (cinza, verde, azul, roxo, dourado), estrelas em
   cima, barras de vida e mana, itens embaixo e o ícone do **alcance** (espada vermelha = de perto; arco azul = de
   longe). Ao lançar a habilidade, a foto dá um pulinho com tremida.
+- **Posição do Yu-Gi-Oh!** (pedido do usuário: mais intuitiva e visual): toda carta, no tabuleiro, no banco e na luta,
+  tem um **selo** no canto de baixo à direita: espada laranja em ataque, escudo ciano em defesa. A carta em defesa ganha
+  um aro ciano em volta da foto, pra ler o time de relance. Clicar no selo alterna a posição durante o planejamento (a
+  área de clique passa da borda do selo; o clique não arrasta a peça nem abre ou fecha a dica). Na luta, no carrossel e
+  no tabuleiro dos outros o selo só mostra. A dica de passar o mouse diz a posição e o efeito em uma linha, e o botão
+  do painel fixo continua lá. A partida também recusa a troca fora do planejamento, inclusive a que vem do online.
 - **Imagens inteiras:** retratos, cartas, carrossel, planejador e dica com `object-fit: contain` sobre um fundo da cor
   do custo (o redondo ainda pode cortar a pontinha de uma arte quadrada cheia).
 - **Cartas da loja:** retrato inteiro, nome e custo, **todos os traços em etiquetas coloridas** (origem na cor da

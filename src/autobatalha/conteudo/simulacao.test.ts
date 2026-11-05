@@ -127,7 +127,7 @@ describe('ouro no chão', () => {
 describe('comportamentos', () => {
   it('Anjo (2): só o primeiro que morre renasce; (4): todos, uma vez', () => {
     const anjo = TRACOS.anjo!;
-    for (const [n, esperado] of [[0, 1], [1, 2]] as const) {
+    for (const [n, esperado] of [[0, 1], [1, 1], [2, 2]] as const) {
       const m = criarMundo();
       const a = m.add('a', 'a', { col: 1, lin: 5 }, { classes: ['anjo'] });
       const b = m.add('b', 'a', { col: 2, lin: 5 }, { classes: ['anjo'] });
@@ -142,9 +142,9 @@ describe('comportamentos', () => {
     const assassino = m.add('assassino', 'a', { col: 3, lin: 4 }, { classes: ['assassino', 'anjo', 'demoniacos'] });
     const anjoInimigo = m.add('anjo', 'b', { col: 3, lin: 3 }, { classes: ['anjo', 'demoniacos'] });
     const demoInimigo = m.add('demo', 'b', { col: 4, lin: 3 }, { classes: ['demoniacos'] });
-    for (const id of ['assassino', 'anjo', 'demoniacos'] as const) TRACOS[id]!.aoComecar!(m.ctx, 2, [assassino]);
+    for (const id of ['assassino', 'anjo', 'demoniacos'] as const) TRACOS[id]!.aoComecar!(m.ctx, 4, [assassino]);
     m.ctx.matar(assassino, anjoInimigo);
-    for (const id of ['assassino', 'anjo', 'demoniacos'] as const) TRACOS[id]!.aoMorrer!(m.ctx, 2, anjoInimigo, assassino);
+    for (const id of ['assassino', 'anjo', 'demoniacos'] as const) TRACOS[id]!.aoMorrer!(m.ctx, 4, anjoInimigo, assassino);
     expect(anjoInimigo.vivo).toBe(false);
     expect(demoInimigo.at.dano).toBe(100);
     expect(assassino.temStatus('intocavel')).toBe(true);
@@ -154,10 +154,10 @@ describe('comportamentos', () => {
     const m = criarMundo();
     const a = m.add('a', 'a', { col: 3, lin: 4 }, { classes: ['demoniacos'] });
     const b = m.add('b', 'a', { col: 4, lin: 4 }, { classes: ['demoniacos'] });
-    TRACOS.demoniacos!.aoComecar!(m.ctx, 1, [a, b]);
+    TRACOS.demoniacos!.aoComecar!(m.ctx, 2, [a, b]);
     m.ctx.matar(a, a);
-    TRACOS.demoniacos!.aoMorrer!(m.ctx, 1, a, null);
-    TRACOS.demoniacos!.aoMorrer!(m.ctx, 1, a, null);
+    TRACOS.demoniacos!.aoMorrer!(m.ctx, 2, a, null);
+    TRACOS.demoniacos!.aoMorrer!(m.ctx, 2, a, null);
     expect(b.at.dano).toBeCloseTo(120);
   });
 
@@ -165,13 +165,13 @@ describe('comportamentos', () => {
     const m = criarMundo();
     const eu = m.add('eu', 'a', { col: 3, lin: 4 });
     const alvo = m.add('alvo', 'b', { col: 3, lin: 3 }, { at: { vida: 1e9 } });
-    for (let i = 0; i < 20; i++) TRACOS.atirador!.aoAtacar!(m.ctx, 2, eu, alvo, 1);
+    for (let i = 0; i < 20; i++) TRACOS.atirador!.aoAtacar!(m.ctx, 4, eu, alvo, 1);
     expect(m.conta('buff:velAtaque')).toBe(15);
-    expect(eu.at.velAtaque).toBeCloseTo(1 + 15 * 0.08);
+    expect(eu.at.velAtaque).toBeCloseTo(1 + 15 * 0.09);
   });
 
-  it('Raio: o raio pula a cada 3 ataques, pra 1/2/3 inimigos', () => {
-    for (const n of [0, 1, 2]) {
+  it('Raio: o raio pula a cada 3 ataques, pra 1/2/3/4 inimigos', () => {
+    for (const n of [0, 1, 2, 3]) {
       const { m, eu, inimigos } = montar();
       for (let i = 0; i < 6; i++) TRACOS.raio!.aoAtacar!(m.ctx, n, eu, inimigos[0]!, 1);
       expect(m.conta('visual:raio')).toBe(2);
@@ -194,12 +194,12 @@ describe('comportamentos', () => {
     expect(eu.vida).toBeCloseTo(eu.at.vida);
   });
 
-  it('JoJo (7): Stands lançam com 25% menos mana; usuário também ganha o bônus', () => {
+  it('JoJo (5): Stands lançam com 25% menos mana; usuário também ganha o bônus', () => {
     const { m, eu, usuario } = montar();
     eu.stand = true;
     TRACOS.jojo!.aoComecar!(m.ctx, 3, [eu]);
     expect(eu.at.mana).toBe(60);
-    expect(usuario.at.dano).toBeCloseTo(124);
+    expect(usuario.at.dano).toBeCloseTo(148);
   });
 
   it('Transformação e Reuniclus: o Reuniclus se sacrifica pelo aliado abaixo de metade', () => {

@@ -13,7 +13,9 @@ import { COLUNAS, LINHAS_DONO } from '../../autobatalha/tipos';
 import { setCarregado } from '../../autobatalha/dados';
 import { chave } from '../../autobatalha/hex';
 import { acoes, estadoAutobatalha, useAutobatalha } from '../../autobatalha/sessao';
-import { estaVivo, humano, limiteTabuleiro, ondeEsta, rodadasDoEstagio, unidadesNoTabuleiro } from '../../autobatalha/partida';
+import {
+  contaNoLimite, estaVivo, humano, limiteTabuleiro, ondeEsta, rodadasDoEstagio,
+} from '../../autobatalha/partida';
 import { alvoSobMouse, fecharDica, propsDica } from './interacao';
 import { Dica, ImagemGrandeJanela } from './Dica';
 import {
@@ -183,7 +185,7 @@ function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
     return () => document.removeEventListener('keydown', tecla);
   }, []);
 
-  const noTab = unidadesNoTabuleiro(visto, false).length;
+  const noTab = contaNoLimite(visto);
   const limite = limiteTabuleiro(visto);
   const planejando = !naLuta && !carrossel;
   const total = (p.estagio === 1 ? 2 / 3 : 1) * e.config.segundos;
@@ -199,7 +201,7 @@ function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
           {planejando && (
             <div className="ab-area-cab">
               <span id="abLimite" className={'ab-limite' + (noTab > limite ? ' acima' : noTab < limite ? ' sobra' : '')}
-                title="Unidades no tabuleiro / limite (nível + 1; Stands não contam)">
+                title="Unidades no tabuleiro / limite (o seu nível). Stand ocupa vaga como qualquer unidade.">
                 <small>Unidades</small><b>{noTab}/{limite}</b>
               </span>
               {olhando ? (
@@ -219,7 +221,7 @@ function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
                 : <TabuleiroDono j={visto} editavel={!olhando && p.fase === 'planejamento'} espaco={espaco} />)}
           </div>
         </div>
-        <Banco j={visto} editavel={!olhando} />
+        <Banco j={visto} editavel={!olhando} planejando={p.fase === 'planejamento'} />
       </div>
       <Jogadores partida={p} olhando={olhando?.id ?? null}>
         {ultima && !(rep && !rep.acabou) && <DanoDaLuta luta={ultima} />}

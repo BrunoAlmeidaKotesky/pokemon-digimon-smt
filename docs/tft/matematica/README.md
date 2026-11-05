@@ -77,19 +77,26 @@ o caminho em `EXPORTACAO` no `analise.mjs`.
     campeões = tamanho do custo), e o teste confere. O critério não cobra nada por acelerar: quanto a loja pode
     acelerar depende da economia, que ainda não tem conta.
 
+11. **Degraus pelo tamanho.** Quantos degraus um traço tem sai do tamanho (`degrausPorTamanho`): 3 até 13 campeões, 4 de 14
+    a 17, 5 de 18 a 29, 6 de 30 em diante, a régua das origens. `conferirEscada` compara o custo de cada degrau com a
+    escada de referência do mesmo número de degraus e diz se o último cabe (com limite = nível, o degrau b fecha no nível
+    b).
+12. **Stands e o limite do tabuleiro.** Cada Stand precisa de um usuário de outra origem, e os dois ocupam vaga: cabem
+    ⌊limite/2⌋. Com isso dá pra ver em que nível cada degrau do JoJo fecha (seção 9).
+
 ## Premissas (mudar alguma muda o resultado)
 
 - **Loja:** toda vaga mostra qualquer campeão com a mesma chance. Quando houver custo por campeão, o custo de
   fechar pesa mais nos traços de campeões caros. Nos desenhos de loja (conta 10), os custos são sorteados, a chance
   do custo é 55% (o custo 1 no nível 4 do TFT, só de referência de mecânica) e as cópias são infinitas.
 - **JoJo:** os Stands entram como campeões. Eles entram presos a outra unidade: se não forem vendidos na loja como
-  campeão, saem da conta.
+  campeão, saem da conta. Todo Stand ocupa vaga, então cabem até 6 no nível 12 (conta 12).
 - **Yu-Gi-Oh!:** as cartas não têm linha; sobem de estrela, como os campeões do LoL. Franquia sem ninguém marcado
   entraria com o tamanho de uma origem média (campeões ÷ franquias).
 - **Elementos:** Luz e Trevas ficaram de fora (o usuário não quer). Únicos não conta como classe. Com a escada própria,
   os elementos são comparados entre si (a faixa em volta da média deles).
 - **Tolerância:** 25% no custo de fechar o último breakpoint.
-- **Tabuleiro:** 9 campeões. O doc ainda não decide esse número.
+- **Tabuleiro:** 9 campeões na régua das seções 2 a 7. No jogo o limite é o nível, até 12: as seções 6b, 6c e 9 usam isso.
 
 ## Playtest (equilíbrio de atributos, habilidades, traços e itens)
 
@@ -99,7 +106,7 @@ pela semente. O código fica em `src/autobatalha/equilibrio/` (o motor é TypeSc
 saída vai pra [equilibrio.md](equilibrio.md).
 
 ```sh
-# tudo (uns 2 minutos); grava docs/tft/matematica/equilibrio.md
+# tudo (alguns minutos); grava docs/tft/matematica/equilibrio.md
 node node_modules/vitest/vitest.mjs run --config src/autobatalha/equilibrio/playtest.config.ts
 # só uma parte, mais rápido, num arquivo à parte (Git Bash)
 EQUILIBRIO_PARTES=curva,campeoes EQUILIBRIO_RAPIDO=1 EQUILIBRIO_SAIDA=/tmp/eq.md \
@@ -108,7 +115,7 @@ EQUILIBRIO_PARTES=curva,campeoes EQUILIBRIO_RAPIDO=1 EQUILIBRIO_SAIDA=/tmp/eq.md
 node node_modules/vitest/vitest.mjs run src/autobatalha/equilibrio
 ```
 
-Variáveis: `EQUILIBRIO_PARTES` (`campeoes,curva,pacotes,tracos,itens,partidas`), `EQUILIBRIO_RAPIDO=1` (menos
+Variáveis: `EQUILIBRIO_PARTES` (`campeoes,curva,pacotes,tracos,itens,partidas,origens`), `EQUILIBRIO_RAPIDO=1` (menos
 cenários), `EQUILIBRIO_SAIDA` (outro .md), `EQUILIBRIO_JSON` (grava os números crus) e `EQUILIBRIO_SEMENTE` (semente
 base, padrão 2026). O `*.playtest.ts` não entra no `vitest run` normal: só com a config própria.
 
@@ -140,7 +147,12 @@ Medidas (detalhes no topo de cada seção do equilibrio.md):
    **equivalente**: o bônus de vida e dano (no time todo, ou no portador do item) que o outro lado precisa pra empatar,
    achado por bisseção com as mesmas sementes em cada passo.
 7. **Partidas de bots**: taxa de vitória dos times com cada traço/item, rodadas de monstros, duração. Mistura o efeito
-   com a força do tabuleiro: é sinal, não medida isolada.
+   com a força do tabuleiro: é sinal, não medida isolada. Também a colocação pela origem mais usada do estágio 3 em
+   diante e quantas unidades entram em campo em cada nível.
+8. **Origens**: time cheio de cada origem contra os times cheios das outras, com os custos da loja daquele nível. Sem
+   itens, e o que age fora da luta (Overwatch, Deadlock, Sujimon) não entra. Digimon leva um terço do time de fora, pro
+   Parceiro. **Quanto vale evoluir**: os mesmos campeões numa estrela a mais; o resultado é o bônus de vida e dano no time
+   da estrela de baixo que empata.
 
 O histórico dos ajustes (antes → depois) fica no fim do equilibrio.md, embaixo do marcador; o playtest regrava só a
 parte de cima.

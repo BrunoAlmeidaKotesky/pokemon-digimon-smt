@@ -75,7 +75,7 @@ export function aplicarAcao(p: Partida, jid: string, a: AcaoJogador): string | n
     // recolhe passando o mouse: moeda que já sumiu não vira aviso
     case 'moeda': pegarMoeda(p, jid, a.i); return null;
     case 'ult': return escolherUlt(p, jid, a.uid, a.ult);
-    case 'posicao': return alternarPosicao(p, jid, a.uid);
+    case 'posicao': return p.fase === 'planejamento' ? alternarPosicao(p, jid, a.uid) : MSG_SO_PLANEJAMENTO;
     case 'pronto': votarPronto(p, jid, a.valor); return null;
   }
 }

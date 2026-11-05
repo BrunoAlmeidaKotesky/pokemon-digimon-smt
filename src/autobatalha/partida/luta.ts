@@ -43,12 +43,15 @@ export interface ResultadoRodada { estagio: number; rodada: number; lutas: LutaD
 
 const copiar = (u: Unidade): Unidade => ({ ...u, itens: [...u.itens], bonus: u.bonus ? { ...u.bonus } : undefined });
 
-/** Unidades que lutam: as normais do tabuleiro (até o limite, as mais fortes) e os Stands presos a elas. */
+/** Unidades que lutam: as normais do tabuleiro (até o limite, as mais fortes) e os Stands presos a elas, nas vagas que
+ *  sobraram, os mais fortes primeiro. */
 export function unidadesQueLutam(j: Jogador): Unidade[] {
-  const normais = unidadesNoTabuleiro(j, false).sort((a, b) => forca(b) - forca(a)).slice(0, limiteTabuleiro(j));
+  const lim = limiteTabuleiro(j);
+  const normais = unidadesNoTabuleiro(j, false).sort((a, b) => forca(b) - forca(a)).slice(0, lim);
   const ids = new Set(normais.map(u => u.uid));
-  const stands = unidadesNoTabuleiro(j).filter(u => ehStand(u) && u.usuario != null && ids.has(u.usuario));
-  return [...normais, ...stands];
+  const presos = unidadesNoTabuleiro(j).filter(u => ehStand(u) && u.usuario != null && ids.has(u.usuario))
+    .sort((a, b) => forca(b) - forca(a));
+  return [...normais, ...presos.slice(0, lim - normais.length)];
 }
 
 /** Time do jogador pro motor (fantasma: o mesmo time com outro dono). Deadlock ativo: +2/3/4% (pelo degrau) de vida e

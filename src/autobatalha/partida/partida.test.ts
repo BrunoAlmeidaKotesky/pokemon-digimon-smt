@@ -3,13 +3,14 @@ import { S } from '../dados';
 import { criarRng } from '../rng';
 import type { Partida } from '../tipos';
 import {
-  acabou, alternarPosicao, aplicarRodada, atualizarLoja, avancarRodada, bonusSequencia, carregarPartida, CHANCES_LOJA,
+  acabou, alternarPosicao, aplicarAcao, aplicarRodada, atualizarLoja, avancarRodada, bonusSequencia, carregarPartida, CHANCES_LOJA,
   chancesLoja, comprar, comprarXp, contaNoLimite, COPIAS_POR_CUSTO, danoDerrota, equipar, escolherEvolucao,
   fimDoPlanejamento, humano, jogadorDe, jogarBot, jogarBots, juros, limiteTabuleiro, mover, terminarCarrossel,
-  MSG_LIMITE, novaPartida, ondeEsta, rendaDaRodada, rodadasDoEstagio, salvarPartida, simularRodada, sortearConfrontos,
-  sortearLoja, standDe, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos, xpParaProximo, apagarPartida,
+  MSG_LIMITE, MSG_SO_PLANEJAMENTO, novaPartida, ondeEsta, rendaDaRodada, rodadasDoEstagio, salvarPartida, simularRodada, sortearConfrontos,
+  prepararTabuleiro, sortearLoja, standDe, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos,
+  xpParaProximo, apagarPartida,
   temPartidaSalva, CHAVE_PARTIDA, escolherUlt, gerarMonstros, montarTime, BONUS_DEADLOCK_POR_10_ALMAS,
-  BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor, OURO_VITORIA, UNIDADES_ALEM_DO_NIVEL,
+  BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor, OURO_VITORIA,
   lugaresDaSala, MAX_NOME, NOME_PADRAO,
 } from './index';
 import { ehEstilo, ESTILO_PADRAO, ESTILOS_TABULEIRO, estiloOuPadrao } from '../estilos';
@@ -369,12 +370,13 @@ describe('evolução', () => {
 });
 
 describe('tabuleiro e Stands', () => {
-  it('limite do tabuleiro = nível + 1; trocar não passa do limite', () => {
+  it('limite do tabuleiro = nível; trocar não passa do limite', () => {
     const { p, eu } = cenario(30);
+    expect(limiteTabuleiro(eu)).toBe(1);
+    eu.nivel = 2;
     const a = dar(p, eu, 'pokemon:squirtle', { casa: [3, 0] });
     dar(p, eu, 'overwatch:tracer', { casa: [5, 0] });
     const b = dar(p, eu, 'sujimon:a', { banco: 0 });
-    expect(limiteTabuleiro(eu)).toBe(eu.nivel + UNIDADES_ALEM_DO_NIVEL);
     expect(limiteTabuleiro(eu)).toBe(2);
     expect(mover(p, eu.id, b.uid, { tipo: 'tabuleiro', casa: { col: 4, lin: 0 } })).toBe(MSG_LIMITE);
     expect(ondeEsta(eu, b.uid)).toEqual({ tipo: 'banco', i: 0 });
@@ -384,24 +386,25 @@ describe('tabuleiro e Stands', () => {
     expect(ondeEsta(eu, b.uid)).toEqual({ tipo: 'tabuleiro', casa: { col: 3, lin: 0 } });
     // mover dentro do tabuleiro pode
     expect(mover(p, eu.id, b.uid, { tipo: 'tabuleiro', casa: { col: 0, lin: 3 } })).toBeNull();
-    eu.nivel = 2;
+    eu.nivel = 3;
     expect(mover(p, eu.id, a.uid, { tipo: 'tabuleiro', casa: { col: 4, lin: 0 } })).toBeNull();
     expect(contaNoLimite(eu)).toBe(3);
     expect(mover(p, eu.id, a.uid, { tipo: 'tabuleiro', casa: { col: 8, lin: 0 } })).toBe('Lugar inválido');
   });
 
-  it('Stand preso a uma unidade de outra origem, não conta no limite e segue o usuário', () => {
+  it('Stand preso a uma unidade de outra origem, ocupando vaga e seguindo o usuário', () => {
     const { p, eu } = cenario(31);
+    eu.nivel = 3;
     const sq = dar(p, eu, 'pokemon:squirtle', { casa: [3, 0] });
     const jo = dar(p, eu, 'jojo:jotaro', { banco: 1 });
     const sp = dar(p, eu, 'jojo:star-platinum', { banco: 0 });
     // longe de todo mundo: não pode
     expect(mover(p, eu.id, sp.uid, { tipo: 'tabuleiro', casa: { col: 7, lin: 3 } })).toMatch(/Stand/);
-    // ao lado do Squirtle: prende (nível 1 e já tem 1 unidade: o Stand não conta)
+    // ao lado do Squirtle: prende
     expect(mover(p, eu.id, sp.uid, { tipo: 'tabuleiro', casa: { col: 3, lin: 1 } })).toBeNull();
     expect(sp.usuario).toBe(sq.uid);
     expect(standDe(eu, sq.uid)?.uid).toBe(sp.uid);
-    expect(contaNoLimite(eu)).toBe(1);
+    expect(contaNoLimite(eu)).toBe(2);
     expect(unidadesNoTabuleiro(eu)).toHaveLength(2);
     // mover o usuário leva o Stand pra uma casa ao lado
     expect(mover(p, eu.id, sq.uid, { tipo: 'tabuleiro', casa: { col: 6, lin: 2 } })).toBeNull();
@@ -419,7 +422,6 @@ describe('tabuleiro e Stands', () => {
     expect(sp.usuario).toBe(sq.uid);
     expect(ondeEsta(eu, sq.uid)).toEqual({ tipo: 'tabuleiro', casa: { col: 6, lin: 2 } });
     // JoJo não segura Stand (mesma origem)
-    eu.nivel = 2;
     mover(p, eu.id, jo.uid, { tipo: 'tabuleiro', casa: { col: 0, lin: 0 } });
     expect(mover(p, eu.id, sp.uid, { tipo: 'tabuleiro', casa: { col: 0, lin: 0 } })).toMatch(/outra franquia/);
     // usuário sai do tabuleiro: Stand volta pro banco
@@ -428,9 +430,28 @@ describe('tabuleiro e Stands', () => {
     expect(sp.usuario).toBeUndefined();
   });
 
+  it('todo Stand ocupa vaga, em qualquer nível: nunca passa do limite', () => {
+    const { p, eu } = cenario(34);
+    eu.nivel = 3;
+    const a = dar(p, eu, 'pokemon:squirtle', { casa: [3, 0] });
+    const b = dar(p, eu, 'overwatch:tracer', { casa: [6, 0] });
+    const s1 = dar(p, eu, 'jojo:star-platinum', { banco: 0 });
+    const s2 = dar(p, eu, 'jojo:star-platinum', { banco: 1 });
+    expect(mover(p, eu.id, s1.uid, { tipo: 'tabuleiro', casa: { col: 3, lin: 1 } })).toBeNull();
+    expect(contaNoLimite(eu)).toBe(3);
+    // o tabuleiro encheu: o segundo Stand não entra
+    expect(mover(p, eu.id, s2.uid, { tipo: 'tabuleiro', casa: { col: 6, lin: 1 } })).toBe(MSG_LIMITE);
+    // nível abaixo do que está no tabuleiro: antes da luta o excesso volta, e o resto luta
+    eu.nivel = 2;
+    prepararTabuleiro(eu);
+    expect(contaNoLimite(eu)).toBe(2);
+    expect(montarTime(eu).lutadores).toHaveLength(2);
+    expect(ondeEsta(eu, a.uid)?.tipo === 'tabuleiro' || ondeEsta(eu, b.uid)?.tipo === 'tabuleiro').toBe(true);
+  });
+
   it('antes da luta: preenche com o banco, Stand sem usuário volta, time montado com Deadlock', () => {
     const { p, eu } = cenario(32);
-    eu.nivel = 3;
+    eu.nivel = 4;
     dar(p, eu, 'overwatch:tracer', { banco: 0 });
     const forte = dar(p, eu, 'lol:jinx', { banco: 1 });
     const h1 = dar(p, eu, 'deadlock:haze', { casa: [3, 0] });
@@ -661,7 +682,7 @@ describe('partida inteira', () => {
     for (let r = 0; r < 12; r++) {
       jogarBots(p);
       fimDoPlanejamento(p);
-      for (const j of vivos(p)) expect(unidadesNoTabuleiro(j, false).length).toBeLessThanOrEqual(limiteTabuleiro(j));
+      for (const j of vivos(p)) expect(contaNoLimite(j)).toBeLessThanOrEqual(limiteTabuleiro(j));
       aplicarRodada(p, simularRodada(p));
       avancarRodada(p);
       terminarCarrossel(p);
@@ -743,5 +764,18 @@ describe('ult e posição', () => {
     expect(alternarPosicao(p, eu.id, u.uid)).toMatch(/Yu-Gi-Oh/);
     expect(alternarPosicao(p, eu.id, y.uid)).toBeNull();
     expect(y.posicao).toBe('defesa');
+  });
+
+  it('a posição só muda no planejamento, também online: a ação de fora dele não vale', () => {
+    const { p, eu } = cenario(61);
+    const y = dar(p, eu, 'ygo:mago', { banco: 0 });
+    eu.bot = false;
+    expect(aplicarAcao(p, eu.id, { tipo: 'posicao', uid: y.uid })).toBeNull();
+    expect(y.posicao).toBe('defesa');
+    for (const fase of ['luta', 'resultado', 'carrossel'] as const) {
+      p.fase = fase;
+      expect(aplicarAcao(p, eu.id, { tipo: 'posicao', uid: y.uid }), fase).toBe(MSG_SO_PLANEJAMENTO);
+      expect(y.posicao, fase).toBe('defesa');
+    }
   });
 });
