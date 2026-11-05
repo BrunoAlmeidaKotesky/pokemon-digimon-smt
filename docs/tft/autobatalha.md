@@ -325,6 +325,12 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Unidade no tabuleiro:** foto redonda com borda da cor do custo (cinza, verde, azul, roxo, dourado), estrelas em
   cima, barras de vida e mana, itens embaixo e o ícone do **alcance** (espada vermelha = de perto; arco azul = de
   longe). Ao lançar a habilidade, a foto dá um pulinho com tremida.
+- **Posição do Yu-Gi-Oh!** (pedido do usuário: mais intuitiva e visual): toda carta, no tabuleiro, no banco e na luta,
+  tem um **selo** no canto de baixo à direita: espada laranja em ataque, escudo ciano em defesa. A carta em defesa ganha
+  um aro ciano em volta da foto, pra ler o time de relance. Clicar no selo alterna a posição durante o planejamento (a
+  área de clique passa da borda do selo; o clique não arrasta a peça nem abre ou fecha a dica). Na luta, no carrossel e
+  no tabuleiro dos outros o selo só mostra. A dica de passar o mouse diz a posição e o efeito em uma linha, e o botão
+  do painel fixo continua lá. A partida também recusa a troca fora do planejamento, inclusive a que vem do online.
 - **Imagens inteiras:** retratos, cartas, carrossel, planejador e dica com `object-fit: contain` sobre um fundo da cor
   do custo (o redondo ainda pode cortar a pontinha de uma arte quadrada cheia).
 - **Cartas da loja:** retrato inteiro, nome e custo, **todos os traços em etiquetas coloridas** (origem na cor da

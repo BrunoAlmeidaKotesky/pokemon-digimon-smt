@@ -133,6 +133,11 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   degrau mais alto é 10, e todo último degrau cabe (limite = nível). Os números dos degraus novos são meus: interpolei
   entre os de antes e estiquei o topo, conferindo no playtest.
 
+- **Posição do Yu-Gi-Oh!:** **[você] mais intuitiva e visual.** Selo sempre visível na carta (espada laranja em ataque,
+  escudo ciano em defesa), aro ciano na carta em defesa, e clicar no selo troca durante o planejamento. Decisão minha: a
+  troca agora só vale no planejamento (antes dava pra trocar no meio da luta pelo painel). **Pra você ver:** as cores
+  do selo e do aro (o ciano foi pra não confundir com as cores de custo).
+
 ## Pra você decidir
 
 - **Visual da tela nova:** tons do gramado, metade do adversário em oliva, cores das classes, ícones de perto/longe e

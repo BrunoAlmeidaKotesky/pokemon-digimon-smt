@@ -225,7 +225,7 @@ function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
                 : <TabuleiroDono j={visto} editavel={!olhando && p.fase === 'planejamento'} espaco={espaco} />)}
           </div>
         </div>
-        <Banco j={visto} editavel={!olhando} />
+        <Banco j={visto} editavel={!olhando} planejando={p.fase === 'planejamento'} />
       </div>
       <Jogadores partida={p} olhando={olhando?.id ?? null}>
         {ultima && !(rep && !rep.acabou) && <DanoDaLuta luta={ultima} />}

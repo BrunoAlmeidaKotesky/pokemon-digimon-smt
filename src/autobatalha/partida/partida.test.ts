@@ -3,10 +3,10 @@ import { S } from '../dados';
 import { criarRng } from '../rng';
 import type { Partida } from '../tipos';
 import {
-  acabou, alternarPosicao, aplicarRodada, atualizarLoja, avancarRodada, bonusSequencia, carregarPartida, CHANCES_LOJA,
+  acabou, alternarPosicao, aplicarAcao, aplicarRodada, atualizarLoja, avancarRodada, bonusSequencia, carregarPartida, CHANCES_LOJA,
   chancesLoja, comprar, comprarXp, contaNoLimite, COPIAS_POR_CUSTO, danoDerrota, equipar, escolherEvolucao,
   fimDoPlanejamento, humano, jogadorDe, jogarBot, jogarBots, juros, limiteTabuleiro, mover, terminarCarrossel,
-  MSG_LIMITE, novaPartida, ondeEsta, rendaDaRodada, rodadasDoEstagio, salvarPartida, simularRodada, sortearConfrontos,
+  MSG_LIMITE, MSG_SO_PLANEJAMENTO, novaPartida, ondeEsta, rendaDaRodada, rodadasDoEstagio, salvarPartida, simularRodada, sortearConfrontos,
   prepararTabuleiro, sortearLoja, standDe, standsForaDaVagaNoNivel, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos,
   xpParaProximo, apagarPartida,
   temPartidaSalva, CHAVE_PARTIDA, escolherUlt, gerarMonstros, montarTime, BONUS_DEADLOCK_POR_10_ALMAS,
@@ -770,5 +770,18 @@ describe('ult e posição', () => {
     expect(alternarPosicao(p, eu.id, u.uid)).toMatch(/Yu-Gi-Oh/);
     expect(alternarPosicao(p, eu.id, y.uid)).toBeNull();
     expect(y.posicao).toBe('defesa');
+  });
+
+  it('a posição só muda no planejamento, também online: a ação de fora dele não vale', () => {
+    const { p, eu } = cenario(61);
+    const y = dar(p, eu, 'ygo:mago', { banco: 0 });
+    eu.bot = false;
+    expect(aplicarAcao(p, eu.id, { tipo: 'posicao', uid: y.uid })).toBeNull();
+    expect(y.posicao).toBe('defesa');
+    for (const fase of ['luta', 'resultado', 'carrossel'] as const) {
+      p.fase = fase;
+      expect(aplicarAcao(p, eu.id, { tipo: 'posicao', uid: y.uid }), fase).toBe(MSG_SO_PLANEJAMENTO);
+      expect(y.posicao, fase).toBe('defesa');
+    }
   });
 });

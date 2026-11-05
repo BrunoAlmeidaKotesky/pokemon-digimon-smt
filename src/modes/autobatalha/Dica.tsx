@@ -10,8 +10,8 @@ import { TRACOS, habilidadeDa, opcoesDeUlt, passivaDe } from '../../autobatalha/
 import { abrirImagem, fecharDica, useDica, useImagemGrande, type AlvoDica } from './interacao';
 import { lutadoresEm } from './reproducao';
 import {
-  Estrelas, Foto, IconeAlcance, IconeItem, Moeda, NOME_UNICOS, TextoPorEstrela, corTraco, custoAttr, formaOuNada, imgForma, nomeItem, nomeTraco, num, partesItem,
-  pct, textoItem,
+  EFEITO_POSICAO, Estrelas, Foto, IconeAlcance, IconeItem, Moeda, NOME_UNICOS, SeloPosicao, TextoPorEstrela, corTraco, custoAttr, formaOuNada, imgForma, nomeItem,
+  nomeTraco, num, partesItem, pct, textoItem,
 } from './comum';
 
 export function Dica({ estado }: { estado: EstadoTela }) {
@@ -30,6 +30,8 @@ export function Dica({ estado }: { estado: EstadoTela }) {
     const fora = (e: PointerEvent) => {
       const t = e.target as Node | null;
       if (t && (ref.current?.contains(t) || fixa.contains(t))) return;
+      // o selo da posição de outra carta troca a posição e não mexe na dica
+      if (t instanceof Element && t.closest('button.ab-selo-posicao')) return;
       fecharDica(0, true);
     };
     const tecla = (e: KeyboardEvent) => { if (e.key === 'Escape') fecharDica(0, true); };
@@ -91,7 +93,7 @@ function conteudo(alvo: AlvoDica, e: EstadoTela, fixa: boolean): ReactNode {
   switch (alvo.tipo) {
     case 'unidade': {
       const u = p?.jogadores.find(j => j.id === alvo.dono)?.unidades[alvo.uid];
-      return u ? <DicaUnidade u={u} editavel={alvo.editavel} fixa={fixa} /> : null;
+      return u ? <DicaUnidade u={u} editavel={alvo.editavel} planejando={p?.fase === 'planejamento'} fixa={fixa} /> : null;
     }
     case 'campeao': {
       const u: Unidade = { uid: -1, campeao: alvo.campeao, estrela: alvo.estrela ?? 1, forma: alvo.forma, itens: [] };
@@ -141,8 +143,8 @@ function tentar<T>(f: () => T): T | null {
 
 /** `editavel`: é sua (dá pra escolher ult e posição); os botões aparecem com a dica fixa (clique na unidade).
  *  `etiqueta`: marca no topo (carta da loja, carrossel); `segura`: item que vem junto (carrossel), fora dos atributos. */
-function DicaUnidade({ u, editavel, luta, fixa = false, etiqueta, segura }: {
-  u: Unidade; editavel: boolean; luta?: EstadoVisivel; fixa?: boolean; etiqueta?: string; segura?: string;
+function DicaUnidade({ u, editavel, planejando = false, luta, fixa = false, etiqueta, segura }: {
+  u: Unidade; editavel: boolean; planejando?: boolean; luta?: EstadoVisivel; fixa?: boolean; etiqueta?: string; segura?: string;
 }) {
   const c = tentar(() => S().campeao(u.campeao));
   const f = formaOuNada(u.forma);
@@ -177,6 +179,7 @@ function DicaUnidade({ u, editavel, luta, fixa = false, etiqueta, segura }: {
         <ul className="ab-d-tracos curtos">
           {tracos.map(id => <li key={id} style={corTraco(id)}><b>{nomeTraco(id)}</b></li>)}
         </ul>
+        {f.fr === 'ygo' && u.uid >= 0 && <p className="ab-d-posicao"><SeloPosicao posicao={pos} />{EFEITO_POSICAO[pos]}</p>}
         {luta && (
           <p className="ab-d-agora">
             Vida <b>{Math.max(0, Math.round(luta.vida))}</b>/{Math.round(luta.vidaMax)}
@@ -252,13 +255,10 @@ function DicaUnidade({ u, editavel, luta, fixa = false, etiqueta, segura }: {
         {f.fr === 'ygo' && (
           <div className="ab-d-ult">
             <span className="mute">Posição:</span> <b>{pos === 'ataque' ? 'Ataque' : 'Defesa'}</b>
-            {editavel && fixa && u.uid >= 0 && (
+            {editavel && planejando && u.uid >= 0 && (
               <button type="button" className="ab-chip" onClick={() => acoes.alternarPosicao(u.uid)}>Mudar pra {pos === 'ataque' ? 'defesa' : 'ataque'}</button>
             )}
           </div>
-        )}
-        {editavel && !fixa && (ops.length > 1 || f.fr === 'ygo') && (
-          <p className="ab-d-dica mute">Clique na unidade pra trocar {ops.length > 1 ? 'a ult' : 'a posição'}.</p>
         )}
       </section>
       <LinhaEvolutiva c={c} atual={u.forma} />
