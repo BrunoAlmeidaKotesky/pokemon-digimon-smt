@@ -23,8 +23,8 @@ const TAMANHOS = { 'Category:Large_Monsters': 'Grande', 'Category:Small_Monsters
 /** Página genérica, não um monstro. */
 const FORA = new Set(['Fish']);
 
-/** Título -> outros renders usados na própria página ("File:..."). */
-async function rendersDaPagina(titulos) {
+/** Título -> outros renders ("File:..."): os usados na própria página e, depois, os que a busca da wiki acha pelo nome. */
+async function outrosRenders(titulos) {
   const out = new Map(titulos.map(t => [t, []]));
   for (const lote of chunks(titulos, 10)) {
     let cont = {};
@@ -36,6 +36,11 @@ async function rendersDaPagina(titulos) {
       if (!d.continue) break;
       cont = d.continue;
     }
+  }
+  for (const t of titulos) {
+    const d = await wiki(API, { action: 'query', list: 'search', srnamespace: '6', srlimit: '20', srsearch: `"${t}" Render` });
+    // o arquivo se chama "<jogo>-<monstro> Render...": o hífen evita pegar "Razing Bogabadorumu" ao procurar "Bogabadorumu"
+    out.get(t).push(...(d.query?.search ?? []).map(x => x.title).filter(a => a.includes(`-${t} Render`)));
   }
   return out;
 }
@@ -50,7 +55,7 @@ async function main() {
   const thumbs = await miniaturas(API, comRender.map(arquivo));
   // a infobox de algumas páginas aponta pra um arquivo que não existe: vale outro render da mesma página
   const quebradas = comRender.filter(p => !thumbs.has(arquivo(p))).map(p => p.title);
-  const outros = await rendersDaPagina(quebradas);
+  const outros = await outrosRenders(quebradas);
   const thumbsOutros = await miniaturas(API, [...outros.values()].flat());
   const imagemDe = p => thumbs.get(arquivo(p)) ?? outros.get(p.title)?.map(a => thumbsOutros.get(a)).find(Boolean);
   const semThumb = comRender.filter(p => !imagemDe(p)).map(p => p.title);
