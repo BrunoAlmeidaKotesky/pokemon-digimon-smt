@@ -1,8 +1,55 @@
 import { describe, expect, it } from 'vitest';
 import {
-  aleatorio, amostra, campeoesComPeso, chanceAoMenos, comb, custoFechar, encher, escadaEquivalente, faixa, mecanicas, media, mediana,
-  melhorDesenho, porCusto, resumoSet, rolagensEsperadas, simularFechar, simularLoja, simularRolagens, tabuleiroAleatorio, tracosDoSet,
+  aleatorio, amostra, campeoesComPeso, chanceAoMenos, comb, conferirEscada, custoFechar, degrausPorTamanho, emCampo, encher, ESCADA_DE_REFERENCIA,
+  escadaEquivalente, faixa, mecanicas, media, mediana, melhorDesenho, nivelDosStands, porCusto, resumoSet, rolagensEsperadas, simularFechar, simularLoja, simularRolagens, standsQueCabem,
+  tabuleiroAleatorio, tracosDoSet,
 } from './lib.mjs';
+
+describe('degraus pelo tamanho do traço', () => {
+  it('traço pequeno fica curto, grande vai até 6, e nunca diminui com o tamanho', () => {
+    expect([11, 13, 14, 17, 18, 29, 30, 55].map(degrausPorTamanho)).toEqual([3, 3, 4, 4, 5, 5, 6, 6]);
+    for (let n = 1; n < 60; n++) expect(degrausPorTamanho(n + 1)).toBeGreaterThanOrEqual(degrausPorTamanho(n));
+  });
+  it('referência: um traço do tamanho certo com a escada dela custa igual, e cada uma tem o número certo de degraus', () => {
+    for (const [k, ref] of Object.entries(ESCADA_DE_REFERENCIA)) {
+      expect(ref).toHaveLength(Number(k));
+      const c = conferirEscada(ref, 27, 27, 270, 12);
+      for (const r of c.razoes) expect(r).toBeCloseTo(1, 10);
+      expect(c.alcancavel).toBe(true);
+      expect(c.lojasDoTopo).toBeCloseTo(custoFechar(ref.at(-1), 27, 270), 10);
+    }
+  });
+  it('último degrau precisa caber no tabuleiro e no traço', () => {
+    expect(conferirEscada([2, 3, 4], 11, 27, 270, 12).alcancavel).toBe(true);
+    expect(conferirEscada([2, 4, 13], 20, 27, 270, 12).alcancavel).toBe(false);
+    expect(conferirEscada([2, 4, 6], 5, 27, 270, 12).alcancavel).toBe(false);
+  });
+});
+
+describe('Stands e o limite do tabuleiro', () => {
+  it('quantos cabem: um usuário por Stand, e quem passa dos livres gasta vaga', () => {
+    expect(standsQueCabem(9, Infinity)).toBe(9);
+    expect(standsQueCabem(9, 0)).toBe(4);
+    expect(standsQueCabem(12, 4)).toBe(8);
+    // confere com a conta por força bruta
+    for (let limite = 1; limite <= 12; limite++) for (let livres = 0; livres <= 5; livres++) {
+      let melhor = 0;
+      for (let h = 0; h <= limite; h++) for (let s = 0; s <= h; s++) if (h + Math.max(0, s - livres) <= limite) melhor = Math.max(melhor, s);
+      expect(standsQueCabem(limite, livres), `${limite} ${livres}`).toBe(melhor);
+    }
+  });
+  it('em campo: o limite e os Stands fora da vaga', () => {
+    expect(emCampo(9, Infinity)).toBe(18);
+    expect(emCampo(9, 0)).toBe(9);
+    expect(emCampo(12, 4)).toBe(16);
+    expect(emCampo(1, 1)).toBe(2);
+  });
+  it('nível dos Stands: o menor nível em que cabem, ou nunca', () => {
+    const livres = n => Math.floor(n / 3);
+    expect([2, 3, 4, 5, 6, 8].map(n => nivelDosStands(n, livres, 12))).toEqual([3, 5, 6, 8, 9, 12]);
+    expect(nivelDosStands(9, livres, 12)).toBe(Infinity);
+  });
+});
 
 describe('custo de fechar um breakpoint', () => {
   it('soma dos degraus: (u/vagas)·Σ 1/(n − j); impossível acima de n', () => {

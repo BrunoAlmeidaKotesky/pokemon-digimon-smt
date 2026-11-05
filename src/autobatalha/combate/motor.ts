@@ -32,7 +32,7 @@ import {
   type EventoLuta, type Item, type Lado, type Lutador, type NomeAtributo, type OpcoesDano, type Quadro, type ResultadoLuta,
   type Status, type TipoDano, type Unidade,
 } from '../tipos';
-import { CRIT_CHANCE, CRIT_DANO, baseDaUnidade, bonusDaUnidade, bonusZero, papelDe, somarBonus } from './atributos';
+import { CRIT_CHANCE, CRIT_DANO, alcanceDaForma, baseDaUnidade, bonusDaUnidade, bonusZero, papelDe, somarBonus } from './atributos';
 import { HABILIDADE_CHEFE } from './chefe';
 import type { Conteudo, TracoAtivo } from './contrato';
 import { LutadorInterno, idLuta, type TracoNoLado } from './lutador';
@@ -849,6 +849,8 @@ class Luta implements Contexto {
     l.base.dano *= multiplicador;
     l.base.armadura *= multiplicador;
     l.base.resist *= multiplicador;
+    // a forma nova manda no alcance (War Greymon bate de perto, mesmo vindo do Metal Greymon)
+    l.base.alcance = alcanceDaForma(f);
     if (this.regras.velTransformar) l.base.velAtaque *= VEL_TRANSFORMAR;
     // a nova forma: transforma de novo (cadeia do Digimon) ou não lança mais
     try {

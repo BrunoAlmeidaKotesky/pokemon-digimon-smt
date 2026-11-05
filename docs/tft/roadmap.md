@@ -10,7 +10,7 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 2. **Escadas das origens:** **[você] mais degraus em todas.** Agora 5 (6 nas maiores), pela conta (resultado.md,
    seção 6b): Persona 1/2/3/4/5, Digimon, Deadlock e Sujimon 2/3/4/5/6, Overwatch 2/3/4/5/7, SMT 2/3/4/6/8, JoJo,
    Yu-Gi-Oh! e LoL 2/3/5/7/9/10, Pokémon 2/4/6/8/9/10 (grande demais pra igualar; degraus de baixo dão pouco).
-   Elementos 2/3/4. A conta usa 10 unidades como teto; com o limite novo (nível + 1, até 13) dá pra refazer.
+   Elementos 2/3/4. A conta usa 10 unidades como teto; o tabuleiro vai até 12 (limite = nível).
 3. **Efeitos das classes sem número** (Demoníacos, Criaturinha Bizarra, Fadinhas, Safada, Atirador, Anjo, Robô,
    Dragão, Temporais): escrevi números a partir da sua ideia de cada uma. Dragão virou escada normal (2/4/6) com bônus
    de vida e dano; a ideia "só cabe um ativo" ficou de fora. **[você] nerf no Dragão:** +10/20/32% (era 15/30/50%),
@@ -30,7 +30,8 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
    de cada estágio (40/40/20 no 5+), banco cheio vende o campeão pelo custo (menos quando fecha evolução, como na
    loja), e dá pra mexer na loja durante o carrossel.
 9. **Atributos, economia e loja:** tabelas no design. **[você] economia mais generosa e mais unidades:** renda 6,
-   vitória +2, sequência +1/+2/+3/+4, nível máximo 12, limite nível + 1, XP mais barata nos níveis baixos e médios.
+   vitória +2, sequência +1/+2/+3/+4, nível máximo 12, XP mais barata nos níveis baixos e médios. O limite nível + 1
+   virou **limite = nível** depois que você jogou (05/11): começar com dois não foi boa ideia.
    Atributos e habilidades passaram pela rodada de equilíbrio (equilibrio.md).
 10. **Bots:** 7, com os nomes dos atributos Bakugan (Pyrus, Aquos…). **[você] fortes demais:** dificuldade Fácil
     (padrão), Normal e Difícil. Um jogador "normal" fica em ~2,9º contra os fáceis e ~4,9º contra os normais. O
@@ -43,7 +44,9 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 
 13. **Dano na derrota:** diminuí o do rascunho do design (as partidas acabavam no estágio 5). Agora vão até o 6 ou
     7, umas 35 rodadas.
-14. **Monstros:** calibrados com partidas de bots. Os comuns quase sempre perdem; o chefe ganha umas 35–40% das vezes.
+14. **Monstros:** calibrados com partidas de bots. Os comuns quase sempre perdem; o chefe ganha umas 40% das vezes na 3-7
+    e 65% depois. Com limite = nível baixei o chefe (vida 4000 → 3400, dano 260 → 220), pra ele não ficar mais forte só
+    porque o tabuleiro tem uma unidade a menos. A 1-1 continua ganha com um campeão só (98%).
 15. **Detalhes da partida:**
     - a sequência de vitórias e derrotas só conta luta contra jogador;
     - empate conta como derrota pros dois;
@@ -62,6 +65,16 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 - **Tooltip:** **[você] passar o mouse mostra só o essencial** (nome, custo, estrelas, alcance, traços, habilidade,
   itens); o botão direito fixa com todos os detalhes.
 - **Baba (Deadlock):** **[você] bate de perto** (alcance 1).
+- **Quem é de longe:** **[você] tem gente demais de longe, muitos sem sentido.** Revi forma por forma: 96 foram pra alcance
+  1 pela tabela `CORPO_A_CORPO` (`combate/atributos.ts`), e 7 trocaram de classe na exportação (`set1-escolhas-v5.json`,
+  editada no lugar). De 408 formas de longe (69%) foram pra 306 (52%). Critério meu, pra você revisar: quem na obra bate,
+  morde ou corta no contato; LoL pelo "Corpo a corpo" do Catálogo, JoJo pelo alcance do Stand na wiki (menos quem atira:
+  Tusk, Bad Company e Ball Breaker continuam), Deadlock e Overwatch ficaram como estavam (todos têm arma).
+  **Classe:** Atirador tinha gente sem tiro nenhum, e trocar só o alcance deixaria um Atirador de perto com a vida
+  mais frágil do jogo, então troquei a classe: Chikorita, Bayleef e Meganium viraram Tanque; Justimon (Blitz e Critical
+  Arm), Porradeiro; Bystial Magnamhut, Dragão; Cironnup perdeu a classe (tem outras duas). Atirador foi de 27 pra 24
+  campeões, dentro da faixa de 23 a 33, e o traço continua fechando 2/4/6. **Pra você ver:** se alguém da lista devia
+  atirar, ou se quer mais gente de perto (Personas e demônios do SMT ficaram como conjuradores).
 - **Lobby:** **[você] pediu** a sala antes da partida no lugar da tela inicial: os 8 jogadores (você com a marca de
   anfitrião; os bots com o ícone e o tabuleiro que vão ter), as regras da sala que só o anfitrião muda (relógio,
   segundos, dificuldade), o seu nome, o seu **tabuleiro** (8 estilos só de cores e fundo: Gramado, Deserto, Neve,
@@ -80,7 +93,61 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   anfitrião que fecha a página acaba a sala (sem trocar de anfitrião); a rodada espera todos verem a luta (cada um na
   velocidade dele), com um limite; a partida online não é salva; nome vazio vira "Jogador N".
 
+- **Stands (JoJo):** **[você] forte demais:** Stand não ocupar vaga deixava o tabuleiro bem acima do limite (18 unidades
+  em campo). Sua decisão de "Stand não ocupa vaga" fica, mas com um teto. Comparei 8 regras no playtest, com tudo o mais
+  igual (`REGRAS_STANDS`, equilibrio.md, seção "Stands"): vitórias do time cheio de JoJo contra as outras origens em 4
+  ★1, 6 ★2, 8 ★2, 10 ★2 e 10 ★3, colocação de quem mais usa JoJo em 48 partidas de bots (a média geral é 4,5) e o máximo
+  de unidades em campo.
+
+  | Regra | Vitórias do JoJo | Colocação | Máximo em campo |
+  |---|---|---|---|
+  | Sem limite | 99 / 100 / 99 / 100 / 97% | 2,6 | 18 |
+  | Todo Stand ocupa vaga | 8 / 12 / 11 / 13 / 13% | 7,5 | 9 |
+  | Até 1 fora da vaga | 49 / 35 / 28 / 19 / 23% | 6,1 | 10 |
+  | Até 2 fora da vaga | 80 / 59 / 50 / 34 / 34% | 4,5 | 11 |
+  | Até 3 fora da vaga | 96 / 78 / 59 / 49 / 48% | 2,9 | 12 |
+  | **Um fora da vaga a cada 3 níveis** | **49 / 59 / 50 / 49 / 48%** | **4,4** | **12** |
+  | Um fora da vaga a cada 4 níveis | 49 / 35 / 50 / 34 / 34% | 6,7 | 11 |
+  | Sem limite, Stand 40% mais fraco | 95 / 94 / 96 / 98 / 94% | 3,4 | 17 |
+
+  **Escolhi um fora da vaga a cada 3 níveis:** é a única que fica perto de 50% em todos os pontos da partida e resolve a
+  sua queixa, o excesso de campeões, em vez de só cortar número (Stand 40% mais fraco continua com 94% a 98% e 17 em
+  campo). Um número fixo não serve: 2 dá 80% cedo e 34% tarde, 3 dá 96% cedo. Stand ocupar vaga mata a origem (cada Stand
+  gasta duas vagas: a dele e a do usuário). Fica assim: 1 no nível 3, 2 no 6, 3 no 9, 4 no 12; os outros ocupam vaga.
+  Consequência: cabem no máximo 8 Stands (nível 12), então a escada 2/3/5/7/9/10 nunca fechava os degraus de 9 e 10.
+  Virou 2/3/4/5/6/8, com +6/10/13/16/18/28%, e a mana a menos passou pro degrau de 8.
+
+- **Pokémon e Digimon:** **[você] vale um buff no escalonamento.** Li como o ganho de força ao evoluir das linhas (se era
+  a escada do traço, é só falar). Bônus de vida e dano nas linhas: Pokémon +5% (★2) e +10% (★3), Digimon +12% e +30%; o
+  Digimon ganha mais porque era a origem mais fraca de verdade na luta. Time cheio contra as outras origens (4 ★1, 6 ★2,
+  8 ★2, 10 ★2, 10 ★3): Pokémon 53 / 41 / 33 / 48 / 45% → 53 / 48 / 38 / 56 / 59%; Digimon 40 / 31 / 29 / 29 / 19% → 39 /
+  46 / 40 / 41 / 46%. Ninguém passa do meio do grupo (Yu-Gi-Oh! e Sujimon seguem no topo). Parei aí porque +10/+20 já
+  punha o Pokémon em 73% no 10 ★3. **Efeito colateral:** estrela vale mais que custo nas linhas (★2 de custo 3 contra ★1
+  de custo 5 foi de 71% pra 77%, alvo 35% a 65%), e as formas de Digimon que só atacam na ★2 ficam muito fortes no
+  rodízio (Numemon, Garurumon, Vegimon, Devimon: 90% a 93%). Baixar o +12% pra +5% tirava só 7 dos 105 campeões fora da
+  faixa e derrubava o Digimon de 46% pra 37% no 6 ★2, então ficou.
+
+- **Mais degraus nos traços:** **[você] Fogo com 2/3/4 tendo muito mais gente.** O número de degraus agora sai do tamanho
+  do traço, com a régua das origens: 3 até 13 campeões, 4 de 14 a 17, 5 de 18 a 29, 6 de 30 em diante. Tabela no design
+  (seção Traços) e contas em resultado.md, seção 6c. Decisões minhas: as escadas guardam os degraus de antes quando dá,
+  e nesses degraus o efeito é o mesmo (Tanque +22% e +23% no 6, medido antes e depois), então quem já fechava segue igual; só
+  Criaturinha Bizarra e Safada começam no 3; Terra e Gelo (11) ficam em 2/3/4; os efeitos extras ficaram na mesma
+  contagem de antes, menos Dragão e Atirador (topo 7 em vez de 6) e Temporais (topo 5 em vez de 6, o traço só tem 17). O
+  degrau mais alto é 10, e todo último degrau cabe (limite = nível). Os números dos degraus novos são meus: interpolei
+  entre os de antes e estiquei o topo, conferindo no playtest.
+
+- **Posição do Yu-Gi-Oh!:** **[você] mais intuitiva e visual.** Selo sempre visível na carta (espada laranja em ataque,
+  escudo ciano em defesa), aro ciano na carta em defesa, e clicar no selo troca durante o planejamento. Decisão minha: a
+  troca agora só vale no planejamento (antes dava pra trocar no meio da luta pelo painel). **Pra você ver:** as cores
+  do selo e do aro (o ciano foi pra não confundir com as cores de custo).
+
 ## Pra você decidir
+
+- **Origens que sobraram fora do meio** (time cheio, equilibrio.md, seção "Origens"): Yu-Gi-Oh! vai a 98% no 10 ★2 (do
+  degrau de 7 em diante as cartas ganham as duas posições) e Sujimon fica entre 73% e 89%. Na outra ponta, Deadlock (3% a
+  32%), Overwatch no 10 ★3 (22%) e LoL no 6 ★2 (33%); os dois primeiros e o Sujimon agem também fora da luta, e isso não
+  entra na conta. Você não pediu pra mexer: quer um ajuste nelas?
+- **"Escalonamento" de Pokémon e Digimon:** li como ganho ao evoluir. Se era a escada do traço, dá pra trocar.
 
 - **Visual da tela nova:** tons do gramado, metade do adversário em oliva, cores das classes, ícones de perto/longe e
   dos degraus, a apresentação "VS" e o lugar do painel de dano. E os sons, que ninguém ouviu ainda.
@@ -124,12 +191,16 @@ está fora no fim de [matematica/equilibrio.md](matematica/equilibrio.md).
 
 ## Pendente
 
+- As 7 trocas de classe (Chikorita, Bayleef, Meganium, os dois Justimon, Bystial Magnamhut e Cironnup) foram feitas direto
+  em `set1-escolhas-v5.json`. No Catálogo do seu navegador elas continuam como eram: troque lá antes de exportar de novo,
+  senão a exportação nova traz as classes antigas de volta. O alcance fica no código e não depende disso.
 - Quatro linhas sem nome no Catálogo ("Nova linha"): Pupitar → Tyranitar → Groudon, Dunsparce → Dudunsparce →
   Rayquaza, Agumon Hakase → Numemon…, Scary Monsters → The World. O jogo mostra o nome da 1ª forma.
 - A linha do Roggenrola está no plano mas nenhuma forma está marcada: ficou fora.
 - Linhas marcadas como não confirmadas no Catálogo (todas as da Persona e do Sujimon, Zygarde) entraram como estão.
 - Classes fora da faixa de tamanho (resultado.md, seção 3): Temporais (faltam 6), Anjo (faltam 3), Assassino
-  (faltam 3), Safada (sobram 4), Porradeiro (sobram 2). Dá pra mexer no Catálogo.
+  (faltam 3), Safada (sobram 4), Porradeiro (sobram 2), Criaturinha Bizarra e Fadinhas (sobra 1 cada). Dá pra mexer no
+  Catálogo.
 - Online: sem troca de anfitrião (se ele sair, a sala acaba) e sem espectador (quem chega com a partida rolando espera
   a próxima). Com PeerJS de verdade, testado só no mesmo computador (dois navegadores isolados): falta testar entre
   redes diferentes.

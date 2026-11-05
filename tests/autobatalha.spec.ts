@@ -77,14 +77,14 @@ test.describe('Autobatalha', () => {
     const noTab = page.locator('#abTabuleiro .ab-peca');
     await expect(noTab).toHaveCount(1);
     await expect(noBanco).toHaveCount(0);
-    // o limite vem da partida (nível + o que ela der a mais): a tela só mostra
+    // o limite vem da partida (o nível): a tela só mostra
     const lim = await limite(page);
     expect(lim).toBeGreaterThanOrEqual(1);
     await expect(page.locator('#abLimite b')).toHaveText(`1/${lim}`);
     await expect(page.locator('#abTracos .ab-traco').first()).toBeVisible();
     await expect(page.locator('#abOuro')).toHaveText('1');
     await expect(page.locator('#abJuros')).toHaveText('+0 juros');
-    await page.locator('#abCartas .ab-carta[data-custo="1"]').first().click();
+    await page.locator('#abCartas .ab-carta[data-custo="1"]:not([data-campeao^="jojo:"])').first().click();
     await expect(page.locator('#abOuro')).toHaveText('0');
     await expect(noBanco).toHaveCount(1);
     await expect(page.locator('#abCartas .ab-carta.vazia')).toHaveCount(1);
@@ -158,10 +158,17 @@ test.describe('Autobatalha', () => {
       const eu = p.jogadores.find(j => j.id === p.voce)!;
       Object.assign(Object.values(eu.unidades)[0]!, { campeao: 'pokemon:bulbasaur', forma: 'pokemon:Bulbasaur' });
       eu.loja = ['pokemon:bulbasaur', 'pokemon:bulbasaur', 'pokemon:bulbasaur', 'jojo:stray-cat', 'smt:mandrake', null, null];
-      // a forma de estrela 3 do Mandrake tem 4 traços com um comprido: não cabe em duas linhas nem com ele no fim
+      // com a classe a mais do set desta conta (abaixo), a forma de estrela 3 do Mandrake tem 4 traços com um comprido
       eu.lojaFormas = eu.loja.map((_, i) => (i === 4 ? 'smt:Cironnup' : null));
       eu.ouro = 20;
       localStorage.setItem('pdx-autobatalha-v1', JSON.stringify(p));
+    });
+    // nenhuma forma do set tem hoje 4 traços com um comprido: o Cironnup ganha uma classe só nesta conta
+    await page.route('**/autobatalha/set1.json', async rota => {
+      const resposta = await rota.fetch();
+      const set = await resposta.json() as { formas: Record<string, { classes: string[] }> };
+      set.formas['smt:Cironnup']!.classes.push('atirador');
+      await rota.fulfill({ response: resposta, json: set });
     });
     await abrir(page);
     await aba(page, 'Autobatalha');
@@ -469,9 +476,56 @@ test.describe('Autobatalha', () => {
     await expect(moeda).toHaveCount(0);
   });
 
+  test('selo de posição do Yu-Gi-Oh!: só nas cartas, o clique alterna, arrastar continua e na luta só mostra', async ({ page }) => {
+    const carta = (uid: number, campeao: string, forma: string) => ({ uid, campeao, forma, estrela: 1, itens: [] });
+    await partidaMexida(page, {
+      nivel: 3,
+      unidades: {
+        900: carta(900, 'ygo:dark-magician', 'ygo:Dark Magician'),
+        901: carta(901, 'ygo:dark-magician-girl', 'ygo:Dark Magician Girl'),
+        902: carta(902, 'lol:caitlyn', 'lol:Caitlyn'),
+      },
+      tabuleiro: { '3,1': 900, '5,1': 902 },
+      banco: [901, null, null, null, null, null, null, null, null],
+    });
+    const noTab = page.locator('#abTabuleiro .ab-peca[data-campeao="ygo:dark-magician"]');
+    const noBanco = page.locator('#abBanco .ab-peca[data-campeao="ygo:dark-magician-girl"]');
+    const selo = noTab.locator('button.ab-selo-posicao');
+    await expect(selo).toHaveAttribute('data-posicao', 'ataque');
+    await expect(noBanco.locator('button.ab-selo-posicao')).toBeVisible();
+    await expect(page.locator('.ab-peca[data-campeao="lol:caitlyn"] .ab-selo-posicao')).toHaveCount(0);
+    await expect(selo).toHaveAttribute('aria-label', 'Em ataque. Clique pra mudar pra defesa');
+
+    // clicar alterna sem abrir a dica fixa nem começar a arrastar; o aro da peça muda junto
+    await selo.click();
+    await expect(selo).toHaveAttribute('data-posicao', 'defesa');
+    await expect(noTab.locator('.ab-ficha')).toHaveClass(/\bdefesa\b/);
+    await expect(page.locator('#abDica.fixa')).toHaveCount(0);
+    await expect(noTab).not.toHaveClass(/pegando/);
+    await expect(page.locator('#abDica .ab-d-posicao')).toContainText('Defesa:');
+
+    // com a dica de outra peça fixa, o selo não fecha ela
+    await page.locator('.ab-peca[data-campeao="lol:caitlyn"]').click();
+    await expect(page.locator('#abDica.fixa')).toBeVisible();
+    await noBanco.locator('button.ab-selo-posicao').click();
+    await expect(noBanco.locator('button.ab-selo-posicao')).toHaveAttribute('data-posicao', 'defesa');
+    await expect(page.locator('#abDica.fixa')).toBeVisible();
+    await page.keyboard.press('Escape');
+
+    // a posição fica na peça, e arrastar pela foto continua movendo
+    await arrastar(page, noBanco.locator('.ab-foto'), page.locator('#abTabuleiro .ab-casa[data-col="1"][data-lin="1"]'));
+    await expect(page.locator('#abTabuleiro .ab-peca[data-campeao="ygo:dark-magician-girl"] button.ab-selo-posicao')).toHaveAttribute('data-posicao', 'defesa');
+
+    // na luta o selo só mostra
+    await page.locator('#abPronto').click();
+    await expect(page.locator('#abLuta')).toBeVisible();
+    await expect(page.locator('#abLuta .ab-peca span.ab-selo-posicao[data-posicao="defesa"]').first()).toBeVisible();
+    await expect(page.locator('#autobatalha button.ab-selo-posicao')).toHaveCount(0);
+  });
+
   test('tecla W, traço em foco, campeões do traço e dica fixa com a arte grande', async ({ page }) => {
     await partidaMexida(page, { ouro: 20, nivel: 4 });
-    await page.locator('#abCartas .ab-carta[data-campeao]').first().click();
+    await page.locator('#abCartas .ab-carta[data-campeao]:not([data-campeao^="jojo:"])').first().click();
     const banco = page.locator('#abBanco .ab-peca');
     const noTab = page.locator('#abTabuleiro .ab-peca');
     await expect(banco).toHaveCount(1);

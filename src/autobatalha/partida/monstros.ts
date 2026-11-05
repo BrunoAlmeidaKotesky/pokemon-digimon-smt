@@ -6,14 +6,15 @@
 //     resistência 10, 0,6 ataque/s; 2, 3 e 4 monstros na 1-1, 1-2 e 1-3
 //   comum do estágio e ≥ 2 (4 no 2-7; escolta do chefe): vida 1000 × 1,45^(e−2), dano 66 × 1,35^(e−2), armadura e
 //     resistência 15 + 10(e−2), 0,65 ataque/s
-//   chefe (3-7 em diante): vida 4000 × 1,4^(e−3), dano 260 × 1,4^(e−3), armadura e resistência 40 + 10(e−3),
+//   chefe (3-7 em diante): vida 3400 × 1,4^(e−3), dano 220 × 1,4^(e−3), armadura e resistência 40 + 10(e−3),
 //     0,75 ataque/s, 15% de crítico (o motor dá a ele a Pancada do Chefe: 200% em área e atordoa)
 //   escolta do chefe: 2 (estágio 3), 3 (4 e 5), 4 (6 em diante)
-// Calibrado em 04/11/2026 com o motor e o conteúdo de verdade e o set1.json, em 40 partidas de 8 bots (o time que
-// cada bot monta faz o papel do time normal daquele ponto). Vitória contra os monstros (e unidades que sobrevivem):
-//   1-1 100% (100%), 1-2 100% (95%), 1-3 100% (93%), 2-7 98% (90%)
-//   chefe: 3-7 61% (35%; 12% das lutas vão até os 30 s), 4-7 69% (37%), 5-7 25% (só 8 lutas: as partidas de bots
-//   costumam acabar no estágio 5)
+// Calibrado em 05/11/2026 com o motor e o conteúdo de verdade e o set1.json, em 24 partidas de 8 bots (o time que
+// cada bot monta faz o papel do time normal daquele ponto). Com limite = nível o tabuleiro tem uma unidade a menos, e o
+// chefe de vida 4000 e dano 260 foi de 64% pra 38% de vitória dos jogadores na 3-7; 3400 e 220 volta pro que era. Vitória dos
+// jogadores:
+//   1-1 98% (só com o campeão de graça), 1-2 99%, 1-3 100%, 2-7 99%
+//   chefe: 3-7 59%, 4-7 31%, 5-7 36%
 // Pra recalibrar: jogar partidas de bots com o motor de verdade e medir de novo; número maior = monstro mais forte.
 import type { Rng } from '../rng';
 import { S } from '../dados';
@@ -39,7 +40,7 @@ export const CALIBRAGEM: { estagio1: Escala; comum: Escala; chefe: Escala } = {
   /** do estágio 2 em diante: vida × cresceVida^(estágio − 2), dano × cresceDano^(…), defesa + cresceDefesa × (…) */
   comum: { vida: 1000, dano: 66, defesa: 15, vel: 0.65, cresceVida: 1.45, cresceDano: 1.35, cresceDefesa: 10 },
   /** chefe: igual ao comum, contando do estágio 3 */
-  chefe: { vida: 4000, dano: 260, defesa: 40, vel: 0.75, cresceVida: 1.4, cresceDano: 1.4, cresceDefesa: 10 },
+  chefe: { vida: 3400, dano: 220, defesa: 40, vel: 0.75, cresceVida: 1.4, cresceDano: 1.4, cresceDefesa: 10 },
 };
 
 /** Atributos do monstro comum (também a escolta do chefe). */

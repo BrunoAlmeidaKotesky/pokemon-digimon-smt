@@ -51,7 +51,7 @@ export interface CampeaoDados {
   /** nome da linha evolutiva, quando é linha */
   linha?: string;
   custo: Custo;
-  /** Stand de JoJo: entra preso a uma unidade de outra origem e não conta no limite do tabuleiro */
+  /** Stand de JoJo: entra preso a uma unidade de outra origem; só alguns ficam fora do limite do tabuleiro */
   stand?: true;
   /** ids de forma por nível da linha (1 a 3 níveis; cada nível pode ter alternativas). Solto: [[id]].
    *  Estrela s usa niveis[min(s, niveis.length) - 1]. */

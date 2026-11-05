@@ -27,6 +27,37 @@ const FORA = ['luz', 'trevas'];
 const ESCADA_ORIGEM_5 = [2, 3, 4, 6, 8];
 const ESCADA_ORIGEM_6 = [2, 3, 4, 6, 8, 10];
 const TABULEIRO_JOGO = 10;
+// Autobatalha: limite do tabuleiro = nível, até o nível máximo; um Stand fora da vaga a cada tantos níveis
+const NIVEL_MAXIMO = 12;
+const NIVEIS_POR_STAND = 3;
+const ESCADA_JOJO = [2, 3, 4, 5, 6, 8];
+const ESCADA_JOJO_ANTES = [2, 3, 5, 7, 9, 10];
+// Autobatalha: escada de cada traço antes (até 05/11/2026) e agora, no código em src/autobatalha/conteudo/tracos.ts
+const ESCADAS_DOS_TRACOS = {
+  Safada: [[3, 5, 7], [3, 4, 5, 7, 9, 10]],
+  'Criaturinha Bizarra': [[3, 5, 7], [3, 4, 5, 7, 9, 10]],
+  Porradeiro: [[2, 4, 6], [2, 3, 4, 6, 8, 10]],
+  Fadinhas: [[2, 4, 6], [2, 3, 4, 6, 8, 10]],
+  Demoníacos: [[2, 4, 6], [2, 3, 4, 6, 8, 10]],
+  Tanque: [[2, 4, 6], [2, 3, 4, 6, 8]],
+  Atirador: [[2, 4, 6], [2, 3, 4, 5, 7]],
+  Dragão: [[2, 4, 6], [2, 3, 4, 5, 7]],
+  Robô: [[2, 4, 6], [2, 3, 4, 5, 6]],
+  Assassino: [[2, 4, 6], [2, 3, 4, 5, 6]],
+  Anjo: [[2, 4, 6], [2, 3, 4, 5, 6]],
+  Temporais: [[2, 4, 6], [2, 3, 4, 5]],
+  Fogo: [[2, 3, 4], [2, 3, 4, 5, 6]],
+  Vento: [[2, 3, 4], [2, 3, 4, 5, 6]],
+  Água: [[2, 3, 4], [2, 3, 4, 5, 6]],
+  Planta: [[2, 3, 4], [2, 3, 4, 5]],
+  Raio: [[2, 3, 4], [2, 3, 4, 5]],
+  Terra: [[2, 3, 4], [2, 3, 4]],
+  Gelo: [[2, 3, 4], [2, 3, 4]],
+};
+const ESCADAS_DAS_ORIGENS = {
+  Pokémon: [2, 4, 6, 8, 9, 10], Digimon: [2, 3, 4, 5, 6], SMT: [2, 3, 4, 6, 8], Persona: [1, 2, 3, 4, 5], JoJo: ESCADA_JOJO,
+  'Yu-Gi-Oh!': [2, 3, 5, 7, 9, 10], LoL: [2, 3, 5, 7, 9, 10], Overwatch: [2, 3, 4, 5, 7], Deadlock: [2, 3, 4, 5, 6], Sujimon: [2, 3, 4, 5, 6],
+};
 
 const f = (x, d = 1) => (Number.isFinite(x) ? x.toFixed(d).replace('.', ',') : '∞');
 const x = r => `${f(r, 2)}×`;
@@ -196,6 +227,26 @@ p(tabela(['Origem', 'Campeões', 'Referência', 'Escada que iguala', 'Custo de c
     return [o.origem, o.campeoes, esc.ref.join('/'), esc.degraus.join('/'), esc.razoes.map(v => x(v)).join(' · ')];
   })));
 
+// ---------- classes e elementos com degraus pelo tamanho (Autobatalha) ----------
+const tamanho = { ...nClasse, ...nElemento };
+p('### 6c. Classes e elementos com degraus pelo tamanho (Autobatalha)',
+  `Quantos degraus cada traço tem sai do tamanho dele, com a régua das origens: 3 até 13 campeões, 4 de 14 a 17, 5 de 18 a 29 e 6 de 30 em diante. Traço pequeno continua curto. A escada guarda os degraus de antes quando dá (quem já fecha 2/4/6 continua fechando), e Criaturinha Bizarra e Safada continuam começando no 3. "Custo" compara cada degrau com a referência do mesmo número de degraus num traço do tamanho certo (${f(nAlvo, 1)} campeões; 1 = igual). Com limite = nível, o degrau b fecha no nível b: o último tem de caber no nível ${NIVEL_MAXIMO} e no traço.`);
+const linhasEscada = Object.entries(ESCADAS_DOS_TRACOS).map(([nome, [antes, agora]]) => {
+  const n = tamanho[nome];
+  const c = m.conferirEscada(agora, n, nAlvo, U, NIVEL_MAXIMO, VAGAS);
+  return { nome, n, antes, agora, c, pelaConta: m.degrausPorTamanho(n) };
+});
+p(tabela(['Traço', 'Campeões', 'Degraus pela conta', 'Escada antes', 'Escada agora', 'Custo de cada degrau', 'Lojas pro último', 'Último cabe?'],
+  linhasEscada.map(l => [l.nome, l.n, l.pelaConta, l.antes.join('/'), l.agora.join('/'), l.c.razoes.map(v => x(v)).join(' · '), f(l.c.lojasDoTopo), l.c.alcancavel ? `sim (nível ${l.agora.at(-1)})` : 'não'])));
+const foraDaConta = linhasEscada.filter(l => l.agora.length !== l.pelaConta).map(l => l.nome);
+const naoCabem = linhasEscada.filter(l => !l.c.alcancavel).map(l => l.nome);
+p(`${foraDaConta.length ? `Fora da conta: ${lista(foraDaConta)}.` : 'Todos com o número de degraus da conta.'} ${naoCabem.length ? `Não cabem: ${lista(naoCabem)}.` : 'Todos os últimos degraus cabem.'} As origens ficam como na seção 6b (o JoJo, como na seção 9):`);
+p(tabela(['Origem', 'Campeões', 'Degraus pela conta', 'Escada', 'Último cabe?'],
+  Object.entries(ESCADAS_DAS_ORIGENS).map(([nome, esc]) => {
+    const n = porFranquia.find(o => o.origem === nome)?.campeoes ?? 0;
+    return [nome, n, m.degrausPorTamanho(n), esc.join('/'), m.conferirEscada(esc, n, nAlvo, U, NIVEL_MAXIMO, VAGAS).alcancavel ? `sim (nível ${esc.at(-1)})` : 'não'];
+  })));
+
 // ---------- comps que fecham dois traços ----------
 p('## 7. Comps que fecham origem e classe juntas',
   `Pra fechar 6 de uma origem e 4 de uma classe em ${TABULEIRO} vagas, pelo menos ${6 + 4 - TABULEIRO} campeão precisa ter as duas; pra 6 e 6, ${6 + 6 - TABULEIRO}. Com as classes de hoje, em quantas das ${GERAIS.length} classes cada origem consegue isso:`);
@@ -269,6 +320,26 @@ p(`Por quê: ${maisEhMelhor ? 'cada vaga e cada ponto de peso do dono a mais bai
 if (maisEhMelhor) p(`O critério não cobra nada por acelerar, então vai pro máximo da grade; o teto de verdade vem da economia (ouro por rodada, 2 de ouro por loja), que ainda não tem conta aqui. Com o número de vagas fixado, o melhor de cada um: ${vagasLoja.map(v => `${nomeLoja(melhorCom(v))} (m1 + m2 = ${f(somaM(melhorCom(v)))})`).join('; ')}. Na de 6 vagas + peso 3, só ligar a vaga do time baixa m1 + m2 de ${f(somaM(pedido))} pra ${f(somaM(pedidoTime))} (${menos(pedidoTime, pedido)}).`);
 p(`Conferência: a conta 9 do README (um dono sozinho num custo de ${f(U0 / CUSTOS, 0)}) dá ${f(isolado)} lojas de m1 pra 6 vagas + peso 3; a simulação com o set dá ${f(pedido.m1)}. Ter mais de um campeão no mesmo custo divide o peso, mas acontece pouco e muda pouco.`);
 
+// ---------- Stands ----------
+const REGRAS_STANDS = [
+  ['Sem limite (o pedido original)', () => Infinity],
+  ['Todo Stand ocupa vaga', () => 0],
+  ['Até 2 fora da vaga', () => 2],
+  [`Um fora da vaga a cada ${NIVEIS_POR_STAND} níveis`, n => Math.floor(n / NIVEIS_POR_STAND)],
+];
+const NIVEIS_VISTOS = [3, 6, 9, NIVEL_MAXIMO];
+p('## 9. Stands e o limite do tabuleiro',
+  `Com limite = nível, cada Stand precisa de um usuário de outra origem, e os que passam dos que ficam fora da vaga gastam uma vaga. Em cada célula, unidades em campo no máximo / Stands que cabem. A força de cada regra vem da simulação: equilibrio.md, seção "Stands".`);
+p(tabela(['Regra', ...NIVEIS_VISTOS.map(n => `Nível ${n}`)],
+  REGRAS_STANDS.map(([nome, livres]) => [nome, ...NIVEIS_VISTOS.map(n => `${m.emCampo(n, livres(n))} / ${m.standsQueCabem(n, livres(n))}`)])));
+const livresDoJogo = n => Math.floor(n / NIVEIS_POR_STAND);
+const nivelDe = n => { const v = m.nivelDosStands(n, livresDoJogo, NIVEL_MAXIMO); return Number.isFinite(v) ? v : 'nunca'; };
+p(`Escada do JoJo com a regra do jogo (${REGRAS_STANDS.at(-1)[0].toLowerCase()}): em que nível cada degrau fecha. A escada de antes parava no ${nivelDe(ESCADA_JOJO_ANTES[3])} pro degrau de ${ESCADA_JOJO_ANTES[3]} e nunca chegava em ${ESCADA_JOJO_ANTES.filter(d => nivelDe(d) === 'nunca').join(' nem ')}.`);
+p(tabela(['Escada', ...ESCADA_JOJO.map((_, i) => `Degrau ${i + 1}`)], [
+  [`Antes (${ESCADA_JOJO_ANTES.join('/')})`, ...ESCADA_JOJO_ANTES.map(nivelDe)],
+  [`Agora (${ESCADA_JOJO.join('/')})`, ...ESCADA_JOJO.map(nivelDe)],
+]));
+
 // resumo no topo, depois do título e da linha de geração
 const foraDoTamanho = origens.filter(o => o.campeoes < fx.min || o.campeoes > fx.max).map(o => `${o.origem} (${o.campeoes})`);
 out.splice(4, 0, '## Resumo', '', [
@@ -277,6 +348,8 @@ out.splice(4, 0, '## Resumo', '', [
   `- **Classes:** de ${Math.min(...Object.values(depois))} a ${Math.max(...Object.values(depois))}. ${sobra.length || falta.length ? `Fora da faixa: ${lista([...sobra.map(([nome, q]) => `${nome} (sobram ${q})`), ...falta.map(([nome, q]) => `${nome} (faltam ${q})`)])} (seção 3).` : 'Todas na faixa.'}`,
   `- **Elementos:** uns ${f(mediaElem, 0)} cada; com ${ESCADA.join('/')} custam ${x(r6(Math.round(mediaElem)))} pra fechar ${ESCADA.at(-1)}. Escada própria ${escadaElem.degraus.join('/')}, ou ${f(elementosIdeais, 0)} elementos.${elemFora.length ? ` Entre si, fora: ${lista(elemFora)} (seção 4).` : ''}`,
   `- **Origens fora da faixa:** ${foraDoTamanho.length ? `${lista(foraDoTamanho)}: escada própria ou mudar o tamanho (seção 6).` : 'nenhuma.'}`,
+  `- **Degraus na Autobatalha:** pelo tamanho do traço, de ${Math.min(...linhasEscada.map(l => l.agora.length))} a ${Math.max(...linhasEscada.map(l => l.agora.length))}, e ${naoCabem.length ? `não cabem: ${lista(naoCabem)}` : 'todo último degrau cabe no limite = nível'} (seção 6c).`,
+  `- **Stands:** com um fora da vaga a cada ${NIVEIS_POR_STAND} níveis, cabem até ${m.standsQueCabem(NIVEL_MAXIMO, livresDoJogo(NIVEL_MAXIMO))} no nível ${NIVEL_MAXIMO} e a escada do JoJo é ${ESCADA_JOJO.join('/')} (seção 9).`,
   `- **Loja:** pelo critério (menor m1 + m2 sem perder variedade), o melhor desenho é **${nomeLoja(melhor)}**: 2 cópias a mais de um campeão do tabuleiro em ${f(melhor.m1)} lojas e um campeão novo do traço em ${f(melhor.m2)}, contra ${f(pedido.m1)} e ${f(pedido.m2)} com 6 vagas + peso 3 e ${f(normal.m1)} e ${f(normal.m2)} na loja normal de 5.${maisEhMelhor ? ' O critério premia sempre mais vagas e mais peso; o teto vem da economia, que falta' : ''} (seção 8).`,
 ].join('\n'), '');
 

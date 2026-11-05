@@ -792,7 +792,7 @@
           ],
           "habitat": "Grassland",
           "classes": [
-            "Atirador",
+            "Tanque",
             "Planta"
           ],
           "custo": 2,
@@ -820,7 +820,7 @@
           ],
           "habitat": "Grassland",
           "classes": [
-            "Atirador",
+            "Tanque",
             "Planta"
           ],
           "custo": 2,
@@ -848,7 +848,7 @@
           ],
           "habitat": "Grassland",
           "classes": [
-            "Atirador",
+            "Tanque",
             "Planta"
           ],
           "ult": "Mega Meganium",
@@ -6458,7 +6458,7 @@
           ],
           "ano": 2001,
           "classes": [
-            "Atirador"
+            "Porradeiro"
           ],
           "custo": 5,
           "linha": {
@@ -6684,7 +6684,7 @@
           ],
           "ano": 2002,
           "classes": [
-            "Atirador"
+            "Porradeiro"
           ],
           "custo": 5,
           "linha": {
@@ -7589,8 +7589,7 @@
           ],
           "classes": [
             "Criaturinha Bizarra",
-            "Fadinhas",
-            "Atirador"
+            "Fadinhas"
           ],
           "custo": 1,
           "linha": {
@@ -11058,7 +11057,7 @@
           "nivel": "Nível 6",
           "arquetipo": "Bystial",
           "classes": [
-            "Atirador"
+            "Dragão"
           ],
           "custo": 1
         },
@@ -15961,20 +15960,20 @@
         },
         "Chikorita": {
           "classes": [
-            "atirador",
+            "tanque",
             "planta"
           ],
           "custo": 2
         },
         "Bayleef": {
           "classes": [
-            "atirador",
+            "tanque",
             "planta"
           ]
         },
         "Meganium": {
           "classes": [
-            "atirador",
+            "tanque",
             "planta"
           ],
           "ult": "Mega Meganium"
@@ -17253,7 +17252,7 @@
         },
         "Justimon(Blitz Arm)": {
           "classes": [
-            "atirador"
+            "porradeiro"
           ]
         },
         "Ancient Wisemon": {
@@ -17279,7 +17278,7 @@
         },
         "Justimon(Critical Arm)": {
           "classes": [
-            "atirador"
+            "porradeiro"
           ]
         },
         "EBEmon (X-Antibody)": {
@@ -17443,8 +17442,7 @@
         "Cironnup": {
           "classes": [
             "fadinhas",
-            "criaturinha-bizarra",
-            "atirador"
+            "criaturinha-bizarra"
           ]
         },
         "Cleopatra": {
@@ -18302,7 +18300,7 @@
       "ygo": {
         "Bystial Magnamhut": {
           "classes": [
-            "atirador"
+            "dragao"
           ],
           "custo": 1
         },

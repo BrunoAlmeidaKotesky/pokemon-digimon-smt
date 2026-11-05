@@ -5,8 +5,9 @@ export const VIDA_INICIAL = 100;
 export const OURO_INICIAL = 1;
 /** nível máximo (pedido do usuário em 04/11/2026: era 10) */
 export const NIVEL_MAXIMO = 12;
-/** unidades no tabuleiro além do nível (limite = nível + isto; Stands à parte). O set é bem maior que o do gênero. */
-export const UNIDADES_ALEM_DO_NIVEL = 1;
+/** a cada tantos níveis, um Stand deixa de ocupar vaga no tabuleiro (os outros contam como unidade normal). Sem limite,
+ *  o time de JoJo ganhava 99% das lutas de time cheio; o motivo e a comparação estão em docs/tft/roadmap.md */
+export const NIVEIS_POR_STAND_FORA_DA_VAGA = 3;
 export const VAGAS_LOJA = 7;
 /** a última vaga da loja é a vaga do time */
 export const VAGA_DO_TIME = VAGAS_LOJA - 1;

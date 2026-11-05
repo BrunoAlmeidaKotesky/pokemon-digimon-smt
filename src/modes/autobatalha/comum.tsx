@@ -1,7 +1,7 @@
 // Peças da tela da Autobatalha usadas em mais de um lugar: geometria das casas, cores do custo, imagens das formas,
 // ícones de item e de rodada, estrelas e o texto "a/b/c" com o número da estrela em destaque.
 import { Fragment, type CSSProperties, type ReactNode } from 'react';
-import { COLUNAS, type Casa, type Componente, type Custo, type Estrela, type FormaDados, type Jogador, type TipoRodada } from '../../autobatalha/tipos';
+import { COLUNAS, type Casa, type Componente, type Custo, type Estrela, type FormaDados, type Jogador, type TipoRodada, type Unidade } from '../../autobatalha/tipos';
 import { S, urlImagem } from '../../autobatalha/dados';
 import { ITENS, ehComponente } from '../../autobatalha/conteudo';
 import { estiloOuPadrao } from '../../autobatalha/estilos';
@@ -91,6 +91,37 @@ export function IconeAlcance({ alcance, className }: { alcance: number; classNam
           : <path d="M13.5 2.5l-.6 3L6.4 12 4 9.6l6.5-6.5zM3.2 10.4l2.4 2.4M2.3 13.7l1.8-1.8" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />}
       </svg>
     </span>
+  );
+}
+
+/** Posição de uma carta de Yu-Gi-Oh! */
+export type Posicao = NonNullable<Unidade['posicao']>;
+/** O que a posição faz, em uma linha (a dica de passar o mouse). */
+export const EFEITO_POSICAO: Record<Posicao, string> = {
+  ataque: 'Ataque: mais dano com o traço ativo.',
+  defesa: 'Defesa: mais vida e armadura, e provoca em volta.',
+};
+
+/** Selo da posição: espada em ataque, escudo em defesa. Com `aoTrocar` é um botão (a peça é sua, no planejamento), que
+ *  não arrasta a peça nem mexe na dica; sem, só mostra. */
+export function SeloPosicao({ posicao, aoTrocar }: { posicao: Posicao; aoTrocar?: () => void }) {
+  const nome = posicao === 'defesa' ? 'Em defesa' : 'Em ataque';
+  const classe = `ab-selo-posicao ${posicao}`;
+  const icone = (
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      {posicao === 'defesa'
+        ? <path d="M8 1.2l5.3 1.9v4.4c0 3.4-2.2 5.9-5.3 7.3-3.1-1.4-5.3-3.9-5.3-7.3V3.1z" fill="currentColor" />
+        : <path d="M8 .8l1.7 2.1v6.2H6.3V2.9zM4.3 9.9h7.4v1.6H9v1.7l1 1.9H6l1-1.9v-1.7H4.3z" fill="currentColor" />}
+    </svg>
+  );
+  if (!aoTrocar) return <span className={classe} data-posicao={posicao} role="img" title={nome} aria-label={nome}>{icone}</span>;
+  const texto = `${nome}. Clique pra mudar pra ${posicao === 'defesa' ? 'ataque' : 'defesa'}`;
+  return (
+    <button type="button" className={classe} data-posicao={posicao} title={texto} aria-label={texto}
+      onPointerDown={e => e.stopPropagation()}
+      onClick={e => { e.stopPropagation(); aoTrocar(); }}>
+      {icone}
+    </button>
   );
 }
 
