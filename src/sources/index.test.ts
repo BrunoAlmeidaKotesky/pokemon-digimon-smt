@@ -4,14 +4,14 @@ import { resolve as resolveDireto } from './resolve';
 import { nice as niceDireto } from './text';
 
 describe('SOURCES / KEYS / LABELS', () => {
-  it('as treze franquias, na ordem do site', () => {
-    expect(KEYS).toEqual(['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'zelda', 'sujimon']);
+  it('as catorze franquias, na ordem do site', () => {
+    expect(KEYS).toEqual(['pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'zelda', 'minecraft', 'sujimon']);
     expect(SOURCES.map(s => s.key)).toEqual(KEYS);
   });
 
   it('rótulos', () => {
     expect(LABELS).toEqual({
-      pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT', persona: 'Persona', jojo: 'JoJo', ygo: 'Yu-Gi-Oh!', bakugan: 'Bakugan', lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', ff: 'Final Fantasy', zelda: 'Zelda', sujimon: 'Sujimon',
+      pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT', persona: 'Persona', jojo: 'JoJo', ygo: 'Yu-Gi-Oh!', bakugan: 'Bakugan', lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', ff: 'Final Fantasy', zelda: 'Zelda', minecraft: 'Minecraft', sujimon: 'Sujimon',
     });
   });
 
