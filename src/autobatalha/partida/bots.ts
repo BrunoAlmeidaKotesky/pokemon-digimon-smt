@@ -10,8 +10,8 @@ import { COLUNAS, LINHAS_DONO } from '../tipos';
 import { CUSTO_ATUALIZAR, CUSTO_XP, VAGAS_BANCO } from './constantes';
 import { rngDa } from './sorteio';
 import {
-  copias, ehStand, forca, limiteTabuleiro, ondeEsta, tracosDe, unidadesNoBanco, unidadesNoTabuleiro, vagaLivreBanco,
-  vivos,
+  copias, ehStand, forca, limiteTabuleiro, ondeEsta, standsForaDaVaga, tracosDe, unidadesNoBanco, unidadesNoTabuleiro,
+  vagaLivreBanco, vivos,
 } from './consultas';
 import { sortearEscolhas } from './evolucao';
 import { equiparItem } from './itens';
@@ -118,14 +118,26 @@ function comprarDaLoja(p: Partida, j: Jogador, perfil: PerfilBot, rng: Rng): voi
   }
 }
 
+/** Quantas unidades normais (`n`) e Stands (`s`) entram, das listas já em ordem de nota. Vaga que sobra fica com um
+ *  Stand, e um Stand melhor que a pior titular toma a vaga dela, enquanto cada Stand tiver um usuário. */
+function elenco(j: Jogador, normais: readonly Unidade[], stands: readonly Unidade[]): { n: number; s: number } {
+  const lim = limiteTabuleiro(j), livres = standsForaDaVaga(j);
+  let n = Math.min(normais.length, lim);
+  let s = Math.min(stands.length, livres, n);
+  while (s < stands.length && s < n && n + Math.max(0, s + 1 - livres) <= lim) s++;
+  while (s < stands.length && s + 1 < n && nota(j, stands[s]!) > nota(j, normais[n - 1]!)) { n--; s++; }
+  return { n, s };
+}
+
 /** Monta o tabuleiro do zero: os melhores até o limite (corpo a corpo na frente, alcance atrás), Stands presos a
  *  um aliado, o resto no banco (sem vaga, vende o mais fraco). */
 export function posicionar(p: Partida, j: Jogador, perfil: PerfilBot = PERFIS_BOT.normal, rng?: Rng): void {
   const todas = Object.values(j.unidades);
   const normais = todas.filter(u => !ehStand(u)).sort((a, b) => nota(j, b) - nota(j, a) || a.uid - b.uid);
   const stands = todas.filter(ehStand).sort((a, b) => nota(j, b) - nota(j, a) || a.uid - b.uid);
-  const titulares = normais.slice(0, limiteTabuleiro(j));
-  const reservas = normais.slice(limiteTabuleiro(j));
+  const { n, s: nStands } = elenco(j, normais, stands);
+  const titulares = normais.slice(0, n);
+  const reservas = [...normais.slice(n), ...stands.slice(nStands)];
   j.tabuleiro = {};
   j.banco = Array<number | null>(VAGAS_BANCO).fill(null);
   for (const u of titulares) {
@@ -133,7 +145,8 @@ export function posicionar(p: Partida, j: Jogador, perfil: PerfilBot = PERFIS_BO
     if (casa) colocar(j, u.uid, { tipo: 'tabuleiro', casa });
     else reservas.push(u);
   }
-  for (const s of stands) {
+  for (const s of stands.slice(nStands)) s.usuario = undefined;
+  for (const s of stands.slice(0, nStands)) {
     s.usuario = undefined;
     let preso = false;
     for (const u of titulares) {

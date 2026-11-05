@@ -13,6 +13,8 @@ export interface MotorPartida {
   /** id do Bakugan completo feito de dois componentes */
   combinar(a: Componente, b: Componente): string;
   ehComponente(id: string): id is Componente;
+  /** Stands que não ocupam vaga no tabuleiro, pelo nível (a regra da partida; o playtest liga outras pra comparar) */
+  standsForaDaVaga(nivel: number): number;
 }
 
 const faltando = (nome: string) => () => {
@@ -30,6 +32,7 @@ const padrao: MotorPartida = {
     return `${x}+${y}`;
   },
   ehComponente: (id): id is Componente => (COMPONENTES as readonly string[]).includes(id),
+  standsForaDaVaga: () => Infinity,
 };
 
 let atual: MotorPartida = { ...padrao };

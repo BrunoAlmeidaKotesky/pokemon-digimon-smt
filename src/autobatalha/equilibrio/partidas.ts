@@ -4,10 +4,23 @@
 // traço alto costuma ter mais ouro e nível): servem de sinal, e as lutas controladas (laboratorio.ts) isolam o efeito.
 import { contarTracos, combinar, ehComponente, passivaDe } from '../conteudo';
 import { atributosDaUnidade, simularLuta } from '../combate';
+import { S } from '../dados';
 import * as P from '../partida';
+import { M } from '../partida/motor';
 import type { EntradaTime, Lado, Partida, ResultadoLuta, SimularLuta, Unidade } from '../tipos';
 import { placarVazio, somarLuta, type Placar } from './medidas';
-import { lutar, moedasDoLado, resultadoDo, somarLancamentos, type TabelaLanc } from './laboratorio';
+import { lutar, moedasDoLado, resultadoDo, somarLancamentos, type RegraStands, type TabelaLanc } from './laboratorio';
+
+/** O que entra em campo, somado por nível do jogador. */
+export interface CampoDoNivel {
+  /** jogador-rodadas contadas */
+  n: number;
+  /** unidades em campo, com Stands */
+  unidades: number;
+  stands: number;
+  /** maior número de unidades em campo */
+  maximo: number;
+}
 
 export interface EstatPartidas {
   partidas: number;
@@ -25,6 +38,10 @@ export interface EstatPartidas {
   lanc: TabelaLanc;
   /** ouro no chão: por campeão com passiva, unidades-luta e moedas (dividido entre os do mesmo lado) */
   moedas: Map<string, { lutas: number; moedas: number }>;
+  /** origem mais usada do estágio 3 em diante (cada unidade em campo conta) → colocação final de quem usou */
+  colocacoes: Map<string, number[]>;
+  /** nível do jogador → o que ele pôs em campo */
+  campo: Map<number, CampoDoNivel>;
 }
 
 const unidadesDo = (t: EntradaTime): Unidade[] => t.lutadores.flatMap(l => (l.unidade ? [l.unidade] : []));
@@ -42,13 +59,44 @@ function contarLado(e: EstatPartidas, t: EntradaTime, r: ResultadoLuta, lado: La
   for (const item of new Set(us.flatMap(u => u.itens))) somar(e.itens, item, r, lado);
 }
 
-/** Joga uma partida por semente e soma as lutas. */
-export function jogarPartidas(sementes: readonly number[], maxRodadas = 120): EstatPartidas {
-  P.definirMotor({ simularLuta, atributosDaUnidade, contarTracos, combinar, ehComponente });
+/** Soma o que o jogador põe em campo nesta rodada e, do estágio 3 em diante, as origens que ele usa. */
+function contarCampo(e: EstatPartidas, p: Partida, uso: Map<string, Map<string, number>>): void {
+  for (const j of P.vivos(p)) {
+    const us = unidadesDo(P.montarTime(j));
+    const stands = us.filter(P.ehStand).length;
+    const c = e.campo.get(j.nivel) ?? { n: 0, unidades: 0, stands: 0, maximo: 0 };
+    c.n++;
+    c.unidades += us.length;
+    c.stands += stands;
+    c.maximo = Math.max(c.maximo, us.length);
+    e.campo.set(j.nivel, c);
+    if (p.estagio < 3) continue;
+    const dele = uso.get(j.id) ?? new Map<string, number>();
+    for (const u of us) { const fr = S().campeao(u.campeao).fr; dele.set(fr, (dele.get(fr) ?? 0) + 1); }
+    uso.set(j.id, dele);
+  }
+}
+
+/** Joga uma partida por semente e soma as lutas. Com `regra`, os Stands seguem ela em vez da regra do jogo. */
+export function jogarPartidas(sementes: readonly number[], maxRodadas = 120, regra?: RegraStands): EstatPartidas {
+  const regraDoJogo = M().standsForaDaVaga;
+  P.definirMotor({
+    simularLuta, atributosDaUnidade, contarTracos, combinar, ehComponente,
+    standsForaDaVaga: regra?.foraDaVaga ?? regraDoJogo,
+  });
   const e: EstatPartidas = {
     partidas: 0, rodadas: [], estagioFinal: [], tracos: new Map(), itens: new Map(), monstros: new Map(), porTempo: placarVazio(),
-    lanc: new Map(), moedas: new Map(),
+    lanc: new Map(), moedas: new Map(), colocacoes: new Map(), campo: new Map(),
   };
+  /** a regra pode enfraquecer os Stands: o bônus vai nas unidades do time, só nesta luta */
+  const comRegra = (t: EntradaTime): EntradaTime => (regra?.bonus
+    ? {
+      ...t,
+      lutadores: t.lutadores.map(l => (l.unidade && P.ehStand(l.unidade)
+        ? { ...l, unidade: { ...l.unidade, bonus: { vida: (l.unidade.bonus?.vida ?? 0) + regra.bonus!, dano: (l.unidade.bonus?.dano ?? 0) + regra.bonus! } } }
+        : l)),
+    }
+    : t);
   const contarMoedas = (t: EntradaTime, r: ResultadoLuta, lado: Lado) => {
     const com = unidadesDo(t).filter(u => passivaDe(u.campeao));
     if (!com.length) return;
@@ -61,7 +109,8 @@ export function jogarPartidas(sementes: readonly number[], maxRodadas = 120): Es
     }
   };
   // a mesma luta do motor de verdade (o conteúdo medido só observa), somando os lançamentos
-  const simular: SimularLuta = (a, b, s) => {
+  const simular: SimularLuta = (a0, b0, s) => {
+    const a = comRegra(a0), b = comRegra(b0);
     const l = lutar(a, b, s);
     somarLancamentos(e.lanc, a, 'a', l);
     somarLancamentos(e.lanc, b, 'b', l);
@@ -72,11 +121,13 @@ export function jogarPartidas(sementes: readonly number[], maxRodadas = 120): Es
   for (const s of sementes) {
     const p: Partida = P.novaPartida(s);
     const humano = p.jogadores.find(j => !j.bot)!;
+    const uso = new Map<string, Map<string, number>>();
     let rodadas = 0;
     while (!P.acabou(p) && rodadas < maxRodadas) {
       P.jogarBots(p);
       if (humano.colocacao == null) P.jogarBot(p, humano);
       P.fimDoPlanejamento(p);
+      contarCampo(e, p, uso);
       const rr = P.simularRodada(p, simular);
       for (const l of rr.lutas) {
         if (P.ehMonstros(l.b)) {
@@ -95,6 +146,14 @@ export function jogarPartidas(sementes: readonly number[], maxRodadas = 120): Es
     e.partidas++;
     e.rodadas.push(rodadas);
     e.estagioFinal.push(p.estagio);
+    for (const j of p.jogadores) {
+      const maisUsada = [...(uso.get(j.id) ?? [])].sort((x, y) => y[1] - x[1] || x[0].localeCompare(y[0]))[0]?.[0];
+      if (!maisUsada || j.colocacao == null) continue;
+      const lista = e.colocacoes.get(maisUsada) ?? [];
+      lista.push(j.colocacao);
+      e.colocacoes.set(maisUsada, lista);
+    }
   }
+  P.definirMotor({ standsForaDaVaga: regraDoJogo });
   return e;
 }

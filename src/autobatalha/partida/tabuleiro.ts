@@ -2,7 +2,7 @@
 import { chave, deChave, igual, vizinhas } from '../hex';
 import { COLUNAS, LINHAS_DONO, type CasaDono, type Jogador, type Onde, type Unidade } from '../tipos';
 import {
-  ehStand, forca, limiteTabuleiro, noTabuleiro, ocupante, ondeEsta, origemDe, standDe, unidadesNoBanco,
+  ehStand, forca, limiteTabuleiro, noTabuleiro, ocupante, ondeEsta, origemDe, standDe, standsForaDaVaga, unidadesNoBanco,
   unidadesNoTabuleiro, vagaLivreBanco,
 } from './consultas';
 import { alcanceDe } from './motor';
@@ -38,8 +38,11 @@ export function casasLivresAoLado(j: Jogador, c: CasaDono): CasaDono[] {
   return vizinhas(c, LINHAS_DONO).filter(v => casaLivre(j, v)).sort((a, b) => b.lin - a.lin);
 }
 
-/** Unidades normais (sem Stands) no tabuleiro: o que conta no limite. */
-export const contaNoLimite = (j: Jogador): number => unidadesNoTabuleiro(j, false).length;
+/** Vagas que o tabuleiro gasta: as unidades normais e os Stands além dos que não ocupam vaga. */
+export function contaNoLimite(j: Jogador): number {
+  const stands = unidadesNoTabuleiro(j).filter(ehStand).length;
+  return unidadesNoTabuleiro(j, false).length + Math.max(0, stands - standsForaDaVaga(j));
+}
 
 // ---------- Stands ----------
 
@@ -223,11 +226,13 @@ export function casaPreferida(j: Jogador, u: Unidade): CasaDono | null {
 export function prepararTabuleiro(j: Jogador): void {
   arrumarStands(j);
   const lim = limiteTabuleiro(j);
-  // excesso: os mais fracos voltam
-  const normais = unidadesNoTabuleiro(j, false).sort((a, b) => forca(a) - forca(b));
-  while (normais.length > lim) {
-    const u = normais.shift()!;
-    if (!paraOBanco(j, u.uid)) break;
+  // excesso: os mais fracos voltam (Stand só entra na conta quando passa dos que não ocupam vaga)
+  while (contaNoLimite(j) > lim) {
+    const stands = unidadesNoTabuleiro(j).filter(ehStand);
+    const candidatos = [...unidadesNoTabuleiro(j, false), ...(stands.length > standsForaDaVaga(j) ? stands : [])];
+    const u = candidatos.sort((a, b) => forca(a) - forca(b))[0];
+    if (!u || !paraOBanco(j, u.uid)) break;
+    arrumarStands(j);
   }
   // preencher
   const banco = unidadesNoBanco(j).filter(u => !ehStand(u)).sort((a, b) => forca(b) - forca(a));

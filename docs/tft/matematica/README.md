@@ -108,7 +108,7 @@ EQUILIBRIO_PARTES=curva,campeoes EQUILIBRIO_RAPIDO=1 EQUILIBRIO_SAIDA=/tmp/eq.md
 node node_modules/vitest/vitest.mjs run src/autobatalha/equilibrio
 ```
 
-Variáveis: `EQUILIBRIO_PARTES` (`campeoes,curva,pacotes,tracos,itens,partidas`), `EQUILIBRIO_RAPIDO=1` (menos
+Variáveis: `EQUILIBRIO_PARTES` (`campeoes,curva,pacotes,tracos,itens,partidas,origens,stands`), `EQUILIBRIO_RAPIDO=1` (menos
 cenários), `EQUILIBRIO_SAIDA` (outro .md), `EQUILIBRIO_JSON` (grava os números crus) e `EQUILIBRIO_SEMENTE` (semente
 base, padrão 2026). O `*.playtest.ts` não entra no `vitest run` normal: só com a config própria.
 
@@ -140,7 +140,14 @@ Medidas (detalhes no topo de cada seção do equilibrio.md):
    **equivalente**: o bônus de vida e dano (no time todo, ou no portador do item) que o outro lado precisa pra empatar,
    achado por bisseção com as mesmas sementes em cada passo.
 7. **Partidas de bots**: taxa de vitória dos times com cada traço/item, rodadas de monstros, duração. Mistura o efeito
-   com a força do tabuleiro: é sinal, não medida isolada.
+   com a força do tabuleiro: é sinal, não medida isolada. Também a colocação pela origem mais usada do estágio 3 em
+   diante e quantas unidades entram em campo em cada nível.
+8. **Origens**: time cheio de cada origem contra os times cheios das outras, com os custos da loja daquele nível. Sem
+   itens, e o que age fora da luta (Overwatch, Deadlock, Sujimon) não entra. Digimon leva um terço do time de fora, pro
+   Parceiro. **Quanto vale evoluir**: os mesmos campeões numa estrela a mais; o resultado é o bônus de vida e dano no time
+   da estrela de baixo que empata.
+9. **Stands**: quanto valem k Stands em cima de um time cheio, e a comparação das regras (`REGRAS_STANDS` no
+   `equilibrio.playtest.ts`): cada regra com o time cheio de JoJo contra as outras origens e com partidas de bots.
 
 O histórico dos ajustes (antes → depois) fica no fim do equilibrio.md, embaixo do marcador; o playtest regrava só a
 parte de cima.

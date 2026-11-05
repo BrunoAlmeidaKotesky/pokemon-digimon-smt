@@ -9,7 +9,7 @@ import {
   MSG_LIMITE, novaPartida, ondeEsta, rendaDaRodada, rodadasDoEstagio, salvarPartida, simularRodada, sortearConfrontos,
   sortearLoja, standDe, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos, xpParaProximo, apagarPartida,
   temPartidaSalva, CHAVE_PARTIDA, escolherUlt, gerarMonstros, montarTime, BONUS_DEADLOCK_POR_10_ALMAS,
-  BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor, OURO_VITORIA, UNIDADES_ALEM_DO_NIVEL,
+  BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor, OURO_VITORIA,
   lugaresDaSala, MAX_NOME, NOME_PADRAO,
 } from './index';
 import { ehEstilo, ESTILO_PADRAO, ESTILOS_TABULEIRO, estiloOuPadrao } from '../estilos';
@@ -369,12 +369,13 @@ describe('evolução', () => {
 });
 
 describe('tabuleiro e Stands', () => {
-  it('limite do tabuleiro = nível + 1; trocar não passa do limite', () => {
+  it('limite do tabuleiro = nível; trocar não passa do limite', () => {
     const { p, eu } = cenario(30);
+    expect(limiteTabuleiro(eu)).toBe(1);
+    eu.nivel = 2;
     const a = dar(p, eu, 'pokemon:squirtle', { casa: [3, 0] });
     dar(p, eu, 'overwatch:tracer', { casa: [5, 0] });
     const b = dar(p, eu, 'sujimon:a', { banco: 0 });
-    expect(limiteTabuleiro(eu)).toBe(eu.nivel + UNIDADES_ALEM_DO_NIVEL);
     expect(limiteTabuleiro(eu)).toBe(2);
     expect(mover(p, eu.id, b.uid, { tipo: 'tabuleiro', casa: { col: 4, lin: 0 } })).toBe(MSG_LIMITE);
     expect(ondeEsta(eu, b.uid)).toEqual({ tipo: 'banco', i: 0 });
@@ -384,7 +385,7 @@ describe('tabuleiro e Stands', () => {
     expect(ondeEsta(eu, b.uid)).toEqual({ tipo: 'tabuleiro', casa: { col: 3, lin: 0 } });
     // mover dentro do tabuleiro pode
     expect(mover(p, eu.id, b.uid, { tipo: 'tabuleiro', casa: { col: 0, lin: 3 } })).toBeNull();
-    eu.nivel = 2;
+    eu.nivel = 3;
     expect(mover(p, eu.id, a.uid, { tipo: 'tabuleiro', casa: { col: 4, lin: 0 } })).toBeNull();
     expect(contaNoLimite(eu)).toBe(3);
     expect(mover(p, eu.id, a.uid, { tipo: 'tabuleiro', casa: { col: 8, lin: 0 } })).toBe('Lugar inválido');
@@ -430,7 +431,7 @@ describe('tabuleiro e Stands', () => {
 
   it('antes da luta: preenche com o banco, Stand sem usuário volta, time montado com Deadlock', () => {
     const { p, eu } = cenario(32);
-    eu.nivel = 3;
+    eu.nivel = 4;
     dar(p, eu, 'overwatch:tracer', { banco: 0 });
     const forte = dar(p, eu, 'lol:jinx', { banco: 1 });
     const h1 = dar(p, eu, 'deadlock:haze', { casa: [3, 0] });

@@ -4,7 +4,8 @@
 // - força por campeão: cada campeão com 3 bonecos contra cada outro do mesmo custo e estrela com os mesmos bonecos;
 // - curva por custo: times de 5 campeões sorteados de um custo/estrela contra os de outro;
 // - equivalentes: quanto de vida e dano (no time todo, ou só na unidade) vale um traço, um item ou o pacote papel +
-//   ult de uma classe — o bônus que o outro lado precisa pra empatar (bisseção em medidas.ts).
+//   ult de uma classe — o bônus que o outro lado precisa pra empatar (bisseção em medidas.ts);
+// - origens: time cheio de cada origem contra os das outras, quanto valem Stands além do limite e quanto vale evoluir.
 // "Boneco" = monstro sem habilidade nem traço, com os atributos base do custo e da estrela (papel Únicos).
 import { S } from '../dados';
 import * as real from '../conteudo';
@@ -12,11 +13,14 @@ import {
   REGRAS, atributosBase, atributosDaUnidade, papelDe, simularLutaCom, type Conteudo, type ObservadorLuta,
 } from '../combate';
 import { vizinhas } from '../hex';
+import { chancesLoja } from '../partida/consultas';
+import { M } from '../partida/motor';
 import { criarRng, type Rng } from '../rng';
 import {
-  COMPONENTES, LINHAS_DONO,
+  COMPONENTES, LINHAS_DONO, ORIGENS,
   type CampeaoDados, type CasaDono, type Contexto, type Custo, type EntradaLutador, type EntradaTime, type Estrela,
-  type FormaDados, type Habilidade, type Lado, type MonstroDados, type ResultadoLuta, type SetDados, type Unidade,
+  type FormaDados, type Habilidade, type Lado, type MonstroDados, type Origem, type ResultadoLuta, type SetDados,
+  type Unidade,
 } from '../tipos';
 import { equivalente, placarVazio, semente, somarLuta, taxa, type Placar } from './medidas';
 
@@ -627,6 +631,120 @@ export function valorDoPacote(classe: string, estrela: Estrela, nCenarios: numbe
     }));
   }
   return medirEquivalente(cenarios, -0.5, 3, passos);
+}
+
+// =================================================================================================================
+// Origens: time cheio de cada origem, o que Stands além do limite valem e o ganho de evoluir
+// =================================================================================================================
+
+/** Uma regra dos Stands pra comparar: quantos não ocupam vaga, por tamanho do tabuleiro, e um bônus de vida e dano
+ *  neles (negativo = mais fracos). */
+export interface RegraStands {
+  nome: string;
+  foraDaVaga: (limite: number) => number;
+  bonus?: number;
+}
+
+/** Stands que cabem no tabuleiro: cada um precisa de um usuário, e os que passam de `livres` gastam vaga. */
+export const standsQueCabem = (limite: number, livres: number): number =>
+  (livres >= limite ? limite : Math.floor((limite + livres) / 2));
+
+/** `n` campeões diferentes do grupo, com os custos que a loja do nível `limite` traz (sem o custo sorteado no grupo,
+ *  o mais perto). */
+function sortearPelaLoja(grupo: readonly CampeaoDados[], n: number, limite: number, rng: Rng): CampeaoDados[] {
+  const resto = [...grupo];
+  const chances = chancesLoja(limite);
+  const out: CampeaoDados[] = [];
+  while (out.length < n && resto.length) {
+    const alvo = rng.pesado([1, 2, 3, 4, 5], c => chances[c - 1] ?? 0) ?? 1;
+    const perto = Math.min(...resto.map(c => Math.abs(c.custo - alvo)));
+    const opcoes = resto.filter(c => Math.abs(c.custo - alvo) === perto);
+    const c = opcoes[rng.int(opcoes.length)]!;
+    out.push(c);
+    resto.splice(resto.indexOf(c), 1);
+  }
+  return out;
+}
+
+/**
+ * Time de uma origem num tabuleiro de `limite`, na estrela, com os custos da loja daquele nível. JoJo: usuários de
+ * outras origens e tantos Stands quantos a regra deixa. Digimon: um terço do time é de fora (o Parceiro pede um
+ * aliado de outra origem do lado). Origem que não enche o tabuleiro completa com outras.
+ */
+export function timeDaOrigem(fr: Origem, limite: number, estrela: Estrela, rng: Rng, variacao: number, regra?: RegraStands): EntradaTime {
+  const outros = reais().filter(c => c.fr !== fr && !c.stand);
+  let uid = 1;
+  if (fr === 'jojo') {
+    const livres = regra ? regra.foraDaVaga(limite) : M().standsForaDaVaga(limite);
+    const s = standsQueCabem(limite, livres);
+    const usuarios = sortearPelaLoja(outros, limite - Math.max(0, s - livres), limite, rng).map(c => unidade(uid++, c.id, estrela));
+    const extra = regra?.bonus ? { bonus: { vida: regra.bonus, dano: regra.bonus } } : {};
+    const stands = sortearPelaLoja(reais().filter(c => c.stand), s, limite, rng)
+      .map((c, i) => unidade(uid++, c.id, estrela, { usuario: usuarios[i]!.uid, ...extra }));
+    return { dono: fr, lutadores: posicionar([...usuarios, ...stands], variacao) };
+  }
+  const n = fr === 'digimon' ? Math.max(1, Math.min(limite - 1, Math.ceil((limite * 2) / 3))) : limite;
+  const daOrigem = sortearPelaLoja(reais().filter(c => c.fr === fr), n, limite, rng);
+  const todos = [...daOrigem, ...sortearPelaLoja(outros, limite - daOrigem.length, limite, rng)];
+  return { dono: fr, lutadores: posicionar(todos.map(c => unidade(uid++, c.id, estrela)), variacao) };
+}
+
+/** Cada origem contra cada outra, com os times cheios de `timeDaOrigem`, dos dois lados. */
+export function origemContraOrigem(limite: number, estrela: Estrela, cenarios: number, base = 0, regra?: RegraStands): Map<Origem, Placar> {
+  const placares = new Map<Origem, Placar>(ORIGENS.map(o => [o, placarVazio()]));
+  for (let i = 0; i < ORIGENS.length; i++) for (let j = i + 1; j < ORIGENS.length; j++) {
+    const p = ORIGENS[i]!, q = ORIGENS[j]!;
+    for (let k = 0; k < cenarios; k++) {
+      const rng = criarRng(semente(base, 'origem', p, q, limite, estrela, k));
+      const tp = timeDaOrigem(p, limite, estrela, rng, k, regra);
+      const tq = timeDaOrigem(q, limite, estrela, rng, k + 3, regra);
+      const s = rng.semente();
+      const ida = lutar(tp, tq, s).r, volta = lutar(tq, tp, s).r;
+      somarLuta(placares.get(p)!, resultadoDo(ida, 'a'));
+      somarLuta(placares.get(q)!, resultadoDo(ida, 'b'));
+      somarLuta(placares.get(p)!, resultadoDo(volta, 'b'));
+      somarLuta(placares.get(q)!, resultadoDo(volta, 'a'));
+    }
+  }
+  return placares;
+}
+
+/**
+ * Quanto valem `k` Stands além do limite: um time de `limite` unidades sem Stand, com os custos da loja do nível,
+ * contra o mesmo time com `k` Stands presos. O equivalente é o bônus de vida e dano no time todo que empata.
+ */
+export function valorDosStands(limite: number, k: number, estrela: Estrela, nCenarios: number, base = 0, passos = 7): Equivalente {
+  const normais = reais().filter(c => !c.stand), stands = reais().filter(c => c.stand);
+  const cenarios: Cenario[] = [];
+  for (let i = 0; i < nCenarios; i++) {
+    const rng = criarRng(semente(base, 'stands', limite, k, estrela, i));
+    let uid = 1;
+    const us = sortearPelaLoja(normais, limite, limite, rng).map(c => unidade(uid++, c.id, estrela));
+    const st = sortearPelaLoja(stands, k, limite, rng).map((c, n) => unidade(uid++, c.id, estrela, { usuario: us[n]!.uid }));
+    const com = posicionar([...us, ...st], i), sem = posicionar(us, i);
+    const s = rng.semente();
+    cenarios.push(b => ({ a: { dono: 'com', lutadores: com }, b: bonusNoTime({ dono: 'sem', lutadores: sem }, b), semente: s }));
+  }
+  return medirEquivalente(cenarios, -0.2, 4, passos);
+}
+
+/**
+ * Quanto vale evoluir: os mesmos campeões da origem numa estrela a mais. O equivalente é o bônus de vida e dano no
+ * time da estrela `de` que empata com o time da estrela `de` + 1 (só linhas evolutivas, com `soLinhas`).
+ */
+export function ganhoDeEvoluir(fr: Origem, de: 1 | 2, limite: number, nCenarios: number, base = 0, soLinhas = false, passos = 7): Equivalente {
+  const grupo = reais().filter(c => c.fr === fr && !c.stand && (!soLinhas || c.niveis.length > 1));
+  const acima = (de + 1) as Estrela;
+  const cenarios: Cenario[] = [];
+  for (let i = 0; i < nCenarios; i++) {
+    const rng = criarRng(semente(base, 'evoluir', fr, de, limite, i));
+    const cs = sortearPelaLoja(grupo, limite, limite, rng);
+    const com = posicionar(cs.map((c, n) => unidade(n + 1, c.id, acima)), i);
+    const sem = posicionar(cs.map((c, n) => unidade(n + 1, c.id, de)), i);
+    const s = rng.semente();
+    cenarios.push(b => ({ a: { dono: 'com', lutadores: com }, b: bonusNoTime({ dono: 'sem', lutadores: sem }, b), semente: s }));
+  }
+  return medirEquivalente(cenarios, 0, 8, passos);
 }
 
 /** Todos os itens: 7 componentes e 28 completos, na ordem de COMPONENTES. */

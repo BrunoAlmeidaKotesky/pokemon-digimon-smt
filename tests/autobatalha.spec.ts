@@ -77,7 +77,7 @@ test.describe('Autobatalha', () => {
     const noTab = page.locator('#abTabuleiro .ab-peca');
     await expect(noTab).toHaveCount(1);
     await expect(noBanco).toHaveCount(0);
-    // o limite vem da partida (nível + o que ela der a mais): a tela só mostra
+    // o limite vem da partida (o nível): a tela só mostra
     const lim = await limite(page);
     expect(lim).toBeGreaterThanOrEqual(1);
     await expect(page.locator('#abLimite b')).toHaveText(`1/${lim}`);

@@ -197,8 +197,8 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
 - **Monstros:** vencer dá 1 componente + 1 de ouro (chefe: 2 componentes + 2 de ouro); perder dá 1 de ouro.
 - **Nível:** começa no 1; +2 de XP por rodada (a partir da 1-2); 4 de ouro = 4 XP. XP pro próximo nível: 2, 2, 4, 8,
   14, 24, 36, 56, 76, 96, 120 (máximo 12; mais barata nos níveis baixos e médios). O limite de unidades no tabuleiro é
-  o nível + 1 (Stands à parte). No começo da luta, quem passar do limite volta pro banco, e vaga sobrando é preenchida
-  com o banco.
+  o nível: 1 no nível 1, até 12 (Stands à parte). No começo da luta, quem passar do limite volta pro banco, e vaga
+  sobrando é preenchida com o banco.
 - **Loja:** 7 vagas, a última é a **vaga do time** (só campeões do custo sorteado que dividem origem ou classe com o
   seu tabuleiro). O custo de cada vaga sai da tabela do nível; dentro do custo, campeão que você já tem pesa 4 e os
   outros 1 (conta da loja em docs/tft/matematica). Atualizar: 2 de ouro; travar a loja; atualização grátis a cada

@@ -199,7 +199,7 @@ function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
           {planejando && (
             <div className="ab-area-cab">
               <span id="abLimite" className={'ab-limite' + (noTab > limite ? ' acima' : noTab < limite ? ' sobra' : '')}
-                title="Unidades no tabuleiro / limite (nível + 1; Stands não contam)">
+                title="Unidades no tabuleiro / limite (o seu nível; Stands não contam)">
                 <small>Unidades</small><b>{noTab}/{limite}</b>
               </span>
               {olhando ? (

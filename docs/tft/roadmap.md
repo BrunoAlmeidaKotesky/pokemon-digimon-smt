@@ -10,7 +10,7 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 2. **Escadas das origens:** **[você] mais degraus em todas.** Agora 5 (6 nas maiores), pela conta (resultado.md,
    seção 6b): Persona 1/2/3/4/5, Digimon, Deadlock e Sujimon 2/3/4/5/6, Overwatch 2/3/4/5/7, SMT 2/3/4/6/8, JoJo,
    Yu-Gi-Oh! e LoL 2/3/5/7/9/10, Pokémon 2/4/6/8/9/10 (grande demais pra igualar; degraus de baixo dão pouco).
-   Elementos 2/3/4. A conta usa 10 unidades como teto; com o limite novo (nível + 1, até 13) dá pra refazer.
+   Elementos 2/3/4. A conta usa 10 unidades como teto; o tabuleiro vai até 12 (limite = nível).
 3. **Efeitos das classes sem número** (Demoníacos, Criaturinha Bizarra, Fadinhas, Safada, Atirador, Anjo, Robô,
    Dragão, Temporais): escrevi números a partir da sua ideia de cada uma. Dragão virou escada normal (2/4/6) com bônus
    de vida e dano; a ideia "só cabe um ativo" ficou de fora. **[você] nerf no Dragão:** +10/20/32% (era 15/30/50%),
@@ -30,7 +30,8 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
    de cada estágio (40/40/20 no 5+), banco cheio vende o campeão pelo custo (menos quando fecha evolução, como na
    loja), e dá pra mexer na loja durante o carrossel.
 9. **Atributos, economia e loja:** tabelas no design. **[você] economia mais generosa e mais unidades:** renda 6,
-   vitória +2, sequência +1/+2/+3/+4, nível máximo 12, limite nível + 1, XP mais barata nos níveis baixos e médios.
+   vitória +2, sequência +1/+2/+3/+4, nível máximo 12, XP mais barata nos níveis baixos e médios. O limite nível + 1
+   virou **limite = nível** depois que você jogou (05/11): começar com dois não foi boa ideia.
    Atributos e habilidades passaram pela rodada de equilíbrio (equilibrio.md).
 10. **Bots:** 7, com os nomes dos atributos Bakugan (Pyrus, Aquos…). **[você] fortes demais:** dificuldade Fácil
     (padrão), Normal e Difícil. Um jogador "normal" fica em ~2,9º contra os fáceis e ~4,9º contra os normais. O

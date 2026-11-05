@@ -10,7 +10,7 @@ import { MULT_COMPLETO, TRACOS, combinar, contarTracos, type TracoAtivo } from '
 import {
   BONUS_SEQUENCIA, COPIAS_POR_CUSTO, COPIAS_POR_ESTRELA, CUSTO_ATUALIZAR, CUSTO_XP, ESTAGIO_DO_ITEM_COMPLETO, JUROS_MAX,
   MAX_ITENS, NIVEL_MAXIMO, OPCOES_DO_CARROSSEL, OURO_INICIAL, OURO_VITORIA, PESO_DONO, PRIMEIRO_ESTAGIO_DO_CARROSSEL,
-  RENDA_BASE, RENDA_ESTAGIO_1, UNIDADES_ALEM_DO_NIVEL, VAGAS_BANCO, VAGAS_LOJA, VIDA_INICIAL, XP_POR_COMPRA, XP_POR_RODADA,
+  RENDA_BASE, RENDA_ESTAGIO_1, VAGAS_BANCO, VAGAS_LOJA, VIDA_INICIAL, XP_POR_COMPRA, XP_POR_RODADA,
   bonusSequencia, chancesLoja, danoBaseEstagio, danoDerrota, danoMonstros, juros, unidadesNoTabuleiro, valorVenda,
   xpParaProximo,
 } from '../../autobatalha/partida';
@@ -314,7 +314,7 @@ function AbaLoja({ eu }: { eu: Jogador | null }) {
                     </td>
                   ))}
                   <td>{xp ? `${xp} XP` : 'máximo'}</td>
-                  <td>{n + UNIDADES_ALEM_DO_NIVEL}</td>
+                  <td>{n}</td>
                 </tr>
               );
             })}
