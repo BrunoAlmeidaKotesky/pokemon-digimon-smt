@@ -63,6 +63,16 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 - **Tooltip:** **[você] passar o mouse mostra só o essencial** (nome, custo, estrelas, alcance, traços, habilidade,
   itens); o botão direito fixa com todos os detalhes.
 - **Baba (Deadlock):** **[você] bate de perto** (alcance 1).
+- **Quem é de longe:** **[você] tem gente demais de longe, muitos sem sentido.** Revi forma por forma: 96 foram pra alcance
+  1 pela tabela `CORPO_A_CORPO` (`combate/atributos.ts`), e 7 trocaram de classe na exportação (`set1-escolhas-v5.json`,
+  editada no lugar). De 408 formas de longe (69%) foram pra 306 (52%). Critério meu, pra você revisar: quem na obra bate,
+  morde ou corta no contato; LoL pelo "Corpo a corpo" do Catálogo, JoJo pelo alcance do Stand na wiki (menos quem atira:
+  Tusk, Bad Company e Ball Breaker continuam), Deadlock e Overwatch ficaram como estavam (todos têm arma).
+  **Classe:** Atirador tinha gente sem tiro nenhum, e trocar só o alcance deixaria um Atirador de perto com a vida
+  mais frágil do jogo, então troquei a classe: Chikorita, Bayleef e Meganium viraram Tanque; Justimon (Blitz e Critical
+  Arm), Porradeiro; Bystial Magnamhut, Dragão; Cironnup perdeu a classe (tem outras duas). Atirador foi de 27 pra 24
+  campeões, dentro da faixa de 23 a 33, e o traço continua fechando 2/4/6. **Pra você ver:** se alguém da lista devia
+  atirar, ou se quer mais gente de perto (Personas e demônios do SMT ficaram como conjuradores).
 - **Lobby:** **[você] pediu** a sala antes da partida no lugar da tela inicial: os 8 jogadores (você com a marca de
   anfitrião; os bots com o ícone e o tabuleiro que vão ter), as regras da sala que só o anfitrião muda (relógio,
   segundos, dificuldade), o seu nome, o seu **tabuleiro** (8 estilos só de cores e fundo: Gramado, Deserto, Neve,

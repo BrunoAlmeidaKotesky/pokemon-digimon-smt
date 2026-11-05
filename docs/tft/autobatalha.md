@@ -74,8 +74,15 @@ O **papel** vem da primeira classe da forma nesta ordem de prioridade e ajusta o
 | Únicos | ×1,00 | ×1,00 | | 2 | 80 |
 | Só elemento | Terra vida ×1,10; Vento vel. ×1,10 | | | Fogo, Água, Vento, Planta 2; Raio, Gelo 3; Terra 1 | 80 |
 
-Forma que não lança nada (não final de Pokémon e Digimon) ganha +20% de vida e dano na estrela 1 e +25% na 2, no
+Forma que não lança nada (não final de Pokémon e Digimon) ganha +22% de vida e dano na estrela 1 e +28% na 2 e na 3, no
 lugar da habilidade.
+
+**Quem luta de perto apesar do papel** (`CORPO_A_CORPO` em atributos.ts; pedido do usuário em 05/11/2026: gente demais
+de longe). O alcance do papel é o padrão, e a tabela põe em alcance 1 quem na obra bate, morde ou corta no contato; quem
+tem ataque de longe de verdade (sopro, tiro, magia) fica com o do papel. Eram 408 das 592 formas de longe; agora são
+306. Sem o alcance a forma toma os golpes da frente, então a vida dela sobe pelo menos até a de um Porradeiro (×1,15, em
+vez do multiplicador do papel; medido: sem isso, 128 campeões fora da faixa no rodízio; com isso, 74). Transformar troca
+o alcance pelo da forma nova (War Greymon bate de perto, mesmo vindo do Metal Greymon).
 
 Todos: 25% de chance de crítico (+40% de dano). **Mana:** +10 por ataque; golpe recebido (ataque ou habilidade) dá
 mana pela fração da vida máxima que tirou: 40 × dano ÷ vida máxima, até 5 por golpe (quem tem mais vida enche mais

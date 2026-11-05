@@ -1,7 +1,8 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { ATRIBUTOS_EM_FRACAO, type Atributos, type FormaDados } from '../tipos';
 import {
-  BONUS_SEM_HABILIDADE, aplicarBonus, atributosBase, atributosDaUnidadeCom, bonusZero, NOMES_ATRIBUTOS, papelDe,
+  ALCANCE_PROPRIO, BONUS_SEM_HABILIDADE, VIDA_DE_PERTO, aplicarBonus, alcanceDaForma, atributosBase, atributosDaUnidadeCom, bonusZero,
+  NOMES_ATRIBUTOS, papelDe,
 } from './atributos';
 import { conteudoFalso, unidade, usarSetTeste } from './test-helpers';
 
@@ -18,6 +19,14 @@ describe('atributos', () => {
     expect(papelDe(f(['gelo', 'raio']))).toBe('gelo');
     expect(papelDe(f(['unicos', 'terra']))).toBe('unicos');
     expect(papelDe(f([]))).toBe('unicos');
+  });
+
+  it('alcance da forma: a tabela manda; fora dela, o do papel', () => {
+    expect(alcanceDaForma(f(['atirador']))).toBe(4);
+    expect(alcanceDaForma(f(['fogo']))).toBe(2);
+    expect(ALCANCE_PROPRIO['lol:Akali']).toBe(1);
+    expect(alcanceDaForma({ ...f(['safada']), id: 'lol:Akali' })).toBe(1);
+    expect(VIDA_DE_PERTO).toBeGreaterThan(1);
   });
 
   it('base: custo × estrela × papel', () => {

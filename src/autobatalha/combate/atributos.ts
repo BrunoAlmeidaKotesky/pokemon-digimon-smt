@@ -154,19 +154,62 @@ export function aplicarBonus(a: Atributos, b: Bonus): Atributos {
 // faixa (eram 73); 25/33% passava do ponto (80 fora, formas que só atacam com até 82%).
 export const BONUS_SEM_HABILIDADE: Record<Estrela, number> = { 1: 0.22, 2: 0.28, 3: 0.28 };
 
-/** Alcance próprio de uma forma, quando o do papel não combina com o personagem (id da forma → casas). */
-export const ALCANCE_PROPRIO: Readonly<Record<string, number>> = {
+/** Quem luta de perto na obra, apesar de o papel dar alcance (o usuário achou gente demais de longe, 05/11/2026): quem
+ *  bate, morde ou corta no contato. Quem tem ataque de longe de verdade (sopro, tiro, magia) fica com o do papel. */
+const CORPO_A_CORPO: Readonly<Record<string, readonly string[]>> = {
+  pokemon: [
+    // mordida e garra
+    'Totodile', 'Croconaw', 'Carvanha', 'Sharpedo', 'Mega Sharpedo', 'Deino', 'Zweilous', 'Gible', 'Gabite', 'Zygarde (10%)',
+    'Shinx', 'Luxio', 'Luxray', 'Eevee', 'Flareon', 'Litten', 'Torracat',
+    // brigões e quem corta com a lâmina
+    'Mudkip', 'Marshtomp', 'Swampert', 'Mega Swampert', 'Oshawott', 'Dewott', 'Samurott', 'Hisuian Samurott',
+    'Treecko', 'Grovyle', 'Sceptile', 'Mega Sceptile', 'Torchic', 'Combusken', 'Chimchar', 'Tepig', 'Slither Wing',
+    'Gouging Fire', 'Dratini', 'Dragonair', 'Dragonite', 'Mega Dragonite', 'Mega Mewtwo X',
+    // chute, bicada e corpo
+    'Buneary', 'Lopunny', 'Mega Lopunny', 'Bounsweet', 'Steenee', 'Tsareena', 'Rookidee', 'Corvisquire', 'Corviknight',
+    'Gigantamax Corviknight', 'Dunsparce', 'Dudunsparce', 'Turtwig', 'Chespin', 'Quilladin', 'Piplup', 'Prinplup', 'Wailmer',
+  ],
+  digimon: ['Punimon', 'Devimon', 'Neo Devimon', 'Fantomon', 'Plotmon', 'Tailmon', 'Saber Leomon', 'War Greymon'],
+  smt: ['Abaddon', 'Bugs', 'Cironnup', 'Melchizedek', 'Niddhoggr'],
+  // humanoides de curto alcance na obra, o navio e a tartaruga
+  jojo: ['Gold Experience', 'Gold Experience Requiem', 'Made in Heaven', 'Strength', 'Mr.President'],
+  ygo: ['Kuriboh', 'Clockwork Knight'],
+  // corpo a corpo no próprio LoL
+  lol: ['Aatrox', 'Akali', 'Blitzcrank', 'Ekko'],
   // pedido do usuário em 04/11/2026: a Baba Yaga bate de perto
-  'deadlock:Baba': 1,
+  deadlock: ['Baba'],
+  // brigões de rua, quem luta com o taco e as máquinas de obra
+  sujimon: [
+    'City Slicker', 'Grease Monk', 'Pornogra-Pharoah', 'Chucklehead', 'Warhead', "Death's-head", 'Masked Demonling', 'Profaner Demon',
+    'Weeping Archdemon', 'Escapist', 'Baseball Diehard', 'Massacre Mascot', 'Heavy Machinery',
+    'Legendary Excavators ft. Lam-chan & Lun-chan',
+  ],
 };
+
+/** Alcance próprio de uma forma, quando o do papel não combina com o personagem (id da forma → casas). */
+export const ALCANCE_PROPRIO: Readonly<Record<string, number>> = Object.fromEntries(
+  Object.entries(CORPO_A_CORPO).flatMap(([fr, nomes]) => nomes.map(nome => [`${fr}:${nome}`, 1] as const)),
+);
+
+/** Multiplicador de vida mínimo de quem o papel deixava de longe e luta de perto (o do Porradeiro): sem o alcance, ele
+ *  toma os golpes da frente, e papel de trás (Anjo, Fadinhas) tem vida de quem fica atrás. */
+export const VIDA_DE_PERTO = 1.15;
+
+/** Casas de alcance da forma: o próprio, se tiver; senão, o do papel. */
+export const alcanceDaForma = (f: FormaDados): number => ALCANCE_PROPRIO[f.id] ?? papel(papelDe(f)).alcance;
 
 /** Base da unidade (custo + estrela + papel); a habilidade, quando tem, define a mana (e a inicial, se disser). Sem
  *  habilidade, ganha BONUS_SEM_HABILIDADE de vida e dano. */
 export function baseDaUnidade(u: Unidade, hab: Habilidade | null): Atributos {
   const s = S();
-  const at = atributosBase(s.campeao(u.campeao).custo, u.estrela, papelDe(s.forma(u.forma)));
-  const alcance = ALCANCE_PROPRIO[u.forma];
-  if (alcance !== undefined) at.alcance = alcance;
+  const forma = s.forma(u.forma);
+  const idPapel = papelDe(forma);
+  const at = atributosBase(s.campeao(u.campeao).custo, u.estrela, idPapel);
+  const alcance = alcanceDaForma(forma);
+  if (alcance < at.alcance) {
+    at.vida *= Math.max(1, VIDA_DE_PERTO / papel(idPapel).vida);
+    at.alcance = alcance;
+  }
   if (hab) {
     at.mana = hab.mana;
     if (hab.manaInicial !== undefined) at.manaInicial = hab.manaInicial;

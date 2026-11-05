@@ -2,6 +2,7 @@
 // Não confere personagem por personagem (o set muda a cada exportação do Catálogo): confere que o arquivo é coerente.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { ALCANCE_PROPRIO, alcanceDaForma } from './combate/atributos';
 import { indexar } from './dados';
 import { ORIGENS, type CampeaoDados, type SetDados } from './tipos';
 
@@ -28,6 +29,25 @@ describe('set da Autobatalha (public/autobatalha/set1.json)', () => {
     for (const [id, f] of Object.entries(set.formas)) {
       expect(f.id).toBe(id);
       expect(id).toBe(`${f.fr}:${f.nome}`);
+    }
+  });
+
+  it('alcance: quem a tabela põe de perto existe e não é Atirador (traço de quem atira, e o papel dele é o mais frágil)', () => {
+    for (const [id, casas] of Object.entries(ALCANCE_PROPRIO)) {
+      expect(set.formas[id], id).toBeDefined();
+      expect(casas, id).toBe(1);
+      expect(set.formas[id]!.classes, id).not.toContain('atirador');
+    }
+  });
+
+  it('alcance: a maioria das formas não fica mais de longe por padrão, e quem atira de verdade continua', () => {
+    const longe = formas.filter(f => alcanceDaForma(f) > 1).length;
+    expect(longe / formas.length).toBeLessThan(0.55);
+    for (const id of ['lol:Jinx', 'overwatch:Widowmaker', 'pokemon:Blastoise', 'pokemon:Charizard', 'digimon:Revolmon']) {
+      expect(alcanceDaForma(set.formas[id]!), id).toBeGreaterThan(1);
+    }
+    for (const id of ['pokemon:Sceptile', 'pokemon:Mega Lopunny', 'digimon:Tailmon', 'lol:Akali', 'deadlock:Baba']) {
+      expect(alcanceDaForma(set.formas[id]!), id).toBe(1);
     }
   });
 
