@@ -1,6 +1,6 @@
 // Tipos compartilhados entre fontes, lógica pura e telas.
 
-/** Chave de franquia ('pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'zelda', 'minecraft', 'monsterhunter', 'sujimon'). */
+/** Chave de franquia ('pokemon', 'digimon', 'smt', 'persona', 'jojo', 'ygo', 'bakugan', 'lol', 'overwatch', 'deadlock', 'ff', 'zelda', 'brainrot', 'minecraft', 'monsterhunter', 'sujimon'). */
 export type FranchiseKey = string;
 
 /** Personagem como vem da fonte. `img` vazio = sem imagem; `href` = detalhe que resolve() consulta (Digimon). */

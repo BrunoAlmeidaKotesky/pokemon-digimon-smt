@@ -1,4 +1,4 @@
-# Quem Você Prefere — Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Minecraft x Monster Hunter x Sujimon
+# Quem Você Prefere — Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Brainrot x Minecraft x Monster Hunter x Sujimon
 
 Site pessoal (em português) pra escolher entre personagens de franquias diferentes. Publicado no GitHub Pages:
 https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/
@@ -43,6 +43,7 @@ Cada franquia é um arquivo em `src/sources/`, na ordem de `SOURCES` (`src/sourc
 | `deadlock` | Deadlock | Deadlock API (`api.deadlock-api.com`), só heróis jogáveis | render da Deadlock Wiki (500px); sem ele, a carta da API |
 | `ff` | Final Fantasy | `public/ff/list.json`, gerado pelo `ff.mjs` a partir da MoogleAPI (só monstros, sem personagens) | `images.moogleapi.com` |
 | `zelda` | Zelda | `public/zelda/list.json`, gerado pelo `zelda.mjs` a partir da Zelda Wiki (inimigos e chefes da série inteira, sem aliados nem armadilhas) | modelo, render ou arte da wiki (`cdn.wikimg.net`) |
+| `brainrot` | Brainrot | `public/brainrot/list.json`, gerado pelo `brainrot.mjs` a partir do sitemap do Animal Brainrot | `static.animalbrainrot.com` |
 | `minecraft` | Minecraft | `public/minecraft/list.json`, gerado pelo `minecraft.mjs` a partir da Minecraft Wiki (mobs, com uma carta por variante de gato, lobo, cavalo, ovelha, sapo e axolote) | imagem da página ou render da wiki |
 | `monsterhunter` | Monster Hunter | `public/monsterhunter/list.json`, gerado pelo `monsterhunter.mjs` a partir da Monster Hunter Wiki (grandes e pequenos, só com render) | render da wiki (`monsterhunterwiki.org`) |
 | `sujimon` | Sujimon | `public/sujimon/list.json` (gerado pelo `sujimon.mjs`); sem ele, a Yakuza Wiki | `public/sujimon/*.webp` ou a wiki |
@@ -84,7 +85,7 @@ node node_modules/@playwright/test/cli.js test
 - `src/autobatalha/`: a Autobatalha (set, motor de combate, conteúdo, partida, controle) e `online/`, a sala com amigos
   (anfitrião, convidado, protocolo, visão de cada um); a tela fica em `src/modes/autobatalha/`.
 - `src/customs/`: franquias personalizadas.
-- `public/`: imagens e listas locais (`smt/`, `sujimon/`, `ff/`).
+- `public/`: imagens e listas locais (`smt/`, `sujimon/`, `ff/`, `zelda/`, `brainrot/`, `minecraft/`, `monsterhunter/`).
 
 ## Testes
 
@@ -110,6 +111,9 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
 - `node zelda.mjs`: junta as categorias Enemies e Bosses da Zelda Wiki em `public/zelda/list.json`. A API manda CORS, mas
   seriam ~25 pedidos a cada visita. Sai quem só tem sprite, print ou ícone, os aliados que aparecem como chefe
   (`PERSONAGENS`) e as armadilhas; confira os avisos.
+- `node brainrot.mjs`: abre a página de cada bicho do Animal Brainrot pelo sitemap, com pausa, e grava
+  `public/brainrot/list.json` (leva meia hora; o site pede frequência semanal, no máximo). O site não tem API aberta.
+  Respeita o `noindex` e para em 403, 429 ou 503.
 - `node minecraft.mjs`: junta os mobs hostis, neutros e passivos da Minecraft Wiki em `public/minecraft/list.json`. Tira
   jockeys, mobs de 1º de abril e os do Education; `VARIANTES` lista os arquivos de cada cor. Arquivo renomeado na wiki
   aparece nos avisos.
