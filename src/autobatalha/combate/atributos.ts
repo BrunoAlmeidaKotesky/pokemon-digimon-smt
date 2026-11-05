@@ -1,7 +1,7 @@
 // Atributos de combate: base pelo custo, multiplicador da estrela, ajuste do papel (a classe que define o jeito de
 // lutar) e a soma dos bônus (itens, traços, buffs). Tabelas em docs/tft/autobatalha.md, seção "Atributos".
 import { S } from '../dados';
-import type { Atributos, Custo, Estrela, FormaDados, Habilidade, NomeAtributo, Unidade } from '../tipos';
+import type { Atributos, CampeaoDados, Custo, Estrela, FormaDados, Habilidade, NomeAtributo, Origem, Unidade } from '../tipos';
 import type { Conteudo } from './contrato';
 
 interface BaseCusto { vida: number; dano: number; armadura: number; resist: number; velAtaque: number }
@@ -154,6 +154,14 @@ export function aplicarBonus(a: Atributos, b: Bonus): Atributos {
 // faixa (eram 73); 25/33% passava do ponto (80 fora, formas que só atacam com até 82%).
 export const BONUS_SEM_HABILIDADE: Record<Estrela, number> = { 1: 0.22, 2: 0.28, 3: 0.28 };
 
+/** Vida e dano a mais por evoluir, por estrela, nas linhas de Pokémon e Digimon (pedido do usuário em 05/11/2026): a
+ *  forma de cima é outro bicho, não a mesma carta mais forte. Solto da mesma origem (Mew não evolui) não ganha. */
+export const BONUS_EVOLUCAO: Partial<Record<Origem, Record<Estrela, number>>> = {
+  pokemon: { 1: 0, 2: 0.05, 3: 0.1 },
+  digimon: { 1: 0, 2: 0.12, 3: 0.3 },
+};
+const bonusEvolucao = (c: CampeaoDados, e: Estrela): number => (c.niveis.length > 1 ? BONUS_EVOLUCAO[c.fr]?.[e] ?? 0 : 0);
+
 /** Quem luta de perto na obra, apesar de o papel dar alcance (o usuário achou gente demais de longe, 05/11/2026): quem
  *  bate, morde ou corta no contato. Quem tem ataque de longe de verdade (sopro, tiro, magia) fica com o do papel. */
 const CORPO_A_CORPO: Readonly<Record<string, readonly string[]>> = {
@@ -204,7 +212,10 @@ export function baseDaUnidade(u: Unidade, hab: Habilidade | null): Atributos {
   const s = S();
   const forma = s.forma(u.forma);
   const idPapel = papelDe(forma);
-  const at = atributosBase(s.campeao(u.campeao).custo, u.estrela, idPapel);
+  const c = s.campeao(u.campeao);
+  const at = atributosBase(c.custo, u.estrela, idPapel);
+  at.vida *= 1 + bonusEvolucao(c, u.estrela);
+  at.dano *= 1 + bonusEvolucao(c, u.estrela);
   const alcance = alcanceDaForma(forma);
   if (alcance < at.alcance) {
     at.vida *= Math.max(1, VIDA_DE_PERTO / papel(idPapel).vida);

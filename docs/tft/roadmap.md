@@ -116,6 +116,14 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   Virou 2/3/4/5/6/8, com +6/10/13/16/18/28%, e a mana a menos passou pro degrau de 8. Com a escada nova o JoJo fica em
   49 / 59 / 49 / 52 / 50%.
 
+- **Pokémon e Digimon:** **[você] vale um buff no escalonamento.** Li como o ganho de força ao evoluir das linhas (se era
+  a escada do traço, é só falar). Bônus de vida e dano nas linhas: Pokémon +5% (★2) e +10% (★3), Digimon +12% e +30%; o
+  Digimon ganha mais porque era a origem mais fraca de verdade na luta. Time cheio contra as outras origens (4 ★1, 6 ★2,
+  8 ★2, 10 ★2, 10 ★3): Pokémon 53 / 41 / 33 / 48 / 45% → 53 / 48 / 39 / 57 / 59%; Digimon 40 / 31 / 29 / 29 / 19% → 40 /
+  46 / 41 / 41 / 48%. Ninguém passa do meio do grupo (Yu-Gi-Oh! e Sujimon seguem no topo). Parei aí porque +10/+20 já
+  punha o Pokémon em 73% no 10 ★3. **Efeito colateral:** estrela vale mais que custo nas linhas: ★2 de custo 3 contra
+  ★1 de custo 5 foi de 71% pra 78% (alvo 35% a 65%).
+
 ## Pra você decidir
 
 - **Visual da tela nova:** tons do gramado, metade do adversário em oliva, cores das classes, ícones de perto/longe e

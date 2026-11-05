@@ -1,6 +1,7 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { distancia } from '../hex';
 import type { EntradaTime, EventoLuta, Lutador, ResultadoLuta } from '../tipos';
+import { BONUS_EVOLUCAO } from './atributos';
 import { separarId } from './lutador';
 import { simularLutaCom } from './motor';
 import { conteudoFalso, em, monstro, time, traco, unidade, usarSetTeste, type ConteudoFalso } from './test-helpers';
@@ -312,7 +313,7 @@ describe('motor de combate', () => {
     expect(ini[`a:${jotaro.uid}`]!.vidaMax).toBe(Math.round(850 * 1.15 * 1.6));
     expect(ini[`a:${mira.uid}`]!.vidaMax).toBe(Math.round(450 * 0.75 * 1.1));
     // os Brigões do lado B não têm o traço (é um campeão só)
-    expect(r.gravacao!.inicial.filter(e => e.lado === 'b').every(e => e.vidaMax === Math.round(450 * 1.8 * 1.15))).toBe(true);
+    expect(r.gravacao!.inicial.filter(e => e.lado === 'b').every(e => e.vidaMax === Math.round(450 * 1.8 * 1.15 * (1 + BONUS_EVOLUCAO.pokemon![2])))).toBe(true);
     expect(quadros(r)[0]!.u[`a:${brigao.uid}`]![3]).toBe(100);
     expect(conta.atacar).toBeGreaterThan(0);
     expect(conta.receber).toBeGreaterThan(0);

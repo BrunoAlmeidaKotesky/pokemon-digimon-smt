@@ -78,6 +78,11 @@ O **papel** vem da primeira classe da forma nesta ordem de prioridade e ajusta o
 Forma que não lança nada (não final de Pokémon e Digimon) ganha +22% de vida e dano na estrela 1 e +28% na 2 e na 3, no
 lugar da habilidade.
 
+**Evoluir** (`BONUS_EVOLUCAO` em atributos.ts; pedido do usuário em 05/11/2026): nas linhas de Pokémon e Digimon, além da
+estrela, a forma evoluída ganha vida e dano: Pokémon +5% na estrela 2 e +10% na 3, Digimon +12% e +30%. Solto da mesma
+origem não ganha. Medido na seção "Origens" do equilibrio.md: evoluir de ★1 pra ★2 valia +84% no Pokémon e +78% no
+Digimon, e agora +91% e +97%; de ★2 pra ★3, +84% e +59%, agora +91% e +84%.
+
 **Quem luta de perto apesar do papel** (`CORPO_A_CORPO` em atributos.ts; pedido do usuário em 05/11/2026: gente demais
 de longe). O alcance do papel é o padrão, e a tabela põe em alcance 1 quem na obra bate, morde ou corta no contato; quem
 tem ataque de longe de verdade (sopro, tiro, magia) fica com o do papel. Eram 408 das 592 formas de longe; agora são

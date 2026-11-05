@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { ATRIBUTOS_EM_FRACAO, type Atributos, type FormaDados } from '../tipos';
 import {
-  ALCANCE_PROPRIO, BONUS_SEM_HABILIDADE, VIDA_DE_PERTO, aplicarBonus, alcanceDaForma, atributosBase, atributosDaUnidadeCom, bonusZero,
+  ALCANCE_PROPRIO, BONUS_EVOLUCAO, BONUS_SEM_HABILIDADE, VIDA_DE_PERTO, aplicarBonus, alcanceDaForma, atributosBase, atributosDaUnidadeCom, bonusZero,
   NOMES_ATRIBUTOS, papelDe,
 } from './atributos';
 import { conteudoFalso, unidade, usarSetTeste } from './test-helpers';
@@ -46,6 +46,16 @@ describe('atributos', () => {
     expect(atributosBase(3, 1, 'raio').alcance).toBe(3);
   });
 
+  it('evoluir: só linhas de Pokémon e Digimon ganham, e a estrela 1 não', () => {
+    const c = conteudoFalso({});
+    expect(atributosDaUnidadeCom(unidade('pokemon:brigao', 1), c).vida).toBeCloseTo(450 * 1.15);
+    expect(atributosDaUnidadeCom(unidade('pokemon:brigao', 3), c).dano).toBeCloseTo(42 * 2.25 * 1.05 * (1 + BONUS_EVOLUCAO.pokemon![3]));
+    // solto de Pokémon não evolui; linha de outra origem não entra na conta
+    expect(atributosDaUnidadeCom(unidade('pokemon:lerdo', 2), c).vida).toBeCloseTo(450 * 1.8 * (1 + BONUS_SEM_HABILIDADE[2]));
+    expect(BONUS_EVOLUCAO.smt).toBeUndefined();
+    expect(BONUS_EVOLUCAO.digimon![3]).toBeGreaterThan(BONUS_EVOLUCAO.pokemon![3]);
+  });
+
   it('soma de bônus segue ATRIBUTOS_EM_FRACAO: fração multiplica o base, o resto soma pontos', () => {
     const base: Atributos = {
       vida: 1000, dano: 100, armadura: 50, resist: 50, velAtaque: 1, alcance: 2, mana: 50, manaInicial: 10, critChance: 0.25,
@@ -64,8 +74,9 @@ describe('atributos', () => {
     const c = conteudoFalso({ itens: { pyrus: { id: 'pyrus', nome: 'Pyrus', texto: '', atributos: { dano: 0.15, manaInicial: 15 } } } });
     const u = unidade('pokemon:brigao', 2, { itens: ['pyrus', 'nao-existe'], bonus: { vida: 0.1 } });
     const at = atributosDaUnidadeCom(u, c);
-    expect(at.vida).toBeCloseTo(450 * 1.8 * 1.15 * 1.1);
-    expect(at.dano).toBeCloseTo(42 * 1.5 * 1.05 * 1.15);
+    const evolucao = 1 + BONUS_EVOLUCAO.pokemon![2];
+    expect(at.vida).toBeCloseTo(450 * 1.8 * 1.15 * evolucao * 1.1);
+    expect(at.dano).toBeCloseTo(42 * 1.5 * 1.05 * evolucao * 1.15);
     expect(at.mana).toBe(60); // golpe falso
     expect(at.manaInicial).toBe(15);
     // tanque: começa sem mana (a habilidade falsa não diz a inicial, e o papel não dá)
