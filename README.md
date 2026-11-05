@@ -1,4 +1,4 @@
-# Quem Você Prefere — Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Sujimon
+# Quem Você Prefere — Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Sujimon
 
 Site pessoal (em português) pra escolher entre personagens de franquias diferentes. Publicado no GitHub Pages:
 https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/
@@ -42,6 +42,7 @@ Cada franquia é um arquivo em `src/sources/`, na ordem de `SOURCES` (`src/sourc
 | `overwatch` | Overwatch | OverFast API | render da Overwatch Wiki; sem ele, o retrato da API |
 | `deadlock` | Deadlock | Deadlock API (`api.deadlock-api.com`), só heróis jogáveis | render da Deadlock Wiki (500px); sem ele, a carta da API |
 | `ff` | Final Fantasy | `public/ff/list.json`, gerado pelo `ff.mjs` a partir da MoogleAPI (só monstros, sem personagens) | `images.moogleapi.com` |
+| `zelda` | Zelda | `public/zelda/list.json`, gerado pelo `zelda.mjs` a partir da Zelda Wiki (inimigos e chefes da série inteira, sem aliados nem armadilhas) | modelo, render ou arte da wiki (`cdn.wikimg.net`) |
 | `sujimon` | Sujimon | `public/sujimon/list.json` (gerado pelo `sujimon.mjs`); sem ele, a Yakuza Wiki | `public/sujimon/*.webp` ou a wiki |
 
 - O nome de cada personagem precisa ser único dentro da franquia: o saco de sorteio e o placar guardam pelo nome. Por
@@ -104,6 +105,9 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
   cabeçalho CORS, então o site lê a lista salva. Ela também lista como monstro os personagens que se enfrenta (Freya,
   Kefka, Sephiroth...): a lista `PESSOAS` do script tira esses, por nome exato e jogo. Rode de novo pra pegar monstros
   novos e confira os avisos.
+- `node zelda.mjs`: junta as categorias Enemies e Bosses da Zelda Wiki em `public/zelda/list.json`. A API manda CORS, mas
+  seriam ~25 pedidos a cada visita. Sai quem só tem sprite, print ou ícone, os aliados que aparecem como chefe
+  (`PERSONAGENS`) e as armadilhas; confira os avisos.
 - `node sujimon.mjs recortar`: recorta os screenshots do Sujidex de `sujimon/_orig/` pra `public/sujimon/`. Instruções
   no começo do arquivo.
 - `node catalogo.mjs [chaves]`: gera `public/catalogo/<chave>.json` com o que a fonte informa de cada personagem (um

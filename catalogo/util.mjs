@@ -48,3 +48,46 @@ export async function pool(items, n, fn) {
 
 /** Pedido à API de uma wiki MediaWiki (format=json e origin=* já incluídos). */
 export const wiki = (api, params) => getJson(api + '?' + new URLSearchParams({ format: 'json', origin: '*', ...params }));
+
+/** Páginas (namespace 0) de uma categoria da wiki, seguindo a continuação; `extra` escolhe o `prop`. */
+export async function membros(api, categoria, extra = {}) {
+  const out = new Map();
+  let cont = {};
+  for (;;) {
+    const d = await wiki(api, { action: 'query', generator: 'categorymembers', gcmtitle: categoria, gcmnamespace: '0', gcmlimit: 'max', ...extra, ...cont });
+    for (const p of Object.values(d.query?.pages ?? {})) out.set(p.pageid, { ...out.get(p.pageid), ...p });
+    if (!d.continue) return [...out.values()];
+    cont = d.continue;
+  }
+}
+
+/** Título da página -> nomes das categorias dela (sem "Category:"), 50 páginas por pedido. */
+export async function categoriasDe(api, titulos) {
+  const out = new Map(titulos.map(t => [t, []]));
+  for (const lote of chunks(titulos, 50)) {
+    let cont = {};
+    for (;;) {
+      const d = await wiki(api, { action: 'query', prop: 'categories', cllimit: 'max', titles: lote.join('|'), ...cont });
+      for (const p of Object.values(d.query?.pages ?? {})) out.get(p.title)?.push(...(p.categories ?? []).map(c => c.title.replace(/^Category:/, '')));
+      if (!d.continue) break;
+      cont = d.continue;
+    }
+  }
+  return out;
+}
+
+/** Arquivo pedido ("File:...") -> miniatura com a largura pedida, seguindo redirecionamentos; 50 por pedido. */
+export async function miniaturas(api, arquivos, largura = 400) {
+  const out = new Map();
+  for (const lote of chunks([...new Set(arquivos)], 50)) {
+    const d = await wiki(api, { action: 'query', prop: 'imageinfo', iiprop: 'url', iiurlwidth: String(largura), redirects: '1', titles: lote.join('|') });
+    const volta = new Map();
+    for (const x of d.query?.normalized ?? []) volta.set(x.to, x.from);
+    for (const x of d.query?.redirects ?? []) volta.set(x.to, volta.get(x.from) ?? x.from);
+    for (const p of Object.values(d.query?.pages ?? {})) {
+      const u = p.imageinfo?.[0]?.thumburl ?? p.imageinfo?.[0]?.url;
+      if (u) out.set(volta.get(p.title) ?? p.title, u);
+    }
+  }
+  return out;
+}

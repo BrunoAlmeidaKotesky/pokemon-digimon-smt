@@ -10,12 +10,13 @@ import { lol } from './lol';
 import { overwatch } from './overwatch';
 import { deadlock } from './deadlock';
 import { ff } from './ff';
+import { zelda } from './zelda';
 import { sujimon } from './sujimon';
 
 export { nice } from './text';
 export { resolve } from './resolve';
 
 /** Todas as franquias, na ordem em que aparecem no site. */
-export const SOURCES: Source[] = [pokemon, digimon, smt, persona, jojo, ygo, bakugan, lol, overwatch, deadlock, ff, sujimon];
+export const SOURCES: Source[] = [pokemon, digimon, smt, persona, jojo, ygo, bakugan, lol, overwatch, deadlock, ff, zelda, sujimon];
 export const KEYS: FranchiseKey[] = SOURCES.map(s => s.key);
 export const LABELS: Record<string, string> = Object.fromEntries(SOURCES.map(s => [s.key, s.label]));

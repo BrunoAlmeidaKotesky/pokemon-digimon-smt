@@ -1,12 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
-import { prepare, abrir, statusEsperado, nomes, franquias, aba, fixture, LABEL, CONTAGEM } from './helpers';
+import { prepare, abrir, statusEsperado, nomes, franquias, aba, fixture, LABEL, CONTAGEM, type Franquia } from './helpers';
 
 test.describe('carregamento e status', () => {
   test('carrega todas as franquias e mostra a contagem', async ({ page }) => {
     const calls = await prepare(page);
     await abrir(page);
     await expect(page.locator('#status')).toHaveText(statusEsperado());
-    await expect(page.locator('h1')).toHaveText('Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Sujimon');
+    await expect(page.locator('h1')).toHaveText('Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Sujimon');
     await expect(page.locator('#h1suji')).toBeVisible();
     await expect(page.locator('meta[name=referrer]')).toHaveAttribute('content', 'no-referrer');
     await expect(page).toHaveTitle('Quem Você Prefere');
@@ -24,6 +24,7 @@ test.describe('carregamento e status', () => {
     expect(calls.deadlock).toBe(1);
     // Final Fantasy: um arquivo só, do próprio site
     expect(calls.ff).toBe(1);
+    expect(calls.zelda).toBe(1);
   });
 
   test('status mostra "carregando" enquanto a lista não chega', async ({ page }) => {
@@ -85,6 +86,21 @@ test.describe('carregamento e status', () => {
     await aba(page, 'Campeonato');
     await expect(page.locator('#cup_sujimon')).toBeChecked();
   });
+
+  // Listas salvas por script, sem nada de especial além de nomes com apóstrofo, parênteses ou acento
+  for (const [fr, nomes] of [['zelda', ["Majora's Mask", 'Moldorm (Boss)']]] as [Franquia, string[]][]) {
+    test(`${LABEL[fr]}: um arquivo só do próprio site, e o nome vira carta sem mudar`, async ({ page }) => {
+      const calls = await prepare(page, { storage: { 'pdx-bags': { [fr]: nomes } } });
+      await abrir(page);
+      await expect(page.locator('#status')).toContainText(`${LABEL[fr]}: 40`);
+      await page.selectOption('#duelA', fr);
+      const carta = page.locator('#duelRow .card').first();
+      await expect(carta).toHaveAttribute('data-fr', fr);
+      await expect(carta.locator('.fr')).toHaveText(LABEL[fr]);
+      await expect(carta.locator('.name')).toHaveText(nomes.at(-1)!);
+      expect(calls[fr]).toBe(1);
+    });
+  }
 
   test('Final Fantasy: o mesmo monstro de jogos diferentes convive, com o jogo no nome', async ({ page }) => {
     // a fixture tem o Bomb do FF II, III, IV e V; o saco sai de trás pra frente: primeiro o do FF IV, depois o do FF III
