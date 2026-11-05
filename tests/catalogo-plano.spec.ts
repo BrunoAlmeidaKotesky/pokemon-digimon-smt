@@ -56,7 +56,7 @@ test.describe('planejamento do Set 1 no Catálogo', () => {
     // as subabas contam o grupo base; a franquia que o site não tem (franquia-futura) e a chave "itens" são ignoradas
     await expect(page.locator('#catFr .cat-fr')).toHaveText([
       'Pokémon · 13', 'Digimon · 0', 'SMT · 0', 'Persona · 4', 'JoJo · 0', 'Yu-Gi-Oh! · 0', 'Bakugan · 2', 'LoL · 2', 'Overwatch · 0',
-      'Deadlock · 0', 'Final Fantasy · 0', 'Sujimon · 0',
+      'Deadlock · 0', 'Final Fantasy · 0', 'Zelda · 0', 'Brainrot · 0', 'Minecraft · 0', 'Monster Hunter · 0', 'Sujimon · 0',
     ]);
     await expect(page.locator('#catAbaClasses')).toHaveText('Classes · 3');
 

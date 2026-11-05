@@ -23,23 +23,26 @@ Depois de pronto, publique com a skill `publicar`.
 - **Cor:** uma pro tema claro e outra pro escuro, num tom livre. Hoje (claro / escuro):
   pokemon `#d6302a`/`#ff5a4f`, digimon `#1f6fd1`/`#4f9bff`, smt `#7a1fa8`/`#b866e8`, persona `#a0168f`/`#e879d6`,
   jojo `#0c8a5a`/`#3fd39a`, ygo `#c2410c`/`#ff8a4c`, bakugan `#0e8fa8`/`#3cc8e6`, lol `#4a3fc4`/`#9a92ff`,
-  overwatch `#5a6f8a`/`#9fb5d0`, deadlock `#77791a`/`#c9cc5e`, ff `#3f8a1c`/`#86d95a`, sujimon `#c0267a`/`#ff6fb5`,
+  overwatch `#5a6f8a`/`#9fb5d0`, deadlock `#77791a`/`#c9cc5e`, ff `#3f8a1c`/`#86d95a`, zelda `#0f6b4f`/`#5eead4`, brainrot `#3b6b00`/`#d4f02f`,
+  minecraft `#7a5230`/`#c9a27a`, monsterhunter `#9f1239`/`#fb7185`, sujimon `#c0267a`/`#ff6fb5`,
   e `--gold` `#c58a00`/`#ffc23d` é da coroa e da roleta (não use). Cinza-escuro some no título (fica igual aos "x").
-  Confira nos dois temas com screenshot.
+  Meça a distância (CIEDE2000) pras cores que já existem: as mais próximas do site ficam em volta de 9. Confira nos dois
+  temas com screenshot.
 
 ## Arquivos
 
 **Código**
 1. `src/sources/<chave>.ts`: `export const <chave>: Source = { key, label, load }`. `load()` lança `Error('vazio')` se
    não sobrar nada. Comentário no topo dizendo de onde vem a lista e a imagem. Wiki: use `collectPages`/`wikiItems`
-   ou `pageThumbs`/`fileThumbs` de `mediawiki.ts`. Lista local: `fetch('<pasta>/list.json')` (URL relativa).
+   ou `pageThumbs`/`fileThumbs` de `mediawiki.ts`. Lista local: `load: listaLocal('<pasta>/list.json')` (de `lista-local.ts`, URL relativa).
 2. `src/sources/index.ts`: import e posição em `SOURCES`. `KEYS` e `LABELS` saem daí.
 3. `src/types.ts`: a lista de chaves no comentário de `FranchiseKey`.
 4. `src/App.tsx`: `<span className="<classe>">Rótulo</span>` no `h1`, na mesma ordem.
 5. `src/styles.css`: `--<chave>` no `:root` claro e no escuro, `h1 .<classe>{color:var(--<chave>)}` e
    `.card[data-fr=<chave>]{--c:var(--<chave>)}`. Arte horizontal que deve preencher a carta: regra de `object-fit:
    cover` como a do LoL (carta, `.slot .th img` do chaveamento e `.team li img` do Draft).
-6. `src/online/room.ts`: `LABELS` e `DEFAULT_CONFIG.cup.frs`.
+6. `src/online/room.ts`: `LABELS` e `DEFAULT_CONFIG.cup.frs`. Franquia fora da Autobatalha: chave em `NAO_SAO_CAMPEOES`
+   (`src/catalog/custos.ts`), senão ela entra nas cotas da subaba Custos.
 7. A roleta (`SpinButton.tsx`) e o placar já se montam a partir de `KEYS`: nada a fazer.
 
 **Vitest**
@@ -56,7 +59,8 @@ Depois de pronto, publique com a skill `publicar`.
     do `route.continue()`. URL de imagem sem extensão precisa cair na rota de imagem (ver a regra do CommunityDragon).
 13. Specs que costumam mudar: `carregamento.spec.ts` (texto do `h1`, chamadas, teste de "falhou", um teste próprio da
     franquia nova), `placar.spec.ts` (`ORDEM` e linhas das barras), `screenshots.spec.ts` (placar semeado),
-    `campeonato.spec.ts` (comentário com o número de franquias), `online-draft.spec.ts` e `quarteto.spec.ts` se o
+    `campeonato.spec.ts` (comentário com o número de franquias), `catalogo.spec.ts` (`FRANQUIAS`), `catalogo-plano.spec.ts`
+    (contagem das subabas), `online-draft.spec.ts` e `quarteto.spec.ts` se o
     rótulo de uma franquia mudar, e `tests/real/site-real.spec.ts` (lista de rótulos).
 
 **Docs**

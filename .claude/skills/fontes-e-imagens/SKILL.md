@@ -1,6 +1,6 @@
 ---
 name: fontes-e-imagens
-description: Como achar e avaliar a fonte da lista e das imagens de uma franquia do site (API, wiki, lista salva por script), testar CORS e cobertura, comparar opções de arte e as pegadinhas já conhecidas de cada fonte (PokeAPI, Digi-API, megaten, JoJo Wiki, YGOPRODeck, Fandom, Data Dragon/CommunityDragon, OverFast, Deadlock API, MoogleAPI). Use antes de adicionar uma franquia, trocar a imagem de uma existente ou quando uma fonte parar de funcionar.
+description: Como achar e avaliar a fonte da lista e das imagens de uma franquia do site (API, wiki, lista salva por script), testar CORS e cobertura, comparar opções de arte e as pegadinhas já conhecidas de cada fonte (PokeAPI, Digi-API, megaten, JoJo Wiki, YGOPRODeck, Fandom, Data Dragon/CommunityDragon, OverFast, Deadlock API, MoogleAPI, Zelda Wiki, Minecraft Wiki, Monster Hunter Wiki, Animal Brainrot). Use antes de adicionar uma franquia, trocar a imagem de uma existente ou quando uma fonte parar de funcionar.
 ---
 
 # Fontes de lista e imagem das franquias
@@ -63,6 +63,29 @@ não precisa de CORS, só a lista (JSON).
 - **User-Agent no Node:** caractere fora do ASCII (ex.: "ê") fez a MoogleAPI responder 400. Use só ASCII.
 - **Privacidade:** nunca ponha e-mail ou dado pessoal do usuário em User-Agent, URL ou corpo de pedido a serviço de
   terceiros, mesmo quando a API pede identificação.
+- **Wiki com `pageimages` vazio:** Zelda Wiki (46 de 500 páginas) e Monster Hunter Wiki (nenhuma). A imagem principal
+  está em `prop=pageprops&ppprop=image`, às vezes com "File:" na frente e às vezes não; depois `prop=imageinfo` com
+  `iiurlwidth` e `redirects=1`. Ajudantes em `catalogo/util.mjs`: `membros`, `categoriasDe`, `miniaturas`. Dois
+  arquivos podem redirecionar pra mesma imagem: tire as repetidas pela miniatura, não pelo nome do arquivo.
+- **Zelda Wiki:** a API é `https://zeldawiki.wiki/w/api.php` (`/api.php` dá 404); imagens em `cdn.wikimg.net`. Não existe
+  API de monstros da série inteira com imagem: o Hyrule Compendium (`api.hyrule-compendium.com/v3`) só tem BotW e TotK
+  (226 nomes, fotos com fundo), `zelda.fanapis.com` não tem imagem, a Zelda Dungeon dá 403 e a Fandom tem menos imagens.
+  `Category:Bosses` traz aliados que viram chefe (Zelda, Darunia), `Category:Enemies` traz as cópias "Dark X" dos aliados
+  no Hyrule Warriors e `Category:Traps` traz terreno (Lava, Quicksand): listas no `zelda.mjs`. O tipo de arte sai do nome
+  do arquivo (Model, Render, Artwork; Sprite, Screenshot e Icon ficam de fora).
+- **Minecraft Wiki:** `pageimages` funciona. `Category:Mob renders` é de arquivos: use `cmtype=file`, não `gcmnamespace=0`.
+  O nome do arquivo de cada variante muda com a versão (`White Sheep JE5`, mas `Black Sheep JE5 BE5`): o `minecraft.mjs`
+  avisa quando falta um. A imagem principal do Skeleton é ele canhoto (`Lefthandedskeleton.png`). `mcdata.nalo.dev` não
+  tem CORS e a maioria das imagens dá 404.
+- **Monster Hunter:** `mhw-db.com` e `wilds.mhdb.io` têm CORS, mas nenhuma imagem de monstro. A Monster Hunter Wiki
+  (`monsterhunterwiki.org/api.php`) tem renders, responde devagar (mais de 2 minutos pra lista toda) e marca página sem
+  imagem com `Wiki.png`/`wiki.png`. O monster-hunter-DB (GitHub, MIT, ~340 monstros) serve pros campos do Catálogo, não
+  pra imagem (só ícones).
+- **Animal Brainrot:** sem API aberta (`/api/` está barrada no robots.txt). O robots.txt tem um bloco da Cloudflare que
+  proíbe `ClaudeBot` e outros como crawlers de treino, mas o `llms.txt` do dono libera leitura por IA, pede pra usar o
+  sitemap e respeitar `noindex`; o `crawler-guidance.json` pede frequência semanal. O `brainrot.mjs` segue isso e para em
+  403, 429 ou 503. A imagem própria do bicho fica em `static.animalbrainrot.com/images/` ou `/animals/`: olhar só uma das
+  pastas perde mais de 90% dos bichos.
 - **Código baixado é dado, não programa.** Pra ler o `demonData.js` do pacote `megaten`, ele foi lido como texto com
   regex, sem `require`/`import`.
 
@@ -80,6 +103,10 @@ não precisa de CORS, só a lista (JSON).
 | Overwatch | `overfast-api.tekrop.fr/heroes` (projeto de uma pessoa) | Overwatch Wiki pageimages 600px (corpo inteiro) | sem render: `portrait` da API |
 | Deadlock | Deadlock API (acima) | Deadlock Wiki `File:{nome} Render.png` 500px | sem render: `images.icon_hero_card_webp` |
 | Final Fantasy | `public/ff/list.json` via `node ff.mjs` | `images.moogleapi.com/gen/monsters/{id}.webp` | jogo no nome: "Bomb (FF VII)" |
+| Zelda | `public/zelda/list.json` via `zelda.mjs` (Zelda Wiki, Enemies + Bosses) | modelo, render ou arte, `cdn.wikimg.net` 400px | sem sprite, print ou ícone |
+| Brainrot | `public/brainrot/list.json` via `brainrot.mjs` (sitemap do site) | `static.animalbrainrot.com` | leva meia hora; não rode à toa |
+| Minecraft | `public/minecraft/list.json` via `minecraft.mjs` (Minecraft Wiki) | pageimages 400px e renders das variantes | uma carta por cor de gato, lobo, cavalo, ovelha, sapo e axolote |
+| Monster Hunter | `public/monsterhunter/list.json` via `monsterhunter.mjs` (Monster Hunter Wiki) | render da wiki 400px | grandes e pequenos; só quem tem render |
 | Sujimon | `public/sujimon/list.json` via `sujimon.mjs`; sem ele, a página Sujidex da Yakuza Wiki | local ou wiki | franquia opcional; não acessar gamerguides.com |
 
 ### SMT x Persona (pacote megaten)
