@@ -20,7 +20,7 @@ export {
 } from './carrossel';
 export {
   chancesLoja, custoDe, ehFantasma, ehMonstros, ehStand, estaVivo, forca, humano, jogadorDe, limiteTabuleiro,
-  ondeEsta, origemDe, rodadasDoEstagio, standDe, standsForaDaVaga, unidadesNoBanco, unidadesNoTabuleiro, valorVenda, vivos,
+  ondeEsta, origemDe, rodadasDoEstagio, standDe, standsForaDaVaga, standsForaDaVagaNoNivel, unidadesNoBanco, unidadesNoTabuleiro, valorVenda, vivos,
   xpParaProximo, donoDoFantasma,
 } from './consultas';
 export { bonusSequencia, danoDerrota, danoMonstros, juros, rendaDaRodada } from './economia';

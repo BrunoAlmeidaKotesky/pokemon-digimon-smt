@@ -194,12 +194,12 @@ describe('comportamentos', () => {
     expect(eu.vida).toBeCloseTo(eu.at.vida);
   });
 
-  it('JoJo (7): Stands lançam com 25% menos mana; usuário também ganha o bônus', () => {
+  it('JoJo (8): Stands lançam com 25% menos mana; usuário também ganha o bônus', () => {
     const { m, eu, usuario } = montar();
     eu.stand = true;
-    TRACOS.jojo!.aoComecar!(m.ctx, 3, [eu]);
+    TRACOS.jojo!.aoComecar!(m.ctx, 5, [eu]);
     expect(eu.at.mana).toBe(60);
-    expect(usuario.at.dano).toBeCloseTo(124);
+    expect(usuario.at.dano).toBeCloseTo(128);
   });
 
   it('Transformação e Reuniclus: o Reuniclus se sacrifica pelo aliado abaixo de metade', () => {

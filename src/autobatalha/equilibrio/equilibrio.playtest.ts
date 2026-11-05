@@ -29,8 +29,8 @@ const PARTES = new Set((env.EQUILIBRIO_PARTES ?? 'campeoes,curva,pacotes,tracos,
 const SAIDA = env.EQUILIBRIO_SAIDA ?? 'docs/tft/matematica/equilibrio.md';
 const BASE = Number(env.EQUILIBRIO_SEMENTE ?? 2026);
 const CENARIOS = RAPIDO
-  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, origens: 6, evolucao: 12, stands: 16, partidas: [1, 2, 3, 4, 5, 6] }
-  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, origens: 20, evolucao: 40, stands: 40, partidas: Array.from({ length: 24 }, (_, i) => i + 1) };
+  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, origens: 6, evolucao: 12, stands: 16, partidas: [1, 2, 3, 4, 5, 6], partidasStands: 6 }
+  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, origens: 20, evolucao: 40, stands: 40, partidas: Array.from({ length: 24 }, (_, i) => i + 1), partidasStands: 48 };
 
 /** Tabuleiro e estrela de cada coluna da comparação entre origens. */
 const PONTOS_ORIGENS: readonly (readonly [number, Estrela])[] = [[4, 1], [6, 2], [8, 2], [10, 2], [10, 3]];
@@ -44,6 +44,7 @@ const REGRAS_STANDS: readonly RegraStands[] = [
   { nome: 'Até 2 fora da vaga', foraDaVaga: () => 2 },
   { nome: 'Até 3 fora da vaga', foraDaVaga: () => 3 },
   { nome: 'Um fora da vaga a cada 3 níveis', foraDaVaga: n => Math.floor(n / 3) },
+  { nome: 'Um fora da vaga a cada 4 níveis', foraDaVaga: n => Math.floor(n / 4) },
   { nome: 'Sem limite, Stand 40% mais fraco', foraDaVaga: () => Infinity, bonus: -0.4 },
 ];
 
@@ -123,7 +124,7 @@ it('playtest: mede e grava o equilibrio.md', () => {
       return {
         nome: regra.nome,
         origens: PONTOS_ORIGENS.map(([limite, estrela]) => ({ limite, estrela, placares: origemContraOrigem(limite, estrela, CENARIOS.origens, BASE, regra) })),
-        partidas: jogarPartidas(CENARIOS.partidas.map(s => s + BASE), 120, regra),
+        partidas: jogarPartidas(Array.from({ length: CENARIOS.partidasStands }, (_, i) => i + 1 + BASE), 120, regra),
       };
     });
   }

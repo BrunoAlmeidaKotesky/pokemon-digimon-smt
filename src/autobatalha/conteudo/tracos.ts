@@ -479,9 +479,10 @@ const DIGIMON_PARCEIRO = 1;
 const DIGIMON_MANA = 3;
 const SMT = [0.2, 0.25, 0.32, 0.45, 0.6];
 const PERSONA = [0.08, 0.14, 0.2, 0.28, 0.38];
-const JOJO = [0.06, 0.1, 0.16, 0.24, 0.32, 0.42];
-/** JoJo: Stands lançam com 25% menos mana a partir deste degrau (7 de JoJo) */
-const JOJO_MANA = 3;
+// só parte dos Stands fica fora da vaga: no nível 12 cabem 8, e a escada termina aí (era 2/3/5/7/9/10)
+const JOJO = [0.06, 0.1, 0.13, 0.16, 0.18, 0.28];
+/** JoJo: Stands lançam com 25% menos mana a partir deste degrau (8 de JoJo) */
+const JOJO_MANA = 5;
 const YGO = [0.1, 0.15, 0.22, 0.3, 0.4, 0.5];
 /** Yu-Gi-Oh!: as cartas ganham as duas posições a partir deste degrau (7 cartas) */
 const YGO_DUAS = 3;
@@ -576,7 +577,7 @@ const origens: Traco[] = [
     },
   },
   {
-    id: 'jojo', nome: 'JoJo', tipo: 'origem', degraus: [2, 3, 5, 7, 9, 10],
+    id: 'jojo', nome: 'JoJo', tipo: 'origem', degraus: [2, 3, 4, 5, 6, 8],
     descricao: 'Stands e seus usuários ficam mais fortes.',
     textos: JOJO.map((v, i) => `Stands e seus usuários ganham +${pct(v)} de dano e vida` +
       (i >= JOJO_MANA ? ', e os Stands lançam com 25% menos mana' : '') + '.'),

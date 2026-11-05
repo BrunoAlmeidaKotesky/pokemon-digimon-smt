@@ -24,7 +24,7 @@ export interface Resultados {
   /** semente base de tudo */
   base: number;
   /** quantos cenários em cada medida (curva, traço, item, pacote) e sementes das partidas */
-  cenarios: { curva: number; tracos: number; itens: number; pacotes: number; origens: number; evolucao: number; stands: number; partidas: number[] };
+  cenarios: { curva: number; tracos: number; itens: number; pacotes: number; origens: number; evolucao: number; stands: number; partidas: number[]; partidasStands: number };
   campeoes?: LinhaCampeao[];
   curva?: ResultadoCurva[];
   pacotes?: ResultadoPacote[];
@@ -504,7 +504,7 @@ function secaoStands(r: Resultados): string {
     out.push(
       '### Regras dos Stands comparadas',
       '',
-      'Cada regra medida com o time cheio de JoJo contra as outras origens (vitórias) e com partidas de bots. "Colocação" é a ' +
+      `Cada regra medida com o time cheio de JoJo contra as outras origens (vitórias) e com ${r.cenarios.partidasStands} partidas de bots. "Colocação" é a ` +
       'média de quem mais usou JoJo do estágio 3 em diante (média geral: 4,5). "Em campo" é a média, nos níveis 8 ou mais.',
       '',
       tabela(['Regra', ...pontos.map(p => `JoJo, ${p.limite} ★${p.estrela}`), 'Colocação', 'Jogadores', 'Geral', 'Em campo', 'Stands', 'Máximo'], linhas),

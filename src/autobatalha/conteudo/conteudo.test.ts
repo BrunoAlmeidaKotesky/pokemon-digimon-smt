@@ -180,7 +180,7 @@ describe('traços', () => {
     expect(Object.keys(TRACOS).sort()).toEqual([...ORIGENS, ...CLASSES, ...ELEMENTOS].sort());
     const escadas: Record<string, number[]> = {
       pokemon: [2, 4, 6, 8, 9, 10], digimon: [2, 3, 4, 5, 6], smt: [2, 3, 4, 6, 8], persona: [1, 2, 3, 4, 5],
-      jojo: [2, 3, 5, 7, 9, 10], ygo: [2, 3, 5, 7, 9, 10], lol: [2, 3, 5, 7, 9, 10], overwatch: [2, 3, 4, 5, 7],
+      jojo: [2, 3, 4, 5, 6, 8], ygo: [2, 3, 5, 7, 9, 10], lol: [2, 3, 5, 7, 9, 10], overwatch: [2, 3, 4, 5, 7],
       deadlock: [2, 3, 4, 5, 6], sujimon: [2, 3, 4, 5, 6],
     };
     for (const o of ORIGENS) expect(TRACOS[o]!.degraus, o).toEqual(escadas[o]);

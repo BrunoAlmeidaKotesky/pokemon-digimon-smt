@@ -53,8 +53,9 @@ export function rodadasDoEstagio(estagio: number): TipoRodada[] {
 
 /** Limite de unidades no tabuleiro: o nível (pedido do usuário em 05/11/2026: começar com dois não foi boa ideia). */
 export const limiteTabuleiro = (j: Jogador): number => j.nivel;
-/** Quantos Stands do tabuleiro não gastam vaga; os outros contam como unidade normal. */
-export const standsForaDaVaga = (j: Jogador): number => M().standsForaDaVaga(j.nivel);
+/** Quantos Stands do tabuleiro não gastam vaga no nível; os outros contam como unidade normal. */
+export const standsForaDaVagaNoNivel = (nivel: number): number => M().standsForaDaVaga(nivel);
+export const standsForaDaVaga = (j: Jogador): number => standsForaDaVagaNoNivel(j.nivel);
 
 /** Unidades no tabuleiro, com ou sem os Stands. */
 export function unidadesNoTabuleiro(j: Jogador, comStands = true): Unidade[] {

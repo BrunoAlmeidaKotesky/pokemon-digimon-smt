@@ -7,7 +7,8 @@ import {
   chancesLoja, comprar, comprarXp, contaNoLimite, COPIAS_POR_CUSTO, danoDerrota, equipar, escolherEvolucao,
   fimDoPlanejamento, humano, jogadorDe, jogarBot, jogarBots, juros, limiteTabuleiro, mover, terminarCarrossel,
   MSG_LIMITE, novaPartida, ondeEsta, rendaDaRodada, rodadasDoEstagio, salvarPartida, simularRodada, sortearConfrontos,
-  sortearLoja, standDe, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos, xpParaProximo, apagarPartida,
+  prepararTabuleiro, sortearLoja, standDe, standsForaDaVagaNoNivel, travarLoja, unidadesNoTabuleiro, valorVenda, vender, vivos,
+  xpParaProximo, apagarPartida,
   temPartidaSalva, CHAVE_PARTIDA, escolherUlt, gerarMonstros, montarTime, BONUS_DEADLOCK_POR_10_ALMAS,
   BONUS_OVERWATCH, ALMAS_POR_ABATE, CHANCE_SUJIMON, definirMotor, OURO_VITORIA,
   lugaresDaSala, MAX_NOME, NOME_PADRAO,
@@ -391,14 +392,15 @@ describe('tabuleiro e Stands', () => {
     expect(mover(p, eu.id, a.uid, { tipo: 'tabuleiro', casa: { col: 8, lin: 0 } })).toBe('Lugar inválido');
   });
 
-  it('Stand preso a uma unidade de outra origem, não conta no limite e segue o usuário', () => {
+  it('Stand preso a uma unidade de outra origem, fora da vaga e seguindo o usuário', () => {
     const { p, eu } = cenario(31);
+    eu.nivel = 3;
     const sq = dar(p, eu, 'pokemon:squirtle', { casa: [3, 0] });
     const jo = dar(p, eu, 'jojo:jotaro', { banco: 1 });
     const sp = dar(p, eu, 'jojo:star-platinum', { banco: 0 });
     // longe de todo mundo: não pode
     expect(mover(p, eu.id, sp.uid, { tipo: 'tabuleiro', casa: { col: 7, lin: 3 } })).toMatch(/Stand/);
-    // ao lado do Squirtle: prende (nível 1 e já tem 1 unidade: o Stand não conta)
+    // ao lado do Squirtle: prende (no nível 3, um Stand não ocupa vaga)
     expect(mover(p, eu.id, sp.uid, { tipo: 'tabuleiro', casa: { col: 3, lin: 1 } })).toBeNull();
     expect(sp.usuario).toBe(sq.uid);
     expect(standDe(eu, sq.uid)?.uid).toBe(sp.uid);
@@ -420,13 +422,37 @@ describe('tabuleiro e Stands', () => {
     expect(sp.usuario).toBe(sq.uid);
     expect(ondeEsta(eu, sq.uid)).toEqual({ tipo: 'tabuleiro', casa: { col: 6, lin: 2 } });
     // JoJo não segura Stand (mesma origem)
-    eu.nivel = 2;
     mover(p, eu.id, jo.uid, { tipo: 'tabuleiro', casa: { col: 0, lin: 0 } });
     expect(mover(p, eu.id, sp.uid, { tipo: 'tabuleiro', casa: { col: 0, lin: 0 } })).toMatch(/outra franquia/);
     // usuário sai do tabuleiro: Stand volta pro banco
     expect(mover(p, eu.id, sq.uid, { tipo: 'banco', i: 5 })).toBeNull();
     expect(ondeEsta(eu, sp.uid)?.tipo).toBe('banco');
     expect(sp.usuario).toBeUndefined();
+  });
+
+  it('um Stand a cada 3 níveis fica fora da vaga; os outros ocupam', () => {
+    const { p, eu } = cenario(34);
+    expect([1, 2, 3, 5, 6, 9, 12].map(standsForaDaVagaNoNivel)).toEqual([0, 0, 1, 1, 2, 3, 4]);
+    eu.nivel = 3;
+    const a = dar(p, eu, 'pokemon:squirtle', { casa: [3, 0] });
+    const b = dar(p, eu, 'overwatch:tracer', { casa: [6, 0] });
+    const s1 = dar(p, eu, 'jojo:star-platinum', { banco: 0 });
+    const s2 = dar(p, eu, 'jojo:star-platinum', { banco: 1 });
+    const c = dar(p, eu, 'sujimon:a', { banco: 2 });
+    expect(mover(p, eu.id, s1.uid, { tipo: 'tabuleiro', casa: { col: 3, lin: 1 } })).toBeNull();
+    expect(contaNoLimite(eu)).toBe(2);
+    // o segundo Stand já ocupa vaga, e a última vaga do nível 3 foi embora
+    expect(mover(p, eu.id, s2.uid, { tipo: 'tabuleiro', casa: { col: 6, lin: 1 } })).toBeNull();
+    expect(s2.usuario).toBe(b.uid);
+    expect(contaNoLimite(eu)).toBe(3);
+    expect(mover(p, eu.id, c.uid, { tipo: 'tabuleiro', casa: { col: 0, lin: 0 } })).toBe(MSG_LIMITE);
+    // nível abaixo do que está no tabuleiro: antes da luta o mais fraco volta, e o resto luta
+    eu.nivel = 2;
+    prepararTabuleiro(eu);
+    expect(contaNoLimite(eu)).toBe(2);
+    expect(ondeEsta(eu, a.uid)?.tipo).toBe('banco');
+    expect(ondeEsta(eu, s1.uid)?.tipo).toBe('banco');
+    expect(montarTime(eu).lutadores.map(l => l.unidade?.uid).sort()).toEqual([b.uid, s2.uid].sort());
   });
 
   it('antes da luta: preenche com o banco, Stand sem usuário volta, time montado com Deadlock', () => {
@@ -662,7 +688,7 @@ describe('partida inteira', () => {
     for (let r = 0; r < 12; r++) {
       jogarBots(p);
       fimDoPlanejamento(p);
-      for (const j of vivos(p)) expect(unidadesNoTabuleiro(j, false).length).toBeLessThanOrEqual(limiteTabuleiro(j));
+      for (const j of vivos(p)) expect(contaNoLimite(j)).toBeLessThanOrEqual(limiteTabuleiro(j));
       aplicarRodada(p, simularRodada(p));
       avancarRodada(p);
       terminarCarrossel(p);

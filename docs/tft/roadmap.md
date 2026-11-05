@@ -91,6 +91,31 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   anfitrião que fecha a página acaba a sala (sem trocar de anfitrião); a rodada espera todos verem a luta (cada um na
   velocidade dele), com um limite; a partida online não é salva; nome vazio vira "Jogador N".
 
+- **Stands (JoJo):** **[você] forte demais:** Stand não ocupar vaga deixava o tabuleiro bem acima do limite (17 unidades
+  no nível 9). Sua decisão de "Stand não ocupa vaga" fica, mas com um teto. Comparei 8 regras no playtest, com limite =
+  nível e o alcance novo (`REGRAS_STANDS`, equilibrio.md, seção "Stands"): vitórias do time cheio de JoJo contra as
+  outras origens em 4 ★1, 6 ★2, 8 ★2, 10 ★2 e 10 ★3, colocação em 48 partidas de bots (a média geral é 4,5) e o máximo
+  de unidades em campo.
+
+  | Regra | Vitórias do JoJo | Colocação | Máximo em campo |
+  |---|---|---|---|
+  | Sem limite | 99 / 100 / 99 / 99 / 98% | 2,4 | 17 |
+  | Todo Stand ocupa vaga | 8 / 13 / 11 / 12 / 17% | 7,3 | 9 |
+  | Até 1 fora da vaga | 49 / 35 / 25 / 20 / 23% | 5,9 | 10 |
+  | Até 2 fora da vaga | 80 / 53 / 48 / 33 / 34% | 4,5 | 11 |
+  | Até 3 fora da vaga | 96 / 77 / 58 / 48 / 46% | 3,0 | 12 |
+  | **Um fora da vaga a cada 3 níveis** | **49 / 53 / 48 / 48 / 46%** | **4,8** | **12** |
+  | Um fora da vaga a cada 4 níveis | 49 / 35 / 48 / 33 / 34% | 6,7 | 11 |
+  | Sem limite, Stand 40% mais fraco | 93 / 92 / 96 / 95 / 95% | 2,4 | 18 |
+
+  **Escolhi um fora da vaga a cada 3 níveis:** é a única que fica perto de 50% em todos os pontos da partida e resolve a
+  sua queixa, o excesso de campeões, em vez de só cortar número (Stand 40% mais fraco continua com 95% e 18 em campo). Um
+  número fixo não serve: 2 é forte cedo e fraco tarde, 3 é forte cedo. Stand ocupar vaga mata a origem (cada Stand gasta
+  duas vagas: a dele e a do usuário). Fica assim: 1 no nível 3, 2 no 6, 3 no 9, 4 no 12; os outros ocupam vaga.
+  Consequência: cabem no máximo 8 Stands (nível 12), então a escada 2/3/5/7/9/10 nunca fechava os degraus de 9 e 10.
+  Virou 2/3/4/5/6/8, com +6/10/13/16/18/28%, e a mana a menos passou pro degrau de 8. Com a escada nova o JoJo fica em
+  49 / 59 / 49 / 52 / 50%.
+
 ## Pra você decidir
 
 - **Visual da tela nova:** tons do gramado, metade do adversário em oliva, cores das classes, ícones de perto/longe e

@@ -27,6 +27,11 @@ const FORA = ['luz', 'trevas'];
 const ESCADA_ORIGEM_5 = [2, 3, 4, 6, 8];
 const ESCADA_ORIGEM_6 = [2, 3, 4, 6, 8, 10];
 const TABULEIRO_JOGO = 10;
+// Autobatalha: limite do tabuleiro = nível, até o nível máximo; um Stand fora da vaga a cada tantos níveis
+const NIVEL_MAXIMO = 12;
+const NIVEIS_POR_STAND = 3;
+const ESCADA_JOJO = [2, 3, 4, 5, 6, 8];
+const ESCADA_JOJO_ANTES = [2, 3, 5, 7, 9, 10];
 
 const f = (x, d = 1) => (Number.isFinite(x) ? x.toFixed(d).replace('.', ',') : '∞');
 const x = r => `${f(r, 2)}×`;
@@ -268,6 +273,26 @@ p(`**Melhor pelo critério (README, conta 10): ${nomeLoja(melhor)}.** m1 + m2 = 
 p(`Por quê: ${maisEhMelhor ? 'cada vaga e cada ponto de peso do dono a mais baixam m1 + m2' : `é a menor soma entre os desenhos que passam`}, e ${foraVariedade.length ? `${foraVariedade.length} desenhos ficam de fora por variedade (m3 abaixo de ${pct(VARIEDADE)} do da loja normal)` : `nenhum desenho perde variedade a ponto de sair (o menor m3, de ${nomeLoja(menorM3)}, é ${pct(menorM3.m3 / normal.m3)} do da loja normal; o corte é ${pct(VARIEDADE)})`}${maisEhMelhor && !foraVariedade.length ? ', então o critério vai pro canto da grade' : ''}. A vaga do time tira em média ${pct(ganhoTime)} de m1 + m2 e ${pct(perdaTime)} de m3. O peso 2 pro time ${pesoTimePiora ? 'piora m1 + m2 em todo desenho' : 'não compensa sempre'}: o dono divide o sorteio com quem divide traço com o tabuleiro e sai menos (m1 ${pct(m1PesoTime)} maior), e m2 cai só ${pct(m2PesoTime)}.`);
 if (maisEhMelhor) p(`O critério não cobra nada por acelerar, então vai pro máximo da grade; o teto de verdade vem da economia (ouro por rodada, 2 de ouro por loja), que ainda não tem conta aqui. Com o número de vagas fixado, o melhor de cada um: ${vagasLoja.map(v => `${nomeLoja(melhorCom(v))} (m1 + m2 = ${f(somaM(melhorCom(v)))})`).join('; ')}. Na de 6 vagas + peso 3, só ligar a vaga do time baixa m1 + m2 de ${f(somaM(pedido))} pra ${f(somaM(pedidoTime))} (${menos(pedidoTime, pedido)}).`);
 p(`Conferência: a conta 9 do README (um dono sozinho num custo de ${f(U0 / CUSTOS, 0)}) dá ${f(isolado)} lojas de m1 pra 6 vagas + peso 3; a simulação com o set dá ${f(pedido.m1)}. Ter mais de um campeão no mesmo custo divide o peso, mas acontece pouco e muda pouco.`);
+
+// ---------- Stands ----------
+const REGRAS_STANDS = [
+  ['Sem limite (o pedido original)', () => Infinity],
+  ['Todo Stand ocupa vaga', () => 0],
+  ['Até 2 fora da vaga', () => 2],
+  [`Um fora da vaga a cada ${NIVEIS_POR_STAND} níveis`, n => Math.floor(n / NIVEIS_POR_STAND)],
+];
+const NIVEIS_VISTOS = [3, 6, 9, NIVEL_MAXIMO];
+p('## 9. Stands e o limite do tabuleiro',
+  `Com limite = nível, cada Stand precisa de um usuário de outra origem, e os que passam dos que ficam fora da vaga gastam uma vaga. Em cada célula, unidades em campo no máximo / Stands que cabem. A força de cada regra vem da simulação: equilibrio.md, seção "Stands".`);
+p(tabela(['Regra', ...NIVEIS_VISTOS.map(n => `Nível ${n}`)],
+  REGRAS_STANDS.map(([nome, livres]) => [nome, ...NIVEIS_VISTOS.map(n => `${m.emCampo(n, livres(n))} / ${m.standsQueCabem(n, livres(n))}`)])));
+const livresDoJogo = n => Math.floor(n / NIVEIS_POR_STAND);
+const nivelDe = n => { const v = m.nivelDosStands(n, livresDoJogo, NIVEL_MAXIMO); return Number.isFinite(v) ? v : 'nunca'; };
+p(`Escada do JoJo com a regra do jogo (${REGRAS_STANDS.at(-1)[0].toLowerCase()}): em que nível cada degrau fecha. A escada de antes parava no ${nivelDe(ESCADA_JOJO_ANTES[3])} pro degrau de ${ESCADA_JOJO_ANTES[3]} e nunca chegava em ${ESCADA_JOJO_ANTES.filter(d => nivelDe(d) === 'nunca').join(' nem ')}.`);
+p(tabela(['Escada', ...ESCADA_JOJO.map((_, i) => `Degrau ${i + 1}`)], [
+  [`Antes (${ESCADA_JOJO_ANTES.join('/')})`, ...ESCADA_JOJO_ANTES.map(nivelDe)],
+  [`Agora (${ESCADA_JOJO.join('/')})`, ...ESCADA_JOJO.map(nivelDe)],
+]));
 
 // resumo no topo, depois do título e da linha de geração
 const foraDoTamanho = origens.filter(o => o.campeoes < fx.min || o.campeoes > fx.max).map(o => `${o.origem} (${o.campeoes})`);
