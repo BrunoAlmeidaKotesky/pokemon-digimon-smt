@@ -29,9 +29,7 @@ const ESCADA_ORIGEM_6 = [2, 3, 4, 6, 8, 10];
 const TABULEIRO_JOGO = 10;
 // Autobatalha: limite do tabuleiro = nível, até o nível máximo; um Stand fora da vaga a cada tantos níveis
 const NIVEL_MAXIMO = 12;
-const NIVEIS_POR_STAND = 3;
-const ESCADA_JOJO = [2, 3, 4, 5, 6, 8];
-const ESCADA_JOJO_ANTES = [2, 3, 5, 7, 9, 10];
+const ESCADA_JOJO = [2, 3, 4, 5, 6];
 // Autobatalha: escada de cada traço antes (até 05/11/2026) e agora, no código em src/autobatalha/conteudo/tracos.ts
 const ESCADAS_DOS_TRACOS = {
   Safada: [[3, 5, 7], [3, 4, 5, 7, 9, 10]],
@@ -321,24 +319,10 @@ if (maisEhMelhor) p(`O critério não cobra nada por acelerar, então vai pro m�
 p(`Conferência: a conta 9 do README (um dono sozinho num custo de ${f(U0 / CUSTOS, 0)}) dá ${f(isolado)} lojas de m1 pra 6 vagas + peso 3; a simulação com o set dá ${f(pedido.m1)}. Ter mais de um campeão no mesmo custo divide o peso, mas acontece pouco e muda pouco.`);
 
 // ---------- Stands ----------
-const REGRAS_STANDS = [
-  ['Sem limite (o pedido original)', () => Infinity],
-  ['Todo Stand ocupa vaga', () => 0],
-  ['Até 2 fora da vaga', () => 2],
-  [`Um fora da vaga a cada ${NIVEIS_POR_STAND} níveis`, n => Math.floor(n / NIVEIS_POR_STAND)],
-];
-const NIVEIS_VISTOS = [3, 6, 9, NIVEL_MAXIMO];
+const nivelDe = n => { const v = m.nivelDosStands(n, NIVEL_MAXIMO); return Number.isFinite(v) ? v : 'nunca'; };
 p('## 9. Stands e o limite do tabuleiro',
-  `Com limite = nível, cada Stand precisa de um usuário de outra origem, e os que passam dos que ficam fora da vaga gastam uma vaga. Em cada célula, unidades em campo no máximo / Stands que cabem. A força de cada regra vem da simulação: equilibrio.md, seção "Stands".`);
-p(tabela(['Regra', ...NIVEIS_VISTOS.map(n => `Nível ${n}`)],
-  REGRAS_STANDS.map(([nome, livres]) => [nome, ...NIVEIS_VISTOS.map(n => `${m.emCampo(n, livres(n))} / ${m.standsQueCabem(n, livres(n))}`)])));
-const livresDoJogo = n => Math.floor(n / NIVEIS_POR_STAND);
-const nivelDe = n => { const v = m.nivelDosStands(n, livresDoJogo, NIVEL_MAXIMO); return Number.isFinite(v) ? v : 'nunca'; };
-p(`Escada do JoJo com a regra do jogo (${REGRAS_STANDS.at(-1)[0].toLowerCase()}): em que nível cada degrau fecha. A escada de antes parava no ${nivelDe(ESCADA_JOJO_ANTES[3])} pro degrau de ${ESCADA_JOJO_ANTES[3]} e nunca chegava em ${ESCADA_JOJO_ANTES.filter(d => nivelDe(d) === 'nunca').join(' nem ')}.`);
-p(tabela(['Escada', ...ESCADA_JOJO.map((_, i) => `Degrau ${i + 1}`)], [
-  [`Antes (${ESCADA_JOJO_ANTES.join('/')})`, ...ESCADA_JOJO_ANTES.map(nivelDe)],
-  [`Agora (${ESCADA_JOJO.join('/')})`, ...ESCADA_JOJO.map(nivelDe)],
-]));
+  `Todo Stand ocupa vaga, e o usuário dele, de outra origem, também: cabem ⌊nível/2⌋ Stands, ${m.standsQueCabem(NIVEL_MAXIMO)} no nível ${NIVEL_MAXIMO}. Em que nível cada degrau do JoJo fecha:`);
+p(tabela(['Escada', ...ESCADA_JOJO.map((_, i) => `Degrau ${i + 1}`)], [[ESCADA_JOJO.join('/'), ...ESCADA_JOJO.map(nivelDe)]]));
 
 // resumo no topo, depois do título e da linha de geração
 const foraDoTamanho = origens.filter(o => o.campeoes < fx.min || o.campeoes > fx.max).map(o => `${o.origem} (${o.campeoes})`);
@@ -349,7 +333,7 @@ out.splice(4, 0, '## Resumo', '', [
   `- **Elementos:** uns ${f(mediaElem, 0)} cada; com ${ESCADA.join('/')} custam ${x(r6(Math.round(mediaElem)))} pra fechar ${ESCADA.at(-1)}. Escada própria ${escadaElem.degraus.join('/')}, ou ${f(elementosIdeais, 0)} elementos.${elemFora.length ? ` Entre si, fora: ${lista(elemFora)} (seção 4).` : ''}`,
   `- **Origens fora da faixa:** ${foraDoTamanho.length ? `${lista(foraDoTamanho)}: escada própria ou mudar o tamanho (seção 6).` : 'nenhuma.'}`,
   `- **Degraus na Autobatalha:** pelo tamanho do traço, de ${Math.min(...linhasEscada.map(l => l.agora.length))} a ${Math.max(...linhasEscada.map(l => l.agora.length))}, e ${naoCabem.length ? `não cabem: ${lista(naoCabem)}` : 'todo último degrau cabe no limite = nível'} (seção 6c).`,
-  `- **Stands:** com um fora da vaga a cada ${NIVEIS_POR_STAND} níveis, cabem até ${m.standsQueCabem(NIVEL_MAXIMO, livresDoJogo(NIVEL_MAXIMO))} no nível ${NIVEL_MAXIMO} e a escada do JoJo é ${ESCADA_JOJO.join('/')} (seção 9).`,
+  `- **Stands:** todo Stand ocupa vaga, então cabem até ${m.standsQueCabem(NIVEL_MAXIMO)} no nível ${NIVEL_MAXIMO} e a escada do JoJo é ${ESCADA_JOJO.join('/')} (seção 9).`,
   `- **Loja:** pelo critério (menor m1 + m2 sem perder variedade), o melhor desenho é **${nomeLoja(melhor)}**: 2 cópias a mais de um campeão do tabuleiro em ${f(melhor.m1)} lojas e um campeão novo do traço em ${f(melhor.m2)}, contra ${f(pedido.m1)} e ${f(pedido.m2)} com 6 vagas + peso 3 e ${f(normal.m1)} e ${f(normal.m2)} na loja normal de 5.${maisEhMelhor ? ' O critério premia sempre mais vagas e mais peso; o teto vem da economia, que falta' : ''} (seção 8).`,
 ].join('\n'), '');
 

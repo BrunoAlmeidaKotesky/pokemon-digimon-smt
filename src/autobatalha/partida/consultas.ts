@@ -5,7 +5,6 @@ import type { Custo, Estrela, Jogador, Onde, Origem, Partida, TipoRodada, Unidad
 import {
   CHANCES_LOJA, COPIAS_POR_ESTRELA, ID_MONSTROS, NIVEL_MAXIMO, PREFIXO_FANTASMA, XP_POR_NIVEL,
 } from './constantes';
-import { M } from './motor';
 
 export function jogadorDe(p: Partida, id: string): Jogador {
   const j = p.jogadores.find(x => x.id === id);
@@ -53,9 +52,6 @@ export function rodadasDoEstagio(estagio: number): TipoRodada[] {
 
 /** Limite de unidades no tabuleiro: o nível (pedido do usuário em 05/11/2026: começar com dois não foi boa ideia). */
 export const limiteTabuleiro = (j: Jogador): number => j.nivel;
-/** Quantos Stands do tabuleiro não gastam vaga no nível; os outros contam como unidade normal. */
-export const standsForaDaVagaNoNivel = (nivel: number): number => M().standsForaDaVaga(nivel);
-export const standsForaDaVaga = (j: Jogador): number => standsForaDaVagaNoNivel(j.nivel);
 
 /** Unidades no tabuleiro, com ou sem os Stands. */
 export function unidadesNoTabuleiro(j: Jogador, comStands = true): Unidade[] {

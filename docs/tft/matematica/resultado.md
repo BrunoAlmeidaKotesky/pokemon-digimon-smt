@@ -9,7 +9,7 @@ Gerado por `node docs/tft/matematica/analise.mjs` em 2026-11-05, com a exportaç
 - **Elementos:** uns 16 cada; com 2/4/6 custam 1,84× pra fechar 6. Escada própria 2/3/4, ou 4 elementos. Entre si, fora: Fogo (sobram 1), Terra (faltam 2) e Gelo (faltam 2) (seção 4).
 - **Origens fora da faixa:** Pokémon (55), Digimon (19), Persona (12), Deadlock (21) e Sujimon (20): escada própria ou mudar o tamanho (seção 6).
 - **Degraus na Autobatalha:** pelo tamanho do traço, de 3 a 6, e todo último degrau cabe no limite = nível (seção 6c).
-- **Stands:** com um fora da vaga a cada 3 níveis, cabem até 8 no nível 12 e a escada do JoJo é 2/3/4/5/6/8 (seção 9).
+- **Stands:** todo Stand ocupa vaga, então cabem até 6 no nível 12 e a escada do JoJo é 2/3/4/5/6 (seção 9).
 - **Loja:** pelo critério (menor m1 + m2 sem perder variedade), o melhor desenho é **7 vagas + peso 4 pro dono + vaga do time**: 2 cópias a mais de um campeão do tabuleiro em 7,5 lojas e um campeão novo do traço em 5,4, contra 12,1 e 6,4 com 6 vagas + peso 3 e 39,3 e 7,2 na loja normal de 5. O critério premia sempre mais vagas e mais peso; o teto vem da economia, que falta (seção 8).
 
 ## 1. O que temos
@@ -170,7 +170,7 @@ Todos com o número de degraus da conta. Todos os últimos degraus cabem. As ori
 | Digimon | 19 | 5 | 2/3/4/5/6 | sim (nível 6) |
 | SMT | 26 | 5 | 2/3/4/6/8 | sim (nível 8) |
 | Persona | 12 | 3 | 1/2/3/4/5 | sim (nível 5) |
-| JoJo | 31 | 6 | 2/3/4/5/6/8 | sim (nível 8) |
+| JoJo | 31 | 6 | 2/3/4/5/6 | sim (nível 6) |
 | Yu-Gi-Oh! | 31 | 6 | 2/3/5/7/9/10 | sim (nível 10) |
 | LoL | 31 | 6 | 2/3/5/7/9/10 | sim (nível 10) |
 | Overwatch | 24 | 5 | 2/3/4/5/7 | sim (nível 7) |
@@ -248,18 +248,8 @@ O critério não cobra nada por acelerar, então vai pro máximo da grade; o tet
 Conferência: a conta 9 do README (um dono sozinho num custo de 54) dá 11,7 lojas de m1 pra 6 vagas + peso 3; a simulação com o set dá 12,1. Ter mais de um campeão no mesmo custo divide o peso, mas acontece pouco e muda pouco.
 
 ## 9. Stands e o limite do tabuleiro
-Com limite = nível, cada Stand precisa de um usuário de outra origem, e os que passam dos que ficam fora da vaga gastam uma vaga. Em cada célula, unidades em campo no máximo / Stands que cabem. A força de cada regra vem da simulação: equilibrio.md, seção "Stands".
+Todo Stand ocupa vaga, e o usuário dele, de outra origem, também: cabem ⌊nível/2⌋ Stands, 6 no nível 12. Em que nível cada degrau do JoJo fecha:
 
-| Regra | Nível 3 | Nível 6 | Nível 9 | Nível 12 |
-|---|---|---|---|---|
-| Sem limite (o pedido original) | 6 / 3 | 12 / 6 | 18 / 9 | 24 / 12 |
-| Todo Stand ocupa vaga | 3 / 1 | 6 / 3 | 9 / 4 | 12 / 6 |
-| Até 2 fora da vaga | 5 / 2 | 8 / 4 | 11 / 5 | 14 / 7 |
-| Um fora da vaga a cada 3 níveis | 4 / 2 | 8 / 4 | 12 / 6 | 16 / 8 |
-
-Escada do JoJo com a regra do jogo (um fora da vaga a cada 3 níveis): em que nível cada degrau fecha. A escada de antes parava no 11 pro degrau de 7 e nunca chegava em 9 nem 10.
-
-| Escada | Degrau 1 | Degrau 2 | Degrau 3 | Degrau 4 | Degrau 5 | Degrau 6 |
-|---|---|---|---|---|---|---|
-| Antes (2/3/5/7/9/10) | 3 | 5 | 8 | 11 | nunca | nunca |
-| Agora (2/3/4/5/6/8) | 3 | 5 | 6 | 8 | 9 | 12 |
+| Escada | Degrau 1 | Degrau 2 | Degrau 3 | Degrau 4 | Degrau 5 |
+|---|---|---|---|---|---|
+| 2/3/4/5/6 | 4 | 6 | 8 | 10 | 12 |

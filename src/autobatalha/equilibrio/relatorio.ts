@@ -15,8 +15,6 @@ export interface ResultadoTraco { traco: string; nivel: number; estrela: Estrela
 export interface ResultadoItem { item: string; estrela: Estrela; eq: Equivalente }
 export interface ResultadoOrigens { limite: number; estrela: Estrela; placares: ReadonlyMap<Origem, Placar> }
 export interface ResultadoEvolucao { fr: Origem; de: 1 | 2; soLinhas: boolean; eq: Equivalente }
-export interface ResultadoRegraStands { nome: string; origens: ResultadoOrigens[]; partidas: EstatPartidas }
-export interface ResultadoValorStands { limite: number; k: number; estrela: Estrela; eq: Equivalente }
 
 export interface Resultados {
   /** AAAA-MM-DD */
@@ -24,7 +22,7 @@ export interface Resultados {
   /** semente base de tudo */
   base: number;
   /** quantos cenários em cada medida (curva, traço, item, pacote) e sementes das partidas */
-  cenarios: { curva: number; tracos: number; itens: number; pacotes: number; origens: number; evolucao: number; stands: number; partidas: number[]; partidasStands: number };
+  cenarios: { curva: number; tracos: number; itens: number; pacotes: number; origens: number; evolucao: number; partidas: number[] };
   campeoes?: LinhaCampeao[];
   curva?: ResultadoCurva[];
   pacotes?: ResultadoPacote[];
@@ -35,8 +33,6 @@ export interface Resultados {
   lancCurva?: TabelaLanc;
   origens?: ResultadoOrigens[];
   evolucao?: ResultadoEvolucao[];
-  valorStands?: ResultadoValorStands[];
-  regrasStands?: ResultadoRegraStands[];
 }
 
 const g = (x: Grupo) => `★${x.estrela} custo ${x.custo}`;
@@ -440,7 +436,7 @@ function secaoOrigens(r: Resultados): string {
       '## Origens',
       '',
       `Time cheio de cada origem contra os times cheios das outras (${r.cenarios.origens} cenários por par, dos dois lados), com os ` +
-      'custos da loja daquele nível e os traços valendo. JoJo: usuários de outras origens mais os Stands que a regra deixa. ' +
+      'custos da loja daquele nível e os traços valendo. JoJo: metade Stands, metade usuários de outras origens. ' +
       'Digimon: um terço do time de fora, pro Parceiro. Overwatch, Deadlock e Sujimon agem também fora da luta, e isso não ' +
       'entra aqui. Sem itens.',
       '',
@@ -468,55 +464,9 @@ function secaoOrigens(r: Resultados): string {
   return out.join('\n').trimEnd();
 }
 
-function secaoStands(r: Resultados): string {
-  const out: string[] = [];
-  if (r.valorStands?.length) {
-    const ks = [...new Set(r.valorStands.map(v => v.k))].sort((a, b) => a - b);
-    const limites = [...new Set(r.valorStands.map(v => v.limite))].sort((a, b) => a - b);
-    out.push(
-      '## Stands',
-      '',
-      `Quanto valem k Stands em cima de um time cheio (★2, ${r.cenarios.stands} cenários): o bônus de vida e dano no time sem Stands que empata.`,
-      '',
-      tabela(['Tabuleiro', ...ks.map(k => `${k} Stand${k > 1 ? 's' : ''}`)], limites.map(l => [
-        l, ...ks.map(k => {
-          const v = r.valorStands!.find(x => x.limite === l && x.k === k);
-          return v ? pct(v.eq.equivalente, 0, true) : '–';
-        }),
-      ])),
-      '',
-    );
-  }
-  if (r.regrasStands?.length) {
-    const jojo = (x: ResultadoRegraStands, i: number) => pct(taxa(x.origens[i]!.placares.get('jojo')!));
-    const pontos = r.regrasStands[0]!.origens;
-    const linhas = r.regrasStands.map(x => {
-      const c = x.partidas.colocacoes.get('jojo') ?? [];
-      const n9 = [...x.partidas.campo].filter(([n]) => n >= 8).map(([, v]) => v);
-      const soma = (f: (v: (typeof n9)[number]) => number) => n9.reduce((s, v) => s + f(v), 0);
-      const tudo = [...x.partidas.colocacoes.values()].flat();
-      return [
-        x.nome, ...pontos.map((_, i) => jojo(x, i)), num(media(c), 2), String(c.length), num(media(tudo), 2),
-        num(soma(v => v.unidades) / (soma(v => v.n) || 1), 1), num(soma(v => v.stands) / (soma(v => v.n) || 1), 1),
-        String(Math.max(0, ...[...x.partidas.campo.values()].map(v => v.maximo))),
-      ];
-    });
-    out.push(
-      '### Regras dos Stands comparadas',
-      '',
-      `Cada regra medida com o time cheio de JoJo contra as outras origens (vitórias) e com ${r.cenarios.partidasStands} partidas de bots. "Colocação" é a ` +
-      'média de quem mais usou JoJo do estágio 3 em diante (média geral: 4,5). "Em campo" é a média, nos níveis 8 ou mais.',
-      '',
-      tabela(['Regra', ...pontos.map(p => `JoJo, ${p.limite} ★${p.estrela}`), 'Colocação', 'Jogadores', 'Geral', 'Em campo', 'Stands', 'Máximo'], linhas),
-      '',
-    );
-  }
-  return out.join('\n').trimEnd();
-}
-
 /** O equilibrio.md inteiro (a parte gerada; o histórico escrito à mão é juntado por quem grava). */
 export function montarRelatorio(r: Resultados): string {
-  const secoes = [secaoCurva(r), secaoMana(r), secaoCampeoes(r), secaoHabilidades(r), secaoPacotes(r), secaoTracos(r), secaoOrigens(r), secaoStands(r), secaoItens(r), secaoMoedas(r), secaoPartidas(r)]
+  const secoes = [secaoCurva(r), secaoMana(r), secaoCampeoes(r), secaoHabilidades(r), secaoPacotes(r), secaoTracos(r), secaoOrigens(r), secaoItens(r), secaoMoedas(r), secaoPartidas(r)]
     .filter(Boolean);
   return [
     '# Equilíbrio: playtest automático',

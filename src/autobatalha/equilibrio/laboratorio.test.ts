@@ -7,7 +7,7 @@ import { simularLuta } from '../combate';
 import { habilidadeDa } from '../conteudo';
 import type { EntradaTime, SetDados } from '../tipos';
 import {
-  SINTETICO, estenderSet, lutar, posicionar, reais, resultadoDo, standsQueCabem, timeComBonecos, timeDaOrigem, timeSorteado, unidade,
+  SINTETICO, estenderSet, lutar, posicionar, reais, resultadoDo, timeComBonecos, timeDaOrigem, timeSorteado, unidade,
   valorDoPacote,
 } from './laboratorio';
 import { criarRng } from '../rng';
@@ -22,25 +22,17 @@ const comClasse = (classe: string, estrela: 1 | 2 | 3) =>
   reais().filter(c => !c.stand && S().forma(S().formaPadrao(c.id, estrela)).classes.includes(classe));
 
 describe('laboratório', () => {
-  it('Stands que cabem: cada um precisa de um usuário, e os que passam dos livres gastam vaga', () => {
-    expect(standsQueCabem(8, Infinity)).toBe(8);
-    expect(standsQueCabem(8, 0)).toBe(4);
-    expect(standsQueCabem(12, 4)).toBe(8);
-    expect(standsQueCabem(1, 0)).toBe(0);
-  });
-
-  it('time da origem: enche o tabuleiro; JoJo fica com usuários de fora e os Stands que a regra deixa', () => {
+  it('time da origem: enche o tabuleiro; JoJo é metade Stands, metade usuários de fora', () => {
     const rng = criarRng(5);
     const lol = timeDaOrigem('lol', 6, 2, rng, 0);
     expect(lol.lutadores).toHaveLength(6);
     expect(lol.lutadores.every(l => S().campeao(l.unidade!.campeao).fr === 'lol')).toBe(true);
     const digi = timeDaOrigem('digimon', 6, 2, rng, 0);
     expect(digi.lutadores.filter(l => S().campeao(l.unidade!.campeao).fr === 'digimon')).toHaveLength(4);
-    const regra = { nome: 'dois', foraDaVaga: () => 2 };
-    const jojo = timeDaOrigem('jojo', 6, 2, rng, 0, regra);
+    const jojo = timeDaOrigem('jojo', 6, 2, rng, 0);
     const stands = jojo.lutadores.filter(l => S().campeao(l.unidade!.campeao).stand);
-    expect(stands).toHaveLength(4);
-    expect(jojo.lutadores.length - stands.length).toBe(4);
+    expect(stands).toHaveLength(3);
+    expect(jojo.lutadores.length - stands.length).toBe(3);
     for (const s of stands) expect(s.unidade!.usuario).toBeDefined();
   });
 

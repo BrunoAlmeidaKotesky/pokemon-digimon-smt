@@ -5,7 +5,7 @@
 //   node node_modules/vitest/vitest.mjs run --config src/autobatalha/equilibrio/playtest.config.ts
 //
 // Variáveis de ambiente (todas opcionais):
-//   EQUILIBRIO_PARTES   lista separada por vírgula: campeoes,curva,pacotes,tracos,itens,partidas,origens,stands (padrão: todas)
+//   EQUILIBRIO_PARTES   lista separada por vírgula: campeoes,curva,pacotes,tracos,itens,partidas,origens (padrão: todas)
 //   EQUILIBRIO_RAPIDO=1 menos cenários (pra conferir um ajuste rápido; os números ficam mais ruidosos)
 //   EQUILIBRIO_SAIDA    arquivo .md (padrão docs/tft/matematica/equilibrio.md)
 //   EQUILIBRIO_JSON     se definido, grava também os números crus nesse arquivo .json
@@ -16,8 +16,8 @@ import { definirSet } from '../dados';
 import { HABILIDADES_CLASSE, TRACOS } from '../conteudo';
 import { ORIGENS, type Custo, type Estrela, type SetDados } from '../tipos';
 import {
-  curva, estenderSet, forcaPorCampeao, ganhoDeEvoluir, idsDosItens, origemContraOrigem, valorDoItem, valorDoPacote, valorDosStands,
-  valorDoTraco, type Grupo, type RegraStands, type TabelaLanc,
+  curva, estenderSet, forcaPorCampeao, ganhoDeEvoluir, idsDosItens, origemContraOrigem, valorDoItem, valorDoPacote,
+  valorDoTraco, type Grupo, type TabelaLanc,
 } from './laboratorio';
 import { juntarComHistorico } from './medidas';
 import { jogarPartidas } from './partidas';
@@ -25,29 +25,17 @@ import { montarRelatorio, type Resultados } from './relatorio';
 
 const env = process.env;
 const RAPIDO = env.EQUILIBRIO_RAPIDO === '1';
-const PARTES = new Set((env.EQUILIBRIO_PARTES ?? 'campeoes,curva,pacotes,tracos,itens,partidas,origens,stands').split(',').map(s => s.trim()));
+const PARTES = new Set((env.EQUILIBRIO_PARTES ?? 'campeoes,curva,pacotes,tracos,itens,partidas,origens').split(',').map(s => s.trim()));
 const SAIDA = env.EQUILIBRIO_SAIDA ?? 'docs/tft/matematica/equilibrio.md';
 const BASE = Number(env.EQUILIBRIO_SEMENTE ?? 2026);
 const CENARIOS = RAPIDO
-  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, origens: 6, evolucao: 12, stands: 16, partidas: [1, 2, 3, 4, 5, 6], partidasStands: 6 }
-  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, origens: 20, evolucao: 40, stands: 40, partidas: Array.from({ length: 24 }, (_, i) => i + 1), partidasStands: 48 };
+  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, origens: 6, evolucao: 12, partidas: [1, 2, 3, 4, 5, 6] }
+  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, origens: 20, evolucao: 40, partidas: Array.from({ length: 24 }, (_, i) => i + 1) };
 
 /** Tabuleiro e estrela de cada coluna da comparação entre origens. */
 const PONTOS_ORIGENS: readonly (readonly [number, Estrela])[] = [[4, 1], [6, 2], [8, 2], [10, 2], [10, 3]];
 /** Origens em que a medida de evoluir olha só as linhas evolutivas. */
 const COM_LINHAS = new Set<string>(['pokemon', 'digimon', 'smt', 'persona', 'sujimon']);
-/** As regras dos Stands comparadas (docs/tft/roadmap.md guarda a escolha e o motivo). */
-const REGRAS_STANDS: readonly RegraStands[] = [
-  { nome: 'Sem limite (o pedido original)', foraDaVaga: () => Infinity },
-  { nome: 'Todo Stand ocupa vaga', foraDaVaga: () => 0 },
-  { nome: 'Até 1 fora da vaga', foraDaVaga: () => 1 },
-  { nome: 'Até 2 fora da vaga', foraDaVaga: () => 2 },
-  { nome: 'Até 3 fora da vaga', foraDaVaga: () => 3 },
-  { nome: 'Um fora da vaga a cada 3 níveis', foraDaVaga: n => Math.floor(n / 3) },
-  { nome: 'Um fora da vaga a cada 4 níveis', foraDaVaga: n => Math.floor(n / 4) },
-  { nome: 'Sem limite, Stand 40% mais fraco', foraDaVaga: () => Infinity, bonus: -0.4 },
-];
-
 const G = (custo: Custo, estrela: Estrela): Grupo => ({ custo, estrela });
 /** Confrontos da curva: [time, contra]. */
 const CONFRONTOS: [Grupo, Grupo][] = [
@@ -114,19 +102,6 @@ it('playtest: mede e grava o equilibrio.md', () => {
       const soLinhas = COM_LINHAS.has(fr);
       return { fr, de, soLinhas, eq: ganhoDeEvoluir(fr, de, 6, CENARIOS.evolucao, BASE, soLinhas) };
     }));
-  }
-  if (PARTES.has('stands')) {
-    log('quanto valem os Stands');
-    r.valorStands = [4, 6, 8, 10].flatMap(limite => [1, 2, 3, 5, 8].filter(k => k <= limite).map(k =>
-      ({ limite, k, estrela: 2 as const, eq: valorDosStands(limite, k, 2, CENARIOS.stands, BASE) })));
-    r.regrasStands = REGRAS_STANDS.map(regra => {
-      log(`regra dos Stands: ${regra.nome}`);
-      return {
-        nome: regra.nome,
-        origens: PONTOS_ORIGENS.map(([limite, estrela]) => ({ limite, estrela, placares: origemContraOrigem(limite, estrela, CENARIOS.origens, BASE, regra) })),
-        partidas: jogarPartidas(Array.from({ length: CENARIOS.partidasStands }, (_, i) => i + 1 + BASE), 120, regra),
-      };
-    });
   }
 
   const antigo = existsSync(SAIDA) ? readFileSync(SAIDA, 'utf8') : null;

@@ -39,8 +39,8 @@ editar o arquivo citado.
   - forma com habilidade própria (JoJo, Únicos e as que você escreveu no Catálogo): a própria;
   - o resto: a ult de uma das suas classes. O jogador escolhe qual no tooltip, e pode trocar em qualquer rodada.
 - **Stands de JoJo:** comprados na loja como os outros. No tabuleiro ficam presos a uma unidade de outra origem (a
-  casa ao lado), no máximo um por unidade. **A cada 3 níveis, um Stand não ocupa vaga** (1 no nível 3, 2 no 6, 3 no 9, 4
-  no 12); os outros contam no limite como qualquer unidade. Se um morre, o outro morre junto. Stand sem usuário volta
+  casa ao lado), no máximo um por unidade. **Todo Stand ocupa vaga**, como qualquer unidade: com o usuário são duas
+  vagas, então cabem até 6 (nível 12). Se um morre, o outro morre junto. Stand sem usuário volta
   pro banco no começo da luta.
 
 ## Atributos (src/autobatalha/combate/atributos.ts)
@@ -178,7 +178,7 @@ com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
 | Digimon | 2/3/4/5/6 | Parceiro: Digimon com aliado de outra origem do lado ganha +8 / 12 / 18 / 25 / 35% de vida e dano; (3) o parceiro ganha metade; (5) o Digimon com parceiro começa com a mana cheia |
 | SMT | 2/3/4/6/8 | Invocadores: no começo, cada demônio invoca um monstro do Final Fantasy (sorteado) ao lado, com 20 / 25 / 32 / 45 / 60% dos atributos dele |
 | Persona | 1/2/3/4/5 | cada Persona dá aos aliados em volta +8 / 14 / 20 / 28 / 38% de um atributo, pela 1ª classe dela (dano: Atirador, Assassino, Porradeiro, Fogo, Raio; vida: Tanque, Terra, Anjo, Água; vel. ataque: Vento, Safada, Temporais; armadura e resist.: Robô, Gelo, Planta; poder de habilidade: Fadinhas, Demoníacos, Dragão, Criaturinha Bizarra) |
-| JoJo | 2/3/4/5/6/8 | Stands e seus usuários ganham +6 / 10 / 13 / 16 / 18 / 28% de dano e vida; (8) os Stands lançam com 25% menos mana |
+| JoJo | 2/3/4/5/6 | Stands e seus usuários ganham +25 / 30 / 40 / 48 / 55% de dano e vida; (5) os Stands lançam com 25% menos mana |
 | Yu-Gi-Oh! | 2/3/5/7/9/10 | cada carta fica em ataque (+10 / 15 / 22 / 30 / 40 / 50% de dano) ou em defesa (o mesmo em vida e armadura, e provoca os inimigos em volta por 2 s no começo); (7) ganham os dois |
 | LoL | 2/3/5/7/9/10 | +10 / 15 / 22 / 30 / 40 / 50% de poder de habilidade. Regra da franquia, com ou sem traço: na estrela 3, a cada 2 lançamentos a habilidade sai duas vezes (a "ultimate") |
 | Overwatch | 2/3/4/5/7 | +6 / 10 / 15 / 20 / 28% de vel. ataque. Jogada da Partida: depois de cada luta, o herói que mais causou dano ganha +2 / 3 / 5 / 7 / 10% de dano e vida pro resto da partida |
@@ -265,8 +265,8 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   como o bot normal termina em média em 2,9º contra bots fáceis, 4,9º contra normais e 5,0º contra difíceis.
 - **Bots:** escolhem 1 ou 2 traços pelas primeiras unidades, compram o que encaixa ou evolui, sobem de nível em
   pontos fixos (no normal: 4 no 2-1, 5 no 2-5, 6 no 3-2, 7 no 4-1, 8 no 5-1, 9 no 6-1, 10 no 7-1), guardam 50 de ouro pelos juros e depois rolam;
-  tanques na frente, alcance atrás; itens no mais forte; Stand preso a um aliado qualquer (além dos que não ocupam vaga,
-  um Stand só entra na vaga que sobrar ou no lugar da pior titular, se tiver nota melhor).
+  tanques na frente, alcance atrás; itens no mais forte; Stand preso a um aliado qualquer (um Stand só
+  entra na vaga que sobrar ou no lugar da pior titular, se tiver nota melhor).
 - **Salvar:** a partida é salva no localStorage (`pdx-autobatalha-v1`) no começo de cada planejamento (depois do
   carrossel: fechar a página no meio dele volta pro último planejamento salvo); os planos do planejador em
   `pdx-autobatalha-planos`; a configuração (regras da sala, as suas escolhas no lobby e as preferências) em
@@ -320,7 +320,7 @@ O completo soma os dois componentes ×1,5 e ganha um efeito próprio (lista no a
   na luta a metade do adversário tem o estilo dele (mesmo estilo: o tom "deles", oliva no gramado) e a linha do meio
   é tracejada com um círculo central; no planejamento a
   linha tracejada fica em cima da sua metade (o adversário vem de cima). Em cima da área: **unidades x/y** (limite da
-  partida, sem número fixo na tela; pisca quando sobra vaga; "+N Stands" quando já há Stand fora da vaga) e a **contagem grande** dos segundos até a luta, que fica
+  partida, sem número fixo na tela; pisca quando sobra vaga) e a **contagem grande** dos segundos até a luta, que fica
   vermelha e pulsa nos últimos 5.
 - **Unidade no tabuleiro:** foto redonda com borda da cor do custo (cinza, verde, azul, roxo, dourado), estrelas em
   cima, barras de vida e mana, itens embaixo e o ícone do **alcance** (espada vermelha = de perto; arco azul = de

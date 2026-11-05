@@ -379,22 +379,12 @@ export function conferirEscada(degraus, n, nAlvo, u, nivelMaximo, vagas = 5) {
   };
 }
 
-/**
- * Stands que cabem num tabuleiro de `limite` vagas quando `livres` deles não ocupam vaga: cada Stand precisa de um
- * usuário de outra origem, e os que passam de `livres` gastam uma vaga. Com s Stands e h usuários: s ≤ h e
- * h + max(0, s − livres) ≤ limite, então s = ⌊(limite + livres)/2⌋ (ou `limite`, se todos couberem fora da vaga).
- */
-export const standsQueCabem = (limite, livres) => (livres >= limite ? limite : Math.floor((limite + livres) / 2));
+/** Stands que cabem num tabuleiro de `limite` vagas: o Stand e o usuário dele, de outra origem, ocupam uma vaga cada. */
+export const standsQueCabem = limite => Math.floor(limite / 2);
 
-/** Unidades em campo no máximo: as do limite mais os Stands que ficam fora da vaga. */
-export const emCampo = (limite, livres) => limite + Math.min(livres, standsQueCabem(limite, livres));
-
-/**
- * Menor nível em que cabem `n` Stands, com `livresNoNivel(nivel)` fora da vaga e limite = nível; `Infinity` se nem no
- * nível `nivelMax`.
- */
-export function nivelDosStands(n, livresNoNivel, nivelMax) {
-  for (let nivel = 1; nivel <= nivelMax; nivel++) if (standsQueCabem(nivel, livresNoNivel(nivel)) >= n) return nivel;
+/** Menor nível em que cabem `n` Stands, com limite = nível; `Infinity` se nem no nível `nivelMax`. */
+export function nivelDosStands(n, nivelMax) {
+  for (let nivel = 1; nivel <= nivelMax; nivel++) if (standsQueCabem(nivel) >= n) return nivel;
   return Infinity;
 }
 

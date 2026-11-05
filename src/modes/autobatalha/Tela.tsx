@@ -14,7 +14,7 @@ import { setCarregado } from '../../autobatalha/dados';
 import { chave } from '../../autobatalha/hex';
 import { acoes, estadoAutobatalha, useAutobatalha } from '../../autobatalha/sessao';
 import {
-  NIVEIS_POR_STAND_FORA_DA_VAGA, contaNoLimite, estaVivo, humano, limiteTabuleiro, ondeEsta, rodadasDoEstagio, standsForaDaVaga,
+  contaNoLimite, estaVivo, humano, limiteTabuleiro, ondeEsta, rodadasDoEstagio,
 } from '../../autobatalha/partida';
 import { alvoSobMouse, fecharDica, propsDica } from './interacao';
 import { Dica, ImagemGrandeJanela } from './Dica';
@@ -187,7 +187,6 @@ function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
 
   const noTab = contaNoLimite(visto);
   const limite = limiteTabuleiro(visto);
-  const standsLivres = standsForaDaVaga(visto);
   const planejando = !naLuta && !carrossel;
   const total = (p.estagio === 1 ? 2 / 3 : 1) * e.config.segundos;
   return (
@@ -202,11 +201,8 @@ function Jogo({ e, p, eu, abrirPlanejador, abrirInfo, abrirConfig }: {
           {planejando && (
             <div className="ab-area-cab">
               <span id="abLimite" className={'ab-limite' + (noTab > limite ? ' acima' : noTab < limite ? ' sobra' : '')}
-                title={`Unidades no tabuleiro / limite (o seu nível). ${standsLivres
-                  ? `${standsLivres} Stand${standsLivres > 1 ? 's' : ''} não ocupa${standsLivres > 1 ? 'm' : ''} vaga; os outros ocupam.`
-                  : `Stand ocupa vaga até o nível ${NIVEIS_POR_STAND_FORA_DA_VAGA}.`}`}>
+                title="Unidades no tabuleiro / limite (o seu nível). Stand ocupa vaga como qualquer unidade.">
                 <small>Unidades</small><b>{noTab}/{limite}</b>
-                {standsLivres > 0 && <small id="abStandsLivres">+{standsLivres} Stand{standsLivres > 1 ? 's' : ''}</small>}
               </span>
               {olhando ? (
                 <span className="ab-olhando">

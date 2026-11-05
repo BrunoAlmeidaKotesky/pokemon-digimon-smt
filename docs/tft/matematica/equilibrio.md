@@ -35,37 +35,37 @@ Alvo: 1º lançamento entre 4 e 10 s pra maioria; tanque não lança antes dos p
 
 | Papel | Unidades-luta | 1º lanç. (s) | Antes de 3 s | 3–10 s | Depois de 10 s | Não lançou | Lanç./10 s vivo | Mana de atacar | de apanhar | de efeitos | 1º lanç. 5×5 (s) | Lanç./10 s 5×5 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Assassino | 1374 | 6,3 | 6% | 76% | 6% | 12% | 1,37 | 59% | 21% | 20% | 6,2 | 1,26 |
-| Planta | 130 | 7,4 | 15% | 49% | 31% | 5% | 0,93 | 82% | 12% | 6% | 11,2 | 0,52 |
-| Porradeiro | 1591 | 7,8 | 3% | 63% | 15% | 19% | 0,86 | 72% | 26% | 3% | 7,6 | 0,91 |
-| Tanque | 1903 | 8,0 | 4% | 64% | 16% | 16% | 0,91 | 70% | 27% | 3% | 7,7 | 0,94 |
-| Atirador | 3027 | 8,1 | 2% | 73% | 10% | 14% | 0,97 | 88% | 11% | 2% | 9,3 | 0,84 |
-| Anjo | 419 | 8,3 | 6% | 60% | 24% | 10% | 0,91 | 81% | 15% | 4% | 9,4 | 0,80 |
-| Robô | 533 | 8,5 | 1% | 62% | 24% | 13% | 0,91 | 75% | 25% | 0% | 7,8 | 0,99 |
-| Safada | 2172 | 8,5 | 3% | 54% | 26% | 17% | 0,83 | 79% | 16% | 5% | 8,5 | 0,87 |
-| Vento | 339 | 8,6 | 5% | 74% | 9% | 12% | 0,85 | 88% | 11% | 1% | 8,8 | 0,89 |
-| Criaturinha Bizarra | 3861 | 8,6 | 2% | 52% | 22% | 24% | 0,76 | 74% | 25% | 2% | 7,9 | 0,88 |
-| Demoníacos | 1092 | 8,6 | 2% | 60% | 26% | 12% | 0,81 | 80% | 18% | 1% | 7,8 | 0,94 |
-| Fadinhas | 2718 | 8,7 | 2% | 63% | 25% | 10% | 0,90 | 80% | 19% | 1% | 9,1 | 0,84 |
-| Dragão | 1017 | 9,0 | 2% | 51% | 36% | 10% | 0,80 | 79% | 19% | 2% | 9,1 | 0,81 |
-| Terra | 102 | 9,2 | 0% | 47% | 31% | 22% | 0,71 | 77% | 23% | 0% | – | – |
-| Água | 452 | 9,3 | 0% | 69% | 17% | 14% | 0,79 | 85% | 15% | 0% | 8,2 | 0,81 |
-| Temporais | 648 | 9,4 | 4% | 34% | 50% | 11% | 0,77 | 84% | 12% | 4% | 10,0 | 0,72 |
-| Fogo | 107 | 9,7 | 0% | 35% | 61% | 5% | 0,81 | 82% | 17% | 1% | 9,9 | 0,58 |
-| Raio | 181 | 10,0 | 0% | 17% | 77% | 6% | 0,76 | 88% | 12% | 0% | 10,6 | 0,67 |
-| Únicos | 991 | 10,2 | 0% | 27% | 30% | 43% | 0,52 | 78% | 22% | 0% | 9,4 | 0,71 |
-| Gelo | 52 | 10,3 | 0% | 6% | 90% | 4% | 0,70 | 91% | 9% | 0% | – | – |
-| **Todos** | 22709 | 8,4 | 3% | 59% | 22% | 16% | 0,87 | 78% | 19% | 3% | 8,5 | 0,88 |
+| Assassino | 1473 | 6,3 | 7% | 75% | 4% | 13% | 1,32 | 61% | 21% | 19% | 6,2 | 1,26 |
+| Safada | 1392 | 7,5 | 6% | 65% | 14% | 15% | 0,97 | 75% | 21% | 4% | 8,5 | 0,87 |
+| Tanque | 1603 | 7,5 | 6% | 69% | 14% | 11% | 0,98 | 69% | 27% | 4% | 7,7 | 0,94 |
+| Terra | 76 | 7,6 | 0% | 67% | 13% | 20% | 0,85 | 69% | 27% | 3% | – | – |
+| Água | 452 | 7,8 | 3% | 82% | 6% | 9% | 0,90 | 82% | 18% | 0% | 8,2 | 0,81 |
+| Criaturinha Bizarra | 2726 | 7,9 | 3% | 64% | 19% | 14% | 0,93 | 72% | 25% | 3% | 7,9 | 0,88 |
+| Porradeiro | 1614 | 7,9 | 1% | 66% | 17% | 16% | 0,85 | 73% | 26% | 1% | 7,6 | 0,91 |
+| Robô | 515 | 8,2 | 1% | 70% | 19% | 10% | 0,93 | 77% | 23% | 0% | 7,8 | 0,99 |
+| Atirador | 2773 | 8,3 | 1% | 74% | 11% | 14% | 0,96 | 87% | 12% | 1% | 9,3 | 0,84 |
+| Demoníacos | 988 | 8,3 | 3% | 61% | 25% | 11% | 0,89 | 75% | 23% | 2% | 7,8 | 0,94 |
+| Anjo | 504 | 8,6 | 2% | 59% | 33% | 6% | 0,89 | 84% | 14% | 2% | 9,4 | 0,80 |
+| Fadinhas | 2781 | 8,7 | 1% | 65% | 25% | 9% | 0,91 | 82% | 17% | 0% | 9,1 | 0,84 |
+| Vento | 332 | 9,1 | 0% | 77% | 11% | 11% | 0,84 | 90% | 10% | 0% | 8,8 | 0,89 |
+| Únicos | 500 | 9,1 | 0% | 47% | 29% | 24% | 0,72 | 76% | 23% | 0% | 9,4 | 0,71 |
+| Fogo | 174 | 9,2 | 0% | 37% | 52% | 11% | 0,71 | 83% | 16% | 1% | 9,9 | 0,58 |
+| Temporais | 660 | 9,5 | 5% | 30% | 56% | 9% | 0,76 | 87% | 12% | 1% | 10,0 | 0,72 |
+| Dragão | 1111 | 9,5 | 1% | 48% | 42% | 9% | 0,75 | 81% | 18% | 0% | 9,1 | 0,81 |
+| Planta | 91 | 10,1 | 0% | 23% | 77% | 0% | 0,76 | 88% | 12% | 0% | 11,2 | 0,52 |
+| Gelo | 53 | 10,3 | 0% | 9% | 79% | 11% | 0,80 | 84% | 16% | 0% | – | – |
+| Raio | 114 | 10,3 | 0% | 10% | 88% | 3% | 0,75 | 87% | 13% | 0% | 10,6 | 0,67 |
+| **Todos** | 19932 | 8,2 | 3% | 64% | 21% | 12% | 0,92 | 78% | 19% | 3% | 8,5 | 0,88 |
 
 | Custo | 1º lanç. ★1 (s) | ★2 | ★3 | Lanç./10 s ★1 | ★2 | ★3 |
 |---|---|---|---|---|---|---|
-| 1 | 9,0 | 8,6 | 6,3 | 0,75 | 0,82 | 1,23 |
-| 2 | 8,7 | 8,0 | 5,4 | 0,86 | 0,94 | 1,49 |
-| 3 | 8,9 | 7,5 | – | 0,85 | 0,99 | – |
-| 4 | 8,0 | 6,1 | – | 0,92 | 1,20 | – |
-| 5 | 8,5 | – | – | 0,89 | – | – |
+| 1 | 8,7 | 8,4 | 5,6 | 0,81 | 0,90 | 1,34 |
+| 2 | 8,3 | 8,1 | 4,3 | 0,90 | 0,94 | 1,15 |
+| 3 | 8,8 | 7,3 | 5,9 | 0,87 | 1,03 | 0,96 |
+| 4 | 7,6 | 5,9 | – | 1,01 | 1,27 | – |
+| 5 | 6,9 | – | – | 1,05 | – | – |
 
-- Tanque: 1º lançamento em 8,0 s; papéis de dano: 7,9 s.
+- Tanque: 1º lançamento em 7,5 s; papéis de dano: 8,0 s (**tanque mais rápido**).
 - Rodízio (seção seguinte, 4 contra 4 com bonecos): 1º lançamento dentro de 4–10 s em 85% dos campeões (mediana 8,8 s).
 - Lançam mais de 1 vez a cada 3 s vivo no rodízio: ninguém.
 - Lançam em menos de 50% das lutas do rodízio (fora transformação): ninguém.
@@ -847,13 +847,13 @@ O time tem exatamente os campeões do degrau com o traço (sorteados, ★2) e ma
 | Traço | Degraus | Degrau 1 | Degrau 2 | Degrau 3 | Degrau 4 | Degrau 5 | Degrau 6 |
 |---|---|---|---|---|---|---|---|
 | Tanque | 2/3/4/6/8 | +3% | +3% | +12% | +23% | +28% | – |
-| Porradeiro | 2/3/4/6/8/10 | +3% | +8% | +11% | +20% | +25% | +33% |
+| Porradeiro | 2/3/4/6/8/10 | +3% | +8% | +11% | +20% | +25% | +31% |
 | Assassino | 2/3/4/5/6 | +3% | +6% | +9% | +14% | +23% | – |
 | Demoníacos | 2/3/4/6/8/10 | +3% | +8% | +17% | +30% | +44% | +62% |
-| Criaturinha Bizarra | 3/4/5/7/9/10 | +6% | +8% | +12% | +33% | +40% | +47% |
+| Criaturinha Bizarra | 3/4/5/7/9/10 | +5% | +9% | +11% | +34% | +40% | +47% |
 | Fadinhas | 2/3/4/6/8/10 | +6% | +12% | +14% | +26% | +34% | +44% |
 | Safada | 3/4/5/7/9/10 | +8% | +9% | +14% | +17% | +23% | +25% |
-| Atirador | 2/3/4/5/7 | +8% | +12% | +20% | +22% | +30% | – |
+| Atirador | 2/3/4/5/7 | +8% | +14% | +22% | +22% | +30% | – |
 | Anjo | 2/3/4/5/6 | +5% | +3% | +11% | +14% | +19% | – |
 | Robô | 2/3/4/5/6 | +5% | +8% | +12% | +17% | +22% | – |
 | Dragão | 2/3/4/5/7 | +5% | +11% | +14% | +20% | +33% | – |
@@ -885,7 +885,7 @@ Todos perto da mediana do degrau.
 | Digimon | 2/3/4/5/6 | +3% | +5% | +8% | +12% | +14% | – |
 | SMT | 2/3/4/6/8 | +5% | +6% | +11% | +15% | +19% | – |
 | Persona | 1/2/3/4/5 | 0% | +1% | +3% | +8% | +11% | – |
-| JoJo | 2/3/4/5/6/8 | +6% | +9% | +12% | +17% | +17% | +30% |
+| JoJo | 2/3/4/5/6 | +25% | +30% | +39% | +56% | +64% | – |
 | Yu-Gi-Oh! | 2/3/5/7/9/10 | +1% | +5% | +8% | +26% | +36% | +45% |
 | LoL | 2/3/5/7/9/10 | 0% | +3% | +3% | +8% | +9% | +11% |
 | Overwatch | 2/3/4/5/7 | +3% | +3% | +6% | +9% | +15% | – |
@@ -896,20 +896,20 @@ Todos perto da mediana do degrau.
 
 ## Origens
 
-Time cheio de cada origem contra os times cheios das outras (20 cenários por par, dos dois lados), com os custos da loja daquele nível e os traços valendo. JoJo: usuários de outras origens mais os Stands que a regra deixa. Digimon: um terço do time de fora, pro Parceiro. Overwatch, Deadlock e Sujimon agem também fora da luta, e isso não entra aqui. Sem itens.
+Time cheio de cada origem contra os times cheios das outras (20 cenários por par, dos dois lados), com os custos da loja daquele nível e os traços valendo. JoJo: metade Stands, metade usuários de outras origens. Digimon: um terço do time de fora, pro Parceiro. Overwatch, Deadlock e Sujimon agem também fora da luta, e isso não entra aqui. Sem itens.
 
 | Origem | 4 no tabuleiro, ★1 | 6 no tabuleiro, ★2 | 8 no tabuleiro, ★2 | 10 no tabuleiro, ★2 | 10 no tabuleiro, ★3 |
 |---|---|---|---|---|---|
-| Pokémon | 53% | 48% | 38% | 56% | 59% |
-| Digimon | 39% | 46% | 40% | 41% | 46% |
-| SMT | 69% | 61% | 63% | 54% | 48% |
-| Persona | 36% | 44% | 43% | 49% | 54% |
-| JoJo | 49% | 59% | 50% | 49% | 48% |
-| Yu-Gi-Oh! | 52% | 44% | 78% | 98% | 95% |
-| LoL | 36% | 33% | 35% | 30% | 53% |
-| Overwatch | 55% | 50% | 55% | 40% | 22% |
-| Deadlock | 32% | 26% | 20% | 5% | 3% |
-| Sujimon | 80% | 89% | 79% | 78% | 73% |
+| Pokémon | 53% | 50% | 39% | 55% | 57% |
+| Digimon | 42% | 50% | 41% | 41% | 46% |
+| SMT | 70% | 64% | 64% | 54% | 46% |
+| Persona | 37% | 48% | 44% | 48% | 53% |
+| JoJo | 34% | 37% | 41% | 52% | 60% |
+| Yu-Gi-Oh! | 51% | 45% | 78% | 98% | 93% |
+| LoL | 38% | 36% | 36% | 29% | 51% |
+| Overwatch | 58% | 53% | 56% | 41% | 23% |
+| Deadlock | 36% | 28% | 22% | 5% | 3% |
+| Sujimon | 82% | 90% | 80% | 78% | 68% |
 
 ### Quanto vale evoluir
 
@@ -926,32 +926,6 @@ Os mesmos campeões numa estrela a mais: bônus de vida e dano no time da estrel
 | Overwatch | +72% | +78% |
 | Deadlock | +72% | +78% |
 | Sujimon (linhas) | +109% | +109% |
-
-## Stands
-
-Quanto valem k Stands em cima de um time cheio (★2, 40 cenários): o bônus de vida e dano no time sem Stands que empata.
-
-| Tabuleiro | 1 Stand | 2 Stands | 3 Stands | 5 Stands | 8 Stands |
-|---|---|---|---|---|---|
-| 4 | +14% | +34% | +54% | – | – |
-| 6 | +11% | +24% | +37% | +74% | – |
-| 8 | +8% | +18% | +28% | +51% | +103% |
-| 10 | +8% | +11% | +21% | +41% | +74% |
-
-### Regras dos Stands comparadas
-
-Cada regra medida com o time cheio de JoJo contra as outras origens (vitórias) e com 48 partidas de bots. "Colocação" é a média de quem mais usou JoJo do estágio 3 em diante (média geral: 4,5). "Em campo" é a média, nos níveis 8 ou mais.
-
-| Regra | JoJo, 4 ★1 | JoJo, 6 ★2 | JoJo, 8 ★2 | JoJo, 10 ★2 | JoJo, 10 ★3 | Colocação | Jogadores | Geral | Em campo | Stands | Máximo |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| Sem limite (o pedido original) | 99% | 100% | 99% | 100% | 97% | 2,60 | 65 | 4,50 | 10,4 | 2,3 | 18 |
-| Todo Stand ocupa vaga | 8% | 12% | 11% | 13% | 13% | 7,53 | 15 | 4,50 | 8,2 | 0,2 | 9 |
-| Até 1 fora da vaga | 49% | 35% | 28% | 19% | 23% | 6,13 | 16 | 4,50 | 8,8 | 0,8 | 10 |
-| Até 2 fora da vaga | 80% | 59% | 50% | 34% | 34% | 4,50 | 24 | 4,50 | 9,2 | 1,2 | 11 |
-| Até 3 fora da vaga | 96% | 78% | 59% | 49% | 48% | 2,89 | 46 | 4,50 | 9,7 | 1,6 | 12 |
-| Um fora da vaga a cada 3 níveis | 49% | 59% | 50% | 49% | 48% | 4,44 | 27 | 4,50 | 9,3 | 1,2 | 12 |
-| Um fora da vaga a cada 4 níveis | 49% | 35% | 50% | 34% | 34% | 6,73 | 15 | 4,50 | 9,1 | 1,0 | 11 |
-| Sem limite, Stand 40% mais fraco | 95% | 94% | 96% | 98% | 94% | 3,37 | 57 | 4,50 | 10,1 | 1,9 | 17 |
 
 ## Itens
 
@@ -1010,128 +984,134 @@ Regra: ao lançar a habilidade (50%) e no golpe que derruba um inimigo (50%), ch
 
 | Campeão | Passiva | Ouro/luta rodízio ★1 | ★2 | Lutas nas partidas | Ouro/luta partidas |
 |---|---|---|---|---|---|
-| Harvest | Achados | 0,80 | 1,03 | 20 | 0,71 |
-| Pro Pickpocket | Mão Leve | 1,25 | 1,32 | 180 | 1,35 |
-| Pseudotrash | Catador | 1,05 | 1,41 | 67 | 1,01 |
-| Agumon Hakase | Ouro de Numemon | 0,90 | 1,49 | 44 | 0,77 |
-| Rat King | Tesouro do Rei Rato | 0,90 | 1,15 | 429 | 0,86 |
+| Harvest | Achados | 0,80 | 1,03 | 32 | 0,76 |
+| Pro Pickpocket | Mão Leve | 1,25 | 1,32 | 213 | 1,42 |
+| Pseudotrash | Catador | 1,05 | 1,41 | 121 | 1,27 |
+| Agumon Hakase | Ouro de Numemon | 0,90 | 1,49 | 37 | 0,73 |
+| Rat King | Tesouro do Rei Rato | 0,90 | 1,15 | 321 | 0,83 |
 
 ## Partidas de bots
 
-24 partidas de 8 bots (sementes 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24); duram 34,7 rodadas em média e acabam no estágio 6,0. 14% das lutas entre jogadores vão até os 30 s. As taxas misturam o efeito do traço/item com a força do tabuleiro de quem o tem (sinal, não medida isolada; essa é a das seções acima).
+24 partidas de 8 bots (sementes 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24); duram 35,5 rodadas em média e acabam no estágio 6,0. 20% das lutas entre jogadores vão até os 30 s. As taxas misturam o efeito do traço/item com a força do tabuleiro de quem o tem (sinal, não medida isolada; essa é a das seções acima).
 
 ### Vitórias com o traço ativo (degrau mais alto atingido; 30 lutas ou mais)
 
 | Traço | Degrau | Lutas | Vitórias |
 |---|---|---|---|
-| Deadlock | 6 | 56 | 98% |
-| Yu-Gi-Oh! | 7 | 46 | 87% |
-| Demoníacos | 2 | 87 | 82% |
-| Gelo | 2 | 52 | 77% |
-| Água | 5 | 35 | 74% |
-| Sujimon | 6 | 31 | 74% |
-| Água | 6 | 53 | 70% |
-| Fogo | 4 | 73 | 67% |
-| Vento | 2 | 45 | 67% |
-| Robô | 2 | 48 | 67% |
-| Criaturinha Bizarra | 7 | 92 | 66% |
-| Digimon | 2 | 200 | 65% |
-| Sujimon | 2 | 93 | 62% |
-| Overwatch | 3 | 47 | 62% |
-| Planta | 3 | 173 | 61% |
-| Persona | 2 | 40 | 60% |
-| Porradeiro | 3 | 62 | 60% |
-| Criaturinha Bizarra | 3 | 170 | 59% |
-| Yu-Gi-Oh! | 5 | 98 | 58% |
-| Tanque | 2 | 232 | 58% |
-| Criaturinha Bizarra | 5 | 269 | 58% |
-| Água | 4 | 68 | 57% |
-| Assassino | 3 | 83 | 57% |
-| Atirador | 3 | 89 | 56% |
-| Assassino | 4 | 59 | 56% |
+| Deadlock | 6 | 41 | 93% |
+| Yu-Gi-Oh! | 7 | 44 | 80% |
+| Temporais | 2 | 61 | 79% |
+| Vento | 2 | 61 | 75% |
+| Robô | 2 | 81 | 74% |
+| Sujimon | 6 | 33 | 73% |
+| Anjo | 2 | 33 | 73% |
+| Tanque | 2 | 178 | 72% |
+| Sujimon | 2 | 164 | 71% |
+| Assassino | 4 | 52 | 71% |
+| Safada | 7 | 34 | 71% |
+| Água | 5 | 39 | 69% |
+| Assassino | 3 | 70 | 69% |
+| Fogo | 4 | 54 | 67% |
+| Água | 4 | 47 | 66% |
+| Criaturinha Bizarra | 7 | 34 | 65% |
+| Fadinhas | 6 | 45 | 64% |
+| Fogo | 5 | 44 | 64% |
+| Água | 6 | 45 | 62% |
+| Gelo | 2 | 65 | 62% |
+| Porradeiro | 6 | 44 | 61% |
+| Assassino | 2 | 131 | 61% |
+| Porradeiro | 4 | 64 | 61% |
+| Safada | 5 | 51 | 61% |
+| Porradeiro | 3 | 77 | 58% |
+| Demoníacos | 2 | 105 | 58% |
+| Yu-Gi-Oh! | 5 | 125 | 56% |
 | SMT | 4 | 34 | 56% |
-| Planta | 4 | 45 | 56% |
-| Atirador | 5 | 108 | 55% |
-| Safada | 5 | 59 | 54% |
-| Terra | 2 | 82 | 54% |
-| Pokémon | 2 | 1005 | 54% |
-| Assassino | 2 | 121 | 52% |
-| JoJo | 2 | 641 | 52% |
-| Porradeiro | 4 | 83 | 51% |
-| Persona | 1 | 637 | 51% |
-| SMT | 2 | 302 | 50% |
-| SMT | 3 | 70 | 50% |
-| Fadinhas | 3 | 120 | 50% |
-| Fadinhas | 4 | 84 | 50% |
-| Criaturinha Bizarra | 4 | 129 | 49% |
-| Safada | 4 | 62 | 48% |
-| Atirador | 4 | 75 | 48% |
-| Fogo | 3 | 100 | 48% |
-| Yu-Gi-Oh! | 3 | 167 | 47% |
-| Deadlock | 2 | 120 | 47% |
-| Pokémon | 8 | 82 | 45% |
-| Fadinhas | 2 | 205 | 45% |
-| Planta | 2 | 468 | 45% |
-| Pokémon | 4 | 748 | 45% |
-| Overwatch | 2 | 153 | 44% |
-| Atirador | 2 | 194 | 44% |
-| Sujimon | 4 | 32 | 44% |
-| Porradeiro | 2 | 215 | 44% |
-| Água | 2 | 387 | 43% |
-| Dragão | 2 | 103 | 43% |
-| Yu-Gi-Oh! | 2 | 82 | 43% |
-| Água | 3 | 94 | 43% |
-| Pokémon | 6 | 445 | 42% |
-| Deadlock | 3 | 75 | 41% |
-| LoL | 3 | 175 | 41% |
-| Raio | 2 | 159 | 41% |
-| JoJo | 3 | 64 | 41% |
-| LoL | 5 | 74 | 41% |
-| LoL | 2 | 162 | 40% |
-| Fogo | 2 | 435 | 39% |
-| Fadinhas | 6 | 49 | 37% |
-| JoJo | 4 | 33 | 36% |
-| Safada | 3 | 121 | 36% |
+| Yu-Gi-Oh! | 3 | 146 | 55% |
+| Yu-Gi-Oh! | 2 | 96 | 55% |
+| Atirador | 2 | 214 | 54% |
+| Persona | 1 | 571 | 54% |
+| Planta | 3 | 180 | 54% |
+| Atirador | 3 | 82 | 54% |
+| Overwatch | 3 | 108 | 53% |
+| Dragão | 2 | 146 | 51% |
+| Pokémon | 2 | 957 | 51% |
+| Overwatch | 2 | 146 | 50% |
+| Safada | 3 | 144 | 50% |
+| Persona | 2 | 40 | 50% |
+| Deadlock | 4 | 30 | 50% |
+| SMT | 3 | 34 | 50% |
+| Fadinhas | 2 | 282 | 50% |
+| Fadinhas | 3 | 152 | 49% |
+| Pokémon | 4 | 731 | 49% |
+| Água | 3 | 182 | 48% |
+| Pokémon | 6 | 479 | 47% |
+| Planta | 2 | 445 | 47% |
+| Água | 2 | 349 | 47% |
+| Safada | 4 | 61 | 46% |
+| Deadlock | 2 | 136 | 46% |
+| Raio | 2 | 178 | 46% |
+| Porradeiro | 2 | 242 | 45% |
+| Fogo | 2 | 516 | 45% |
+| Fadinhas | 4 | 86 | 45% |
+| LoL | 5 | 89 | 45% |
+| Digimon | 2 | 95 | 44% |
+| Fogo | 3 | 86 | 44% |
+| LoL | 3 | 168 | 44% |
+| Criaturinha Bizarra | 4 | 141 | 43% |
+| SMT | 2 | 349 | 43% |
+| Pokémon | 8 | 112 | 43% |
+| Atirador | 4 | 95 | 42% |
+| Criaturinha Bizarra | 3 | 192 | 42% |
+| Criaturinha Bizarra | 5 | 135 | 41% |
+| LoL | 2 | 176 | 41% |
+| JoJo | 2 | 129 | 38% |
+| Terra | 2 | 106 | 38% |
+| Raio | 3 | 37 | 30% |
+| JoJo | 3 | 47 | 28% |
+| Deadlock | 3 | 66 | 26% |
+| Atirador | 5 | 61 | 25% |
+| Digimon | 3 | 37 | 24% |
+| Tanque | 3 | 32 | 16% |
 
 ### Vitórias com o item em alguém do time (30 lutas ou mais)
 
 | Item | Lutas | Vitórias |
 |---|---|---|
-| Preyas | 256 | 59% |
-| Nobilious | 285 | 59% |
-| Serpenoid | 350 | 59% |
-| Pyravian | 507 | 59% |
-| Dragonoid X Darkus | 585 | 58% |
-| Hammersaur | 430 | 57% |
-| Aquos | 706 | 57% |
-| Tayghen | 605 | 56% |
-| Hydorous X Aurelus | 434 | 56% |
-| Tigrerra | 271 | 55% |
-| Limulus | 344 | 53% |
-| Gorem | 280 | 52% |
-| Jelldon | 453 | 52% |
-| Griffon | 460 | 52% |
-| Skyress | 138 | 51% |
-| Hynoid | 418 | 51% |
-| Falconeer | 324 | 51% |
-| Drago | 250 | 51% |
-| Monarus | 444 | 51% |
-| El Condor | 414 | 51% |
-| Pegatrix X Aurelus | 379 | 51% |
-| Gargonoid | 336 | 51% |
-| Subterra | 752 | 50% |
-| Pyrus | 611 | 50% |
-| Saurus | 432 | 50% |
-| Goreene | 377 | 50% |
-| Wormquake | 473 | 49% |
-| Siege | 386 | 49% |
-| Ventus | 709 | 49% |
-| Hydranoid | 251 | 48% |
-| Fear Ripper | 372 | 47% |
-| Howlkor X Aurelus | 441 | 46% |
-| Aurelus | 620 | 45% |
-| Haos | 637 | 45% |
-| Darkus | 524 | 44% |
+| Saurus | 474 | 61% |
+| Preyas | 224 | 59% |
+| Hammersaur | 450 | 59% |
+| Howlkor X Aurelus | 397 | 56% |
+| Falconeer | 436 | 56% |
+| El Condor | 440 | 55% |
+| Pyravian | 446 | 55% |
+| Tayghen | 558 | 55% |
+| Jelldon | 406 | 52% |
+| Pyrus | 609 | 52% |
+| Siege | 372 | 52% |
+| Drago | 298 | 52% |
+| Ventus | 701 | 51% |
+| Dragonoid X Darkus | 517 | 50% |
+| Limulus | 417 | 50% |
+| Aquos | 618 | 50% |
+| Wormquake | 572 | 50% |
+| Hydranoid | 296 | 50% |
+| Haos | 675 | 50% |
+| Skyress | 250 | 50% |
+| Hynoid | 438 | 50% |
+| Subterra | 897 | 49% |
+| Hydorous X Aurelus | 413 | 49% |
+| Griffon | 492 | 49% |
+| Monarus | 615 | 49% |
+| Aurelus | 728 | 49% |
+| Goreene | 291 | 49% |
+| Darkus | 637 | 49% |
+| Gorem | 332 | 48% |
+| Serpenoid | 346 | 47% |
+| Tigrerra | 297 | 47% |
+| Pegatrix X Aurelus | 481 | 47% |
+| Gargonoid | 313 | 46% |
+| Fear Ripper | 416 | 46% |
+| Nobilious | 258 | 42% |
 
 ### Rodadas de monstros (vitórias dos jogadores)
 
@@ -1140,26 +1120,26 @@ Regra: ao lançar a habilidade (50%) e no golpe que derruba um inimigo (50%), ch
 | 1-1 | 192 | 98% |
 | 1-2 | 192 | 99% |
 | 1-3 | 192 | 100% |
-| 2-7 | 192 | 99% |
-| 3-7 | 192 | 59% |
-| 4-7 | 147 | 31% |
-| 5-7 | 70 | 36% |
+| 2-7 | 192 | 98% |
+| 3-7 | 192 | 60% |
+| 4-7 | 167 | 29% |
+| 5-7 | 81 | 36% |
 | 6-7 | 2 | 0% |
 
 ### Colocação pela origem mais usada (do estágio 3 em diante)
 
 | Origem | Jogadores | Colocação média | Entre os 4 primeiros |
 |---|---|---|---|
-| Overwatch | 4 | 3,00 | 75% |
-| Digimon | 7 | 3,29 | 71% |
-| SMT | 9 | 3,67 | 67% |
-| Deadlock | 11 | 3,73 | 64% |
-| Yu-Gi-Oh! | 18 | 3,83 | 56% |
-| Persona | 4 | 4,00 | 75% |
-| Sujimon | 6 | 4,17 | 33% |
-| JoJo | 15 | 4,47 | 53% |
-| Pokémon | 102 | 4,80 | 45% |
-| LoL | 16 | 5,50 | 38% |
+| Persona | 4 | 3,00 | 75% |
+| Sujimon | 8 | 3,00 | 75% |
+| Overwatch | 9 | 3,11 | 78% |
+| Yu-Gi-Oh! | 16 | 3,69 | 69% |
+| Deadlock | 8 | 3,88 | 63% |
+| SMT | 14 | 4,50 | 50% |
+| Pokémon | 97 | 4,61 | 46% |
+| Digimon | 7 | 5,00 | 43% |
+| LoL | 19 | 5,58 | 32% |
+| JoJo | 10 | 5,90 | 30% |
 
 ### Em campo por nível
 
@@ -1167,13 +1147,13 @@ Regra: ao lançar a habilidade (50%) e no golpe que derruba um inimigo (50%), ch
 |---|---|---|---|---|
 | 1 | 192 | 1,0 | 0,0 | 1 |
 | 2 | 192 | 2,0 | 0,0 | 2 |
-| 3 | 192 | 3,3 | 0,4 | 4 |
-| 4 | 576 | 4,4 | 0,5 | 5 |
-| 5 | 960 | 5,5 | 0,6 | 6 |
-| 6 | 1152 | 6,8 | 0,9 | 8 |
-| 7 | 1238 | 7,9 | 1,0 | 9 |
-| 8 | 802 | 9,0 | 1,1 | 10 |
-| 9 | 126 | 10,3 | 1,3 | 12 |
+| 3 | 192 | 3,0 | 0,1 | 3 |
+| 4 | 576 | 4,0 | 0,1 | 4 |
+| 5 | 960 | 5,0 | 0,2 | 5 |
+| 6 | 1152 | 6,0 | 0,3 | 6 |
+| 7 | 1311 | 7,0 | 0,3 | 7 |
+| 8 | 883 | 8,0 | 0,3 | 8 |
+| 9 | 159 | 9,0 | 0,2 | 9 |
 
 <!-- histórico: daqui pra baixo é escrito à mão; o playtest mantém -->
 
@@ -1189,17 +1169,18 @@ tabuleiro passa do limite; vale um buff no escalonamento de Pokémon e Digimon; 
 
 | Medida | Antes | Depois |
 |---|---|---|
-| Limite do tabuleiro | nível + 1 | nível |
+| Limite do tabuleiro | nível + 1 | nível, com todo Stand ocupando vaga |
+| Bônus do JoJo por degrau | +6 / 10 / 13 / 16 / 18% (2/3/5/7/9/10) | +25 / 30 / 40 / 48 / 55% (2/3/4/5/6) |
 | Máximo de unidades em campo nas partidas de bots | 19 | 12 |
 | Formas de longe | 408 de 592 (69%) | 306 de 592 (52%) |
-| Time cheio de JoJo (4 ★1, 6 ★2, 8 ★2, 10 ★2, 10 ★3) | 99 / 99 / 99 / 99 / 99% | 49 / 59 / 50 / 49 / 48% |
-| Colocação de quem mais usa JoJo | 2,79 | 4,47 |
-| Time cheio de Pokémon | 46 / 38 / 31 / 42 / 39% | 53 / 48 / 38 / 56 / 59% |
-| Time cheio de Digimon | 34 / 30 / 28 / 26 / 16% | 39 / 46 / 40 / 41 / 46% |
+| Time cheio de JoJo (4 ★1, 6 ★2, 8 ★2, 10 ★2, 10 ★3) | 99 / 99 / 99 / 99 / 99% | 34 / 37 / 41 / 52 / 60% |
+| Colocação de quem mais usa JoJo (bots quase não usam Stand) | 2,79 | 5,90 |
+| Time cheio de Pokémon | 46 / 38 / 31 / 42 / 39% | 53 / 50 / 39 / 55 / 57% |
+| Time cheio de Digimon | 34 / 30 / 28 / 26 / 16% | 42 / 50 / 41 / 41 / 46% |
 | Evoluir no Pokémon (★1 → ★2, ★2 → ★3) | +84%, +84% | +91%, +91% |
 | Evoluir no Digimon | +78%, +53% | +97%, +84% |
-| Chefe na 3-7, 4-7 e 5-7 (vitória dos jogadores) | 64 / 31 / 37% | 59 / 31 / 36% |
-| Duração | 33,6 rodadas | 34,7 rodadas |
+| Chefe na 3-7, 4-7 e 5-7 (vitória dos jogadores) | 64 / 31 / 37% | 60 / 29 / 36% |
+| Duração | 33,6 rodadas | 35,5 rodadas |
 | Campeões fora de 35%–65% no rodízio | 54 de 474 | 105 de 474 |
 
 Parte da subida de Pokémon e Digimon vem do JoJo parar de ganhar de todo mundo. Só o buff de evoluir, com o resto

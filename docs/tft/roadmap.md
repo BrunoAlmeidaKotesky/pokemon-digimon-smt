@@ -45,7 +45,7 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 13. **Dano na derrota:** diminuí o do rascunho do design (as partidas acabavam no estágio 5). Agora vão até o 6 ou
     7, umas 35 rodadas.
 14. **Monstros:** calibrados com partidas de bots. Os comuns quase sempre perdem; o chefe ganha umas 40% das vezes na 3-7
-    e 65% depois. Com limite = nível baixei o chefe (vida 4000 → 3400, dano 260 → 220), pra ele não ficar mais forte só
+    e 65% depois. Com limite = nível e todo Stand ocupando vaga baixei o chefe (vida 4000 → 3200, dano 260 → 210, crescimento 1,4 → 1,34), pra ele não ficar mais forte só
     porque o tabuleiro tem uma unidade a menos. A 1-1 continua ganha com um campeão só (98%).
 15. **Detalhes da partida:**
     - a sequência de vitórias e derrotas só conta luta contra jogador;
@@ -93,29 +93,27 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   anfitrião que fecha a página acaba a sala (sem trocar de anfitrião); a rodada espera todos verem a luta (cada um na
   velocidade dele), com um limite; a partida online não é salva; nome vazio vira "Jogador N".
 
-- **Stands (JoJo):** **[você] forte demais:** Stand não ocupar vaga deixava o tabuleiro bem acima do limite (18 unidades
-  em campo). Sua decisão de "Stand não ocupa vaga" fica, mas com um teto. Comparei 8 regras no playtest, com tudo o mais
-  igual (`REGRAS_STANDS`, equilibrio.md, seção "Stands"): vitórias do time cheio de JoJo contra as outras origens em 4
-  ★1, 6 ★2, 8 ★2, 10 ★2 e 10 ★3, colocação de quem mais usa JoJo em 48 partidas de bots (a média geral é 4,5) e o máximo
-  de unidades em campo.
+- **Stands (JoJo):** **[você] decidido em 05/11/2026: Stand nunca excede a vaga.** Todo Stand ocupa vaga como qualquer
+  unidade. Isso substitui "Stand não ocupa vaga" e a tentativa de um fora da vaga a cada 3 níveis, que não chegou a ser
+  publicada. Cada Stand precisa de um usuário de outra origem, que também ocupa vaga: cabem ⌊nível/2⌋ Stands, 6 no nível
+  12. Por isso a escada virou 2/3/4/5/6, e a mana a menos vem no degrau de 5.
 
-  | Regra | Vitórias do JoJo | Colocação | Máximo em campo |
-  |---|---|---|---|
-  | Sem limite | 99 / 100 / 99 / 100 / 97% | 2,6 | 18 |
-  | Todo Stand ocupa vaga | 8 / 12 / 11 / 13 / 13% | 7,5 | 9 |
-  | Até 1 fora da vaga | 49 / 35 / 28 / 19 / 23% | 6,1 | 10 |
-  | Até 2 fora da vaga | 80 / 59 / 50 / 34 / 34% | 4,5 | 11 |
-  | Até 3 fora da vaga | 96 / 78 / 59 / 49 / 48% | 2,9 | 12 |
-  | **Um fora da vaga a cada 3 níveis** | **49 / 59 / 50 / 49 / 48%** | **4,4** | **12** |
-  | Um fora da vaga a cada 4 níveis | 49 / 35 / 50 / 34 / 34% | 6,7 | 11 |
-  | Sem limite, Stand 40% mais fraco | 95 / 94 / 96 / 98 / 94% | 3,4 | 17 |
+  Sem compensar, a origem morria, então o bônus subiu. Duas medidas, porque bônus alto demais vira obrigação: **time
+  cheio** é metade Stands contra as outras origens (4 ★1, 6 ★2, 8 ★2, 10 ★2, 10 ★3); **2 Stands no time** é trocar 2
+  normais por 2 Stands no mesmo time ★2, contra ele sem Stand (tabuleiro de 4, 6, 8 e 10; 50% = tanto faz).
 
-  **Escolhi um fora da vaga a cada 3 níveis:** é a única que fica perto de 50% em todos os pontos da partida e resolve a
-  sua queixa, o excesso de campeões, em vez de só cortar número (Stand 40% mais fraco continua com 94% a 98% e 17 em
-  campo). Um número fixo não serve: 2 dá 80% cedo e 34% tarde, 3 dá 96% cedo. Stand ocupar vaga mata a origem (cada Stand
-  gasta duas vagas: a dele e a do usuário). Fica assim: 1 no nível 3, 2 no 6, 3 no 9, 4 no 12; os outros ocupam vaga.
-  Consequência: cabem no máximo 8 Stands (nível 12), então a escada 2/3/5/7/9/10 nunca fechava os degraus de 9 e 10.
-  Virou 2/3/4/5/6/8, com +6/10/13/16/18/28%, e a mana a menos passou pro degrau de 8.
+  | Bônus por degrau | Time cheio | 2 Stands no time |
+  |---|---|---|
+  | +6 / 10 / 13 / 16 / 18% | 8 / 12 / 11 / 20 / 27% | 23 / 23 / 23 / 24% |
+  | +20 / 30 / 42 / 50 / 55% | 25 / 37 / 41 / 54 / 62% | 45 / 43 / 44 / 36% |
+  | **+25 / 30 / 40 / 48 / 55%** | **34 / 37 / 41 / 52 / 60%** | **53 / 49 / 51 / 41%** |
+  | +35 / 40 / 45 / 48 / 52% | 47 / 49 / 44 / 52 / 60% | 66 / 61 / 62 / 53% |
+
+  **Escolhi +25/30/40/48/55%:** com +35% no primeiro degrau, botar 2 Stands em qualquer time vencia até 66%, e todo mundo
+  ia querer. Assim 2 Stands ficam neutros e JoJo cheio é fraco no começo e forte no fim. O preço é o começo fraco (34%
+  com 4 no tabuleiro). Os números do bônus são altos perto dos outros traços porque cada Stand gasta duas vagas e, se um
+  morre, o outro morre junto. Os bots quase não usam Stand (0,3 em média), então a colocação deles com JoJo diz pouco:
+  **pra conferir jogando**.
 
 - **Pokémon e Digimon:** **[você] vale um buff no escalonamento.** Li como o ganho de força ao evoluir das linhas (se era
   a escada do traço, é só falar). Bônus de vida e dano nas linhas: Pokémon +5% (★2) e +10% (★3), Digimon +12% e +30%; o

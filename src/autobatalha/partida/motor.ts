@@ -2,7 +2,6 @@
 // A partida não importa esses módulos direto: o controle (src/autobatalha/controle.ts) liga os de verdade com
 // definirMotor() e os testes ligam falsos. Assim a lógica da partida roda e testa sozinha.
 import { COMPONENTES, type Atributos, type Componente, type SimularLuta, type Unidade } from '../tipos';
-import { NIVEIS_POR_STAND_FORA_DA_VAGA } from './constantes';
 
 /** Traço ativo como o conteúdo conta: nivel = índice do degrau ativo (-1 = nenhum). */
 export interface TracoContado { id: string; n: number; nivel: number }
@@ -14,8 +13,6 @@ export interface MotorPartida {
   /** id do Bakugan completo feito de dois componentes */
   combinar(a: Componente, b: Componente): string;
   ehComponente(id: string): id is Componente;
-  /** Stands que não ocupam vaga no tabuleiro, pelo nível (a regra da partida; o playtest liga outras pra comparar) */
-  standsForaDaVaga(nivel: number): number;
 }
 
 const faltando = (nome: string) => () => {
@@ -33,7 +30,6 @@ const padrao: MotorPartida = {
     return `${x}+${y}`;
   },
   ehComponente: (id): id is Componente => (COMPONENTES as readonly string[]).includes(id),
-  standsForaDaVaga: nivel => Math.floor(nivel / NIVEIS_POR_STAND_FORA_DA_VAGA),
 };
 
 let atual: MotorPartida = { ...padrao };

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  aleatorio, amostra, campeoesComPeso, chanceAoMenos, comb, conferirEscada, custoFechar, degrausPorTamanho, emCampo, encher, ESCADA_DE_REFERENCIA,
+  aleatorio, amostra, campeoesComPeso, chanceAoMenos, comb, conferirEscada, custoFechar, degrausPorTamanho, encher, ESCADA_DE_REFERENCIA,
   escadaEquivalente, faixa, mecanicas, media, mediana, melhorDesenho, nivelDosStands, porCusto, resumoSet, rolagensEsperadas, simularFechar, simularLoja, simularRolagens, standsQueCabem,
   tabuleiroAleatorio, tracosDoSet,
 } from './lib.mjs';
@@ -27,27 +27,12 @@ describe('degraus pelo tamanho do traço', () => {
 });
 
 describe('Stands e o limite do tabuleiro', () => {
-  it('quantos cabem: um usuário por Stand, e quem passa dos livres gasta vaga', () => {
-    expect(standsQueCabem(9, Infinity)).toBe(9);
-    expect(standsQueCabem(9, 0)).toBe(4);
-    expect(standsQueCabem(12, 4)).toBe(8);
-    // confere com a conta por força bruta
-    for (let limite = 1; limite <= 12; limite++) for (let livres = 0; livres <= 5; livres++) {
-      let melhor = 0;
-      for (let h = 0; h <= limite; h++) for (let s = 0; s <= h; s++) if (h + Math.max(0, s - livres) <= limite) melhor = Math.max(melhor, s);
-      expect(standsQueCabem(limite, livres), `${limite} ${livres}`).toBe(melhor);
-    }
-  });
-  it('em campo: o limite e os Stands fora da vaga', () => {
-    expect(emCampo(9, Infinity)).toBe(18);
-    expect(emCampo(9, 0)).toBe(9);
-    expect(emCampo(12, 4)).toBe(16);
-    expect(emCampo(1, 1)).toBe(2);
+  it('quantos cabem: cada Stand gasta a vaga dele e a do usuário', () => {
+    expect([1, 2, 3, 9, 12].map(standsQueCabem)).toEqual([0, 1, 1, 4, 6]);
   });
   it('nível dos Stands: o menor nível em que cabem, ou nunca', () => {
-    const livres = n => Math.floor(n / 3);
-    expect([2, 3, 4, 5, 6, 8].map(n => nivelDosStands(n, livres, 12))).toEqual([3, 5, 6, 8, 9, 12]);
-    expect(nivelDosStands(9, livres, 12)).toBe(Infinity);
+    expect([2, 3, 4, 5, 6].map(n => nivelDosStands(n, 12))).toEqual([4, 6, 8, 10, 12]);
+    expect(nivelDosStands(7, 12)).toBe(Infinity);
   });
 });
 

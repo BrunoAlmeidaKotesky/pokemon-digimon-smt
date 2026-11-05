@@ -9,9 +9,9 @@ import { S } from '../../autobatalha/dados';
 import { MULT_COMPLETO, TRACOS, combinar, contarTracos, type TracoAtivo } from '../../autobatalha/conteudo';
 import {
   BONUS_SEQUENCIA, COPIAS_POR_CUSTO, COPIAS_POR_ESTRELA, CUSTO_ATUALIZAR, CUSTO_XP, ESTAGIO_DO_ITEM_COMPLETO, JUROS_MAX,
-  MAX_ITENS, NIVEIS_POR_STAND_FORA_DA_VAGA, NIVEL_MAXIMO, OPCOES_DO_CARROSSEL, OURO_INICIAL, OURO_VITORIA, PESO_DONO, PRIMEIRO_ESTAGIO_DO_CARROSSEL,
+  MAX_ITENS, NIVEL_MAXIMO, OPCOES_DO_CARROSSEL, OURO_INICIAL, OURO_VITORIA, PESO_DONO, PRIMEIRO_ESTAGIO_DO_CARROSSEL,
   RENDA_BASE, RENDA_ESTAGIO_1, VAGAS_BANCO, VAGAS_LOJA, VIDA_INICIAL, XP_POR_COMPRA, XP_POR_RODADA,
-  bonusSequencia, chancesLoja, danoBaseEstagio, danoDerrota, danoMonstros, juros, standsForaDaVagaNoNivel, unidadesNoTabuleiro,
+  bonusSequencia, chancesLoja, danoBaseEstagio, danoDerrota, danoMonstros, juros, unidadesNoTabuleiro,
   valorVenda, xpParaProximo,
 } from '../../autobatalha/partida';
 import { propsDica } from './interacao';
@@ -314,7 +314,7 @@ function AbaLoja({ eu }: { eu: Jogador | null }) {
                     </td>
                   ))}
                   <td>{xp ? `${xp} XP` : 'máximo'}</td>
-                  <td>{n}{standsForaDaVagaNoNivel(n) > 0 && <small> + {standsForaDaVagaNoNivel(n)} Stand{standsForaDaVagaNoNivel(n) > 1 ? 's' : ''}</small>}</td>
+                  <td>{n}</td>
                 </tr>
               );
             })}
@@ -323,7 +323,7 @@ function AbaLoja({ eu }: { eu: Jogador | null }) {
       </div>
       <p className="ab-info-nota">
         Comprar XP: <Moeda />{CUSTO_XP} dá {XP_POR_COMPRA} XP; todo planejamento (a partir da 1-2) dá {XP_POR_RODADA} XP de
-        graça. A cada {NIVEIS_POR_STAND_FORA_DA_VAGA} níveis, um Stand de JoJo não ocupa vaga no tabuleiro; os outros ocupam como qualquer unidade.
+        graça. Stand de JoJo ocupa vaga no tabuleiro como qualquer unidade.
       </p>
       <h3>Pool compartilhado</h3>
       <div className="ab-info-rolar">

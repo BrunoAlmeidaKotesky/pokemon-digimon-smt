@@ -10,7 +10,7 @@ import { COLUNAS, LINHAS_DONO } from '../tipos';
 import { CUSTO_ATUALIZAR, CUSTO_XP, VAGAS_BANCO } from './constantes';
 import { rngDa } from './sorteio';
 import {
-  copias, ehStand, forca, limiteTabuleiro, ondeEsta, standsForaDaVaga, tracosDe, unidadesNoBanco, unidadesNoTabuleiro,
+  copias, ehStand, forca, limiteTabuleiro, ondeEsta, tracosDe, unidadesNoBanco, unidadesNoTabuleiro,
   vagaLivreBanco, vivos,
 } from './consultas';
 import { sortearEscolhas } from './evolucao';
@@ -121,10 +121,10 @@ function comprarDaLoja(p: Partida, j: Jogador, perfil: PerfilBot, rng: Rng): voi
 /** Quantas unidades normais (`n`) e Stands (`s`) entram, das listas já em ordem de nota. Vaga que sobra fica com um
  *  Stand, e um Stand melhor que a pior titular toma a vaga dela, enquanto cada Stand tiver um usuário. */
 function elenco(j: Jogador, normais: readonly Unidade[], stands: readonly Unidade[]): { n: number; s: number } {
-  const lim = limiteTabuleiro(j), livres = standsForaDaVaga(j);
+  const lim = limiteTabuleiro(j);
   let n = Math.min(normais.length, lim);
-  let s = Math.min(stands.length, livres, n);
-  while (s < stands.length && s < n && n + Math.max(0, s + 1 - livres) <= lim) s++;
+  let s = 0;
+  while (s < stands.length && s < n && n + s < lim) s++;
   while (s < stands.length && s + 1 < n && nota(j, stands[s]!) > nota(j, normais[n - 1]!)) { n--; s++; }
   return { n, s };
 }
