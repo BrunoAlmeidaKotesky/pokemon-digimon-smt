@@ -8,6 +8,8 @@ Gerado por `node docs/tft/matematica/analise.mjs` em 2026-11-05, com a exportaç
 - **Classes:** de 17 a 37. Fora da faixa: Criaturinha Bizarra (sobram 1), Fadinhas (sobram 1), Safada (sobram 4), Porradeiro (sobram 2), Anjo (faltam 3), Temporais (faltam 6) e Assassino (faltam 3) (seção 3).
 - **Elementos:** uns 16 cada; com 2/4/6 custam 1,84× pra fechar 6. Escada própria 2/3/4, ou 4 elementos. Entre si, fora: Fogo (sobram 1), Terra (faltam 2) e Gelo (faltam 2) (seção 4).
 - **Origens fora da faixa:** Pokémon (55), Digimon (19), Persona (12), Deadlock (21) e Sujimon (20): escada própria ou mudar o tamanho (seção 6).
+- **Degraus na Autobatalha:** pelo tamanho do traço, de 3 a 6, e todo último degrau cabe no limite = nível (seção 6c).
+- **Stands:** com um fora da vaga a cada 3 níveis, cabem até 8 no nível 12 e a escada do JoJo é 2/3/4/5/6/8 (seção 9).
 - **Loja:** pelo critério (menor m1 + m2 sem perder variedade), o melhor desenho é **7 vagas + peso 4 pro dono + vaga do time**: 2 cópias a mais de um campeão do tabuleiro em 7,5 lojas e um campeão novo do traço em 5,4, contra 12,1 e 6,4 com 6 vagas + peso 3 e 39,3 e 7,2 na loja normal de 5. O critério premia sempre mais vagas e mais peso; o teto vem da economia, que falta (seção 8).
 
 ## 1. O que temos

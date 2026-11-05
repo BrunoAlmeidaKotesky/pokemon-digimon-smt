@@ -97,7 +97,7 @@ o caminho em `EXPORTACAO` no `analise.mjs`.
 - **Elementos:** Luz e Trevas ficaram de fora (o usuário não quer). Únicos não conta como classe. Com a escada própria,
   os elementos são comparados entre si (a faixa em volta da média deles).
 - **Tolerância:** 25% no custo de fechar o último breakpoint.
-- **Tabuleiro:** 9 campeões. O doc ainda não decide esse número.
+- **Tabuleiro:** 9 campeões na régua das seções 2 a 7. No jogo o limite é o nível, até 12: as seções 6b, 6c e 9 usam isso.
 
 ## Playtest (equilíbrio de atributos, habilidades, traços e itens)
 
@@ -107,7 +107,7 @@ pela semente. O código fica em `src/autobatalha/equilibrio/` (o motor é TypeSc
 saída vai pra [equilibrio.md](equilibrio.md).
 
 ```sh
-# tudo (uns 2 minutos); grava docs/tft/matematica/equilibrio.md
+# tudo (uns 10 minutos, a maior parte na comparação dos Stands); grava docs/tft/matematica/equilibrio.md
 node node_modules/vitest/vitest.mjs run --config src/autobatalha/equilibrio/playtest.config.ts
 # só uma parte, mais rápido, num arquivo à parte (Git Bash)
 EQUILIBRIO_PARTES=curva,campeoes EQUILIBRIO_RAPIDO=1 EQUILIBRIO_SAIDA=/tmp/eq.md \

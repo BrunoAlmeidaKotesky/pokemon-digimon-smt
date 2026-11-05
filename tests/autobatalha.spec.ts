@@ -84,7 +84,7 @@ test.describe('Autobatalha', () => {
     await expect(page.locator('#abTracos .ab-traco').first()).toBeVisible();
     await expect(page.locator('#abOuro')).toHaveText('1');
     await expect(page.locator('#abJuros')).toHaveText('+0 juros');
-    await page.locator('#abCartas .ab-carta[data-custo="1"]').first().click();
+    await page.locator('#abCartas .ab-carta[data-custo="1"]:not([data-campeao^="jojo:"])').first().click();
     await expect(page.locator('#abOuro')).toHaveText('0');
     await expect(noBanco).toHaveCount(1);
     await expect(page.locator('#abCartas .ab-carta.vazia')).toHaveCount(1);
@@ -525,7 +525,7 @@ test.describe('Autobatalha', () => {
 
   test('tecla W, traço em foco, campeões do traço e dica fixa com a arte grande', async ({ page }) => {
     await partidaMexida(page, { ouro: 20, nivel: 4 });
-    await page.locator('#abCartas .ab-carta[data-campeao]').first().click();
+    await page.locator('#abCartas .ab-carta[data-campeao]:not([data-campeao^="jojo:"])').first().click();
     const banco = page.locator('#abBanco .ab-peca');
     const noTab = page.locator('#abTabuleiro .ab-peca');
     await expect(banco).toHaveCount(1);
