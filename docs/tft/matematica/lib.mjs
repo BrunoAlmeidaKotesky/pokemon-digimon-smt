@@ -356,6 +356,30 @@ export function simularLoja(campeoes, { vagas = 5, pesoDono = 1, vagaDoTime = 0,
 }
 
 /**
+ * Quantos degraus um traço merece pelo tamanho: 3 até 13 campeões, 4 de 14 a 17, 5 de 18 a 29, 6 de 30 em diante. É a
+ * régua das origens (Digimon com 19 tem 5, LoL com 31 tem 6), levada pras classes e elementos.
+ */
+export const degrausPorTamanho = n => (n >= 30 ? 6 : n >= 18 ? 5 : n >= 14 ? 4 : 3);
+
+/** Escada de um traço do tamanho certo pra cada número de degraus: a referência do custo. */
+export const ESCADA_DE_REFERENCIA = { 3: [2, 4, 6], 4: [2, 3, 4, 6], 5: [2, 3, 4, 6, 8], 6: [2, 3, 4, 6, 8, 10] };
+
+/**
+ * Confere a escada de um traço de `n` campeões: a razão de custo de cada degrau contra a referência num traço de
+ * `nAlvo` (1 = igual), as lojas pra fechar o último e se o último cabe. Com limite = nível, o degrau b fecha no nível b,
+ * então ele cabe se b não passa de `nivelMaximo` nem de `n`.
+ */
+export function conferirEscada(degraus, n, nAlvo, u, nivelMaximo, vagas = 5) {
+  const ref = ESCADA_DE_REFERENCIA[degraus.length] ?? degraus;
+  const topo = degraus.at(-1);
+  return {
+    razoes: degraus.map((b, i) => custoFechar(b, n, u, vagas) / custoFechar(ref[i], nAlvo, u, vagas)),
+    lojasDoTopo: custoFechar(topo, n, u, vagas),
+    alcancavel: topo <= Math.min(n, nivelMaximo),
+  };
+}
+
+/**
  * Stands que cabem num tabuleiro de `limite` vagas quando `livres` deles não ocupam vaga: cada Stand precisa de um
  * usuário de outra origem, e os que passam de `livres` gastam uma vaga. Com s Stands e h usuários: s ≤ h e
  * h + max(0, s − livres) ≤ limite, então s = ⌊(limite + livres)/2⌋ (ou `limite`, se todos couberem fora da vaga).

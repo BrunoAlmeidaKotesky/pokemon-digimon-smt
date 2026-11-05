@@ -36,25 +36,45 @@ function estadoDoLado<T>(mapa: WeakMap<Lutador, T>, criar: () => T) {
 }
 
 // ===================================================================================================
-// Classes (2/4/6)
+// Classes. O número de degraus vem do tamanho do traço (pedido do usuário em 05/11/2026; conta em
+// docs/tft/matematica/resultado.md, seção 6c). Cada lista tem um valor por degrau, e as constantes em maiúsculas com
+// "degrau" no comentário dizem a partir de qual degrau (índice) o efeito extra liga.
 // ===================================================================================================
 
-const TANQUE = [0.2, 0.4, 0.7];
-const PORRADEIRO = [0.15, 0.3, 0.5];
-const ASSASSINO = [0.15, 0.3, 0.45];
-const DEMONIACOS = [0.1, 0.2, 0.25];
-const BIZARRA_MULT = [1, 2, 2.5];
-const FADINHAS = [0.04, 0.08, 0.14];
-const SAFADA = [0.15, 0.27, 0.4];
+const TANQUE = [0.2, 0.3, 0.4, 0.7, 1];
+/** Tanque: escudo a partir deste degrau (4 Tanques) e provocar a partir deste (6) */
+const TANQUE_ESCUDO = 2;
+const TANQUE_PROVOCA = 3;
+const PORRADEIRO = [0.15, 0.22, 0.3, 0.5, 0.65, 0.8];
+/** Porradeiro: bravo a partir deste degrau (4) e vida pro resto do time a partir deste (6) */
+const PORRADEIRO_BRAVO = 2;
+const PORRADEIRO_TIME = 3;
+const ASSASSINO = [0.15, 0.22, 0.3, 0.37, 0.45];
+/** Assassino: abate deixa sem poder ser alvo a partir deste degrau (6) */
+const ASSASSINO_INTOCAVEL = 4;
+const DEMONIACOS = [0.1, 0.15, 0.2, 0.25, 0.27, 0.3];
+const BIZARRA_MULT = [1, 1.5, 2, 2.5, 3, 3.5];
+/** Criaturinha Bizarra: dois bônus a partir deste degrau (7) */
+const BIZARRA_DOIS = 3;
+const FADINHAS = [0.04, 0.06, 0.08, 0.14, 0.18, 0.22];
+const SAFADA = [0.15, 0.21, 0.27, 0.4, 0.55, 0.7];
 /** Safada: segundos de encantado */
 const SAFADA_CHARME = 1.5;
-const ATIRADOR = [0.03, 0.06, 0.08];
-const ANJO = [0.4, 0.5, 0.8];
-const ROBO_ARMADURA = [0.25, 0.5, 0.9];
-const ROBO_ESCUDO = [0.1, 0.2, 0.35];
+const ATIRADOR = [0.03, 0.045, 0.06, 0.07, 0.09];
+const ANJO = [0.4, 0.45, 0.5, 0.65, 0.8];
+/** Anjo: todos renascem a partir deste degrau (4); antes, só o primeiro */
+const ANJO_TODOS = 2;
+const ROBO_ARMADURA = [0.25, 0.38, 0.5, 0.7, 0.9];
+const ROBO_ESCUDO = [0.1, 0.15, 0.2, 0.27, 0.35];
+/** Robô: imune a atordoar a partir deste degrau (6) */
+const ROBO_IMUNE = 4;
 // Dragão levou nerf a pedido do usuário (04/11/2026): era 15/30/50% e +10% de dano pro time
-const DRAGAO = [0.1, 0.2, 0.32];
-const TEMPORAIS = [0.06, 0.12, 0.2];
+const DRAGAO = [0.1, 0.15, 0.2, 0.26, 0.36];
+/** Dragão: +5% de dano pro time a partir deste degrau (7) */
+const DRAGAO_TIME = 4;
+const TEMPORAIS = [0.06, 0.09, 0.12, 0.18];
+/** Temporais: salva o aliado a partir deste degrau (5) */
+const TEMPORAIS_SALVA = 3;
 
 // aoMorrer roda nos traços do lado do morto e também nos do lado de quem matou: quem age em morte só confia no
 // degrau registrado no aoComecar do próprio lado.
@@ -71,62 +91,55 @@ const temporais = estadoDoLado(new WeakMap<Lutador, { salvou: boolean }>(), () =
 
 const classes: Traco[] = [
   {
-    id: 'tanque', nome: 'Tanque', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'tanque', nome: 'Tanque', tipo: 'classe', degraus: [2, 3, 4, 6, 8],
     descricao: 'Linha de frente que segura o dano pelo time: mais armadura e resistência.',
-    textos: [
-      '+20% de armadura e resistência.',
-      '+40% de armadura e resistência, e começam a luta com escudo de 15% da vida.',
-      '+70% de armadura e resistência, escudo de 15% da vida no começo, e no começo provocam os inimigos a até 2 casas por 3 s.',
-    ],
+    textos: TANQUE.map((v, i) => `+${pct(v)} de armadura e resistência` +
+      (i >= TANQUE_ESCUDO ? ', escudo de 15% da vida no começo' : '') +
+      (i >= TANQUE_PROVOCA ? ', e no começo provocam os inimigos a até 2 casas por 3 s' : '') + '.'),
     atributos: n => ({ armadura: deg(TANQUE, n), resist: deg(TANQUE, n) }),
     aoComecar(ctx, n, membros) {
-      if (n < 1) return;
+      if (n < TANQUE_ESCUDO) return;
       for (const m of membros) ctx.escudo(m, m.at.vida * 0.15, LUTA_TODA);
-      if (n < 2) return;
+      if (n < TANQUE_PROVOCA) return;
       for (const m of membros) for (const x of naArea(ctx, m, m, 2, 'inimigos')) ctx.status(m, x, 'provocado', 3);
     },
   },
   {
-    id: 'porradeiro', nome: 'Porradeiro', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'porradeiro', nome: 'Porradeiro', tipo: 'classe', degraus: [2, 3, 4, 6, 8, 10],
     descricao: 'Briga corpo a corpo: muita vida, e bate mais forte quando apanha.',
-    textos: [
-      '+15% de vida.',
-      '+30% de vida; ao cair abaixo de metade da vida, causam 20% a mais de dano até o fim da luta.',
-      '+50% de vida, o bônus abaixo de metade da vida, e o resto do time ganha +10% de vida.',
-    ],
+    textos: PORRADEIRO.map((v, i) => `+${pct(v)} de vida` +
+      (i >= PORRADEIRO_BRAVO ? '; ao cair abaixo de metade da vida, causam 20% a mais de dano até o fim da luta' : '') +
+      (i >= PORRADEIRO_TIME ? ', e o resto do time ganha +10% de vida' : '') + '.'),
     atributos: n => ({ vida: deg(PORRADEIRO, n) }),
     aoComecar(ctx, n, membros) {
-      if (n < 2 || !membros[0]) return;
+      if (n < PORRADEIRO_TIME || !membros[0]) return;
       for (const a of ctx.aliadosDe(membros[0], true)) if (!membros.includes(a)) buffVidaInicio(ctx, a, 0.1);
     },
     aoReceberDano(ctx, n, u) {
-      if (n < 1 || !u.vivo || porradeiroBravo.has(u) || fracVida(u) >= 0.5) return;
+      if (n < PORRADEIRO_BRAVO || !u.vivo || porradeiroBravo.has(u) || fracVida(u) >= 0.5) return;
       porradeiroBravo.add(u);
       ctx.texto(u, 'Bravo!');
       ctx.buff(u, 'dano', 0.2);
     },
   },
   {
-    id: 'assassino', nome: 'Assassino', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'assassino', nome: 'Assassino', tipo: 'classe', degraus: [2, 3, 4, 5, 6],
     descricao: 'No começo da luta saltam pra trás da linha inimiga e acertam críticos.',
-    textos: [
-      '+15% de chance e +15% de dano de crítico.',
-      '+30% de chance e +30% de dano de crítico.',
-      '+45% de chance e +45% de dano de crítico, e cada abate deixa o Assassino 1 s sem poder ser alvo.',
-    ],
+    textos: ASSASSINO.map((v, i) => `+${pct(v)} de chance e +${pct(v)} de dano de crítico` +
+      (i >= ASSASSINO_INTOCAVEL ? ', e cada abate deixa o Assassino 1 s sem poder ser alvo' : '') + '.'),
     atributos: n => ({ critChance: deg(ASSASSINO, n), critDano: deg(ASSASSINO, n) }),
     aoComecar(_ctx, n, membros) {
       for (const m of membros) nivelAssassino.set(m, n);
     },
     aoMorrer(ctx, _n, morto, abatedor) {
-      if (!abatedor?.vivo || abatedor.lado === morto.lado || (nivelAssassino.get(abatedor) ?? -1) < 2) return;
+      if (!abatedor?.vivo || abatedor.lado === morto.lado || (nivelAssassino.get(abatedor) ?? -1) < ASSASSINO_INTOCAVEL) return;
       if (assassinoAbateu.has(morto)) return;
       assassinoAbateu.add(morto);
       ctx.status(abatedor, abatedor, 'intocavel', 1);
     },
   },
   {
-    id: 'demoniacos', nome: 'Demoníacos', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'demoniacos', nome: 'Demoníacos', tipo: 'classe', degraus: [2, 3, 4, 6, 8, 10],
     descricao: 'Roubam vida, e a morte de um deixa os outros mais fortes.',
     textos: DEMONIACOS.map(v => `${pct(v)} de roubo de vida; quando um Demoníaco morre, os outros ganham +${pct(v)} de dano.`),
     atributos: n => ({ rouboVida: deg(DEMONIACOS, n) }),
@@ -143,21 +156,16 @@ const classes: Traco[] = [
     },
   },
   {
-    // 3/5/7 (pedido do usuário em 04/11/2026: nem todo traço deve começar no 2; é a maior classe do set)
-    id: 'criaturinha-bizarra', nome: 'Criaturinha Bizarra', tipo: 'classe', degraus: [3, 5, 7],
+    // começa no 3 (pedido do usuário em 04/11/2026: nem todo traço deve começar no 2; é uma das maiores classes do set)
+    id: 'criaturinha-bizarra', nome: 'Criaturinha Bizarra', tipo: 'classe', degraus: [3, 4, 5, 7, 9, 10],
     descricao: 'No começo da luta, cada uma ganha um bônus sorteado.',
-    textos: [
-      'No começo, cada uma ganha um bônus sorteado: escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura ' +
-      'de 2% da vida por segundo.',
-      'O bônus sorteado vale o dobro: escudo de 30%, +30% de vel. ataque, +30% de dano ou cura de 4% por segundo.',
-      `O bônus vale ${num(deg(BIZARRA_MULT, 2))} vezes (${pct(0.15 * deg(BIZARRA_MULT, 2))} de escudo, vel. ataque ou dano, ou ` +
-      `cura de ${pct(0.02 * deg(BIZARRA_MULT, 2))} por segundo), e cada uma ganha dois bônus diferentes.`,
-    ],
+    textos: BIZARRA_MULT.map((v, i) => `No começo, cada uma ganha ${i >= BIZARRA_DOIS ? 'dois bônus diferentes sorteados' : 'um bônus sorteado'}: ` +
+      `escudo de ${pct(0.15 * v)} da vida, +${pct(0.15 * v)} de vel. ataque, +${pct(0.15 * v)} de dano ou cura de ${pct(0.02 * v)} da vida por segundo.`),
     aoComecar(ctx, n, membros) {
       const mult = deg(BIZARRA_MULT, n);
       const opcoes = ['escudo', 'velAtaque', 'dano', 'cura'] as const;
       for (const m of membros) {
-        for (const b of ctx.sortear(opcoes, n >= 2 ? 2 : 1)) {
+        for (const b of ctx.sortear(opcoes, n >= BIZARRA_DOIS ? 2 : 1)) {
           if (b === 'escudo') ctx.escudo(m, m.at.vida * 0.15 * mult, LUTA_TODA);
           else if (b === 'cura') bizarraCura.set(m, 0.02 * mult);
           else ctx.buff(m, b, 0.15 * mult);
@@ -172,7 +180,7 @@ const classes: Traco[] = [
     },
   },
   {
-    id: 'fadinhas', nome: 'Fadinhas', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'fadinhas', nome: 'Fadinhas', tipo: 'classe', degraus: [2, 3, 4, 6, 8, 10],
     descricao: 'Curam o aliado que mais precisa.',
     textos: FADINHAS.map(v => `A cada 4 s, cada Fadinha cura o aliado com menos vida em ${pct(v)} da vida máxima dele.`),
     porSegundo(ctx, n, membros) {
@@ -187,8 +195,8 @@ const classes: Traco[] = [
     },
   },
   {
-    // 3/5/7 (pedido do usuário em 04/11/2026; a 2ª maior classe do set)
-    id: 'safada', nome: 'Safada', tipo: 'classe', degraus: [3, 5, 7],
+    // começa no 3 (pedido do usuário em 04/11/2026; a maior classe do set)
+    id: 'safada', nome: 'Safada', tipo: 'classe', degraus: [3, 4, 5, 7, 9, 10],
     descricao: 'Os ataques encantam o alvo.',
     textos: SAFADA.map(v => `Os ataques têm ${pct(v)} de chance de encantar o alvo por ${num(SAFADA_CHARME)} s (atordoado).`),
     aoAtacar(ctx, n, de, alvo) {
@@ -198,7 +206,7 @@ const classes: Traco[] = [
     },
   },
   {
-    id: 'atirador', nome: 'Atirador', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'atirador', nome: 'Atirador', tipo: 'classe', degraus: [2, 3, 4, 5, 7],
     descricao: 'Atiram de longe e cada vez mais rápido.',
     textos: ATIRADOR.map(v => `+1 de alcance; cada ataque dá +${pct(v)} de vel. ataque (até 15 vezes).`),
     atributos: () => ({ alcance: 1 }),
@@ -210,20 +218,18 @@ const classes: Traco[] = [
     },
   },
   {
-    id: 'anjo', nome: 'Anjo', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'anjo', nome: 'Anjo', tipo: 'classe', degraus: [2, 3, 4, 5, 6],
     descricao: 'Renascem depois de morrer.',
-    textos: [
-      `O primeiro Anjo que morrer renasce com ${pct(deg(ANJO, 0))} da vida.`,
-      `Todos os Anjos renascem uma vez com ${pct(deg(ANJO, 1))} da vida.`,
-      `Todos os Anjos renascem uma vez com ${pct(deg(ANJO, 2))} da vida.`,
-    ],
+    textos: ANJO.map((v, i) => (i >= ANJO_TODOS
+      ? `Todos os Anjos renascem uma vez com ${pct(v)} da vida.`
+      : `O primeiro Anjo que morrer renasce com ${pct(v)} da vida.`)),
     aoComecar(_ctx, n, membros) {
       const e = { nivel: n, usou: false };
       for (const m of membros) anjo.set(m, e);
     },
     aoMorrer(ctx, _n, morto) {
       const e = anjo.get(morto);
-      if (!e || anjoRenasceu.has(morto) || (e.nivel === 0 && e.usou)) return;
+      if (!e || anjoRenasceu.has(morto) || (e.nivel < ANJO_TODOS && e.usou)) return;
       e.usou = true;
       anjoRenasceu.add(morto);
       ctx.visual('luz', [morto], morto);
@@ -231,45 +237,34 @@ const classes: Traco[] = [
     },
   },
   {
-    id: 'robo', nome: 'Robô', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'robo', nome: 'Robô', tipo: 'classe', degraus: [2, 3, 4, 5, 6],
     descricao: 'Blindados: armadura e escudo no começo da luta.',
-    textos: [
-      '+25% de armadura e escudo de 10% da vida no começo.',
-      '+50% de armadura e escudo de 20% da vida no começo.',
-      '+90% de armadura e escudo de 35% da vida no começo, e imunes a atordoar nos primeiros 5 s.',
-    ],
+    textos: ROBO_ARMADURA.map((v, i) => `+${pct(v)} de armadura e escudo de ${pct(deg(ROBO_ESCUDO, i))} da vida no começo` +
+      (i >= ROBO_IMUNE ? ', e imunes a atordoar nos primeiros 5 s' : '') + '.'),
     atributos: n => ({ armadura: deg(ROBO_ARMADURA, n) }),
     aoComecar(ctx, n, membros) {
       for (const m of membros) {
         ctx.escudo(m, m.at.vida * deg(ROBO_ESCUDO, n), LUTA_TODA);
         // o motor ignora o status até esse segundo de luta (memoria['imune:<status>'])
-        if (n >= 2) m.memoria['imune:atordoado'] = ctx.tempo + 5;
+        if (n >= ROBO_IMUNE) m.memoria['imune:atordoado'] = ctx.tempo + 5;
       }
     },
   },
   {
-    id: 'dragao', nome: 'Dragão', tipo: 'classe', degraus: [2, 4, 6],
+    id: 'dragao', nome: 'Dragão', tipo: 'classe', degraus: [2, 3, 4, 5, 7],
     descricao: 'Mais vida e mais dano.',
-    textos: [
-      '+10% de vida e dano.',
-      '+20% de vida e dano.',
-      '+32% de vida e dano, e o time inteiro ganha +5% de dano.',
-    ],
+    textos: DRAGAO.map((v, i) => `+${pct(v)} de vida e dano` + (i >= DRAGAO_TIME ? ', e o time inteiro ganha +5% de dano' : '') + '.'),
     atributos: n => ({ vida: deg(DRAGAO, n), dano: deg(DRAGAO, n) }),
     aoComecar(ctx, n, membros) {
-      if (n < 2 || !membros[0]) return;
+      if (n < DRAGAO_TIME || !membros[0]) return;
       for (const a of ctx.aliadosDe(membros[0], true)) ctx.buff(a, 'dano', 0.05);
     },
   },
   {
-    id: 'temporais', nome: 'Temporais', tipo: 'classe', degraus: [2, 4, 6], alcance: 'time',
+    id: 'temporais', nome: 'Temporais', tipo: 'classe', degraus: [2, 3, 4, 5], alcance: 'time',
     descricao: 'Aceleram o time inteiro com o passar da luta.',
-    textos: [
-      'A cada 5 s, o time ganha +6% de vel. ataque até o fim da luta (acumula).',
-      'A cada 5 s, o time ganha +12% de vel. ataque até o fim da luta (acumula).',
-      'A cada 5 s, o time ganha +20% de vel. ataque (acumula); uma vez por luta, o aliado que cair abaixo de 20% da ' +
-      'vida cura 40% dela.',
-    ],
+    textos: TEMPORAIS.map((v, i) => `A cada 5 s, o time ganha +${pct(v)} de vel. ataque até o fim da luta (acumula)` +
+      (i >= TEMPORAIS_SALVA ? '; uma vez por luta, o aliado que cair abaixo de 20% da vida cura 40% dela' : '') + '.'),
     aoComecar(_ctx, _n, membros) {
       temporais.registrar(membros);
     },
@@ -278,7 +273,7 @@ const classes: Traco[] = [
       for (const m of membros) if (m.vivo) ctx.buff(m, 'velAtaque', deg(TEMPORAIS, n));
     },
     aoReceberDano(ctx, n, u) {
-      if (n < 2 || !u.vivo || fracVida(u) >= 0.2) return;
+      if (n < TEMPORAIS_SALVA || !u.vivo || fracVida(u) >= 0.2) return;
       const e = temporais.de(u);
       if (e.salvou) return;
       e.salvou = true;
@@ -289,19 +284,21 @@ const classes: Traco[] = [
 ];
 
 // ===================================================================================================
-// Elementos (2/3/4)
+// Elementos: os degraus 2/3/4 de sempre, e os maiores (Fogo, Água, Vento, Raio e Planta) têm mais gente pra ir além.
+// Os efeitos do 4 continuam no 4 (degrau 2), que aqui chama ELEMENTO_4.
 // ===================================================================================================
 
-const FOGO = [0.01, 0.02, 0.03];
-const AGUA = [0.015, 0.03, 0.045];
+const ELEMENTO_4 = 2;
+const FOGO = [0.01, 0.02, 0.03, 0.035, 0.04];
+const AGUA = [0.015, 0.03, 0.045, 0.055, 0.065];
 const TERRA = [0.3, 0.6, 1];
 /** Terra (4): segundos entre os tremores */
 const TERRA_TREMOR = 4;
-const VENTO = [0.15, 0.3, 0.45];
-const VENTO_DESVIO = [0, 0.1, 0.15];
-const RAIO = [1, 2, 3];
+const VENTO = [0.15, 0.3, 0.45, 0.55, 0.65];
+const VENTO_DESVIO = [0, 0.1, 0.15, 0.18, 0.2];
+const RAIO = [1, 2, 3, 4];
 const GELO = [0.15, 0.25, 0.35];
-const PLANTA = [0.02, 0.035, 0.045];
+const PLANTA = [0.02, 0.035, 0.045, 0.055];
 
 const fogo = estadoDoLado(new WeakMap<Lutador, Map<Lutador, { ate: number; de: Lutador }>>(), () => new Map());
 const raioAtaques = new WeakMap<Lutador, number>();
@@ -310,24 +307,20 @@ const planta = estadoDoLado(new WeakMap<Lutador, WeakSet<Lutador>>(), () => new 
 
 const elementos: Traco[] = [
   {
-    id: 'fogo', nome: 'Fogo', tipo: 'elemento', degraus: [2, 3, 4],
+    id: 'fogo', nome: 'Fogo', tipo: 'elemento', degraus: [2, 3, 4, 5, 6],
     descricao: 'Os ataques queimam: o alvo perde vida aos poucos e recebe menos cura.',
-    textos: [
-      'Os ataques queimam o alvo por 3 s: 1% da vida máxima por segundo, e ele recebe 33% menos cura.',
-      'Os ataques queimam o alvo por 3 s: 2% da vida máxima por segundo, e ele recebe 33% menos cura.',
-      'Os ataques queimam o alvo por 3 s: 3% da vida máxima por segundo, e ele recebe 33% menos cura. Quem morre ' +
-      'queimando passa o fogo pro inimigo mais perto.',
-    ],
+    textos: FOGO.map((v, i) => `Os ataques queimam o alvo por 3 s: ${pct(v)} da vida máxima por segundo, e ele recebe 33% menos cura.` +
+      (i >= ELEMENTO_4 ? ' Quem morre queimando passa o fogo pro inimigo mais perto.' : '')),
     aoComecar(_ctx, _n, membros) {
       fogo.registrar(membros);
     },
     aoAtacar(ctx, n, de, alvo) {
       if (!alvo.vivo) return;
       ctx.status(de, alvo, 'queimando', 3, deg(FOGO, n));
-      if (n >= 2) fogo.de(de).set(alvo, { ate: ctx.tempo + 3, de });
+      if (n >= ELEMENTO_4) fogo.de(de).set(alvo, { ate: ctx.tempo + 3, de });
     },
     porSegundo(ctx, n, membros) {
-      if (n < 2) return;
+      if (n < ELEMENTO_4) return;
       for (const queimados of new Set(membros.map(m => fogo.de(m)))) {
         for (const [x, q] of [...queimados]) {
           if (x.vivo) {
@@ -346,12 +339,12 @@ const elementos: Traco[] = [
     },
   },
   {
-    id: 'agua', nome: 'Água', tipo: 'elemento', degraus: [2, 3, 4],
+    id: 'agua', nome: 'Água', tipo: 'elemento', degraus: [2, 3, 4, 5, 6],
     descricao: 'Recuperam vida durante a luta.',
     textos: AGUA.map((v, i) => `Recuperam ${pct(v)} da vida máxima por segundo` +
-      (i >= 2 ? ', e a cada 4 s se livram de queimadura, lentidão e outros efeitos ruins.' : '.')),
+      (i >= ELEMENTO_4 ? ', e a cada 4 s se livram de queimadura, lentidão e outros efeitos ruins.' : '.')),
     porSegundo(ctx, n, membros) {
-      const limpar = n >= 2 && aCadaS(ctx, 4);
+      const limpar = n >= ELEMENTO_4 && aCadaS(ctx, 4);
       for (const m of membros) {
         if (!m.vivo) continue;
         ctx.curar(m, m, m.at.vida * deg(AGUA, n));
@@ -377,7 +370,7 @@ const elementos: Traco[] = [
     },
   },
   {
-    id: 'vento', nome: 'Vento', tipo: 'elemento', degraus: [2, 3, 4],
+    id: 'vento', nome: 'Vento', tipo: 'elemento', degraus: [2, 3, 4, 5, 6],
     descricao: 'Rápidos e difíceis de acertar.',
     textos: VENTO.map((v, i) => `+${pct(v)} de vel. ataque` +
       (deg(VENTO_DESVIO, i) > 0 ? `, e desviam de ${pct(deg(VENTO_DESVIO, i))} dos ataques.` : '.')),
@@ -388,13 +381,10 @@ const elementos: Traco[] = [
     },
   },
   {
-    id: 'raio', nome: 'Raio', tipo: 'elemento', degraus: [2, 3, 4],
+    id: 'raio', nome: 'Raio', tipo: 'elemento', degraus: [2, 3, 4, 5],
     descricao: 'A cada 3 ataques, um raio pula do alvo pra outros inimigos.',
-    textos: [
-      'A cada 3 ataques, um raio pula do alvo pra 1 inimigo perto dele (60% do dano de ataque).',
-      'A cada 3 ataques, um raio pula do alvo pra 2 inimigos perto dele (60% do dano de ataque).',
-      'A cada 3 ataques, um raio pula do alvo pra 3 inimigos perto dele (60% do dano de ataque) e atordoa por 0,5 s.',
-    ],
+    textos: RAIO.map((v, i) => `A cada 3 ataques, um raio pula do alvo pra ${v} inimigo${v > 1 ? 's' : ''} perto dele (60% do dano de ataque)` +
+      (i >= ELEMENTO_4 ? ' e atordoa por 0,5 s' : '') + '.'),
     aoAtacar(ctx, n, de, alvo) {
       const k = (raioAtaques.get(de) ?? 0) + 1;
       raioAtaques.set(de, k % 3);
@@ -411,7 +401,7 @@ const elementos: Traco[] = [
       ctx.visual('raio', [alvo, ...pulos], de);
       for (const x of pulos) {
         ctx.dano(de, x, 0.6, { tipo: 'magico', critico: 'nunca' });
-        if (n >= 2 && x.vivo) ctx.status(de, x, 'atordoado', 0.5);
+        if (n >= ELEMENTO_4 && x.vivo) ctx.status(de, x, 'atordoado', 0.5);
       }
     },
   },
@@ -437,11 +427,11 @@ const elementos: Traco[] = [
     },
   },
   {
-    id: 'planta', nome: 'Planta', tipo: 'elemento', degraus: [2, 3, 4],
+    id: 'planta', nome: 'Planta', tipo: 'elemento', degraus: [2, 3, 4, 5],
     descricao: 'O primeiro ataque em cada inimigo planta uma semente que suga a vida dele.',
     textos: PLANTA.map((v, i) => `O 1º ataque do time em cada inimigo planta uma semente que suga ${pct(v)} da vida ` +
       'máxima dele por segundo, por 4 s' +
-      (i >= 2 ? '; a cura vai pra quem plantou e pro aliado mais perto dele.' : ', e cura quem plantou.')),
+      (i >= ELEMENTO_4 ? '; a cura vai pra quem plantou e pro aliado mais perto dele.' : ', e cura quem plantou.')),
     aoComecar(_ctx, _n, membros) {
       planta.registrar(membros);
     },
@@ -457,7 +447,7 @@ const elementos: Traco[] = [
           const d = ctx.danoFixo(de, alvo, alvo.at.vida * fracao, { tipo: 'verdadeiro', critico: 'nunca' });
           if (d <= 0) return;
           if (de.vivo) ctx.curar(de, de, d);
-          if (n < 2) return;
+          if (n < ELEMENTO_4) return;
           const vizinho = maisPertoEm(ctx, de, ctx.aliadosDe(de, false).filter(a => a.vivo));
           if (vizinho) ctx.curar(de, vizinho, d);
         });

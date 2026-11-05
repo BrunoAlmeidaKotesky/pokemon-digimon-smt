@@ -182,11 +182,13 @@ describe('traços', () => {
       pokemon: [2, 4, 6, 8, 9, 10], digimon: [2, 3, 4, 5, 6], smt: [2, 3, 4, 6, 8], persona: [1, 2, 3, 4, 5],
       jojo: [2, 3, 4, 5, 6, 8], ygo: [2, 3, 5, 7, 9, 10], lol: [2, 3, 5, 7, 9, 10], overwatch: [2, 3, 4, 5, 7],
       deadlock: [2, 3, 4, 5, 6], sujimon: [2, 3, 4, 5, 6],
+      safada: [3, 4, 5, 7, 9, 10], 'criaturinha-bizarra': [3, 4, 5, 7, 9, 10], porradeiro: [2, 3, 4, 6, 8, 10],
+      fadinhas: [2, 3, 4, 6, 8, 10], demoniacos: [2, 3, 4, 6, 8, 10], tanque: [2, 3, 4, 6, 8], atirador: [2, 3, 4, 5, 7],
+      dragao: [2, 3, 4, 5, 7], robo: [2, 3, 4, 5, 6], assassino: [2, 3, 4, 5, 6], anjo: [2, 3, 4, 5, 6], temporais: [2, 3, 4, 5],
+      fogo: [2, 3, 4, 5, 6], agua: [2, 3, 4, 5, 6], vento: [2, 3, 4, 5, 6], planta: [2, 3, 4, 5], raio: [2, 3, 4, 5],
+      terra: [2, 3, 4], gelo: [2, 3, 4],
     };
-    for (const o of ORIGENS) expect(TRACOS[o]!.degraus, o).toEqual(escadas[o]);
-    const comeca3 = ['criaturinha-bizarra', 'safada'];
-    for (const c of CLASSES) expect(TRACOS[c]!.degraus, c).toEqual(comeca3.includes(c) ? [3, 5, 7] : [2, 4, 6]);
-    for (const e of ELEMENTOS) expect(TRACOS[e]!.degraus, e).toEqual([2, 3, 4]);
+    for (const id of [...ORIGENS, ...CLASSES, ...ELEMENTOS]) expect(TRACOS[id]!.degraus, id).toEqual(escadas[id]);
     for (const o of ORIGENS) expect(TRACOS[o]!.tipo).toBe('origem');
     for (const c of CLASSES) expect(TRACOS[c]!.tipo).toBe('classe');
     for (const e of ELEMENTOS) expect(TRACOS[e]!.tipo).toBe('elemento');

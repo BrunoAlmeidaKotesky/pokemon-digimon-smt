@@ -116,34 +116,59 @@ desses).
 ## Traços (src/autobatalha/conteudo/tracos.ts)
 
 Conta campeões diferentes no tabuleiro (duas cópias do mesmo campeão contam uma vez), pela forma atual. Únicos não é
-traço. Escadas das classes 2/4/6 (Criaturinha Bizarra e Safada, as duas maiores, 3/5/7: pedido do usuário pra nem todo
-traço começar no 2) e dos elementos 2/3/4. As origens têm 5 degraus (6 nas maiores), pedido do usuário em
-04/11/2026, com as escadas da conta (docs/tft/matematica/resultado.md, seção 6b); o Pokémon, grande demais pra se
-igualar com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
+traço. **Quantos degraus cada traço tem sai do tamanho dele** (pedido do usuário em 05/11/2026: Fogo com 2/3/4 tendo muito
+mais gente): 3 até 13 campeões, 4 de 14 a 17, 5 de 18 a 29 e 6 de 30 em diante (`degrausPorTamanho`; contas e custo de
+cada degrau em docs/tft/matematica/resultado.md, seção 6c). A escada guarda os degraus de antes quando dá, e todo último
+degrau cabe no tabuleiro: com limite = nível, o degrau b fecha no nível b (o mais alto é 10).
+Criaturinha Bizarra e Safada começam no 3 (pedido do usuário pra nem todo traço começar no 2). As origens têm 5 degraus (6
+nas maiores), pedido do usuário em 04/11/2026, com as escadas da conta (seção 6b); o Pokémon, grande demais pra se igualar
+com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
+
+| Traço | Campeões | Antes | Agora |
+|---|---|---|---|
+| Safada | 37 | 3/5/7 | 3/4/5/7/9/10 |
+| Porradeiro | 35 | 2/4/6 | 2/3/4/6/8/10 |
+| Criaturinha Bizarra | 34 | 3/5/7 | 3/4/5/7/9/10 |
+| Fadinhas | 34 | 2/4/6 | 2/3/4/6/8/10 |
+| Demoníacos | 32 | 2/4/6 | 2/3/4/6/8/10 |
+| Tanque | 27 | 2/4/6 | 2/3/4/6/8 |
+| Atirador | 24 | 2/4/6 | 2/3/4/5/7 |
+| Dragão | 24 | 2/4/6 | 2/3/4/5/7 |
+| Robô | 23 | 2/4/6 | 2/3/4/5/6 |
+| Assassino | 20 | 2/4/6 | 2/3/4/5/6 |
+| Anjo | 20 | 2/4/6 | 2/3/4/5/6 |
+| Fogo | 20 | 2/3/4 | 2/3/4/5/6 |
+| Vento | 19 | 2/3/4 | 2/3/4/5/6 |
+| Água | 18 | 2/3/4 | 2/3/4/5/6 |
+| Temporais | 17 | 2/4/6 | 2/3/4/5 |
+| Planta | 16 | 2/3/4 | 2/3/4/5 |
+| Raio | 15 | 2/3/4 | 2/3/4/5 |
+| Terra | 11 | 2/3/4 | 2/3/4 |
+| Gelo | 11 | 2/3/4 | 2/3/4 |
 
 **Classes**
 
 | Classe | Efeito |
 |---|---|
-| Tanque | (2) +20% de armadura e resistência; (4) +40%, e começam com escudo de 15% da vida; (6) +70%, e no começo provocam os inimigos em volta por 3 s |
-| Porradeiro | (2) +15% de vida; (4) +30%, e abaixo de metade da vida causam 20% a mais; (6) +50%, e o resto do time ganha +10% de vida |
-| Assassino | saltam pra trás da linha inimiga. (2) +15% de chance e +15% de dano de crítico; (4) +30% e +30%; (6) +45% e +45%, e cada abate deixa 1 s sem poder ser alvo |
-| Demoníacos | (2) 10% de roubo de vida, e quando um Demoníaco morre os outros ganham 10% de dano; (4) 20% e 20%; (6) 25% e 25% |
-| Criaturinha Bizarra (3/5/7) | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo); (5) o dobro; (7) 2,5 vezes e dois bônus |
-| Fadinhas | a cada 4 s, cada Fadinha cura o aliado com menos vida em 4 / 8 / 14% da vida máxima dele |
-| Safada (3/5/7) | os ataques têm 15 / 27 / 40% de chance de encantar o alvo por 1,5 s (atordoado) |
-| Atirador | +1 de alcance; cada ataque dá +3 / 6 / 8% de vel. ataque (até 15 vezes) |
-| Anjo | (2) o primeiro Anjo que morrer renasce com 40% da vida; (4) todos renascem uma vez com 50%; (6) com 80% |
-| Robô | +25 / 50 / 90% de armadura e escudo de 10 / 20 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |
-| Dragão | +10 / 20 / 32% de vida e dano; (6) o time inteiro ganha +5% de dano |
-| Temporais | a cada 5 s, o time ganha +6 / 12 / 20% de vel. ataque até o fim da luta (acumula); (6) uma vez por luta, o aliado que cairia abaixo de 20% da vida cura 40% |
-| Fogo (2/3/4) | ataques queimam (1 / 2 / 3% da vida máxima por s, 3 s, e 33% menos cura); (4) quem morre queimando passa o fogo pro inimigo mais perto |
-| Água (2/3/4) | recuperam 1,5 / 3 / 4,5% da vida por segundo; (4) a cada 4 s se livram dos efeitos ruins |
+| Tanque (2/3/4/6/8) | +20 / 30 / 40 / 70 / 100% de armadura e resistência; (4) começam com escudo de 15% da vida; (6) no começo provocam os inimigos em volta por 3 s |
+| Porradeiro (2/3/4/6/8/10) | +15 / 22 / 30 / 50 / 65 / 80% de vida; (4) abaixo de metade da vida causam 20% a mais; (6) o resto do time ganha +10% de vida |
+| Assassino (2/3/4/5/6) | saltam pra trás da linha inimiga. +15 / 22 / 30 / 37 / 45% de chance e de dano de crítico; (6) cada abate deixa 1 s sem poder ser alvo |
+| Demoníacos (2/3/4/6/8/10) | 10 / 15 / 20 / 25 / 27 / 30% de roubo de vida, e quando um Demoníaco morre os outros ganham o mesmo em dano |
+| Criaturinha Bizarra (3/4/5/7/9/10) | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo), que vale 1 / 1,5 / 2 / 2,5 / 3 / 3,5 vezes isso; (7) dois bônus |
+| Fadinhas (2/3/4/6/8/10) | a cada 4 s, cada Fadinha cura o aliado com menos vida em 4 / 6 / 8 / 14 / 18 / 22% da vida máxima dele |
+| Safada (3/4/5/7/9/10) | os ataques têm 15 / 21 / 27 / 40 / 55 / 70% de chance de encantar o alvo por 1,5 s (atordoado) |
+| Atirador (2/3/4/5/7) | +1 de alcance; cada ataque dá +3 / 4,5 / 6 / 7 / 9% de vel. ataque (até 15 vezes) |
+| Anjo (2/3/4/5/6) | (2) o primeiro Anjo que morrer renasce com 40% da vida; (3) com 45%; (4) todos renascem uma vez com 50%; (5) 65%; (6) 80% |
+| Robô (2/3/4/5/6) | +25 / 38 / 50 / 70 / 90% de armadura e escudo de 10 / 15 / 20 / 27 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |
+| Dragão (2/3/4/5/7) | +10 / 15 / 20 / 26 / 36% de vida e dano; (7) o time inteiro ganha +5% de dano |
+| Temporais (2/3/4/5) | a cada 5 s, o time ganha +6 / 9 / 12 / 18% de vel. ataque até o fim da luta (acumula); (5) uma vez por luta, o aliado que cairia abaixo de 20% da vida cura 40% |
+| Fogo (2/3/4/5/6) | ataques queimam (1 / 2 / 3 / 3,5 / 4% da vida máxima por s, 3 s, e 33% menos cura); (4) quem morre queimando passa o fogo pro inimigo mais perto |
+| Água (2/3/4/5/6) | recuperam 1,5 / 3 / 4,5 / 5,5 / 6,5% da vida por segundo; (4) a cada 4 s se livram dos efeitos ruins |
 | Terra (2/3/4) | +30 / 60 / 100% de armadura e resistência; (4) a cada 4 s um tremor atordoa por 0,5 s os inimigos em volta |
-| Vento (2/3/4) | +15 / 30 / 45% de vel. ataque; (3) desviam de 10% dos ataques; (4) 15% |
-| Raio (2/3/4) | a cada 3 ataques, um raio pula do alvo pra 1 / 2 / 3 inimigos (60% do dano); (4) atordoa 0,5 s |
+| Vento (2/3/4/5/6) | +15 / 30 / 45 / 55 / 65% de vel. ataque; desviam de 0 / 10 / 15 / 18 / 20% dos ataques |
+| Raio (2/3/4/5) | a cada 3 ataques, um raio pula do alvo pra 1 / 2 / 3 / 4 inimigos (60% do dano); (4) atordoa 0,5 s |
 | Gelo (2/3/4) | o alvo fica 15 / 25 / 35% mais lento; (4) o 5º ataque seguido no mesmo alvo congela 1 s |
-| Planta (2/3/4) | o 1º ataque em cada inimigo planta uma semente que suga 2 / 3,5 / 4,5% da vida dele por segundo, por 4 s, e cura quem plantou; (4) a cura vai também pro aliado mais perto |
+| Planta (2/3/4/5) | o 1º ataque em cada inimigo planta uma semente que suga 2 / 3,5 / 4,5 / 5,5% da vida dele por segundo, por 4 s, e cura quem plantou; (4) a cura vai também pro aliado mais perto |
 
 **Origens**
 

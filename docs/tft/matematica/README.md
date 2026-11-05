@@ -77,9 +77,13 @@ o caminho em `EXPORTACAO` no `analise.mjs`.
     campeões = tamanho do custo), e o teste confere. O critério não cobra nada por acelerar: quanto a loja pode
     acelerar depende da economia, que ainda não tem conta.
 
-11. **Stands e o limite do tabuleiro.** Cada Stand precisa de um usuário de outra origem, e só `livres` deles ficam fora
+11. **Degraus pelo tamanho.** Quantos degraus um traço tem sai do tamanho (`degrausPorTamanho`): 3 até 13 campeões, 4 de 14
+    a 17, 5 de 18 a 29, 6 de 30 em diante, a régua das origens. `conferirEscada` compara o custo de cada degrau com a
+    escada de referência do mesmo número de degraus e diz se o último cabe (com limite = nível, o degrau b fecha no nível
+    b).
+12. **Stands e o limite do tabuleiro.** Cada Stand precisa de um usuário de outra origem, e só `livres` deles ficam fora
     da vaga. Com s Stands e h usuários, s ≤ h e h + max(0, s − livres) ≤ limite: cabem ⌊(limite + livres)/2⌋. Em campo
-    ficam o limite e os Stands fora da vaga. Com isso dá pra ver em que nível cada degrau do JoJo fecha.
+    ficam o limite e os Stands fora da vaga. Com isso dá pra ver em que nível cada degrau do JoJo fecha (seção 9).
 
 ## Premissas (mudar alguma muda o resultado)
 
@@ -87,7 +91,7 @@ o caminho em `EXPORTACAO` no `analise.mjs`.
   fechar pesa mais nos traços de campeões caros. Nos desenhos de loja (conta 10), os custos são sorteados, a chance
   do custo é 55% (o custo 1 no nível 4 do TFT, só de referência de mecânica) e as cópias são infinitas.
 - **JoJo:** os Stands entram como campeões. Eles entram presos a outra unidade: se não forem vendidos na loja como
-  campeão, saem da conta. Com um Stand fora da vaga a cada 3 níveis, cabem até 8 no nível 12 (conta 11).
+  campeão, saem da conta. Com um Stand fora da vaga a cada 3 níveis, cabem até 8 no nível 12 (conta 12).
 - **Yu-Gi-Oh!:** as cartas não têm linha; sobem de estrela, como os campeões do LoL. Franquia sem ninguém marcado
   entraria com o tamanho de uma origem média (campeões ÷ franquias).
 - **Elementos:** Luz e Trevas ficaram de fora (o usuário não quer). Únicos não conta como classe. Com a escada própria,

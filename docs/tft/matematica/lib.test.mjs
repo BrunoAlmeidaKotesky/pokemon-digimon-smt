@@ -1,9 +1,30 @@
 import { describe, expect, it } from 'vitest';
 import {
-  aleatorio, amostra, campeoesComPeso, chanceAoMenos, comb, custoFechar, emCampo, encher, escadaEquivalente, faixa, mecanicas, media, mediana,
-  melhorDesenho, nivelDosStands, porCusto, resumoSet, rolagensEsperadas, simularFechar, simularLoja, simularRolagens, standsQueCabem,
+  aleatorio, amostra, campeoesComPeso, chanceAoMenos, comb, conferirEscada, custoFechar, degrausPorTamanho, emCampo, encher, ESCADA_DE_REFERENCIA,
+  escadaEquivalente, faixa, mecanicas, media, mediana, melhorDesenho, nivelDosStands, porCusto, resumoSet, rolagensEsperadas, simularFechar, simularLoja, simularRolagens, standsQueCabem,
   tabuleiroAleatorio, tracosDoSet,
 } from './lib.mjs';
+
+describe('degraus pelo tamanho do traço', () => {
+  it('traço pequeno fica curto, grande vai até 6, e nunca diminui com o tamanho', () => {
+    expect([11, 13, 14, 17, 18, 29, 30, 55].map(degrausPorTamanho)).toEqual([3, 3, 4, 4, 5, 5, 6, 6]);
+    for (let n = 1; n < 60; n++) expect(degrausPorTamanho(n + 1)).toBeGreaterThanOrEqual(degrausPorTamanho(n));
+  });
+  it('referência: um traço do tamanho certo com a escada dela custa igual, e cada uma tem o número certo de degraus', () => {
+    for (const [k, ref] of Object.entries(ESCADA_DE_REFERENCIA)) {
+      expect(ref).toHaveLength(Number(k));
+      const c = conferirEscada(ref, 27, 27, 270, 12);
+      for (const r of c.razoes) expect(r).toBeCloseTo(1, 10);
+      expect(c.alcancavel).toBe(true);
+      expect(c.lojasDoTopo).toBeCloseTo(custoFechar(ref.at(-1), 27, 270), 10);
+    }
+  });
+  it('último degrau precisa caber no tabuleiro e no traço', () => {
+    expect(conferirEscada([2, 3, 4], 11, 27, 270, 12).alcancavel).toBe(true);
+    expect(conferirEscada([2, 4, 13], 20, 27, 270, 12).alcancavel).toBe(false);
+    expect(conferirEscada([2, 4, 6], 5, 27, 270, 12).alcancavel).toBe(false);
+  });
+});
 
 describe('Stands e o limite do tabuleiro', () => {
   it('quantos cabem: um usuário por Stand, e quem passa dos livres gasta vaga', () => {

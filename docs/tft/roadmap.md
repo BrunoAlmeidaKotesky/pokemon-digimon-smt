@@ -124,6 +124,15 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   punha o Pokémon em 73% no 10 ★3. **Efeito colateral:** estrela vale mais que custo nas linhas: ★2 de custo 3 contra
   ★1 de custo 5 foi de 71% pra 78% (alvo 35% a 65%).
 
+- **Mais degraus nos traços:** **[você] Fogo com 2/3/4 tendo muito mais gente.** O número de degraus agora sai do tamanho
+  do traço, com a régua das origens: 3 até 13 campeões, 4 de 14 a 17, 5 de 18 a 29, 6 de 30 em diante. Tabela no design
+  (seção Traços) e contas em resultado.md, seção 6c. Decisões minhas: as escadas guardam os degraus de antes quando dá,
+  e nesses degraus o efeito é o mesmo (Tanque continua +22% no 6, medido), então quem já fechava continua igual; só
+  Criaturinha Bizarra e Safada começam no 3; Terra e Gelo (11) ficam em 2/3/4; os efeitos extras ficaram na mesma
+  contagem de antes, menos Dragão e Atirador (topo 7 em vez de 6) e Temporais (topo 5 em vez de 6, o traço só tem 17). O
+  degrau mais alto é 10, e todo último degrau cabe (limite = nível). Os números dos degraus novos são meus: interpolei
+  entre os de antes e estiquei o topo, conferindo no playtest.
+
 ## Pra você decidir
 
 - **Visual da tela nova:** tons do gramado, metade do adversário em oliva, cores das classes, ícones de perto/longe e
@@ -173,7 +182,8 @@ está fora no fim de [matematica/equilibrio.md](matematica/equilibrio.md).
 - A linha do Roggenrola está no plano mas nenhuma forma está marcada: ficou fora.
 - Linhas marcadas como não confirmadas no Catálogo (todas as da Persona e do Sujimon, Zygarde) entraram como estão.
 - Classes fora da faixa de tamanho (resultado.md, seção 3): Temporais (faltam 6), Anjo (faltam 3), Assassino
-  (faltam 3), Safada (sobram 4), Porradeiro (sobram 2). Dá pra mexer no Catálogo.
+  (faltam 3), Safada (sobram 4), Porradeiro (sobram 2), Criaturinha Bizarra e Fadinhas (sobra 1 cada). Dá pra mexer no
+  Catálogo.
 - Online: sem troca de anfitrião (se ele sair, a sala acaba) e sem espectador (quem chega com a partida rolando espera
   a próxima). Com PeerJS de verdade, testado só no mesmo computador (dois navegadores isolados): falta testar entre
   redes diferentes.

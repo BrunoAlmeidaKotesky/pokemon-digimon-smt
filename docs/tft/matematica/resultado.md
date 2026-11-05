@@ -135,6 +135,46 @@ A Autobatalha usa mais degraus nas origens. Referência: uma origem média (27,0
 | Deadlock | 21 | 2/3/4/6/8 | 2/3/4/5/6 | 1,29× · 1,30× · 1,31× · 1,08× · 0,95× |
 | Sujimon | 20 | 2/3/4/6/8 | 2/3/4/5/6 | 1,36× · 1,37× · 1,38× · 1,14× · 1,01× |
 
+### 6c. Classes e elementos com degraus pelo tamanho (Autobatalha)
+Quantos degraus cada traço tem sai do tamanho dele, com a régua das origens: 3 até 13 campeões, 4 de 14 a 17, 5 de 18 a 29 e 6 de 30 em diante. Traço pequeno continua curto. A escada guarda os degraus de antes quando dá (quem já fecha 2/4/6 continua fechando), e Criaturinha Bizarra e Safada continuam começando no 3. "Custo" compara cada degrau com a referência do mesmo número de degraus num traço do tamanho certo (27,0 campeões; 1 = igual). Com limite = nível, o degrau b fecha no nível b: o último tem de caber no nível 12 e no traço.
+
+| Traço | Campeões | Degraus pela conta | Escada antes | Escada agora | Custo de cada degrau | Lojas pro último | Último cabe? |
+|---|---|---|---|---|---|---|---|
+| Safada | 37 | 6 | 3/5/7 | 3/4/5/7/9/10 | 1,10× · 0,98× · 0,91× · 0,84× · 0,80× · 0,69× | 16,7 | sim (nível 10) |
+| Criaturinha Bizarra | 34 | 6 | 3/5/7 | 3/4/5/7/9/10 | 1,20× · 1,07× · 1,00× · 0,92× · 0,88× · 0,76× | 18,5 | sim (nível 10) |
+| Porradeiro | 35 | 6 | 2/4/6 | 2/3/4/6/8/10 | 0,77× · 0,76× · 0,76× · 0,75× · 0,74× · 0,73× | 17,9 | sim (nível 10) |
+| Fadinhas | 34 | 6 | 2/4/6 | 2/3/4/6/8/10 | 0,79× · 0,79× · 0,78× · 0,78× · 0,77× · 0,76× | 18,5 | sim (nível 10) |
+| Demoníacos | 32 | 6 | 2/4/6 | 2/3/4/6/8/10 | 0,84× · 0,84× · 0,84× · 0,83× · 0,82× · 0,81× | 19,9 | sim (nível 10) |
+| Tanque | 27 | 5 | 2/4/6 | 2/3/4/6/8 | 1,00× · 1,00× · 1,00× · 1,00× · 1,00× | 18,6 | sim (nível 8) |
+| Atirador | 24 | 5 | 2/4/6 | 2/3/4/5/7 | 1,13× · 1,13× · 1,13× · 0,93× · 0,98× | 18,2 | sim (nível 7) |
+| Dragão | 24 | 5 | 2/4/6 | 2/3/4/5/7 | 1,13× · 1,13× · 1,13× · 0,93× · 0,98× | 18,2 | sim (nível 7) |
+| Robô | 23 | 5 | 2/4/6 | 2/3/4/5/6 | 1,18× · 1,18× · 1,19× · 0,97× · 0,86× | 15,9 | sim (nível 6) |
+| Assassino | 20 | 5 | 2/4/6 | 2/3/4/5/6 | 1,36× · 1,37× · 1,38× · 1,14× · 1,01× | 18,7 | sim (nível 6) |
+| Anjo | 20 | 5 | 2/4/6 | 2/3/4/5/6 | 1,36× · 1,37× · 1,38× · 1,14× · 1,01× | 18,7 | sim (nível 6) |
+| Temporais | 17 | 4 | 2/4/6 | 2/3/4/5 | 1,61× · 1,63× · 1,65× · 1,37× | 18,2 | sim (nível 5) |
+| Fogo | 20 | 5 | 2/3/4 | 2/3/4/5/6 | 1,36× · 1,37× · 1,38× · 1,14× · 1,01× | 18,7 | sim (nível 6) |
+| Vento | 19 | 5 | 2/3/4 | 2/3/4/5/6 | 1,43× · 1,45× · 1,46× · 1,20× · 1,07× | 19,9 | sim (nível 6) |
+| Água | 18 | 5 | 2/3/4 | 2/3/4/5/6 | 1,51× · 1,53× · 1,55× · 1,28× · 1,14× | 21,2 | sim (nível 6) |
+| Planta | 16 | 4 | 2/3/4 | 2/3/4/5 | 1,71× · 1,74× · 1,77× · 1,47× | 19,5 | sim (nível 5) |
+| Raio | 15 | 4 | 2/3/4 | 2/3/4/5 | 1,83× · 1,86× · 1,90× · 1,58× | 21,0 | sim (nível 5) |
+| Terra | 11 | 3 | 2/3/4 | 2/3/4 | 2,53× · 1,92× · 1,74× | 23,1 | sim (nível 4) |
+| Gelo | 11 | 3 | 2/3/4 | 2/3/4 | 2,53× · 1,92× · 1,74× | 23,1 | sim (nível 4) |
+
+Todos com o número de degraus da conta. Todos os últimos degraus cabem. As origens ficam como na seção 6b (o JoJo, como na seção 9):
+
+| Origem | Campeões | Degraus pela conta | Escada | Último cabe? |
+|---|---|---|---|---|
+| Pokémon | 55 | 6 | 2/4/6/8/9/10 | sim (nível 10) |
+| Digimon | 19 | 5 | 2/3/4/5/6 | sim (nível 6) |
+| SMT | 26 | 5 | 2/3/4/6/8 | sim (nível 8) |
+| Persona | 12 | 3 | 1/2/3/4/5 | sim (nível 5) |
+| JoJo | 31 | 6 | 2/3/4/5/6/8 | sim (nível 8) |
+| Yu-Gi-Oh! | 31 | 6 | 2/3/5/7/9/10 | sim (nível 10) |
+| LoL | 31 | 6 | 2/3/5/7/9/10 | sim (nível 10) |
+| Overwatch | 24 | 5 | 2/3/4/5/7 | sim (nível 7) |
+| Deadlock | 21 | 5 | 2/3/4/5/6 | sim (nível 6) |
+| Sujimon | 20 | 5 | 2/3/4/5/6 | sim (nível 6) |
+
 ## 7. Comps que fecham origem e classe juntas
 Pra fechar 6 de uma origem e 4 de uma classe em 9 vagas, pelo menos 1 campeão precisa ter as duas; pra 6 e 6, 3. Com as classes de hoje, em quantas das 12 classes cada origem consegue isso:
 

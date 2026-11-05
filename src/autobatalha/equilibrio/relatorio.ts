@@ -308,9 +308,9 @@ function secaoTracos(r: Resultados): string {
     'mediana do mesmo degrau. Origens: só referência (as escadas e os números delas não mudam aqui); Overwatch, ' +
     'Deadlock e Sujimon agem também fora da luta, e isso não entra.',
     '',
-    bloco('Classes (2/4/6)', id => tipo(id) === 'classe', true),
+    bloco('Classes', id => tipo(id) === 'classe', true),
     '',
-    bloco('Elementos (2/3/4)', id => tipo(id) === 'elemento', true),
+    bloco('Elementos', id => tipo(id) === 'elemento', true),
     '',
     bloco('Origens', id => tipo(id) === 'origem', false),
   ].join('\n');
