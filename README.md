@@ -1,4 +1,4 @@
-# Quem Você Prefere — Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Minecraft x Sujimon
+# Quem Você Prefere — Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Minecraft x Monster Hunter x Sujimon
 
 Site pessoal (em português) pra escolher entre personagens de franquias diferentes. Publicado no GitHub Pages:
 https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/
@@ -44,6 +44,7 @@ Cada franquia é um arquivo em `src/sources/`, na ordem de `SOURCES` (`src/sourc
 | `ff` | Final Fantasy | `public/ff/list.json`, gerado pelo `ff.mjs` a partir da MoogleAPI (só monstros, sem personagens) | `images.moogleapi.com` |
 | `zelda` | Zelda | `public/zelda/list.json`, gerado pelo `zelda.mjs` a partir da Zelda Wiki (inimigos e chefes da série inteira, sem aliados nem armadilhas) | modelo, render ou arte da wiki (`cdn.wikimg.net`) |
 | `minecraft` | Minecraft | `public/minecraft/list.json`, gerado pelo `minecraft.mjs` a partir da Minecraft Wiki (mobs, com uma carta por variante de gato, lobo, cavalo, ovelha, sapo e axolote) | imagem da página ou render da wiki |
+| `monsterhunter` | Monster Hunter | `public/monsterhunter/list.json`, gerado pelo `monsterhunter.mjs` a partir da Monster Hunter Wiki (grandes e pequenos, só com render) | render da wiki (`monsterhunterwiki.org`) |
 | `sujimon` | Sujimon | `public/sujimon/list.json` (gerado pelo `sujimon.mjs`); sem ele, a Yakuza Wiki | `public/sujimon/*.webp` ou a wiki |
 
 - O nome de cada personagem precisa ser único dentro da franquia: o saco de sorteio e o placar guardam pelo nome. Por
@@ -112,6 +113,8 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
 - `node minecraft.mjs`: junta os mobs hostis, neutros e passivos da Minecraft Wiki em `public/minecraft/list.json`. Tira
   jockeys, mobs de 1º de abril e os do Education; `VARIANTES` lista os arquivos de cada cor. Arquivo renomeado na wiki
   aparece nos avisos.
+- `node monsterhunter.mjs`: junta os monstros grandes e pequenos da Monster Hunter Wiki em
+  `public/monsterhunter/list.json`. Fica só quem tem render; o resto do Catálogo vem do monster-hunter-DB, pelo nome.
 - `node sujimon.mjs recortar`: recorta os screenshots do Sujidex de `sujimon/_orig/` pra `public/sujimon/`. Instruções
   no começo do arquivo.
 - `node catalogo.mjs [chaves]`: gera `public/catalogo/<chave>.json` com o que a fonte informa de cada personagem (um

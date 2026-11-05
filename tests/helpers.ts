@@ -23,14 +23,14 @@ function pngPixel(r: number, g: number, b: number): Buffer {
 }
 export const PNG = pngPixel(150, 150, 160);
 
-export type Franquia = 'pokemon' | 'digimon' | 'smt' | 'persona' | 'jojo' | 'ygo' | 'bakugan' | 'lol' | 'overwatch' | 'deadlock' | 'ff' | 'zelda' | 'minecraft' | 'sujimon';
+export type Franquia = 'pokemon' | 'digimon' | 'smt' | 'persona' | 'jojo' | 'ygo' | 'bakugan' | 'lol' | 'overwatch' | 'deadlock' | 'ff' | 'zelda' | 'minecraft' | 'monsterhunter' | 'sujimon';
 export const LABEL: Record<Franquia, string> = {
   pokemon: 'Pokémon', digimon: 'Digimon', smt: 'SMT', persona: 'Persona', jojo: 'JoJo', ygo: 'Yu-Gi-Oh!', bakugan: 'Bakugan',
-  lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', ff: 'Final Fantasy', zelda: 'Zelda', minecraft: 'Minecraft', sujimon: 'Sujimon',
+  lol: 'LoL', overwatch: 'Overwatch', deadlock: 'Deadlock', ff: 'Final Fantasy', zelda: 'Zelda', minecraft: 'Minecraft', monsterhunter: 'Monster Hunter', sujimon: 'Sujimon',
 };
 // SMT e Persona são listas fixas do próprio site (src/sources/smt.json e persona.json): não passam pelo mock
 export const CONTAGEM: Record<Franquia, number> = {
-  pokemon: 40, digimon: 40, smt: 297, persona: 95, jojo: 41, ygo: 45, bakugan: 49, lol: 40, overwatch: 54, deadlock: 44, ff: 40, zelda: 40, minecraft: 40, sujimon: 40,
+  pokemon: 40, digimon: 40, smt: 297, persona: 95, jojo: 41, ygo: 45, bakugan: 49, lol: 40, overwatch: 54, deadlock: 44, ff: 40, zelda: 40, minecraft: 40, monsterhunter: 40, sujimon: 40,
 };
 
 export interface MockOpts {
@@ -89,6 +89,10 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
       if (u.pathname.endsWith('/minecraft/list.json')) {
         count('minecraft'); await espera('minecraft');
         return falha.has('minecraft') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('minecraft-list.json'));
+      }
+      if (u.pathname.endsWith('/monsterhunter/list.json')) {
+        count('monsterhunter'); await espera('monsterhunter');
+        return falha.has('monsterhunter') ? route.fulfill({ status: 500, body: 'erro' }) : json(route, fixture('monsterhunter-list.json'));
       }
       // Base do planejamento do Set 1 (classes, grupo base, linhas): a fixture catalogo-set1-base.json, ou 404
       if (u.pathname.endsWith('/catalogo/set1-base.json')) {

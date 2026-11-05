@@ -6,7 +6,7 @@ test.describe('carregamento e status', () => {
     const calls = await prepare(page);
     await abrir(page);
     await expect(page.locator('#status')).toHaveText(statusEsperado());
-    await expect(page.locator('h1')).toHaveText('Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Minecraft x Sujimon');
+    await expect(page.locator('h1')).toHaveText('Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Minecraft x Monster Hunter x Sujimon');
     await expect(page.locator('#h1suji')).toBeVisible();
     await expect(page.locator('meta[name=referrer]')).toHaveAttribute('content', 'no-referrer');
     await expect(page).toHaveTitle('Quem Você Prefere');
@@ -26,6 +26,7 @@ test.describe('carregamento e status', () => {
     expect(calls.ff).toBe(1);
     expect(calls.zelda).toBe(1);
     expect(calls.minecraft).toBe(1);
+    expect(calls.monsterhunter).toBe(1);
   });
 
   test('status mostra "carregando" enquanto a lista não chega', async ({ page }) => {
@@ -89,7 +90,7 @@ test.describe('carregamento e status', () => {
   });
 
   // Listas salvas por script, sem nada de especial além de nomes com apóstrofo, parênteses ou acento
-  for (const [fr, nomes] of [['zelda', ["Majora's Mask", 'Moldorm (Boss)']], ['minecraft', ['Creeper', 'Light Blue Sheep']]] as [Franquia, string[]][]) {
+  for (const [fr, nomes] of [['zelda', ["Majora's Mask", 'Moldorm (Boss)']], ['minecraft', ['Creeper', 'Light Blue Sheep']], ['monsterhunter', ['Rathalos', "Safi'jiiva"]]] as [Franquia, string[]][]) {
     test(`${LABEL[fr]}: um arquivo só do próprio site, e o nome vira carta sem mudar`, async ({ page }) => {
       const calls = await prepare(page, { storage: { 'pdx-bags': { [fr]: nomes } } });
       await abrir(page);
