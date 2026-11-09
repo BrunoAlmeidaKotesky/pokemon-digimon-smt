@@ -3,7 +3,9 @@
 import { S } from '../dados';
 import { CHANCE_MOEDA_ABATE, CHANCE_MOEDA_LANCAR, HABILIDADES_CLASSE, ITENS, PASSIVAS, TETO_MOEDAS, TRACOS } from '../conteudo';
 import { ORIGENS, type Estrela, type Origem } from '../tipos';
-import { somaLancVazia, type Equivalente, type Grupo, type LinhaCampeao, type SomaLanc, type TabelaLanc } from './laboratorio';
+import {
+  somaLancVazia, type Equivalente, type Foco, type Grupo, type LinhaCampeao, type ResultadoFocos, type SomaLanc, type TabelaLanc,
+} from './laboratorio';
 import {
   FAIXAS, foraDaFaixa, foraDaMediana, media, mediana, num, pct, quantil, tabela, taxa, type Placar,
 } from './medidas';
@@ -15,6 +17,13 @@ export interface ResultadoTraco { traco: string; nivel: number; estrela: Estrela
 export interface ResultadoItem { item: string; estrela: Estrela; eq: Equivalente }
 export interface ResultadoOrigens { limite: number; estrela: Estrela; placares: ReadonlyMap<Origem, Placar> }
 export interface ResultadoEvolucao { fr: Origem; de: 1 | 2; soLinhas: boolean; eq: Equivalente }
+export interface ResultadoComposicoes {
+  focos: Foco[];
+  pontos: (ResultadoFocos & { limite: number; estrela: Estrela })[];
+  oponentes: number;
+  /** "2 Stands num time normal" (doisStandsNoTime), por tamanho de tabuleiro */
+  doisStands: { limite: number; estrela: Estrela; placar: Placar }[];
+}
 
 export interface Resultados {
   /** AAAA-MM-DD */
@@ -22,7 +31,7 @@ export interface Resultados {
   /** semente base de tudo */
   base: number;
   /** quantos cenários em cada medida (curva, traço, item, pacote) e sementes das partidas */
-  cenarios: { curva: number; tracos: number; itens: number; pacotes: number; origens: number; evolucao: number; partidas: number[] };
+  cenarios: { curva: number; tracos: number; itens: number; pacotes: number; origens: number; evolucao: number; comps: number; partidas: number[] };
   campeoes?: LinhaCampeao[];
   curva?: ResultadoCurva[];
   pacotes?: ResultadoPacote[];
@@ -33,6 +42,7 @@ export interface Resultados {
   lancCurva?: TabelaLanc;
   origens?: ResultadoOrigens[];
   evolucao?: ResultadoEvolucao[];
+  composicoes?: ResultadoComposicoes;
 }
 
 const g = (x: Grupo) => `★${x.estrela} custo ${x.custo}`;
@@ -418,6 +428,21 @@ function secaoPartidas(r: Resultados): string {
     tabela(['Nível', 'Jogador-rodadas', 'Unidades em média', 'Stands em média', 'Máximo'], [...e.campo]
       .sort((a, b) => a[0] - b[0])
       .map(([n, c]) => [n, c.n, num(c.unidades / c.n, 1), num(c.stands / c.n, 1), c.maximo])),
+    '',
+    '### Almas do Deadlock (jogadores com o traço ativo, por estágio)',
+    '',
+    e.almas.size
+      ? tabela(['Estágio', 'Jogador-rodadas', 'Almas em média'], [...e.almas].sort((a, b) => a[0] - b[0]).map(([k, a]) => [k, a.n, num(a.soma / a.n, 1)]))
+      : 'Ninguém.',
+    '',
+    '## Invariantes',
+    '',
+    `Conferidos em cada rodada das partidas de bots (invariantes.ts): lugares das unidades, limite do tabuleiro, Stands, pool, ouro, vida, nível, itens e o resultado de cada luta. Partidas que não terminaram: ${e.naoTerminaram}. Erros do conteúdo durante a luta: ${e.errosConteudo.length}.`,
+    '',
+    e.violacoes.size
+      ? tabela(['Violação', 'Vezes', 'Exemplo'], [...e.violacoes].sort((a, b) => b[1].n - a[1].n).map(([k, x]) => [k, x.n, x.exemplo]))
+      : 'Nenhum invariante quebrado.',
+    ...(e.errosConteudo.length ? ['', `**Erros do conteúdo:** ${[...new Set(e.errosConteudo)].slice(0, 5).join('; ')}`] : []),
   ].join('\n');
 }
 
@@ -464,9 +489,87 @@ function secaoOrigens(r: Resultados): string {
   return out.join('\n').trimEnd();
 }
 
+const nomeFoco = (f: Foco): string => (f.origem && f.classe ? `${nomeOrigem(f.origem)} + ${nomeTraco(f.classe)}` : nomeTraco(f.id));
+
+/** Média das taxas de um foco nos pontos em que lutou. */
+function mediaFoco(c: ResultadoComposicoes, id: string): number {
+  return media(c.pontos.map(p => taxa(p.focos.get(id)!)).filter(Number.isFinite));
+}
+
+/** Placar de um campeão somado em todos os pontos. */
+function placarCampeao(c: ResultadoComposicoes, id: string): Placar {
+  const s: Placar = { vitorias: 0, empates: 0, lutas: 0 };
+  for (const p of c.pontos) {
+    const x = p.campeoes.get(id);
+    if (x) { s.vitorias += x.vitorias; s.empates += x.empates; s.lutas += x.lutas; }
+  }
+  return s;
+}
+
+function secaoComposicoes(r: Resultados): string {
+  const c = r.composicoes;
+  if (!c?.pontos.length) return '';
+  const faixa = FAIXAS.campeao;
+  const marcar = (x: number) => (foraDaFaixa(x, faixa) ? `**${pct(x)}**` : pct(x));
+  const linhaFoco = (f: Foco) => [nomeFoco(f), ...c.pontos.map(p => pct(taxa(p.focos.get(f.id)!))), marcar(mediaFoco(c, f.id))];
+  const cabecaFoco = ['Foco', ...c.pontos.map(p => `${p.limite} ★${p.estrela}`), 'Média'];
+  const puros = c.focos.filter(f => !(f.origem && f.classe));
+  const pares = c.focos.filter(f => f.origem && f.classe);
+  const emOrdem = (fs: readonly Foco[]) => [...fs].sort((a, b) => mediaFoco(c, b.id) - mediaFoco(c, a.id));
+  const paresOrd = emOrdem(pares);
+  const lutas = c.pontos.reduce((s, p) => s + p.lutas, 0);
+  const foraPuros = emOrdem(puros).filter(f => foraDaFaixa(mediaFoco(c, f.id), faixa));
+  const ids = [...new Set(c.pontos.flatMap(p => [...p.campeoes.keys()]))];
+  const linhas = ids.map(id => ({ id, p: placarCampeao(c, id) })).filter(x => x.p.lutas > 0);
+  const ordCamp = [...linhas].filter(x => x.p.lutas >= 30).sort((a, b) => taxa(b.p) - taxa(a.p) || a.id.localeCompare(b.id));
+  const linhaCamp = (x: { id: string; p: Placar }) => {
+    const camp = S().campeao(x.id);
+    return [camp.nome, nomeOrigem(camp.fr), camp.custo, camp.stand ? 'sim' : '', x.p.lutas, pct(taxa(x.p))];
+  };
+  const cabCamp = ['Campeão', 'Origem', 'Custo', 'Stand', 'Lutas', 'Vitórias'];
+  return [
+    '## Composições forçadas',
+    '',
+    `Times focados em cada traço (as 10 origens, cada classe e elemento) e em cada par origem + classe que existe no set (${pares.length} pares ` +
+    'com 2 campeões ou mais), em vários tamanhos de tabuleiro e estrelas, com os custos da loja daquele nível. Cada foco luta contra ' +
+    `${c.oponentes} focos sorteados por ponto, dos dois lados (${lutas} lutas no total), e os traços valem; sem itens. Origem pura: o time cheio da seção ` +
+    'Origens. JoJo: sempre metade Stands e metade usuários de outras origens. Digimon: dois terços Digimon e o resto de fora, pro Parceiro. Par: primeiro quem ' +
+    'tem os dois; o que faltar, metade da origem e metade da classe. Overwatch, Deadlock e Sujimon agem também fora da luta, e isso não entra aqui. ' +
+    `Em negrito: média fora de ${pct(faixa[0])}–${pct(faixa[1])}.`,
+    '',
+    '### Por traço',
+    '',
+    tabela(cabecaFoco, emOrdem(puros).map(linhaFoco)),
+    '',
+    foraPuros.length ? `**Fora de ${pct(faixa[0])}–${pct(faixa[1])} na média:** ${foraPuros.map(f => `${nomeFoco(f)} ${pct(mediaFoco(c, f.id))}`).join(', ')}.` : 'Todos dentro da faixa na média.',
+    '',
+    '### Pares origem + classe',
+    '',
+    `Os 12 melhores e os 12 piores pela média; todos os ${pares.length} embaixo.`,
+    '',
+    tabela(cabecaFoco, [...paresOrd.slice(0, 12), ...paresOrd.slice(-12)].map(linhaFoco)),
+    '',
+    `<details><summary>Todos os pares</summary>\n\n${tabela(cabecaFoco, paresOrd.map(linhaFoco))}\n\n</details>`,
+    '',
+    '### Campeões (vitórias de quem aparece nesses times)',
+    '',
+    'Todas as lutas em que o campeão entrou (por um foco ou como complemento), somando os pontos; 30 lutas ou mais. Mistura o campeão com o time em volta: é sinal.',
+    '',
+    tabela(cabCamp, [...ordCamp.slice(0, 15), ...ordCamp.slice(-15)].map(linhaCamp)),
+    '',
+    `<details><summary>Todos os campeões</summary>\n\n${tabela(cabCamp, ordCamp.map(linhaCamp))}\n\n</details>`,
+    '',
+    '### 2 Stands num time normal',
+    '',
+    'O mesmo time de campeões normais, com 2 trocados por 2 Stands presos a 2 dos que ficam, contra ele sem Stand. Passar muito de 50% faria todo mundo querer Stand.',
+    '',
+    tabela(['Tabuleiro', 'Estrela', 'Lutas', 'Vitórias do time com Stands'], c.doisStands.map(s => [s.limite, `★${s.estrela}`, s.placar.lutas, pct(taxa(s.placar))])),
+  ].join('\n');
+}
+
 /** O equilibrio.md inteiro (a parte gerada; o histórico escrito à mão é juntado por quem grava). */
 export function montarRelatorio(r: Resultados): string {
-  const secoes = [secaoCurva(r), secaoMana(r), secaoCampeoes(r), secaoHabilidades(r), secaoPacotes(r), secaoTracos(r), secaoOrigens(r), secaoItens(r), secaoMoedas(r), secaoPartidas(r)]
+  const secoes = [secaoCurva(r), secaoMana(r), secaoCampeoes(r), secaoHabilidades(r), secaoPacotes(r), secaoTracos(r), secaoOrigens(r), secaoComposicoes(r), secaoItens(r), secaoMoedas(r), secaoPartidas(r)]
     .filter(Boolean);
   return [
     '# Equilíbrio: playtest automático',

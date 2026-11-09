@@ -52,18 +52,18 @@ calibrados no playtest automático ([matematica/equilibrio.md](matematica/equili
 |---|---|---|---|---|---|
 | 1 | 450 | 42 | 20 | 20 | 0,65 |
 | 2 | 600 | 50 | 25 | 25 | 0,70 |
-| 3 | 720 | 61 | 30 | 30 | 0,75 |
-| 4 | 850 | 75 | 40 | 40 | 0,80 |
-| 5 | 1000 | 90 | 50 | 50 | 0,85 |
+| 3 | 750 | 63 | 30 | 30 | 0,75 |
+| 4 | 910 | 80 | 40 | 40 | 0,80 |
+| 5 | 1110 | 98 | 50 | 50 | 0,85 |
 
 O **papel** vem da primeira classe da forma nesta ordem de prioridade e ajusta o base:
 
 | Papel | Vida | Dano | Outros | Alcance | Mana |
 |---|---|---|---|---|---|
 | Tanque | ×1,25 | ×0,75 | +20 armadura e resist. | 1 | 70 |
-| Porradeiro | ×1,15 | ×1,05 | | 1 | 70 |
+| Porradeiro | ×1,15 | ×1,10 | | 1 | 70 |
 | Assassino | ×1,00 | ×1,20 | +15% crítico | 1 | 60 |
-| Atirador | ×0,75 | ×1,00 | vel. ataque ×1,10 | 4 | 80 |
+| Atirador | ×0,80 | ×1,00 | vel. ataque ×1,10 | 4 | 80 |
 | Dragão | ×1,05 | ×1,05 | | 2 | 80 |
 | Robô | ×1,00 | ×1,00 | +15 armadura | 2 | 70 |
 | Anjo | ×0,85 | ×1,00 | | 3 | 80 |
@@ -75,11 +75,11 @@ O **papel** vem da primeira classe da forma nesta ordem de prioridade e ajusta o
 | Únicos | ×1,00 | ×1,00 | | 2 | 80 |
 | Só elemento | Terra vida ×1,10; Vento vel. ×1,10 | | | Fogo, Água, Vento, Planta 2; Raio, Gelo 3; Terra 1 | 80 |
 
-Forma que não lança nada (não final de Pokémon e Digimon) ganha +22% de vida e dano na estrela 1 e +28% na 2 e na 3, no
+Forma que não lança nada (não final de Pokémon e Digimon) ganha +22% de vida e dano na estrela 1, +24% na 2 e +28% na 3, no
 lugar da habilidade.
 
 **Evoluir** (`BONUS_EVOLUCAO` em atributos.ts; pedido do usuário em 05/11/2026): nas linhas de Pokémon e Digimon, além da
-estrela, a forma evoluída ganha vida e dano: Pokémon +5% na estrela 2 e +10% na 3, Digimon +12% e +30%. Solto da mesma
+estrela, a forma evoluída ganha vida e dano: Pokémon +5% na estrela 2 e +10% na 3, Digimon +6% e +30%. Solto da mesma
 origem não ganha. Medido na seção "Origens" do equilibrio.md: evoluir de ★1 pra ★2 valia +84% no Pokémon e +78% no
 Digimon, e agora +91% e +97%; de ★2 pra ★3, +84% e +59%, agora +91% e +84%.
 
@@ -150,40 +150,40 @@ com 6 degraus, ganhou 2/4/6/8/9/10 com efeito pequeno nos degraus de baixo.
 
 | Classe | Efeito |
 |---|---|
-| Tanque (2/3/4/6/8) | +20 / 30 / 40 / 70 / 100% de armadura e resistência; (4) começam com escudo de 15% da vida; (6) no começo provocam os inimigos em volta por 3 s |
-| Porradeiro (2/3/4/6/8/10) | +15 / 22 / 30 / 50 / 65 / 80% de vida; (4) abaixo de metade da vida causam 20% a mais; (6) o resto do time ganha +10% de vida |
+| Tanque (2/3/4/6/8) | +50 / 65 / 75 / 90 / 115% de armadura e resistência; (4) começam com escudo de 15% da vida; (6) no começo provocam os inimigos em volta por 3 s |
+| Porradeiro (2/3/4/6/8/10) | +20 / 28 / 36 / 55 / 70 / 85% de vida; (4) abaixo de metade da vida causam 20% a mais; (6) o resto do time ganha +10% de vida |
 | Assassino (2/3/4/5/6) | saltam pra trás da linha inimiga. +15 / 22 / 30 / 37 / 45% de chance e de dano de crítico; (6) cada abate deixa 1 s sem poder ser alvo |
-| Demoníacos (2/3/4/6/8/10) | 10 / 15 / 20 / 25 / 27 / 30% de roubo de vida, e quando um Demoníaco morre os outros ganham o mesmo em dano |
+| Demoníacos (2/3/4/6/8/10) | 10 / 14 / 18 / 20 / 22 / 25% de roubo de vida, e quando um Demoníaco morre os outros ganham o mesmo em dano |
 | Criaturinha Bizarra (3/4/5/7/9/10) | no começo, cada uma ganha um bônus sorteado (escudo de 15% da vida, +15% de vel. ataque, +15% de dano ou cura de 2% da vida por segundo), que vale 1 / 1,5 / 2 / 2,5 / 3 / 3,5 vezes isso; (7) dois bônus |
-| Fadinhas (2/3/4/6/8/10) | a cada 4 s, cada Fadinha cura o aliado com menos vida em 4 / 6 / 8 / 14 / 18 / 22% da vida máxima dele |
-| Safada (3/4/5/7/9/10) | os ataques têm 15 / 21 / 27 / 40 / 55 / 70% de chance de encantar o alvo por 1,5 s (atordoado) |
-| Atirador (2/3/4/5/7) | +1 de alcance; cada ataque dá +3 / 4,5 / 6 / 7 / 9% de vel. ataque (até 15 vezes) |
-| Anjo (2/3/4/5/6) | (2) o primeiro Anjo que morrer renasce com 40% da vida; (3) com 45%; (4) todos renascem uma vez com 50%; (5) 65%; (6) 80% |
+| Fadinhas (2/3/4/6/8/10) | a cada 4 s, cada Fadinha cura o aliado com menos vida em 5 / 8 / 10 / 16 / 20 / 24% da vida máxima dele |
+| Safada (3/4/5/7/9/10) | os ataques têm 18 / 24 / 30 / 42 / 55 / 70% de chance de encantar o alvo por 1,5 s (atordoado) |
+| Atirador (2/3/4/5/7) | +1 de alcance; cada ataque dá +4 / 5,5 / 7 / 8 / 10% de vel. ataque (até 15 vezes) |
+| Anjo (2/3/4/5/6) | (2) o primeiro Anjo que morrer renasce com 60% da vida; (3) com 70%; (4) todos renascem uma vez com 70%; (5) 80%; (6) 90% |
 | Robô (2/3/4/5/6) | +25 / 38 / 50 / 70 / 90% de armadura e escudo de 10 / 15 / 20 / 27 / 35% da vida no começo; (6) imunes a atordoar nos primeiros 5 s |
 | Dragão (2/3/4/5/7) | +10 / 15 / 20 / 26 / 36% de vida e dano; (7) o time inteiro ganha +5% de dano |
-| Temporais (2/3/4/5) | a cada 5 s, o time ganha +6 / 9 / 12 / 18% de vel. ataque até o fim da luta (acumula); (5) uma vez por luta, o aliado que cairia abaixo de 20% da vida cura 40% |
-| Fogo (2/3/4/5/6) | ataques queimam (1 / 2 / 3 / 3,5 / 4% da vida máxima por s, 3 s, e 33% menos cura); (4) quem morre queimando passa o fogo pro inimigo mais perto |
+| Temporais (2/3/4/5) | a cada 5 s, o time ganha +7 / 10 / 13 / 18% de vel. ataque até o fim da luta (acumula); (5) uma vez por luta, o aliado que cairia abaixo de 20% da vida cura 40% |
+| Fogo (2/3/4/5/6) | ataques queimam (1,5 / 2,5 / 3,5 / 4 / 4,5% da vida máxima por s, 3 s, e 33% menos cura); (4) quem morre queimando passa o fogo pro inimigo mais perto |
 | Água (2/3/4/5/6) | recuperam 1,5 / 3 / 4,5 / 5,5 / 6,5% da vida por segundo; (4) a cada 4 s se livram dos efeitos ruins |
-| Terra (2/3/4) | +30 / 60 / 100% de armadura e resistência; (4) a cada 4 s um tremor atordoa por 0,5 s os inimigos em volta |
+| Terra (2/3/4) | +50 / 80 / 120% de armadura e resistência; (4) a cada 4 s um tremor atordoa por 0,5 s os inimigos em volta |
 | Vento (2/3/4/5/6) | +15 / 30 / 45 / 55 / 65% de vel. ataque; desviam de 0 / 10 / 15 / 18 / 20% dos ataques |
 | Raio (2/3/4/5) | a cada 3 ataques, um raio pula do alvo pra 1 / 2 / 3 / 4 inimigos (60% do dano); (4) atordoa 0,5 s |
 | Gelo (2/3/4) | o alvo fica 15 / 25 / 35% mais lento; (4) o 5º ataque seguido no mesmo alvo congela 1 s |
-| Planta (2/3/4/5) | o 1º ataque em cada inimigo planta uma semente que suga 2 / 3,5 / 4,5 / 5,5% da vida dele por segundo, por 4 s, e cura quem plantou; (4) a cura vai também pro aliado mais perto |
+| Planta (2/3/4/5) | o 1º ataque em cada inimigo planta uma semente que suga 2,5 / 4 / 5 / 6,5% da vida dele por segundo, por 4 s, e cura quem plantou; (4) a cura vai também pro aliado mais perto |
 
 **Origens**
 
 | Origem | Escada | Efeito |
 |---|---|---|
-| Pokémon | 2/4/6/8/9/10 | cada Pokémon ganha +1 / 1,5 / 2 / 2,5 / 3 / 3,5% de vida e dano por Pokémon no tabuleiro |
-| Digimon | 2/3/4/5/6 | Parceiro: Digimon com aliado de outra origem do lado ganha +8 / 12 / 18 / 25 / 35% de vida e dano; (3) o parceiro ganha metade; (5) o Digimon com parceiro começa com a mana cheia |
+| Pokémon | 2/4/6/8/9/10 | cada Pokémon ganha +2 / 2,4 / 3 / 3,2 / 3,6 / 4% de vida e dano por Pokémon no tabuleiro |
+| Digimon | 2/3/4/5/6 | Parceiro: Digimon com aliado de outra origem do lado ganha +16 / 22 / 30 / 38 / 50% de vida e dano; (3) o parceiro ganha metade; (5) o Digimon com parceiro começa com a mana cheia |
 | SMT | 2/3/4/6/8 | Invocadores: no começo, cada demônio invoca um monstro do Final Fantasy (sorteado) ao lado, com 20 / 25 / 32 / 45 / 60% dos atributos dele |
-| Persona | 1/2/3/4/5 | cada Persona dá aos aliados em volta +8 / 14 / 20 / 28 / 38% de um atributo, pela 1ª classe dela (dano: Atirador, Assassino, Porradeiro, Fogo, Raio; vida: Tanque, Terra, Anjo, Água; vel. ataque: Vento, Safada, Temporais; armadura e resist.: Robô, Gelo, Planta; poder de habilidade: Fadinhas, Demoníacos, Dragão, Criaturinha Bizarra) |
-| JoJo | 2/3/4/5/6 | Stands e seus usuários ganham +25 / 30 / 40 / 48 / 55% de dano e vida; (5) os Stands lançam com 25% menos mana |
-| Yu-Gi-Oh! | 2/3/5/7/9/10 | cada carta fica em ataque (+10 / 15 / 22 / 30 / 40 / 50% de dano) ou em defesa (o mesmo em vida e armadura, e provoca os inimigos em volta por 2 s no começo); (7) ganham os dois |
-| LoL | 2/3/5/7/9/10 | +10 / 15 / 22 / 30 / 40 / 50% de poder de habilidade. Regra da franquia, com ou sem traço: na estrela 3, a cada 2 lançamentos a habilidade sai duas vezes (a "ultimate") |
-| Overwatch | 2/3/4/5/7 | +6 / 10 / 15 / 20 / 28% de vel. ataque. Jogada da Partida: depois de cada luta, o herói que mais causou dano ganha +2 / 3 / 5 / 7 / 10% de dano e vida pro resto da partida |
-| Deadlock | 2/3/4/5/6 | abates de heróis do Deadlock rendem almas (×2 a partir do 5). A cada 10 almas: +1 de ouro, e os heróis ganham +1,5 / 2 / 2,5 / 3 / 4% de dano e vida por 10 almas juntadas na partida |
-| Sujimon | 2/3/4/5/6 | +10 / 15 / 22 / 30 / 40% de vida e dano; vencer rodada de monstros traz um Sujimon de graça pro banco com 0 / 30 / 50 / 75 / 100% de chance |
+| Persona | 1/2/3/4/5 | cada Persona dá aos aliados em volta +10 / 16 / 22 / 30 / 40% de um atributo, pela 1ª classe dela (dano: Atirador, Assassino, Porradeiro, Fogo, Raio; vida: Tanque, Terra, Anjo, Água; vel. ataque: Vento, Safada, Temporais; armadura e resist.: Robô, Gelo, Planta; poder de habilidade: Fadinhas, Demoníacos, Dragão, Criaturinha Bizarra) |
+| JoJo | 2/3/4/5/6 | Stands e seus usuários ganham +25 / 35 / 46 / 50 / 55% de dano e vida; (5) os Stands lançam com 25% menos mana |
+| Yu-Gi-Oh! | 2/3/5/7/9/10 | cada carta fica em ataque (+14 / 20 / 27 / 22 / 27 / 33% de dano) ou em defesa (o mesmo em vida e armadura, e provoca os inimigos em volta por 2 s no começo); (7) ganham os dois |
+| LoL | 2/3/5/7/9/10 | +20 / 30 / 42 / 55 / 70 / 85% de poder de habilidade. Regra da franquia, com ou sem traço: na estrela 3, a cada 2 lançamentos a habilidade sai duas vezes (a "ultimate") |
+| Overwatch | 2/3/4/5/7 | +10 / 15 / 20 / 27 / 36% de vel. ataque. Jogada da Partida: depois de cada luta, o herói que mais causou dano ganha +2 / 3 / 5 / 7 / 10% de dano e vida pro resto da partida |
+| Deadlock | 2/3/4/5/6 | abates de heróis do Deadlock rendem almas (×2 a partir do 5). A cada 10 almas: +1 de ouro, e os heróis ganham +2 / 2,5 / 3 / 4 / 5% de dano e vida por 10 almas juntadas na partida |
+| Sujimon | 2/3/4/5/6 | +6 / 10 / 15 / 24 / 34% de vida e dano; vencer rodada de monstros traz um Sujimon de graça pro banco com 0 / 30 / 50 / 75 / 100% de chance |
 
 ## Itens: Bakugan (src/autobatalha/conteudo/itens.ts)
 

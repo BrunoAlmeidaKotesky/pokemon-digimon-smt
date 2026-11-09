@@ -310,8 +310,8 @@ describe('motor de combate', () => {
     const r = lutar(c, time('p1', em(brigao, 3, 0), em(jotaro, 4, 0), em(mira, 3, 3)), time('p2', ...[2, 3, 4].map(col => em(unidade('pokemon:brigao', 2), col, 0))));
     const ini = Object.fromEntries(r.gravacao!.inicial.map(e => [e.id, e]));
     expect(ini[`a:${brigao.uid}`]!.vidaMax).toBe(Math.round(450 * 1.15 * 1.6));
-    expect(ini[`a:${jotaro.uid}`]!.vidaMax).toBe(Math.round(850 * 1.15 * 1.6));
-    expect(ini[`a:${mira.uid}`]!.vidaMax).toBe(Math.round(450 * 0.75 * 1.1));
+    expect(ini[`a:${jotaro.uid}`]!.vidaMax).toBe(Math.round(910 * 1.15 * 1.6));
+    expect(ini[`a:${mira.uid}`]!.vidaMax).toBe(Math.round(450 * 0.8 * 1.1));
     // os Brigões do lado B não têm o traço (é um campeão só)
     expect(r.gravacao!.inicial.filter(e => e.lado === 'b').every(e => e.vidaMax === Math.round(450 * 1.8 * 1.15 * (1 + BONUS_EVOLUCAO.pokemon![2])))).toBe(true);
     expect(quadros(r)[0]!.u[`a:${brigao.uid}`]![3]).toBe(100);

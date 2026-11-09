@@ -5,7 +5,9 @@
 // - curva por custo: times de 5 campeões sorteados de um custo/estrela contra os de outro;
 // - equivalentes: quanto de vida e dano (no time todo, ou só na unidade) vale um traço, um item ou o pacote papel +
 //   ult de uma classe — o bônus que o outro lado precisa pra empatar (bisseção em medidas.ts);
-// - origens: time cheio de cada origem contra os das outras, quanto valem Stands além do limite e quanto vale evoluir.
+// - origens: time cheio de cada origem contra os das outras, quanto valem Stands além do limite e quanto vale evoluir;
+// - composições forçadas: times focados em cada traço e em cada par origem + classe, um contra o outro, em vários
+//   tamanhos de tabuleiro e estrelas; e se 2 Stands num time normal viram obrigação.
 // "Boneco" = monstro sem habilidade nem traço, com os atributos base do custo e da estrela (papel Únicos).
 import { S } from '../dados';
 import * as real from '../conteudo';
@@ -149,6 +151,8 @@ export const CONTEUDO_MEDIDO: Conteudo = {
 export interface OpcoesLuta {
   /** traços que não ativam naquele lado */
   desligar?: Partial<Record<Lado, readonly string[]>>;
+  /** grava quadro a quadro (pra conferir invariantes dentro da luta) */
+  gravar?: boolean;
 }
 export interface LutaMedida { r: ResultadoLuta; med: ReadonlyMap<string, MedidaLutador> }
 
@@ -158,7 +162,7 @@ export function lutar(a: EntradaTime, b: EntradaTime, sem: number, op: OpcoesLut
   medidas = new Map();
   filaLados = (['a', 'b'] as const).filter(l => (l === 'a' ? a : b).lutadores.some(x => x.unidade));
   desligados = { a: new Set(op.desligar?.a ?? []), b: new Set(op.desligar?.b ?? []) };
-  const r = simularLutaCom(CONTEUDO_MEDIDO, a, b, sem, false, REGRAS, OBSERVADOR);
+  const r = simularLutaCom(CONTEUDO_MEDIDO, a, b, sem, !!op.gravar, REGRAS, OBSERVADOR);
   return { r, med: medidas };
 }
 
@@ -711,6 +715,141 @@ export function ganhoDeEvoluir(fr: Origem, de: 1 | 2, limite: number, nCenarios:
     cenarios.push(b => ({ a: { dono: 'com', lutadores: com }, b: bonusNoTime({ dono: 'sem', lutadores: sem }, b), semente: s }));
   }
   return medirEquivalente(cenarios, 0, 8, passos);
+}
+
+// =================================================================================================================
+// Composições forçadas: times focados em cada traço e em cada par origem + classe, um contra o outro
+// =================================================================================================================
+
+/** Foco de um time: uma origem, uma classe/elemento ou um par origem + classe. */
+export interface Foco { id: string; origem?: Origem; classe?: string }
+
+/** Os focos que existem no set: as 10 origens, cada classe e elemento, e os pares origem + classe com pelo menos
+ *  `minPar` campeões que têm os dois (com menos, o par não fecha nem o 1º degrau). Únicos não é traço. */
+export function focosDoSet(minPar = 2): Foco[] {
+  const classes = Object.values(real.TRACOS).filter(t => t.tipo !== 'origem').map(t => t.id);
+  const pares: Foco[] = [];
+  for (const origem of ORIGENS) for (const classe of classes) {
+    if (reais().filter(c => c.fr === origem && S().tracosDoCampeao(c.id).includes(classe)).length >= minPar) {
+      pares.push({ id: `${origem}+${classe}`, origem, classe });
+    }
+  }
+  return [...ORIGENS.map(origem => ({ id: origem, origem })), ...classes.map(classe => ({ id: classe, classe })), ...pares];
+}
+
+/** Sorteia `n` campeões pela loja do nível `limite`, gastando os grupos em ordem (o 2º só entra se o 1º não bastar). */
+function sortearEmOrdem(grupos: readonly (readonly CampeaoDados[])[], n: number, limite: number, rng: Rng): CampeaoDados[] {
+  const out: CampeaoDados[] = [];
+  for (const g of grupos) {
+    if (out.length >= n) break;
+    out.push(...sortearPelaLoja(g.filter(c => !out.includes(c)), n - out.length, limite, rng));
+  }
+  return out;
+}
+
+/**
+ * Time forçado de um foco num tabuleiro de `limite`, na estrela, com os custos da loja daquele nível. Origem pura:
+ * `timeDaOrigem`. Classe/elemento: todos os campeões com a classe na forma da estrela (sem Stands), completando com
+ * outros. Par origem + classe: primeiro quem tem os dois; o que faltar, metade da origem e metade da classe. JoJo:
+ * sempre metade Stands (com a classe primeiro) e metade usuários de outras origens (também com a classe primeiro).
+ * Digimon: dois terços do time é Digimon e o resto de fora (o Parceiro), com a classe primeiro nos dois.
+ */
+export function timeDoFoco(f: Foco, limite: number, estrela: Estrela, rng: Rng, variacao: number): EntradaTime {
+  const { origem, classe } = f;
+  if (!classe) return timeDaOrigem(origem!, limite, estrela, rng, variacao);
+  const temClasse = (c: CampeaoDados) => S().forma(S().formaPadrao(c.id, estrela)).classes.includes(classe);
+  const comClasseOuNao = (g: readonly CampeaoDados[]) => [g.filter(temClasse), g.filter(c => !temClasse(c))];
+  const normais = reais().filter(c => !c.stand);
+  const fora = normais.filter(c => c.fr !== origem);
+  let uid = 1;
+  const un = (c: CampeaoDados, extra: Partial<Unidade> = {}) => unidade(uid++, c.id, estrela, extra);
+  let escolhidos: CampeaoDados[];
+  if (origem === 'jojo') {
+    const s = Math.floor(limite / 2);
+    const usuarios = sortearEmOrdem(comClasseOuNao(fora), limite - s, limite, rng).map(c => un(c));
+    const stands = sortearEmOrdem(comClasseOuNao(reais().filter(c => c.stand)), s, limite, rng)
+      .map((c, i) => un(c, { usuario: usuarios[i]!.uid }));
+    return { dono: f.id, lutadores: posicionar([...usuarios, ...stands], variacao) };
+  }
+  if (origem === 'digimon') {
+    const n = Math.max(1, Math.min(limite - 1, Math.ceil((limite * 2) / 3)));
+    const daOrigem = sortearEmOrdem(comClasseOuNao(normais.filter(c => c.fr === origem)), n, limite, rng);
+    escolhidos = [...daOrigem, ...sortearEmOrdem(comClasseOuNao(fora), limite - daOrigem.length, limite, rng)];
+  } else if (origem) {
+    const daOrigem = normais.filter(c => c.fr === origem);
+    const juntos = sortearPelaLoja(daOrigem.filter(temClasse), limite, limite, rng);
+    const falta = limite - juntos.length;
+    const soOrigem = sortearPelaLoja(daOrigem.filter(c => !temClasse(c)), Math.ceil(falta / 2), limite, rng);
+    const soClasse = sortearPelaLoja(fora.filter(temClasse), falta - soOrigem.length, limite, rng);
+    escolhidos = [...juntos, ...soOrigem, ...soClasse];
+    escolhidos.push(...sortearEmOrdem([normais], limite - escolhidos.length, limite, rng));
+  } else {
+    escolhidos = sortearEmOrdem([normais.filter(temClasse), normais], limite, limite, rng);
+  }
+  return { dono: f.id, lutadores: posicionar(escolhidos.map(c => un(c)), variacao) };
+}
+
+export interface ResultadoFocos {
+  /** id do foco → placar */
+  focos: Map<string, Placar>;
+  /** id do campeão → placar de todas as lutas em que apareceu */
+  campeoes: Map<string, Placar>;
+  lutas: number;
+}
+
+/** Cada foco contra `oponentes` focos sorteados (cada confronto dos dois lados); conta pros dois focos e pra todo
+ *  campeão que aparece. */
+export function focosEmConfronto(focos: readonly Foco[], limite: number, estrela: Estrela, oponentes: number, base = 0): ResultadoFocos {
+  const placarDe = (m: Map<string, Placar>, id: string) => {
+    let p = m.get(id);
+    if (!p) m.set(id, (p = placarVazio()));
+    return p;
+  };
+  const r: ResultadoFocos = { focos: new Map(focos.map(f => [f.id, placarVazio()])), campeoes: new Map(), lutas: 0 };
+  const somarTime = (f: Foco, t: EntradaTime, res: 'vitoria' | 'derrota' | 'empate') => {
+    somarLuta(placarDe(r.focos, f.id), res);
+    for (const l of t.lutadores) if (l.unidade) somarLuta(placarDe(r.campeoes, l.unidade.campeao), res);
+  };
+  focos.forEach((f, i) => {
+    for (let k = 0; k < oponentes; k++) {
+      const rng = criarRng(semente(base, 'foco', f.id, limite, estrela, k));
+      const j = rng.int(focos.length - 1);
+      const g = focos[j >= i ? j + 1 : j]!;
+      const tf = timeDoFoco(f, limite, estrela, rng, k);
+      const tg = timeDoFoco(g, limite, estrela, rng, k + 3);
+      const s = rng.semente();
+      const ida = lutar(tf, tg, s).r, volta = lutar(tg, tf, s).r;
+      somarTime(f, tf, resultadoDo(ida, 'a'));
+      somarTime(g, tg, resultadoDo(ida, 'b'));
+      somarTime(f, tf, resultadoDo(volta, 'b'));
+      somarTime(g, tg, resultadoDo(volta, 'a'));
+      r.lutas += 2;
+    }
+  });
+  return r;
+}
+
+/**
+ * Vale botar 2 Stands num time normal? O mesmo time de `limite` campeões normais, com 2 deles trocados por 2 Stands
+ * (presos a 2 dos normais que ficam), contra ele sem Stand. Passar muito de 50% faria todo mundo querer: os Stands
+ * viram obrigação (docs/tft/roadmap.md, seção dos Stands).
+ */
+export function doisStandsNoTime(limite: number, estrela: Estrela, cenarios: number, base = 0): Placar {
+  const placar = placarVazio();
+  for (let k = 0; k < cenarios; k++) {
+    const rng = criarRng(semente(base, 'dois-stands', limite, estrela, k));
+    const normais = sortearPelaLoja(reais().filter(c => !c.stand), limite, limite, rng);
+    const stands = sortearPelaLoja(reais().filter(c => c.stand), 2, limite, rng);
+    const sem = normais.map((c, i) => unidade(i + 1, c.id, estrela));
+    const ficam = sem.slice(0, limite - 2);
+    const com = [...ficam, ...stands.map((c, i) => unidade(limite - 1 + i, c.id, estrela, { usuario: ficam[i]!.uid }))];
+    const tc: EntradaTime = { dono: 'com', lutadores: posicionar(com, k) };
+    const ts: EntradaTime = { dono: 'sem', lutadores: posicionar(sem, k + 3) };
+    const s = rng.semente();
+    somarLuta(placar, resultadoDo(lutar(tc, ts, s).r, 'a'));
+    somarLuta(placar, resultadoDo(lutar(ts, tc, s).r, 'b'));
+  }
+  return placar;
 }
 
 /** Todos os itens: 7 componentes e 28 completos, na ordem de COMPONENTES. */

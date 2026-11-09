@@ -11,7 +11,7 @@ export function porDegrau(valores: readonly number[], degrau: number): number {
 /** Overwatch: bônus permanente de vida e dano pro herói que mais causou dano na luta. */
 export const BONUS_OVERWATCH = [0.02, 0.03, 0.05, 0.07, 0.1] as const;
 /** Deadlock: vida e dano por 10 almas juntadas; cada 10 almas = +1 de ouro. */
-export const BONUS_DEADLOCK_POR_10_ALMAS = [0.015, 0.02, 0.025, 0.03, 0.04] as const;
+export const BONUS_DEADLOCK_POR_10_ALMAS = [0.02, 0.025, 0.03, 0.04, 0.05] as const;
 /** Deadlock: almas por abate de herói do Deadlock. */
 export const ALMAS_POR_ABATE = [1, 1, 1, 2, 2] as const;
 /** Sujimon: chance de recrutar depois de vencer monstros. */

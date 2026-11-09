@@ -6,8 +6,9 @@ import { contarTracos, combinar, ehComponente, passivaDe } from '../conteudo';
 import { atributosDaUnidade, simularLuta } from '../combate';
 import { S } from '../dados';
 import * as P from '../partida';
-import type { EntradaTime, Lado, Partida, ResultadoLuta, SimularLuta, Unidade } from '../tipos';
+import type { Dificuldade, EntradaTime, Lado, Partida, ResultadoLuta, SimularLuta, Unidade } from '../tipos';
 import { placarVazio, somarLuta, type Placar } from './medidas';
+import { conferirGravacao, conferirLuta, conferirPartida, conferirTimes, massaDeItens, type Violacoes } from './invariantes';
 import { lutar, moedasDoLado, resultadoDo, somarLancamentos, type TabelaLanc } from './laboratorio';
 
 /** O que entra em campo, somado por nível do jogador. */
@@ -41,6 +42,20 @@ export interface EstatPartidas {
   colocacoes: Map<string, number[]>;
   /** nível do jogador → o que ele pôs em campo */
   campo: Map<number, CampoDoNivel>;
+  /** estágio → jogadores com o Deadlock ativo no tabuleiro e a soma das almas deles nesse estágio */
+  almas: Map<number, { n: number; soma: number }>;
+  /** invariantes quebrados (invariantes.ts) */
+  violacoes: Violacoes;
+  /** erros que o conteúdo jogou durante a luta (o motor engole e escreve no console) */
+  errosConteudo: string[];
+  /** partidas que bateram no limite de rodadas sem acabar */
+  naoTerminaram: number;
+}
+
+export interface OpcoesPartidas {
+  dificuldade?: Dificuldade;
+  /** grava e confere quadro a quadro uma a cada N lutas (0 = nunca) */
+  gravarUmaACada?: number;
 }
 
 const unidadesDo = (t: EntradaTime): Unidade[] => t.lutadores.flatMap(l => (l.unidade ? [l.unidade] : []));
@@ -69,6 +84,12 @@ function contarCampo(e: EstatPartidas, p: Partida, uso: Map<string, Map<string, 
     c.stands += stands;
     c.maximo = Math.max(c.maximo, us.length);
     e.campo.set(j.nivel, c);
+    if (contarTracos(us).some(t => t.id === 'deadlock' && t.nivel >= 0)) {
+      const a = e.almas.get(p.estagio) ?? { n: 0, soma: 0 };
+      a.n++;
+      a.soma += j.almas;
+      e.almas.set(p.estagio, a);
+    }
     if (p.estagio < 3) continue;
     const dele = uso.get(j.id) ?? new Map<string, number>();
     for (const u of us) { const fr = S().campeao(u.campeao).fr; dele.set(fr, (dele.get(fr) ?? 0) + 1); }
@@ -77,11 +98,11 @@ function contarCampo(e: EstatPartidas, p: Partida, uso: Map<string, Map<string, 
 }
 
 /** Joga uma partida por semente e soma as lutas. */
-export function jogarPartidas(sementes: readonly number[], maxRodadas = 120): EstatPartidas {
+export function jogarPartidas(sementes: readonly number[], maxRodadas = 120, opcoes: OpcoesPartidas = {}): EstatPartidas {
   P.definirMotor({ simularLuta, atributosDaUnidade, contarTracos, combinar, ehComponente });
   const e: EstatPartidas = {
     partidas: 0, rodadas: [], estagioFinal: [], tracos: new Map(), itens: new Map(), monstros: new Map(), porTempo: placarVazio(),
-    lanc: new Map(), moedas: new Map(), colocacoes: new Map(), campo: new Map(),
+    lanc: new Map(), moedas: new Map(), colocacoes: new Map(), campo: new Map(), almas: new Map(), violacoes: new Map(), errosConteudo: [], naoTerminaram: 0,
   };
   const contarMoedas = (t: EntradaTime, r: ResultadoLuta, lado: Lado) => {
     const com = unidadesDo(t).filter(u => passivaDe(u.campeao));
@@ -95,23 +116,55 @@ export function jogarPartidas(sementes: readonly number[], maxRodadas = 120): Es
     }
   };
   // a mesma luta do motor de verdade (o conteúdo medido só observa), somando os lançamentos
+  let nLutas = 0;
   const simular: SimularLuta = (a, b, s) => {
-    const l = lutar(a, b, s);
+    const gravar = !!opcoes.gravarUmaACada && ++nLutas % opcoes.gravarUmaACada === 0;
+    const l = lutar(a, b, s, { gravar });
+    conferirLuta(a, b, l.r, e.violacoes);
+    if (gravar) {
+      conferirGravacao(l.r, e.violacoes);
+      delete l.r.gravacao;
+    }
     somarLancamentos(e.lanc, a, 'a', l);
     somarLancamentos(e.lanc, b, 'b', l);
     contarMoedas(a, l.r, 'a');
     contarMoedas(b, l.r, 'b');
     return l.r;
   };
+  const erroOriginal = console.error;
+  console.error = (...args: unknown[]) => { e.errosConteudo.push(args.map(String).join(' ')); };
   for (const s of sementes) {
-    const p: Partida = P.novaPartida(s);
+    const p: Partida = P.novaPartida(s, {}, opcoes.dificuldade ?? 'normal');
     const humano = p.jogadores.find(j => !j.bot)!;
     const uso = new Map<string, Map<string, number>>();
+    const massa = new Map<string, number>();
+    // item não some: a massa de itens (componente = 1, completo = 2) de quem está vivo só sobe
+    const conferirItens = (momento: string) => {
+      for (const j of P.vivos(p)) {
+        const m = massaDeItens(j);
+        if (m < (massa.get(j.id) ?? 0)) {
+          const x = e.violacoes.get('item sumiu') ?? { n: 0, exemplo: `${momento} ${p.estagio}-${p.rodada} ${j.id}: ${massa.get(j.id)} → ${m}` };
+          x.n++;
+          e.violacoes.set('item sumiu', x);
+        }
+        massa.set(j.id, m);
+      }
+    };
+    conferirPartida(p, e.violacoes, 'início');
     let rodadas = 0;
     while (!P.acabou(p) && rodadas < maxRodadas) {
+      // regressão: os bots planejam só depois do carrossel acabar, como no jogo (senão usam o que ganharam uma rodada atrasados)
+      if (p.carrossel) {
+        const x = e.violacoes.get('bots planejando com o carrossel aberto') ?? { n: 0, exemplo: `${p.estagio}-${p.rodada}` };
+        x.n++;
+        e.violacoes.set('bots planejando com o carrossel aberto', x);
+      }
       P.jogarBots(p);
       if (humano.colocacao == null) P.jogarBot(p, humano);
       P.fimDoPlanejamento(p);
+      conferirPartida(p, e.violacoes, 'antes da luta');
+      conferirTimes(p, e.violacoes);
+      conferirItens('antes da luta');
       contarCampo(e, p, uso);
       const rr = P.simularRodada(p, simular);
       for (const l of rr.lutas) {
@@ -124,9 +177,21 @@ export function jogarPartidas(sementes: readonly number[], maxRodadas = 120): Es
         somarLuta(e.porTempo, l.resultado.duracao >= 30 - 1e-9 ? 'vitoria' : 'derrota');
       }
       P.aplicarRodada(p, rr);
+      conferirPartida(p, e.violacoes, 'depois da luta');
+      conferirItens('depois da luta');
       rodadas++;
       if (P.acabou(p)) break;
       P.avancarRodada(p);
+      conferirPartida(p, e.violacoes, 'começo da rodada');
+      // como no jogo de verdade (controle.ts): o carrossel acaba e só depois os bots planejam
+      P.terminarCarrossel(p);
+      conferirPartida(p, e.violacoes, 'depois do carrossel');
+    }
+    if (!P.acabou(p)) e.naoTerminaram++;
+    else if ([...p.jogadores.map(j => j.colocacao)].sort((a, b) => (a ?? 0) - (b ?? 0)).join() !== '1,2,3,4,5,6,7,8') {
+      const x = e.violacoes.get('colocações não são 1 a 8') ?? { n: 0, exemplo: p.jogadores.map(j => j.colocacao).join(',') };
+      x.n++;
+      e.violacoes.set('colocações não são 1 a 8', x);
     }
     e.partidas++;
     e.rodadas.push(rodadas);
@@ -139,5 +204,6 @@ export function jogarPartidas(sementes: readonly number[], maxRodadas = 120): Es
       e.colocacoes.set(maisUsada, lista);
     }
   }
+  console.error = erroOriginal;
   return e;
 }
