@@ -9,7 +9,7 @@ import { CUSTOS, custoDaLinha, type LinhaEvo, type Unidades } from './plano';
  */
 export const PROPORCAO = [14, 13, 14, 14, 10] as const;
 /** Franquias que não viram campeão: Bakugan são os itens; Final Fantasy, os monstros das rodadas; as novas ficam fora da Autobatalha. */
-export const NAO_SAO_CAMPEOES: readonly string[] = ['bakugan', 'ff', 'zelda', 'minecraft', 'monsterhunter', 'brainrot'];
+export const NAO_SAO_CAMPEOES: readonly string[] = ['bakugan', 'ff', 'zelda', 'minecraft', 'monsterhunter', 'brainrot', 'kamenrider'];
 
 export interface Campeao { nome: string; custo?: number }
 

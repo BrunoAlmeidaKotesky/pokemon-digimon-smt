@@ -24,7 +24,8 @@ Depois de pronto, publique com a skill `publicar`.
   pokemon `#d6302a`/`#ff5a4f`, digimon `#1f6fd1`/`#4f9bff`, smt `#7a1fa8`/`#b866e8`, persona `#a0168f`/`#e879d6`,
   jojo `#0c8a5a`/`#3fd39a`, ygo `#c2410c`/`#ff8a4c`, bakugan `#0e8fa8`/`#3cc8e6`, lol `#4a3fc4`/`#9a92ff`,
   overwatch `#5a6f8a`/`#9fb5d0`, deadlock `#77791a`/`#c9cc5e`, ff `#3f8a1c`/`#86d95a`, zelda `#0f6b4f`/`#5eead4`, brainrot `#3b6b00`/`#d4f02f`,
-  minecraft `#7a5230`/`#c9a27a`, monsterhunter `#9f1239`/`#fb7185`, sujimon `#c0267a`/`#ff6fb5`,
+  minecraft `#7a5230`/`#c9a27a`, monsterhunter `#9f1239`/`#fb7185`, kamenrider `#81250e`/`#eab0a9`,
+  sujimon `#c0267a`/`#ff6fb5`,
   e `--gold` `#c58a00`/`#ffc23d` é da coroa e da roleta (não use). Cinza-escuro some no título (fica igual aos "x").
   Meça a distância (CIEDE2000) pras cores que já existem: as mais próximas do site ficam em volta de 9. Confira nos dois
   temas com screenshot.

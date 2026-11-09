@@ -42,20 +42,17 @@ describe('public/minecraft/list.json (gerado pelo minecraft.mjs)', async () => {
   const imagem = new Map(list);
 
   it('sem nome nem imagem repetidos, tudo da wiki', () => {
-    expect(list.length).toBeGreaterThan(120);
+    expect(list.length).toBeGreaterThan(80);
     expect(nomes.size).toBe(list.length);
     expect(new Set(list.map(([, img]) => img)).size).toBe(list.length);
     for (const [n, img] of list) expect(img, n).toMatch(/^https:\/\/minecraft\.wiki\/images\//);
   });
 
-  it('variantes entram no lugar do mob base, uma carta por cor', () => {
-    for (const n of ['Cat', 'Wolf', 'Horse', 'Sheep', 'Frog', 'Axolotl']) expect(nomes.has(n), n).toBe(false);
+  it('sem variantes de cor: um gato, um lobo, uma ovelha', () => {
+    for (const n of ['Cat', 'Wolf', 'Horse', 'Sheep', 'Frog', 'Axolotl']) expect(nomes.has(n), n).toBe(true);
     for (const n of ['Black Cat', 'Persian Cat', 'Pale Wolf', 'Ashen Wolf', 'White Horse', 'White Sheep', 'Light Blue Sheep', 'Temperate Frog', 'Lucy Axolotl']) {
-      expect(nomes.has(n), n).toBe(true);
+      expect(nomes.has(n), n).toBe(false);
     }
-    expect(list.filter(([n]) => n.endsWith(' Sheep'))).toHaveLength(16);
-    expect(list.filter(([n]) => n.endsWith(' Wolf'))).toHaveLength(9);
-    expect(list.filter(([n]) => n.endsWith(' Cat'))).toHaveLength(11);
   });
 
   it('jockeys, mobs de 1º de abril, Education e os que não existem no jogo normal ficam de fora', () => {
