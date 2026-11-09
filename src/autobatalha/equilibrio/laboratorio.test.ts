@@ -7,8 +7,8 @@ import { simularLuta } from '../combate';
 import { habilidadeDa } from '../conteudo';
 import type { EntradaTime, SetDados } from '../tipos';
 import {
-  SINTETICO, estenderSet, lutar, posicionar, reais, resultadoDo, timeComBonecos, timeDaOrigem, timeSorteado, unidade,
-  valorDoPacote,
+  SINTETICO, doisStandsNoTime, estenderSet, focosDoSet, focosEmConfronto, lutar, posicionar, reais, resultadoDo,
+  timeComBonecos, timeDaOrigem, timeDoFoco, timeSorteado, unidade, valorDoPacote,
 } from './laboratorio';
 import { criarRng } from '../rng';
 
@@ -91,6 +91,42 @@ describe('laboratório', () => {
     expect(e.every(x => x.casa.col >= 0 && x.casa.col < 8 && x.casa.lin >= 0 && x.casa.lin < 4)).toBe(true);
     const cs = e.find(x => x.id === '99')!.casa, cu = e.find(x => x.id === String(normais[0]!.uid))!.casa;
     expect(Math.abs(cs.lin - cu.lin) + Math.abs(cs.col - cu.col)).toBeLessThanOrEqual(2);
+  });
+
+  it('composições forçadas: focos do set e times de cada tipo', () => {
+    const focos = focosDoSet(2);
+    const ids = focos.map(f => f.id);
+    expect(ids).toEqual(expect.arrayContaining(['pokemon', 'jojo', 'tanque', 'fogo', 'pokemon+tanque', 'jojo+porradeiro', 'digimon+planta']));
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).not.toContain('pokemon+unicos');
+    const rng = criarRng(11);
+    // classe: todo mundo com a classe na forma da estrela (sem Stands)
+    const tanque = timeDoFoco({ id: 'tanque', classe: 'tanque' }, 4, 2, rng, 0);
+    expect(tanque.lutadores).toHaveLength(4);
+    expect(tanque.lutadores.every(l => !S().campeao(l.unidade!.campeao).stand)).toBe(true);
+    expect(tanque.lutadores.every(l => S().forma(l.unidade!.forma).classes.includes('tanque'))).toBe(true);
+    // par: JoJo sempre metade Stands e metade usuários de fora, Digimon com o Parceiro
+    const jojo = timeDoFoco({ id: 'jojo+porradeiro', origem: 'jojo', classe: 'porradeiro' }, 8, 2, rng, 1);
+    const stands = jojo.lutadores.filter(l => S().campeao(l.unidade!.campeao).stand);
+    expect(stands).toHaveLength(4);
+    expect(jojo.lutadores).toHaveLength(8);
+    expect(stands.every(l => l.unidade!.usuario !== undefined)).toBe(true);
+    const digi = timeDoFoco({ id: 'digimon+planta', origem: 'digimon', classe: 'planta' }, 9, 2, rng, 2);
+    expect(digi.lutadores).toHaveLength(9);
+    expect(digi.lutadores.filter(l => S().campeao(l.unidade!.campeao).fr === 'digimon')).toHaveLength(6);
+  });
+
+  it('composições forçadas: confronto e 2 Stands são determinísticos pela semente', () => {
+    const focos = focosDoSet(2).slice(0, 12);
+    const a = focosEmConfronto(focos, 4, 1, 2, 7), b = focosEmConfronto(focos, 4, 1, 2, 7);
+    expect([...a.focos]).toEqual([...b.focos]);
+    expect([...a.campeoes]).toEqual([...b.campeoes]);
+    expect(a.lutas).toBe(focos.length * 2 * 2);
+    // os dois lados do confronto contam: cada luta soma um placar pra cada foco
+    expect([...a.focos.values()].reduce((s, p) => s + p.lutas, 0)).toBe(a.lutas * 2);
+    const c = doisStandsNoTime(6, 2, 2, 7), d = doisStandsNoTime(6, 2, 2, 7);
+    expect(c).toEqual(d);
+    expect(c.lutas).toBe(4);
   });
 
   it('equivalente do pacote: o tanque sintético vale alguma coisa (e é determinístico)', () => {

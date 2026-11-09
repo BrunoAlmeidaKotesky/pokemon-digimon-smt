@@ -5,7 +5,7 @@
 //   node node_modules/vitest/vitest.mjs run --config src/autobatalha/equilibrio/playtest.config.ts
 //
 // Variáveis de ambiente (todas opcionais):
-//   EQUILIBRIO_PARTES   lista separada por vírgula: campeoes,curva,pacotes,tracos,itens,partidas,origens (padrão: todas)
+//   EQUILIBRIO_PARTES   lista separada por vírgula: campeoes,curva,pacotes,tracos,itens,partidas,origens,comps (padrão: todas)
 //   EQUILIBRIO_RAPIDO=1 menos cenários (pra conferir um ajuste rápido; os números ficam mais ruidosos)
 //   EQUILIBRIO_SAIDA    arquivo .md (padrão docs/tft/matematica/equilibrio.md)
 //   EQUILIBRIO_JSON     se definido, grava também os números crus nesse arquivo .json
@@ -16,8 +16,8 @@ import { definirSet } from '../dados';
 import { HABILIDADES_CLASSE, TRACOS } from '../conteudo';
 import { ORIGENS, type Custo, type Estrela, type SetDados } from '../tipos';
 import {
-  curva, estenderSet, forcaPorCampeao, ganhoDeEvoluir, idsDosItens, origemContraOrigem, valorDoItem, valorDoPacote,
-  valorDoTraco, type Grupo, type TabelaLanc,
+  curva, doisStandsNoTime, estenderSet, focosDoSet, focosEmConfronto, forcaPorCampeao, ganhoDeEvoluir, idsDosItens,
+  origemContraOrigem, valorDoItem, valorDoPacote, valorDoTraco, type Grupo, type TabelaLanc,
 } from './laboratorio';
 import { juntarComHistorico } from './medidas';
 import { jogarPartidas } from './partidas';
@@ -25,14 +25,14 @@ import { montarRelatorio, type Resultados } from './relatorio';
 
 const env = process.env;
 const RAPIDO = env.EQUILIBRIO_RAPIDO === '1';
-const PARTES = new Set((env.EQUILIBRIO_PARTES ?? 'campeoes,curva,pacotes,tracos,itens,partidas,origens').split(',').map(s => s.trim()));
+const PARTES = new Set((env.EQUILIBRIO_PARTES ?? 'campeoes,curva,pacotes,tracos,itens,partidas,origens,comps').split(',').map(s => s.trim()));
 const SAIDA = env.EQUILIBRIO_SAIDA ?? 'docs/tft/matematica/equilibrio.md';
 const BASE = Number(env.EQUILIBRIO_SEMENTE ?? 2026);
 const CENARIOS = RAPIDO
-  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, origens: 6, evolucao: 12, partidas: [1, 2, 3, 4, 5, 6] }
-  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, origens: 20, evolucao: 40, partidas: Array.from({ length: 24 }, (_, i) => i + 1) };
+  ? { curva: 40, tracos: 20, itens: 30, pacotes: 24, origens: 6, evolucao: 12, comps: 6, doisStands: 30, partidas: Array.from({ length: 16 }, (_, i) => i + 1) }
+  : { curva: 160, tracos: 60, itens: 90, pacotes: 72, origens: 20, evolucao: 40, comps: 24, doisStands: 120, partidas: Array.from({ length: 240 }, (_, i) => i + 1) };
 
-/** Tabuleiro e estrela de cada coluna da comparação entre origens. */
+/** Tabuleiro e estrela de cada coluna da comparação entre origens e das composições forçadas. */
 const PONTOS_ORIGENS: readonly (readonly [number, Estrela])[] = [[4, 1], [6, 2], [8, 2], [10, 2], [10, 3]];
 /** Origens em que a medida de evoluir olha só as linhas evolutivas. */
 const COM_LINHAS = new Set<string>(['pokemon', 'digimon', 'smt', 'persona', 'sujimon']);
@@ -91,7 +91,19 @@ it('playtest: mede e grava o equilibrio.md', () => {
   }
   if (PARTES.has('partidas')) {
     log(`partidas de bots (${CENARIOS.partidas.length})`);
-    r.partidas = jogarPartidas(CENARIOS.partidas.map(s => s + BASE));
+    r.partidas = jogarPartidas(CENARIOS.partidas.map(s => s + BASE), 120, { gravarUmaACada: 40 });
+    // os invariantes valem em qualquer dificuldade: mais umas partidas só pra conferir, fora das estatísticas
+    for (const dificuldade of ['facil', 'dificil'] as const) {
+      log(`partidas de bots no ${dificuldade}, só invariantes`);
+      const extra = jogarPartidas(CENARIOS.partidas.slice(0, Math.ceil(CENARIOS.partidas.length / 3)).map(s => s + BASE), 120, { dificuldade, gravarUmaACada: 40 });
+      r.partidas.naoTerminaram += extra.naoTerminaram;
+      r.partidas.errosConteudo.push(...extra.errosConteudo);
+      for (const [k, x] of extra.violacoes) {
+        const y = r.partidas.violacoes.get(k);
+        if (y) y.n += x.n;
+        else r.partidas.violacoes.set(k, x);
+      }
+    }
   }
 
   if (PARTES.has('origens')) {
@@ -103,6 +115,18 @@ it('playtest: mede e grava o equilibrio.md', () => {
       return { fr, de, soLinhas, eq: ganhoDeEvoluir(fr, de, 6, CENARIOS.evolucao, BASE, soLinhas) };
     }));
   }
+  if (PARTES.has('comps')) {
+    const focos = focosDoSet(2);
+    r.composicoes = {
+      focos,
+      oponentes: CENARIOS.comps,
+      pontos: PONTOS_ORIGENS.map(([limite, estrela]) => {
+        log(`composições forçadas (${focos.length} focos), ${limite} no tabuleiro, ★${estrela}`);
+        return { limite, estrela, ...focosEmConfronto(focos, limite, estrela, CENARIOS.comps, BASE) };
+      }),
+      doisStands: ([4, 6, 8, 10] as const).map(limite => ({ limite, estrela: 2 as const, placar: doisStandsNoTime(limite, 2, CENARIOS.doisStands, BASE) })),
+    };
+  }
 
   const antigo = existsSync(SAIDA) ? readFileSync(SAIDA, 'utf8') : null;
   writeFileSync(SAIDA, juntarComHistorico(montarRelatorio(r), antigo));
@@ -111,7 +135,14 @@ it('playtest: mede e grava o equilibrio.md', () => {
     const comoObjeto = (m: Map<string, unknown>) => Object.fromEntries(m);
     const json = { ...r, lancCurva: r.lancCurva && comoObjeto(r.lancCurva), partidas: r.partidas && {
       ...r.partidas, tracos: comoObjeto(r.partidas.tracos), itens: comoObjeto(r.partidas.itens), monstros: comoObjeto(r.partidas.monstros),
-      lanc: comoObjeto(r.partidas.lanc), moedas: comoObjeto(r.partidas.moedas),
+      lanc: comoObjeto(r.partidas.lanc), moedas: comoObjeto(r.partidas.moedas), colocacoes: comoObjeto(r.partidas.colocacoes),
+      campo: comoObjeto(r.partidas.campo as unknown as Map<string, unknown>),
+      almas: comoObjeto(r.partidas.almas as unknown as Map<string, unknown>),
+      violacoes: comoObjeto(r.partidas.violacoes),
+    }, origens: r.origens?.map(o => ({ ...o, placares: comoObjeto(o.placares as Map<string, unknown>) })),
+    composicoes: r.composicoes && {
+      ...r.composicoes,
+      pontos: r.composicoes.pontos.map(p => ({ ...p, focos: comoObjeto(p.focos), campeoes: comoObjeto(p.campeoes) })),
     } };
     writeFileSync(env.EQUILIBRIO_JSON, JSON.stringify(json));
     log(`gravado ${env.EQUILIBRIO_JSON}`);

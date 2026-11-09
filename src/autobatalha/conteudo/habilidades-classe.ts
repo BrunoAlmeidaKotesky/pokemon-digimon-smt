@@ -13,15 +13,15 @@ function ult(id: string, nome: string, mana: number, texto: string, lancar: Lanc
 }
 
 // Números rebalanceados no playtest de 04/11/2026 (docs/tft/matematica/equilibrio.md, histórico).
-const DEMONIACOS: PorEstrela = [2.6, 3.9, 5.9];
+const DEMONIACOS: PorEstrela = [3, 4.5, 6.8];
 /** fração da vida atual que o Pacto Sombrio gasta */
 const DEMONIACOS_CUSTO = 0.05;
-const BIZARRA_GOSMA: PorEstrela = [3, 4.5, 6.75];
+const BIZARRA_GOSMA: PorEstrela = [3.3, 5, 7.4];
 const BIZARRA_CURA: PorEstrela = [0.35, 0.5, 0.7];
 const BIZARRA_BERRO = 2;
 const FADINHAS: PorEstrela = [0.16, 0.18, 0.22];
 const FADINHAS_ESCUDO = 0.1;
-const SAFADA: PorEstrela = [2.5, 3.75, 5.6];
+const SAFADA: PorEstrela = [3, 4.5, 6.75];
 /** segundos de encantado do Charme */
 const SAFADA_CHARME = 1.5;
 const ATIRADOR: PorEstrela = [1.8, 2.7, 4];
@@ -31,17 +31,17 @@ const ROBO: PorEstrela = [0.6, 0.9, 1.35];
 const ROBO_ESCUDO = 0.12;
 const DRAGAO: PorEstrela = [2, 3, 4.5];
 const TEMPORAIS: PorEstrela = [1.5, 2, 2.5];
-const TEMPORAIS_DANO: PorEstrela = [0.6, 0.9, 1.35];
+const TEMPORAIS_DANO: PorEstrela = [0.8, 1.2, 1.8];
 const TANQUE: PorEstrela = [0.16, 0.18, 0.22];
-const PORRADEIRO: PorEstrela = [2, 3, 4.5];
+const PORRADEIRO: PorEstrela = [2.3, 3.45, 5.2];
 /** fração da própria vida máxima somada ao Pancadão */
 const PORRADEIRO_VIDA = 0.1;
-const ASSASSINO: PorEstrela = [3, 4.5, 6.75];
-const FOGO: PorEstrela = [2.1, 3.15, 4.7];
+const ASSASSINO: PorEstrela = [3.4, 5.1, 7.7];
+const FOGO: PorEstrela = [2.4, 3.6, 5.4];
 const AGUA: PorEstrela = [1.9, 2.85, 4.3];
 const AGUA_CURA = 0.15;
 const TERRA: PorEstrela = [2.3, 3.45, 5.2];
-const VENTO: PorEstrela = [2.4, 3.6, 5.4];
+const VENTO: PorEstrela = [2.8, 4.2, 6.3];
 const RAIO: PorEstrela = [1.3, 1.95, 2.9];
 const GELO: PorEstrela = [1.3, 1.95, 2.9];
 const GELO_CONGELA = 1;

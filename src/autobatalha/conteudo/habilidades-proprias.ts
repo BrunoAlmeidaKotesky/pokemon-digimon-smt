@@ -239,18 +239,18 @@ const pokemonEDigimon: Habilidade[] = [
 // SMT, LoL, Deadlock e Sujimon
 // ---------------------------------------------------------------------------------------------------------------
 
-const ANUBIS: PorEstrela = [1.8, 2.7, 4];
+const ANUBIS: PorEstrela = [3, 4.5, 6.75];
 const ARAHABAKI: PorEstrela = [2, 2.5, 3];
 const MOT: PorEstrela = [2.5, 3.75, 5.6];
 const VELKOZ: PorEstrela = [3, 4.5, 7];
-const BABA: PorEstrela = [1.2, 1.8, 2.7];
+const BABA: PorEstrela = [1.6, 2.4, 3.6];
 const ESCAPIST_CURA: PorEstrela = [0.2, 0.3, 0.45];
 const TWISTED: PorEstrela = [0.9, 1.35, 2];
-const DIEHARD: PorEstrela = [1.4, 2.1, 3.2];
-const MASCOT: PorEstrela = [2.6, 3.9, 5.9];
+const DIEHARD: PorEstrela = [2.2, 3.3, 5];
+const MASCOT: PorEstrela = [3.2, 4.8, 7.2];
 
 const outros: Habilidade[] = [
-  hab('smt:Anubis', 'Pesagem do Coração', 80,
+  hab('smt:Anubis', 'Pesagem do Coração', 70,
     `põe na balança o coração do inimigo com mais vida: ele leva ${pc(ANUBIS)} do dano de ataque mais 10% da vida que ` +
     'tem agora. Se ainda tiver mais vida que o Anubis, o coração pesou: fica atordoado por 1,5 s.',
     (ctx, eu, alvo0) => {
@@ -382,7 +382,7 @@ const outros: Habilidade[] = [
 // JoJo (Stands)
 // ---------------------------------------------------------------------------------------------------------------
 
-const BALL_BREAKER: PorEstrela = [1.5, 2.25, 3.4];
+const BALL_BREAKER: PorEstrela = [1.35, 2, 3];
 const CIVIL_WAR: PorEstrela = [2.2, 3.3, 5];
 const D4C: PorEstrela = [2, 3, 4.5];
 const HEY_YA: PorEstrela = [0.4, 0.6, 0.9];
@@ -392,15 +392,15 @@ const SCARY: PorEstrela = [1.6, 2.4, 3.6];
 const THE_WORLD_SBR: PorEstrela = [1.6, 2.4, 3.6];
 const THE_WORLD_SBR_TEMPO: PorEstrela = [1.5, 1.75, 2];
 const TUBULAR: PorEstrela = [1.5, 2.25, 3.4];
-const TUSK: PorEstrela = [0.22, 0.32, 0.5];
+export const TUSK: PorEstrela = [0.2, 0.29, 0.45];
 const SILVER: PorEstrela = [0.4, 0.6, 0.9];
 const STAR_TEMPO: PorEstrela = [1, 1.5, 2];
 const STAR: PorEstrela = [2.5, 3.75, 5.6];
 const STRENGTH_TEMPO: PorEstrela = [1.5, 2, 2.5];
 const STRENGTH: PorEstrela = [1.5, 2.25, 3.4];
-const HOLY: PorEstrela = [0.3, 0.45, 0.7];
+const HOLY: PorEstrela = [0.45, 0.65, 1];
 const SOFT: PorEstrela = [0.6, 0.9, 1.35];
-const WONDER: PorEstrela = [1.2, 1.8, 2.7];
+const WONDER: PorEstrela = [1.6, 2.4, 3.6];
 const BOY: PorEstrela = [0.6, 0.75, 0.9];
 const PEARL: PorEstrela = [0.22, 0.33, 0.5];
 const BAD_COMPANY: PorEstrela = [0.5, 0.75, 1.1];
@@ -409,13 +409,13 @@ const CRAZY_CURA: PorEstrela = [0.25, 0.35, 0.5];
 const HARVEST: PorEstrela = [0.4, 0.6, 0.9];
 const RHCP: PorEstrela = [1.3, 1.95, 2.9];
 const STRAY: PorEstrela = [1.4, 2.1, 3.1];
-const THE_HAND: PorEstrela = [3, 4.5, 6.75];
+const THE_HAND: PorEstrela = [3.6, 5.4, 8.1];
 const BABY: PorEstrela = [2.2, 3.3, 5];
 const REQUIEM_SONO: PorEstrela = [1.5, 2, 2.5];
 const GOLD: PorEstrela = [1.6, 2.4, 3.6];
 const GER_TEMPO: PorEstrela = [3, 4, 5];
 const GER: PorEstrela = [3, 4.5, 6.75];
-const METALLICA: PorEstrela = [2, 3, 4.5];
+const METALLICA: PorEstrela = [3.2, 4.8, 7.2];
 const PRESIDENT: PorEstrela = [2, 3, 4];
 const PISTOLS: PorEstrela = [0.55, 0.8, 1.2];
 const TALKING: PorEstrela = [2, 2.5, 3];
@@ -426,8 +426,8 @@ const TWOH_TEMPO: PorEstrela = [2, 2.5, 3];
 const TWOH: PorEstrela = [3, 4.5, 7];
 const NOVEMBER: PorEstrela = [0.6, 0.9, 1.35];
 const LIGHT_ROD: PorEstrela = [1.8, 2.7, 4];
-const FOO: PorEstrela = [0.8, 1.2, 1.8];
-const ECHOES: PorEstrela = [2, 3, 4.5];
+const FOO: PorEstrela = [1.2, 1.8, 2.7];
+const ECHOES: PorEstrela = [3, 4.5, 6.75];
 const FOO_CURA: PorEstrela = [0.15, 0.22, 0.33];
 const WHITESNAKE: PorEstrela = [1.5, 2.25, 3.4];
 const WHITESNAKE_TEMPO: PorEstrela = [2, 3, 4];
@@ -547,9 +547,9 @@ const jojo: Habilidade[] = [
     }),
 
   hab('jojo:Tusk', 'Unhas Giratórias', 80,
-    'muda de Act a cada estrela. Estrela 1 (Act 1): dispara as 10 unhas giratórias no alvo, cada uma com 30% do dano de ' +
-    'ataque. Estrela 2 (Act 2): 45% cada, e depois de 2 s o buraco da bala persegue o alvo e acerta de novo, com 150%. ' +
-    'Estrela 3 (Act 4, Rotação Infinita): 70% cada, e o alvo perde 5% da vida máxima por segundo por 6 s, sem poder ser ' +
+    `muda de Act a cada estrela. Estrela 1 (Act 1): dispara as 10 unhas giratórias no alvo, cada uma com ${pct(TUSK[0])} do dano de ` +
+    `ataque. Estrela 2 (Act 2): ${pct(TUSK[1])} cada, e depois de 2 s o buraco da bala persegue o alvo e acerta de novo, com 150%. ` +
+    `Estrela 3 (Act 4, Rotação Infinita): ${pct(TUSK[2])} cada, e o alvo perde 5% da vida máxima por segundo por 6 s, sem poder ser ` +
     'curado.',
     comAlvo((ctx, eu, alvo) => {
       ctx.visual('feixe', [alvo], eu);

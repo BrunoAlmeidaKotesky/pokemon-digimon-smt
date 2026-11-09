@@ -115,7 +115,7 @@ EQUILIBRIO_PARTES=curva,campeoes EQUILIBRIO_RAPIDO=1 EQUILIBRIO_SAIDA=/tmp/eq.md
 node node_modules/vitest/vitest.mjs run src/autobatalha/equilibrio
 ```
 
-Variáveis: `EQUILIBRIO_PARTES` (`campeoes,curva,pacotes,tracos,itens,partidas,origens`), `EQUILIBRIO_RAPIDO=1` (menos
+Variáveis: `EQUILIBRIO_PARTES` (`campeoes,curva,pacotes,tracos,itens,partidas,origens,comps`), `EQUILIBRIO_RAPIDO=1` (menos
 cenários), `EQUILIBRIO_SAIDA` (outro .md), `EQUILIBRIO_JSON` (grava os números crus) e `EQUILIBRIO_SEMENTE` (semente
 base, padrão 2026). O `*.playtest.ts` não entra no `vitest run` normal: só com a config própria.
 
@@ -127,7 +127,8 @@ Arquivos:
   lançamento, dano, cura, escudo) e pode desligar um traço de um lado só; o motor avisa de onde veio a mana (atacar,
   apanhar, efeitos) e quando cada um morreu (`ObservadorLuta`, sem mudar a luta). `laboratorio.test.ts` confere que a
   luta medida é idêntica à do motor de verdade.
-- `partidas.ts`: partidas inteiras de 8 bots (o laço de `src/autobatalha/integracao.test.ts`), contando cada luta.
+- `partidas.ts`: partidas inteiras de 8 bots (o laço de `src/autobatalha/integracao.test.ts`), contando cada luta, 240 no padrão, e mais 80 em cada dificuldade só pros invariantes.
+- `invariantes.ts`: o que tem de valer em qualquer jogo (lugares das unidades, limite do tabuleiro, Stands, pool, ouro, vida, nível, itens, resultado e gravação de cada luta), conferido a cada rodada; testado em `invariantes.test.ts`.
 - `relatorio.ts`: monta o `equilibrio.md`; `equilibrio.playtest.ts` roda tudo e grava.
 
 Medidas (detalhes no topo de cada seção do equilibrio.md):
@@ -153,6 +154,10 @@ Medidas (detalhes no topo de cada seção do equilibrio.md):
    itens, e o que age fora da luta (Overwatch, Deadlock, Sujimon) não entra. Digimon leva um terço do time de fora, pro
    Parceiro. **Quanto vale evoluir**: os mesmos campeões numa estrela a mais; o resultado é o bônus de vida e dano no time
    da estrela de baixo que empata.
+9. **Composições forçadas** (`comps`): times focados em cada traço e em cada par origem + classe que existe no set (com 2 campeões ou mais), em
+   tabuleiros de 4 ★1, 6 ★2, 8 ★2, 10 ★2 e 10 ★3, com os custos da loja daquele nível. Cada foco luta contra focos sorteados, dos dois lados. Resultado por
+   traço, por par e por campeão (vitórias de quem aparece). JoJo sempre metade Stands, metade usuários de fora; Digimon com o Parceiro. É a medida de
+   "combinações diferentes", que as partidas de bots não dão (os bots afunilam em Pokémon). **2 Stands num time normal** mede se o splash vira obrigação (50% = tanto faz).
 
 O histórico dos ajustes (antes → depois) fica no fim do equilibrio.md, embaixo do marcador; o playtest regrava só a
 parte de cima.

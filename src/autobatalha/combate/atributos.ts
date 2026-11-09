@@ -10,9 +10,9 @@ interface BaseCusto { vida: number; dano: number; armadura: number; resist: numb
 export const BASE_POR_CUSTO: Record<Custo, BaseCusto> = {
   1: { vida: 450, dano: 42, armadura: 20, resist: 20, velAtaque: 0.65 },
   2: { vida: 600, dano: 50, armadura: 25, resist: 25, velAtaque: 0.7 },
-  3: { vida: 720, dano: 61, armadura: 30, resist: 30, velAtaque: 0.75 },
-  4: { vida: 850, dano: 75, armadura: 40, resist: 40, velAtaque: 0.8 },
-  5: { vida: 1000, dano: 90, armadura: 50, resist: 50, velAtaque: 0.85 },
+  3: { vida: 750, dano: 63, armadura: 30, resist: 30, velAtaque: 0.75 },
+  4: { vida: 910, dano: 80, armadura: 40, resist: 40, velAtaque: 0.8 },
+  5: { vida: 1110, dano: 98, armadura: 50, resist: 50, velAtaque: 0.85 },
 };
 
 /** Quanto a estrela multiplica a vida e o dano. */
@@ -40,9 +40,9 @@ export interface Papel {
 
 export const PAPEIS: Record<string, Papel> = {
   tanque: { vida: 1.25, dano: 0.75, armadura: 20, resist: 20, alcance: 1, mana: 70 },
-  porradeiro: { vida: 1.15, dano: 1.05, alcance: 1, mana: 70 },
+  porradeiro: { vida: 1.15, dano: 1.1, alcance: 1, mana: 70 },
   assassino: { vida: 1, dano: 1.2, crit: 0.15, alcance: 1, mana: 60 },
-  atirador: { vida: 0.75, dano: 1, velAtaque: 1.1, alcance: 4, mana: 80 },
+  atirador: { vida: 0.8, dano: 1, velAtaque: 1.1, alcance: 4, mana: 80 },
   dragao: { vida: 1.05, dano: 1.05, alcance: 2, mana: 80 },
   robo: { vida: 1, dano: 1, armadura: 15, alcance: 2, mana: 70 },
   anjo: { vida: 0.85, dano: 1, alcance: 3, mana: 80 },
@@ -150,15 +150,15 @@ export function aplicarBonus(a: Atributos, b: Bonus): Atributos {
 
 /** Forma que não lança nada (não final de Pokémon e Digimon): vida e dano a mais, por estrela, no lugar da
  *  habilidade (na estrela 2 as habilidades dos outros crescem, então o bônus também). */
-// buff pedido pelo usuário em 04/11/2026 (era 20/25/25%). Medido no playtest: 22/28% deixa 52 campeões fora da
-// faixa (eram 73); 25/33% passava do ponto (80 fora, formas que só atacam com até 82%).
-export const BONUS_SEM_HABILIDADE: Record<Estrela, number> = { 1: 0.22, 2: 0.28, 3: 0.28 };
+// buff pedido pelo usuário em 04/11/2026 (era 20/25/25%; 22/28% na época). Em 09/11/2026 a ★2 foi pra 24%: somado ao
+// bônus de evoluir, ★2 que só ataca chegava a 90% no rodízio (equilibrio.md, histórico).
+export const BONUS_SEM_HABILIDADE: Record<Estrela, number> = { 1: 0.22, 2: 0.24, 3: 0.28 };
 
 /** Vida e dano a mais por evoluir, por estrela, nas linhas de Pokémon e Digimon (pedido do usuário em 05/11/2026): a
  *  forma de cima é outro bicho, não a mesma carta mais forte. Solto da mesma origem (Mew não evolui) não ganha. */
 export const BONUS_EVOLUCAO: Partial<Record<Origem, Record<Estrela, number>>> = {
   pokemon: { 1: 0, 2: 0.05, 3: 0.1 },
-  digimon: { 1: 0, 2: 0.12, 3: 0.3 },
+  digimon: { 1: 0, 2: 0.06, 3: 0.3 },
 };
 const bonusEvolucao = (c: CampeaoDados, e: Estrela): number => (c.niveis.length > 1 ? BONUS_EVOLUCAO[c.fr]?.[e] ?? 0 : 0);
 

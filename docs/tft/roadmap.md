@@ -46,7 +46,7 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
     7, umas 35 rodadas.
 14. **Monstros:** calibrados com partidas de bots. Os comuns quase sempre perdem; o chefe ganha umas 40% das vezes na 3-7
     e 65% depois. Com limite = nível e todo Stand ocupando vaga baixei o chefe (vida 4000 → 3200, dano 260 → 210, crescimento 1,4 → 1,34), pra ele não ficar mais forte só
-    porque o tabuleiro tem uma unidade a menos. A 1-1 continua ganha com um campeão só (98%).
+    porque o tabuleiro tem uma unidade a menos; no patch de 09/11 ele foi pra vida 3400, dano 225 e crescimento 1,27. A 1-1 continua ganha com um campeão só (99%).
 15. **Detalhes da partida:**
     - a sequência de vitórias e derrotas só conta luta contra jogador;
     - empate conta como derrota pros dois;
@@ -98,7 +98,7 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
   publicada. Cada Stand precisa de um usuário de outra origem, que também ocupa vaga: cabem ⌊nível/2⌋ Stands, 6 no nível
   12. Por isso a escada virou 2/3/4/5/6, e a mana a menos vem no degrau de 5.
 
-  Sem compensar, a origem morria, então o bônus subiu. Duas medidas, porque bônus alto demais vira obrigação: **time
+  Sem compensar, a origem morria, então o bônus subiu (em 09/11 os degraus de 3 e 4 foram pra +35 e +46%; o de 2 ficou em +25% pra não virar obrigação). Duas medidas, porque bônus alto demais vira obrigação: **time
   cheio** é metade Stands contra as outras origens (4 ★1, 6 ★2, 8 ★2, 10 ★2, 10 ★3); **2 Stands no time** é trocar 2
   normais por 2 Stands no mesmo time ★2, contra ele sem Stand (tabuleiro de 4, 6, 8 e 10; 50% = tanto faz).
 
@@ -141,10 +141,9 @@ O que eu decidi sozinho enquanto você dormia, e o que ficou em aberto. O design
 
 ## Pra você decidir
 
-- **Origens que sobraram fora do meio** (time cheio, equilibrio.md, seção "Origens"): Yu-Gi-Oh! vai a 98% no 10 ★2 (do
-  degrau de 7 em diante as cartas ganham as duas posições) e Sujimon fica entre 73% e 89%. Na outra ponta, Deadlock (3% a
-  32%), Overwatch no 10 ★3 (22%) e LoL no 6 ★2 (33%); os dois primeiros e o Sujimon agem também fora da luta, e isso não
-  entra na conta. Você não pediu pra mexer: quer um ajuste nelas?
+- **Origens depois do patch de 09/11/2026** (equilibrio.md, histórico): Yu-Gi-Oh! ainda vai a ~88% com 10 no tabuleiro ★2 (nerf aplicado, número no histórico)
+  e Deadlock fica em 3% a 34% no time cheio, porque o bônus dele é das almas (fora da luta; em partida de verdade ele acaba na 4ª posição em média).
+  **Pra jogar e dizer:** se Deadlock ou Yu-Gi-Oh! ainda parecem errados no late game.
 - **"Escalonamento" de Pokémon e Digimon:** li como ganho ao evoluir. Se era a escada do traço, dá pra trocar.
 
 - **Visual da tela nova:** tons do gramado, metade do adversário em oliva, cores das classes, ícones de perto/longe e

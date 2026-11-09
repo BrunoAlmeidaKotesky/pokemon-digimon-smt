@@ -41,27 +41,27 @@ function estadoDoLado<T>(mapa: WeakMap<Lutador, T>, criar: () => T) {
 // "degrau" no comentário dizem a partir de qual degrau (índice) o efeito extra liga.
 // ===================================================================================================
 
-const TANQUE = [0.2, 0.3, 0.4, 0.7, 1];
+const TANQUE = [0.5, 0.65, 0.75, 0.9, 1.15];
 /** Tanque: escudo a partir deste degrau (4 Tanques) e provocar a partir deste (6) */
 const TANQUE_ESCUDO = 2;
 const TANQUE_PROVOCA = 3;
-const PORRADEIRO = [0.15, 0.22, 0.3, 0.5, 0.65, 0.8];
+const PORRADEIRO = [0.2, 0.28, 0.36, 0.55, 0.7, 0.85];
 /** Porradeiro: bravo a partir deste degrau (4) e vida pro resto do time a partir deste (6) */
 const PORRADEIRO_BRAVO = 2;
 const PORRADEIRO_TIME = 3;
 const ASSASSINO = [0.15, 0.22, 0.3, 0.37, 0.45];
 /** Assassino: abate deixa sem poder ser alvo a partir deste degrau (6) */
 const ASSASSINO_INTOCAVEL = 4;
-const DEMONIACOS = [0.1, 0.15, 0.2, 0.25, 0.27, 0.3];
+const DEMONIACOS = [0.1, 0.14, 0.18, 0.2, 0.22, 0.25];
 const BIZARRA_MULT = [1, 1.5, 2, 2.5, 3, 3.5];
 /** Criaturinha Bizarra: dois bônus a partir deste degrau (7) */
 const BIZARRA_DOIS = 3;
-const FADINHAS = [0.04, 0.06, 0.08, 0.14, 0.18, 0.22];
-const SAFADA = [0.15, 0.21, 0.27, 0.4, 0.55, 0.7];
+const FADINHAS = [0.05, 0.08, 0.1, 0.16, 0.2, 0.24];
+const SAFADA = [0.18, 0.24, 0.3, 0.42, 0.55, 0.7];
 /** Safada: segundos de encantado */
 const SAFADA_CHARME = 1.5;
-const ATIRADOR = [0.03, 0.045, 0.06, 0.07, 0.09];
-const ANJO = [0.4, 0.45, 0.5, 0.65, 0.8];
+const ATIRADOR = [0.04, 0.055, 0.07, 0.08, 0.1];
+const ANJO = [0.6, 0.7, 0.7, 0.8, 0.9];
 /** Anjo: todos renascem a partir deste degrau (4); antes, só o primeiro */
 const ANJO_TODOS = 2;
 const ROBO_ARMADURA = [0.25, 0.38, 0.5, 0.7, 0.9];
@@ -72,7 +72,7 @@ const ROBO_IMUNE = 4;
 const DRAGAO = [0.1, 0.15, 0.2, 0.26, 0.36];
 /** Dragão: +5% de dano pro time a partir deste degrau (7) */
 const DRAGAO_TIME = 4;
-const TEMPORAIS = [0.06, 0.09, 0.12, 0.18];
+const TEMPORAIS = [0.07, 0.1, 0.13, 0.18];
 /** Temporais: salva o aliado a partir deste degrau (5) */
 const TEMPORAIS_SALVA = 3;
 
@@ -289,16 +289,16 @@ const classes: Traco[] = [
 // ===================================================================================================
 
 const ELEMENTO_4 = 2;
-const FOGO = [0.01, 0.02, 0.03, 0.035, 0.04];
+const FOGO = [0.015, 0.025, 0.035, 0.04, 0.045];
 const AGUA = [0.015, 0.03, 0.045, 0.055, 0.065];
-const TERRA = [0.3, 0.6, 1];
+const TERRA = [0.5, 0.8, 1.2];
 /** Terra (4): segundos entre os tremores */
 const TERRA_TREMOR = 4;
 const VENTO = [0.15, 0.3, 0.45, 0.55, 0.65];
 const VENTO_DESVIO = [0, 0.1, 0.15, 0.18, 0.2];
 const RAIO = [1, 2, 3, 4];
 const GELO = [0.15, 0.25, 0.35];
-const PLANTA = [0.02, 0.035, 0.045, 0.055];
+const PLANTA = [0.025, 0.04, 0.05, 0.065];
 
 const fogo = estadoDoLado(new WeakMap<Lutador, Map<Lutador, { ate: number; de: Lutador }>>(), () => new Map());
 const raioAtaques = new WeakMap<Lutador, number>();
@@ -462,26 +462,26 @@ const elementos: Traco[] = [
 
 // Escadas das origens: 5 degraus (6 nas maiores), pela conta de docs/tft/matematica/resultado.md, seção 6b. Os números
 // de cada degrau estão nas listas abaixo (uma posição por degrau).
-const POKEMON = [0.01, 0.015, 0.02, 0.025, 0.03, 0.035];
-const DIGIMON = [0.08, 0.12, 0.18, 0.25, 0.35];
+const POKEMON = [0.02, 0.024, 0.03, 0.032, 0.036, 0.04];
+const DIGIMON = [0.16, 0.22, 0.3, 0.38, 0.5];
 /** Digimon: o parceiro ganha metade a partir deste degrau (3 Digimon), e a mana cheia a partir deste (5 Digimon) */
 const DIGIMON_PARCEIRO = 1;
 const DIGIMON_MANA = 3;
 const SMT = [0.2, 0.25, 0.32, 0.45, 0.6];
-const PERSONA = [0.08, 0.14, 0.2, 0.28, 0.38];
+const PERSONA = [0.1, 0.16, 0.22, 0.3, 0.4];
 // só parte dos Stands fica fora da vaga: no nível 12 cabem 8, e a escada termina aí (era 2/3/5/7/9/10)
-const JOJO = [0.25, 0.3, 0.4, 0.48, 0.55];
+const JOJO = [0.25, 0.35, 0.46, 0.5, 0.55];
 /** JoJo: Stands lançam com 25% menos mana a partir deste degrau (5 de JoJo) */
 const JOJO_MANA = 3;
-const YGO = [0.1, 0.15, 0.22, 0.3, 0.4, 0.5];
+const YGO = [0.14, 0.2, 0.27, 0.22, 0.27, 0.33];
 /** Yu-Gi-Oh!: as cartas ganham as duas posições a partir deste degrau (7 cartas) */
 const YGO_DUAS = 3;
-const LOL = [0.1, 0.15, 0.22, 0.3, 0.4, 0.5];
-const OVERWATCH = [0.06, 0.1, 0.15, 0.2, 0.28];
+const LOL = [0.2, 0.3, 0.42, 0.55, 0.7, 0.85];
+const OVERWATCH = [0.1, 0.15, 0.2, 0.27, 0.36];
 const OVERWATCH_JOGADA = [0.02, 0.03, 0.05, 0.07, 0.1];
-const DEADLOCK_POR_10 = [0.015, 0.02, 0.025, 0.03, 0.04];
+const DEADLOCK_POR_10 = [0.02, 0.025, 0.03, 0.04, 0.05];
 const DEADLOCK_ALMAS = [1, 1, 1, 2, 2];
-const SUJIMON = [0.1, 0.15, 0.22, 0.3, 0.4];
+const SUJIMON = [0.06, 0.1, 0.15, 0.24, 0.34];
 const SUJIMON_RECRUTAR = [0, 0.3, 0.5, 0.75, 1];
 
 /** Atributo que cada Persona espalha, pela 1ª classe dela. */

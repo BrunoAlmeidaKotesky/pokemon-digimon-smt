@@ -5,6 +5,7 @@ import type { Estrela, Ganchos, Habilidade } from '../tipos';
 import {
   ESCUDO_HAOS, GOLPE, HABILIDADES_CLASSE, HABILIDADES_PROPRIAS, ITENS, PASSIVAS, TETO_MOEDAS, TRACOS, textoPassiva,
 } from './index';
+import { TUSK } from './habilidades-proprias';
 import { criarMundo, type LutadorFalso, type Mundo } from './test-helpers';
 
 /** Tabuleiro de teste: lançador e 2 aliados embaixo, 5 inimigos em cima (frente colada). */
@@ -158,7 +159,7 @@ describe('comportamentos', () => {
     m.ctx.matar(a, a);
     TRACOS.demoniacos!.aoMorrer!(m.ctx, 2, a, null);
     TRACOS.demoniacos!.aoMorrer!(m.ctx, 2, a, null);
-    expect(b.at.dano).toBeCloseTo(120);
+    expect(b.at.dano).toBeCloseTo(118);
   });
 
   it('Atirador: acumula vel. ataque até 15 vezes', () => {
@@ -167,7 +168,7 @@ describe('comportamentos', () => {
     const alvo = m.add('alvo', 'b', { col: 3, lin: 3 }, { at: { vida: 1e9 } });
     for (let i = 0; i < 20; i++) TRACOS.atirador!.aoAtacar!(m.ctx, 4, eu, alvo, 1);
     expect(m.conta('buff:velAtaque')).toBe(15);
-    expect(eu.at.velAtaque).toBeCloseTo(1 + 15 * 0.09);
+    expect(eu.at.velAtaque).toBeCloseTo(1 + 15 * 0.1);
   });
 
   it('Raio: o raio pula a cada 3 ataques, pra 1/2/3/4 inimigos', () => {
@@ -190,7 +191,7 @@ describe('comportamentos', () => {
   it('Pokémon: bônus pelo número de Pokémon no tabuleiro', () => {
     const { m, eu, usuario, aliado } = montar();
     TRACOS.pokemon!.aoComecar!(m.ctx, 0, [eu, usuario, aliado]);
-    expect(eu.at.dano).toBeCloseTo(100 * (1 + 0.01 * 3));
+    expect(eu.at.dano).toBeCloseTo(100 * (1 + 0.02 * 3));
     expect(eu.vida).toBeCloseTo(eu.at.vida);
   });
 
@@ -199,7 +200,7 @@ describe('comportamentos', () => {
     eu.stand = true;
     TRACOS.jojo!.aoComecar!(m.ctx, 3, [eu]);
     expect(eu.at.mana).toBe(60);
-    expect(usuario.at.dano).toBeCloseTo(148);
+    expect(usuario.at.dano).toBeCloseTo(150);
   });
 
   it('Transformação e Reuniclus: o Reuniclus se sacrifica pelo aliado abaixo de metade', () => {
@@ -238,6 +239,15 @@ describe('comportamentos', () => {
     expect(m.registro).toContain('texto:Habilidade roubada!');
     m.rodar(100);
     expect(alvo.temStatus('semMana')).toBe(true);
+  });
+
+  it('Tusk: o texto mostra os números que o código usa (ficou com os de antes do nerf)', () => {
+    const texto = HABILIDADES_PROPRIAS['jojo:Tusk']!.texto;
+    for (const v of TUSK) expect(texto).toContain(`${Math.round(v * 100)}%`);
+    const { m, eu, inimigos } = montar(1);
+    inimigos[0]!.at.vida = 1e9;
+    HABILIDADES_PROPRIAS['jojo:Tusk']!.lancar(m.ctx, eu, inimigos[0]!);
+    expect(m.conta('dano')).toBe(10);
   });
 
   it('Dirty Deeds: uma vez por luta, a unidade do Stand volta com 60% da vida', () => {
