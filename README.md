@@ -1,4 +1,4 @@
-# Quem Você Prefere — Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Brainrot x Minecraft x Monster Hunter x Sujimon
+# Quem Você Prefere — Pokémon x Digimon x SMT x Persona x JoJo x Yu-Gi-Oh! x Bakugan x LoL x Overwatch x Deadlock x Final Fantasy x Zelda x Brainrot x Minecraft x Monster Hunter x Kamen Rider x Sujimon
 
 Site pessoal (em português) pra escolher entre personagens de franquias diferentes. Publicado no GitHub Pages:
 https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/
@@ -44,8 +44,9 @@ Cada franquia é um arquivo em `src/sources/`, na ordem de `SOURCES` (`src/sourc
 | `ff` | Final Fantasy | `public/ff/list.json`, gerado pelo `ff.mjs` a partir da MoogleAPI (só monstros, sem personagens) | `images.moogleapi.com` |
 | `zelda` | Zelda | `public/zelda/list.json`, gerado pelo `zelda.mjs` a partir da Zelda Wiki (inimigos e chefes da série inteira, sem aliados nem armadilhas) | modelo, render ou arte da wiki (`cdn.wikimg.net`) |
 | `brainrot` | Brainrot | `public/brainrot/list.json`, gerado pelo `brainrot.mjs` a partir do sitemap do Animal Brainrot | `static.animalbrainrot.com` |
-| `minecraft` | Minecraft | `public/minecraft/list.json`, gerado pelo `minecraft.mjs` a partir da Minecraft Wiki (mobs, com uma carta por variante de gato, lobo, cavalo, ovelha, sapo e axolote) | imagem da página ou render da wiki |
+| `minecraft` | Minecraft | `public/minecraft/list.json`, gerado pelo `minecraft.mjs` a partir da Minecraft Wiki (mobs, sem variantes de cor) | imagem da página da wiki |
 | `monsterhunter` | Monster Hunter | `public/monsterhunter/list.json`, gerado pelo `monsterhunter.mjs` a partir da Monster Hunter Wiki (grandes e pequenos, só com render) | render da wiki (`monsterhunterwiki.org`) |
+| `kamenrider` | Kamen Rider | `public/kamenrider/list.json`, gerado pelo `kamenrider.mjs` a partir da lista oficial de Riders da Kamen Rider Wiki | render do traje, da wiki |
 | `sujimon` | Sujimon | `public/sujimon/list.json` (gerado pelo `sujimon.mjs`); sem ele, a Yakuza Wiki | `public/sujimon/*.webp` ou a wiki |
 
 - O nome de cada personagem precisa ser único dentro da franquia: o saco de sorteio e o placar guardam pelo nome. Por
@@ -85,7 +86,7 @@ node node_modules/@playwright/test/cli.js test
 - `src/autobatalha/`: a Autobatalha (set, motor de combate, conteúdo, partida, controle) e `online/`, a sala com amigos
   (anfitrião, convidado, protocolo, visão de cada um); a tela fica em `src/modes/autobatalha/`.
 - `src/customs/`: franquias personalizadas.
-- `public/`: imagens e listas locais (`smt/`, `sujimon/`, `ff/`, `zelda/`, `brainrot/`, `minecraft/`, `monsterhunter/`).
+- `public/`: imagens e listas locais (`smt/`, `sujimon/`, `ff/`, `zelda/`, `brainrot/`, `minecraft/`, `monsterhunter/`, `kamenrider/`).
 
 ## Testes
 
@@ -115,10 +116,12 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
   `public/brainrot/list.json` (leva meia hora; o site pede frequência semanal, no máximo). O site não tem API aberta.
   Respeita o `noindex` e para em 403, 429 ou 503.
 - `node minecraft.mjs`: junta os mobs hostis, neutros e passivos da Minecraft Wiki em `public/minecraft/list.json`. Tira
-  jockeys, mobs de 1º de abril e os do Education; `VARIANTES` lista os arquivos de cada cor. Arquivo renomeado na wiki
-  aparece nos avisos.
+  jockeys, mobs de 1º de abril e os do Education.
 - `node monsterhunter.mjs`: junta os monstros grandes e pequenos da Monster Hunter Wiki em
   `public/monsterhunter/list.json`. Fica só quem tem render; o resto do Catálogo vem do monster-hunter-DB, pelo nome.
+- `node kamenrider.mjs`: lê a tabela "Confirmed List" da Kamen Rider Wiki e grava `public/kamenrider/list.json`, com o
+  render do traje de cada Rider. A tabela para no Gotchard: `RECENTES` acrescenta os novos à mão. `IMAGEM` corrige os
+  casos em que o texto da página não aponta pro render certo; confira os avisos.
 - `node sujimon.mjs recortar`: recorta os screenshots do Sujidex de `sujimon/_orig/` pra `public/sujimon/`. Instruções
   no começo do arquivo.
 - `node catalogo.mjs [chaves]`: gera `public/catalogo/<chave>.json` com o que a fonte informa de cada personagem (um

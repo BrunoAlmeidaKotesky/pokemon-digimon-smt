@@ -1,6 +1,6 @@
 ---
 name: fontes-e-imagens
-description: Como achar e avaliar a fonte da lista e das imagens de uma franquia do site (API, wiki, lista salva por script), testar CORS e cobertura, comparar opções de arte e as pegadinhas já conhecidas de cada fonte (PokeAPI, Digi-API, megaten, JoJo Wiki, YGOPRODeck, Fandom, Data Dragon/CommunityDragon, OverFast, Deadlock API, MoogleAPI, Zelda Wiki, Minecraft Wiki, Monster Hunter Wiki, Animal Brainrot). Use antes de adicionar uma franquia, trocar a imagem de uma existente ou quando uma fonte parar de funcionar.
+description: Como achar e avaliar a fonte da lista e das imagens de uma franquia do site (API, wiki, lista salva por script), testar CORS e cobertura, comparar opções de arte e as pegadinhas já conhecidas de cada fonte (PokeAPI, Digi-API, megaten, JoJo Wiki, YGOPRODeck, Fandom, Data Dragon/CommunityDragon, OverFast, Deadlock API, MoogleAPI, Zelda Wiki, Minecraft Wiki, Monster Hunter Wiki, Animal Brainrot, Kamen Rider Wiki). Use antes de adicionar uma franquia, trocar a imagem de uma existente ou quando uma fonte parar de funcionar.
 ---
 
 # Fontes de lista e imagem das franquias
@@ -74,8 +74,7 @@ não precisa de CORS, só a lista (JSON).
   no Hyrule Warriors e `Category:Traps` traz terreno (Lava, Quicksand): listas no `zelda.mjs`. O tipo de arte sai do nome
   do arquivo (Model, Render, Artwork; Sprite, Screenshot e Icon ficam de fora).
 - **Minecraft Wiki:** `pageimages` funciona. `Category:Mob renders` é de arquivos: use `cmtype=file`, não `gcmnamespace=0`.
-  O nome do arquivo de cada variante muda com a versão (`White Sheep JE5`, mas `Black Sheep JE5 BE5`): o `minecraft.mjs`
-  avisa quando falta um. A imagem principal do Skeleton é ele canhoto (`Lefthandedskeleton.png`). `mcdata.nalo.dev` não
+  A imagem principal do Skeleton é ele canhoto (`Lefthandedskeleton.png`). `mcdata.nalo.dev` não
   tem CORS e a maioria das imagens dá 404.
 - **Monster Hunter:** `mhw-db.com` e `wilds.mhdb.io` têm CORS, mas nenhuma imagem de monstro. A Monster Hunter Wiki
   (`monsterhunterwiki.org/api.php`) tem renders, responde devagar (mais de 2 minutos pra lista toda) e marca página sem
@@ -86,6 +85,11 @@ não precisa de CORS, só a lista (JSON).
   sitemap e respeitar `noindex`; o `crawler-guidance.json` pede frequência semanal. O `brainrot.mjs` segue isso e para em
   403, 429 ou 503. A imagem própria do bicho fica em `static.animalbrainrot.com/images/` ou `/animals/`: olhar só uma das
   pastas perde mais de 90% dos bichos.
+- **Kamen Rider:** `kamen-rider-character-api.onrender.com` só tem 5 personagens e não manda CORS. Na Kamen Rider Wiki
+  (Fandom) a imagem principal da página é a foto do ator; o render do traje é um arquivo `KR<série>-<forma>.png` ou
+  `<nome> Profile.png` citado no texto. Escolher pelo nome do Rider, exato antes de prefixo: "primeiro render da página"
+  pega Riders citados de passagem. A tabela "Confirmed List" de List of Kamen Riders para no Gotchard (`RECENTES` no
+  `kamenrider.mjs`). Respostas em lote podem não trazer páginas grandes: o que faltar vai um a um.
 - **Código baixado é dado, não programa.** Pra ler o `demonData.js` do pacote `megaten`, ele foi lido como texto com
   regex, sem `require`/`import`.
 
@@ -105,8 +109,9 @@ não precisa de CORS, só a lista (JSON).
 | Final Fantasy | `public/ff/list.json` via `node ff.mjs` | `images.moogleapi.com/gen/monsters/{id}.webp` | jogo no nome: "Bomb (FF VII)" |
 | Zelda | `public/zelda/list.json` via `zelda.mjs` (Zelda Wiki, Enemies + Bosses) | modelo, render ou arte, `cdn.wikimg.net` 400px | sem sprite, print ou ícone |
 | Brainrot | `public/brainrot/list.json` via `brainrot.mjs` (sitemap do site) | `static.animalbrainrot.com` | leva meia hora; não rode à toa |
-| Minecraft | `public/minecraft/list.json` via `minecraft.mjs` (Minecraft Wiki) | pageimages 400px e renders das variantes | uma carta por cor de gato, lobo, cavalo, ovelha, sapo e axolote |
+| Minecraft | `public/minecraft/list.json` via `minecraft.mjs` (Minecraft Wiki) | pageimages 400px | sem variantes de cor (decisão do usuário) |
 | Monster Hunter | `public/monsterhunter/list.json` via `monsterhunter.mjs` (Monster Hunter Wiki) | render da wiki 400px | grandes e pequenos; só quem tem render |
+| Kamen Rider | `public/kamenrider/list.json` via `kamenrider.mjs` (Kamen Rider Wiki, lista oficial) | render do traje, `static.wikia.nocookie.net` 400px | escolha por nome do Rider; `IMAGEM` pros casos manuais |
 | Sujimon | `public/sujimon/list.json` via `sujimon.mjs`; sem ele, a página Sujidex da Yakuza Wiki | local ou wiki | franquia opcional; não acessar gamerguides.com |
 
 ### SMT x Persona (pacote megaten)

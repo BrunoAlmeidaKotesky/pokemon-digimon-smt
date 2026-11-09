@@ -186,7 +186,7 @@ test.describe('campeonato: partidas e chaveamento', () => {
         expect(await linhas(page)).toBe('');
       }
     }
-    // dividir igualmente: 8 vagas pras 16 franquias, então 8 franquias diferentes com 1 cada
+    // dividir igualmente: 8 vagas pras 17 franquias, então 8 franquias diferentes com 1 cada
     const fr0 = await frsDaColuna(page, 0);
     expect(fr0).toHaveLength(8);
     expect(Object.keys(contar(fr0))).toHaveLength(8);
@@ -337,7 +337,8 @@ test.describe('campeonato: partidas e chaveamento', () => {
       const frs = await frsDaColuna(page, 0);
       expect(frs).toHaveLength(tamanho);
       const c = Object.values(contar(frs));
-      expect(c).toHaveLength(TODAS.length);
+      // com mais franquias do que vagas (16 vagas, 17 franquias), cada vaga é de uma franquia diferente
+      expect(c).toHaveLength(Math.min(tamanho, TODAS.length));
       expect(Math.max(...c) - Math.min(...c)).toBeLessThanOrEqual(1);
       await page.locator('#cupQuit').click();
       await mostrando(page.locator('#cupSetup'));

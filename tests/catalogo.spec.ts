@@ -16,7 +16,7 @@ const nomes = async (page: Page) => (await page.locator('#catList .cat-row .nm')
 const marcas = (page: Page) => lerStorage<Marcas>(page, 'pdx-set1');
 const opcoes = (page: Page, id: string) => page.locator(`#catCampo_${id} option`).allTextContents();
 const FOGO = ['Charmander', 'Charmeleon', 'Charizard', 'Vulpix', 'Ninetales'];
-const FRANQUIAS = ['Pokémon', 'Digimon', 'SMT', 'Persona', 'JoJo', 'Yu-Gi-Oh!', 'Bakugan', 'LoL', 'Overwatch', 'Deadlock', 'Final Fantasy', 'Zelda', 'Brainrot', 'Minecraft', 'Monster Hunter', 'Sujimon'];
+const FRANQUIAS = ['Pokémon', 'Digimon', 'SMT', 'Persona', 'JoJo', 'Yu-Gi-Oh!', 'Bakugan', 'LoL', 'Overwatch', 'Deadlock', 'Final Fantasy', 'Zelda', 'Brainrot', 'Minecraft', 'Monster Hunter', 'Kamen Rider', 'Sujimon'];
 
 /** Escolhe um valor no filtro de um campo (no celular os seletores ficam recolhidos atrás de um botão). */
 async function campo(page: Page, id: string, valor: string) {

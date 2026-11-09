@@ -1,8 +1,8 @@
 // Minecraft: os mobs de public/minecraft/list.json (gerada pelo minecraft.mjs da raiz), com as categorias da Minecraft
-// Wiki. A variante (Black Cat, Ashen Wolf) herda as categorias do mob base.
+// Wiki.
 
 import fs from 'node:fs/promises';
-import { VARIANTES, nomeVariante, paginas } from '../minecraft.mjs';
+import { paginas } from '../minecraft.mjs';
 
 const LISTA = 'public/minecraft/list.json';
 
@@ -23,21 +23,18 @@ export default {
   campos: [
     { id: 'comportamento', rotulo: 'Comportamento' },
     { id: 'traco', rotulo: 'Traços' },
-    { id: 'base', rotulo: 'Mob' },
   ],
   async gerar() {
     const lista = JSON.parse(await fs.readFile(LISTA, 'utf8'));
     const { cats } = await paginas();
-    const baseDe = Object.fromEntries(Object.entries(VARIANTES).flatMap(([b, as]) => as.map(a => [nomeVariante(a), b])));
     const itens = {};
     for (const [nome] of lista) {
-      const c = cats.get(baseDe[nome] ?? nome) ?? [];
+      const c = cats.get(nome) ?? [];
       const info = {};
       const comportamento = valor(presentes(c, COMPORTAMENTO));
       const traco = valor(presentes(c, TRACO));
       if (comportamento) info.comportamento = comportamento;
       if (traco) info.traco = traco;
-      if (baseDe[nome]) info.base = baseDe[nome];
       itens[nome] = info;
     }
     return { itens };
