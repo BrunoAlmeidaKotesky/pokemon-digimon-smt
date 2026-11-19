@@ -21,6 +21,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # os secrets do TURN (TURN_URLS, TURN_USERNAME, TURN_CREDENTIAL) ficam no ambiente "enc" (Settings → Environments)
+    environment: enc
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
