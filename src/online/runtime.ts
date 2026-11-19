@@ -76,7 +76,7 @@ export function errorText(e: unknown, code: string): string {
   const kind = e instanceof TransportError ? e.kind : null;
   switch (kind) {
     case 'sala-nao-existe': return `Não achei a sala ${code}. Confira o código. Se a sala existia, o host fechou a página e ela acabou.`;
-    case 'p2p-bloqueado': return 'Achei a sala, mas não consegui conectar ao aparelho do host. Algumas redes (Wi-Fi de empresa ou escola, alguns 4G) bloqueiam conexão direta entre aparelhos. Tente outra rede (por exemplo, trocar o Wi-Fi pelo 4G) ou configure um servidor TURN em "Problemas de conexão?".';
+    case 'p2p-bloqueado': return 'Achei a sala, mas não consegui conectar ao aparelho do host (tentei 3 vezes). Algumas redes (Wi-Fi de empresa ou escola, alguns 4G) bloqueiam conexão direta entre aparelhos. Tente outra rede (por exemplo, trocar o Wi-Fi pelo 4G) ou configure um servidor TURN em "Problemas de conexão?".';
     case 'rede': return 'Não consegui falar com o servidor de convites (PeerJS). Confira a internet e tente de novo.';
     case 'navegador': return 'Este navegador não tem suporte a conexão direta (WebRTC). Tente o Chrome, o Firefox ou o Safari atualizados.';
     case 'codigo-em-uso': return 'Não consegui criar a sala (código em uso). Tente de novo.';

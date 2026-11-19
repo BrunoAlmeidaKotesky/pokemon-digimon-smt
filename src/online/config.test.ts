@@ -3,13 +3,15 @@ import { installStorage } from '../core/test-helpers';
 import {
   iceServers,
   isValidTurn,
+  JOIN_TENTATIVAS,
   JOIN_TIMEOUT_MS,
   loadTurn,
   PEER_PREFIX,
-  PEERJS_DEFAULT_ICE,
+  ICE_PADRAO,
   saveTurn,
   TURN_KEY,
   TURN_SERVERS,
+  turnDoAmbiente,
 } from './config';
 
 afterEach(() => vi.unstubAllGlobals());
@@ -20,48 +22,58 @@ describe('constantes', () => {
   it('valores combinados', () => {
     expect(PEER_PREFIX).toBe('qvp-sala-');
     expect(JOIN_TIMEOUT_MS).toBe(15000);
+    expect(JOIN_TENTATIVAS).toBe(3);
     expect(TURN_KEY).toBe('pdx-turn');
-    expect(TURN_SERVERS).toEqual([]);
+    // o TURN vem das variáveis do build (secrets no GitHub, .env.local no PC), nunca do código
+    expect(TURN_SERVERS.length).toBeLessThanOrEqual(1);
   });
 
-  it('padrão do PeerJS 1.5.5', () => {
-    expect(PEERJS_DEFAULT_ICE).toEqual([
-      { urls: 'stun:stun.l.google.com:19302' },
-      {
-        urls: ['turn:eu-0.turn.peerjs.com:3478', 'turn:us-0.turn.peerjs.com:3478'],
-        username: 'peerjs',
-        credential: 'peerjsp',
-      },
-    ]);
+  it('STUN de quatro empresas e nenhum TURN morto (o do PeerJS não existe mais)', () => {
+    const urls = ICE_PADRAO.flatMap(s => (Array.isArray(s.urls) ? s.urls : [s.urls]));
+    expect(urls).toEqual(['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun.cloudflare.com:3478', 'stun:global.stun.twilio.com:3478']);
+    expect(urls.some(u => u.includes('peerjs.com'))).toBe(false);
+  });
+});
+
+describe('turnDoAmbiente (TURN fora do repositório)', () => {
+  const ok = { VITE_TURN_URLS: 'turn:relay.exemplo.com:3478, turn:relay.exemplo.com:3478?transport=tcp', VITE_TURN_USERNAME: 'u', VITE_TURN_CREDENTIAL: 's' };
+  it('monta o servidor com as URLs separadas por vírgula', () => {
+    expect(turnDoAmbiente(ok)).toEqual([{ urls: ['turn:relay.exemplo.com:3478', 'turn:relay.exemplo.com:3478?transport=tcp'], username: 'u', credential: 's' }]);
+  });
+  it('sem alguma variável ou com URL estranha: nenhum (o navegador recusaria a configuração inteira)', () => {
+    expect(turnDoAmbiente({})).toEqual([]);
+    expect(turnDoAmbiente({ ...ok, VITE_TURN_CREDENTIAL: '' })).toEqual([]);
+    expect(turnDoAmbiente({ ...ok, VITE_TURN_USERNAME: undefined })).toEqual([]);
+    expect(turnDoAmbiente({ ...ok, VITE_TURN_URLS: 'http://x' })).toEqual([]);
   });
 });
 
 describe('iceServers', () => {
   it('sem TURN guardado: só o padrão', () => {
     installStorage();
-    expect(iceServers()).toEqual([...PEERJS_DEFAULT_ICE, ...TURN_SERVERS]);
+    expect(iceServers()).toEqual([...ICE_PADRAO, ...TURN_SERVERS]);
   });
 
   it('com TURN guardado: vai no fim', () => {
     installStorage({ [TURN_KEY]: JSON.stringify(TURN) });
     const s = iceServers();
-    expect(s).toHaveLength(PEERJS_DEFAULT_ICE.length + TURN_SERVERS.length + 1);
-    expect(s.slice(0, PEERJS_DEFAULT_ICE.length)).toEqual(PEERJS_DEFAULT_ICE);
+    expect(s).toHaveLength(ICE_PADRAO.length + TURN_SERVERS.length + 1);
+    expect(s.slice(0, ICE_PADRAO.length)).toEqual(ICE_PADRAO);
     expect(s.at(-1)).toEqual(TURN);
   });
 
   it('sem localStorage: só o padrão', () => {
     vi.stubGlobal('localStorage', undefined);
-    expect(iceServers()).toEqual(PEERJS_DEFAULT_ICE);
+    expect(iceServers()).toEqual([...ICE_PADRAO, ...TURN_SERVERS]);
   });
 
   it('devolve cópias (mexer no resultado não muda o padrão)', () => {
     installStorage();
     const s = iceServers();
-    (s[1]?.urls as string[]).push('turn:x');
+    (s[0]?.urls as string[]).push('turn:x');
     s.pop();
-    expect(iceServers()).toEqual(PEERJS_DEFAULT_ICE);
-    expect(PEERJS_DEFAULT_ICE[1]?.urls).toHaveLength(2);
+    expect(iceServers()).toEqual([...ICE_PADRAO, ...TURN_SERVERS]);
+    expect(ICE_PADRAO[0]?.urls).toHaveLength(2);
   });
 });
 
@@ -118,7 +130,7 @@ describe('loadTurn / saveTurn', () => {
     for (const raw of casos) {
       installStorage({ [TURN_KEY]: raw });
       expect(loadTurn(), raw).toBeNull();
-      expect(iceServers(), raw).toEqual(PEERJS_DEFAULT_ICE);
+      expect(iceServers(), raw).toEqual([...ICE_PADRAO, ...TURN_SERVERS]);
     }
   });
 

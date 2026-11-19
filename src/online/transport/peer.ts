@@ -1,7 +1,7 @@
 // Transporte de verdade: WebRTC pelo PeerJS (servidor de convites público do PeerJS + STUN/TURN).
 // O PeerJS é carregado sob demanda (import dinâmico), pra não pesar no modo solo.
 import type { DataConnection, Peer } from 'peerjs';
-import { iceServers, JOIN_TIMEOUT_MS, PEER_PREFIX } from '../config';
+import { iceServers, JOIN_TENTATIVAS, JOIN_TIMEOUT_MS, PEER_PREFIX } from '../config';
 import { TransportError, type HostEndpoint, type Link, type Transport, type TransportErrorKind } from '../types';
 import { createLink, linkQueue } from './link';
 
@@ -210,8 +210,9 @@ async function host(code: string): Promise<HostEndpoint> {
   });
 }
 
-async function join(code: string): Promise<Link> {
-  const peer = newPeer(await loadPeer(), null);
+/** Uma tentativa de entrar: Peer novo, conexão com o host, até abrir ou falhar. */
+function joinUmaVez(PeerClass: typeof Peer, code: string): Promise<Link> {
+  const peer = newPeer(PeerClass, null);
   return new Promise<Link>((resolve, reject) => {
     let opened = false;
     let settled = false;
@@ -260,4 +261,26 @@ async function join(code: string): Promise<Link> {
   });
 }
 
+/**
+ * Entra na sala. Se a conexão direta não abrir (o servidor de convites achou o host, mas o WebRTC falhou), tenta de
+ * novo com um Peer novo, até JOIN_TENTATIVAS vezes: a falha costuma ser de momento (porta trocada pela operadora,
+ * corrida na negociação). Sala que não existe, falta de rede ou navegador sem WebRTC não repetem.
+ */
+async function join(code: string, tentativas = JOIN_TENTATIVAS, pausaMs = 500): Promise<Link> {
+  const PeerClass = await loadPeer();
+  let ultimo: unknown;
+  for (let i = 0; i < tentativas; i++) {
+    if (i > 0) await new Promise(r => setTimeout(r, pausaMs));
+    try {
+      return await joinUmaVez(PeerClass, code);
+    } catch (e) {
+      ultimo = e;
+      if (!(e instanceof TransportError) || e.kind !== 'p2p-bloqueado') throw e;
+    }
+  }
+  throw ultimo;
+}
+
 export const peerTransport: Transport = { name: 'peerjs', host, join };
+/** Só pros testes: entrar com outro número de tentativas e sem pausa. */
+export const joinParaTeste = join;
