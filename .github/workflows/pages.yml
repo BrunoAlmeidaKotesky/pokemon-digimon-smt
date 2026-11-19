@@ -31,7 +31,12 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      # TURN do modo online: credencial nos secrets do repositório, nunca no código (src/online/config.ts)
       - run: npm run build
+        env:
+          VITE_TURN_URLS: ${{ secrets.TURN_URLS }}
+          VITE_TURN_USERNAME: ${{ secrets.TURN_USERNAME }}
+          VITE_TURN_CREDENTIAL: ${{ secrets.TURN_CREDENTIAL }}
       # Playwright roda na react e nos PRs; na main o mesmo código já passou por ele, então o deploy pula (mais rápido)
       - name: Playwright (Chromium)
         if: github.ref != 'refs/heads/main'

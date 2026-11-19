@@ -2,35 +2,50 @@
 
 /** prefixo do id do host no servidor de convites do PeerJS (o código da sala vem depois) */
 export const PEER_PREFIX = 'qvp-sala-';
-/** quanto quem entra espera a conexão abrir antes de desistir */
+/** quanto quem entra espera a conexão abrir antes de desistir (cada tentativa) */
 export const JOIN_TIMEOUT_MS = 15000;
+/** tentativas de abrir a conexão direta antes de mostrar o erro: ela às vezes falha numa e abre na seguinte */
+export const JOIN_TENTATIVAS = 3;
 /** chave do localStorage com o TURN configurado neste navegador */
 export const TURN_KEY = 'pdx-turn';
 
-/** O padrão do PeerJS 1.5.5 (util.defaultConfig): STUN do Google e o TURN público do PeerJS. */
-export const PEERJS_DEFAULT_ICE: RTCIceServer[] = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  {
-    urls: ['turn:eu-0.turn.peerjs.com:3478', 'turn:us-0.turn.peerjs.com:3478'],
-    username: 'peerjs',
-    credential: 'peerjsp',
-  },
+/**
+ * STUN de quatro empresas: cada aparelho descobre o próprio endereço público mesmo se um deles falhar ou demorar.
+ * O padrão do PeerJS 1.5.5 trazia um TURN público (eu-0/us-0.turn.peerjs.com) que não existe mais (o DNS não
+ * resolve, conferido em 18/11/2026), e o Open Relay da Metered também foi desligado: TURN de graça só com conta.
+ */
+export const ICE_PADRAO: RTCIceServer[] = [
+  { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
+  { urls: 'stun:stun.cloudflare.com:3478' },
+  { urls: 'stun:global.stun.twilio.com:3478' },
 ];
 
 /**
  * TURN fixo no código, pra todo mundo que abrir o site.
  *
  * Quando a rede de alguém bloqueia a conexão direta (4G de algumas operadoras, Wi-Fi de empresa ou faculdade), o
- * WebRTC só funciona passando por um servidor TURN, que retransmite o tráfego. O TURN público do PeerJS é fraco e às
- * vezes cai. Pra usar outro (Metered, Twilio, um coturn seu...), coloque aqui, por exemplo:
+ * WebRTC só funciona passando por um servidor TURN, que retransmite o tráfego. Sem nenhum, essas pessoas só conectam
+ * quando a rede deixa (por isso o erro parece intermitente).
  *
- *   { urls: 'turn:global.relay.metered.ca:80', username: 'usuario', credential: 'senha' },
- *   { urls: 'turns:global.relay.metered.ca:443?transport=tcp', username: 'usuario', credential: 'senha' },
- *
- * Atenção: o site é estático e público, então qualquer um vê essa credencial no código. Use uma com limite de uso.
- * Também dá pra configurar um TURN só no próprio navegador, sem mexer no código (saveTurn, guardado em 'pdx-turn').
+ * A credencial NÃO fica no repositório: vem das variáveis do build VITE_TURN_URLS (uma ou mais URLs separadas por
+ * vírgula), VITE_TURN_USERNAME e VITE_TURN_CREDENTIAL. No GitHub são os secrets TURN_URLS, TURN_USERNAME e
+ * TURN_CREDENTIAL (o workflow repassa pro build); no PC, um arquivo .env.local (fora do git). Sem elas, segue só com
+ * STUN. Atenção: o navegador de quem joga precisa da credencial, então ela vai no JavaScript publicado e qualquer um
+ * pode ver no site; por isso, conta com limite de uso (o plano grátis do ExpressTURN, em 18/11/2026).
+ * Também dá pra configurar um TURN só no próprio navegador, sem mexer no build (saveTurn, guardado em 'pdx-turn').
  */
-export const TURN_SERVERS: RTCIceServer[] = [];
+export const TURN_SERVERS: RTCIceServer[] = turnDoAmbiente(
+  (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env ?? {},
+);
+
+/** TURN das variáveis do build: [] se faltar alguma, ou se uma URL não for turn:/turns:. */
+export function turnDoAmbiente(env: Record<string, string | undefined>): RTCIceServer[] {
+  const urls = (env.VITE_TURN_URLS ?? '').split(/[\s,]+/).filter(Boolean);
+  const username = env.VITE_TURN_USERNAME ?? '';
+  const credential = env.VITE_TURN_CREDENTIAL ?? '';
+  if (!urls.length || !username || !credential || !urls.every((u) => /^turns?:\S+$/i.test(u))) return [];
+  return [{ urls, username, credential }];
+}
 
 /** TURN (ou STUN) digitado pelo usuário */
 export interface TurnConfig {
@@ -87,8 +102,8 @@ export function saveTurn(t: TurnConfig | null): void {
 
 const copy = (s: RTCIceServer): RTCIceServer => ({ ...s, urls: Array.isArray(s.urls) ? [...s.urls] : s.urls });
 
-/** Servidores ICE pro RTCPeerConnection: padrão do PeerJS + TURN_SERVERS + o TURN guardado neste navegador. */
+/** Servidores ICE pro RTCPeerConnection: os STUN padrão + TURN_SERVERS + o TURN guardado neste navegador. */
 export function iceServers(): RTCIceServer[] {
   const saved = loadTurn();
-  return [...PEERJS_DEFAULT_ICE, ...TURN_SERVERS, ...(saved ? [saved] : [])].map(copy);
+  return [...ICE_PADRAO, ...TURN_SERVERS, ...(saved ? [saved] : [])].map(copy);
 }

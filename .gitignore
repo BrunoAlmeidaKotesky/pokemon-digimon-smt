@@ -4,6 +4,9 @@ sujimon/_orig/
 .claude/*
 !.claude/skills/
 dist/
+# credenciais locais (TURN do modo online): nunca no git
+.env.local
+.env.*.local
 test-results/
 playwright-report/
 blob-report/
