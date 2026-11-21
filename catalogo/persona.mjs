@@ -1,7 +1,7 @@
 // Persona: personas dos personagens de P3, P4 e P5 no pacote megaten@2.3.1 (o leitor do demonData.js fica em smt.mjs).
 // As versões Picaro (P5 Royal) não têm dono no pacote: herdam o da persona base ("Ariadne Picaro" -> "Ariadne").
 
-import { enxuto, JOGOS, megaten, porNome } from './smt.mjs';
+import { atributoForte, enxuto, JOGOS, megaten, porNome, resiste } from './smt.mjs';
 
 export default {
   chave: 'persona',
@@ -14,6 +14,8 @@ export default {
     { id: 'estagio', rotulo: 'Estágio' },
     { id: 'nivel', rotulo: 'Nível' },
     { id: 'fraco', rotulo: 'Fraqueza' },
+    { id: 'resiste', rotulo: 'Resiste' },
+    { id: 'atributo', rotulo: 'Atributo mais forte' },
   ],
   async gerar() {
     const todos = new Map((await megaten()).map(d => [d.name, d]));
@@ -28,6 +30,8 @@ export default {
         estagio: d.stage,
         nivel: d.level,
         fraco: d.resistances?.weak,
+        resiste: resiste(d),
+        atributo: atributoForte(d),
       });
     }
     return { itens };

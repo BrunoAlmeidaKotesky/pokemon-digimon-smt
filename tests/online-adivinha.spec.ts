@@ -128,3 +128,50 @@ test('Adivinha online: vez de cada um, secreto só no host, tempo esgotado, reve
   await ana.locator('#onLobbyBtn').click();
   await expect(beto.locator('#onLobby')).toBeVisible();
 });
+
+test('Adivinha online no Imagem (recorte): o mesmo recorte pra todos, que abre a cada chute errado de qualquer um', async ({ context }) => {
+  test.setTimeout(90_000);
+  await mockApis(context, { adivinha: true });
+  await seedRandom(context, 5);
+  const ana = await abrir(context, 1);
+  await ana.locator('nav button', { hasText: 'Online' }).click();
+  await ana.locator('#onName').fill('Ana');
+  await ana.locator('#onCreate').click();
+  await expect(ana.locator('#onRoomCode')).toHaveText(/^[A-Z]{4}$/);
+  const code = (await ana.locator('#onRoomCode').textContent())!;
+  const beto = await abrir(context, 2, code);
+  await beto.locator('#onName').fill('Beto');
+  await beto.locator('#onJoin').click();
+  await expect(ana.locator('#onPlayers .chip')).toHaveCount(2);
+  await ana.locator('#onLobby [data-modo="adivinha"]').click();
+  await expect(ana.locator('#onAdvSubmodo button')).toHaveText(['Clássico', 'Imagem', 'Blur', 'Emoji']);
+  await ana.locator('#onAdvSubmodo button[data-n="imagem"]').click();
+  await expect(beto.locator('#onAdvSubmodo button[data-n="imagem"]')).toHaveAttribute('aria-checked', 'true');
+  await expect(ana.locator('#onStartBar .resumo b')).toContainText('Adivinha · LoL · Imagem');
+  await ana.locator('#onStart').click();
+
+  const quadro = (p: Page) => p.locator('#onAdv #advImagem');
+  for (const p of [ana, beto]) {
+    await expect(quadro(p)).toHaveAttribute('data-modo', 'imagem');
+    await expect(quadro(p)).toHaveAttribute('data-nivel', '0');
+    await expect(quadro(p)).toHaveAttribute('data-escala', '5');
+  }
+  // o mesmo recorte: mesma posição da imagem dentro da moldura
+  const origem = async (p: Page) => (await quadro(p).locator('img').getAttribute('style'))!.match(/left: [^;]+; top: [^;]+/)![0];
+  expect(await origem(beto)).toBe(await origem(ana));
+
+  // cada chute errado (de qualquer um) abre um nível, igual nas duas telas
+  let erros = 0;
+  for (const nome of NOMES_LOL) {
+    const p = (await ana.locator('#onAdvVezNome').textContent()) === 'Sua vez!' ? ana : beto;
+    await p.locator('#onAdvChute').fill(nome);
+    await expect(p.locator('#onAdvChuteLista li').first()).toHaveAttribute('data-nome', nome);
+    await p.locator('#onAdvChute').press('Enter');
+    await expect(beto.locator('#onAdv #advErrados li, #onAdv #onAdvFim')).toHaveCount(erros + 1);
+    if (await ana.locator('#onAdv[data-passo="resultado"]').count()) break;
+    erros++;
+    for (const q of [ana, beto]) await expect(quadro(q)).toHaveAttribute('data-nivel', String(erros));
+    if (erros === 2) break;
+  }
+  if (erros === 2) await expect(quadro(beto)).toHaveAttribute('data-escala', '3.85');
+});

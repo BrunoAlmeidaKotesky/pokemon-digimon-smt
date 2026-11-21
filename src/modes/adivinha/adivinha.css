@@ -39,14 +39,23 @@
 
 /* tabela do Clássico */
 .adv-tabela-wrap{overflow-x:auto;padding-bottom:4px}
-.adv-tabela{width:100%;min-width:calc(var(--n) * 96px);border-collapse:separate;border-spacing:4px;table-layout:fixed}
+.adv-tabela{width:100%;min-width:calc(var(--n) * 88px);border-collapse:separate;border-spacing:4px;table-layout:fixed}
+/* 9 colunas (Pokémon): mais estreitas e letra menor; se ainda não couber, só a tabela rola de lado */
+.adv-tabela.muitas{min-width:calc(var(--n) * 78px);border-spacing:3px}
+.adv-tabela.muitas td{font-size:12px;padding:5px 2px}
+.adv-tabela.muitas th{font-size:11px;letter-spacing:.2px}
+.adv-tabela.muitas th:first-child{width:140px}
 .adv-tabela th{font:600 12px var(--display);text-transform:uppercase;letter-spacing:.5px;color:var(--mute);padding:2px 4px;text-align:center;overflow-wrap:anywhere}
 .adv-tabela th:first-child{width:170px;text-align:left}
 .adv-tabela td{padding:6px 4px;text-align:center;vertical-align:middle;border-radius:8px;font-size:13px;line-height:1.25;overflow-wrap:anywhere;border:2px solid var(--line);background:var(--panel)}
 .adv-c.certo{background:color-mix(in srgb,var(--ok) 26%,var(--panel));border-color:var(--ok)}
 .adv-c.parcial{background:color-mix(in srgb,var(--gold) 26%,var(--panel));border-color:var(--gold)}
 .adv-c.errado{background:color-mix(in srgb,var(--bad) 20%,var(--panel));border-color:var(--bad)}
-.adv-seta{display:block;font-size:15px;line-height:1.1;margin-top:2px}
+/* número diferente: seta grande atrás do valor (pra onde está o personagem) */
+.adv-c.seta{position:relative;overflow:hidden;isolation:isolate}
+.adv-c .adv-seta{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);z-index:-1;fill:color-mix(in srgb,var(--bad) 55%,var(--panel))}
+.adv-c.seta .adv-v{font-weight:700;font-size:14px;text-shadow:0 0 3px var(--panel),0 0 6px var(--panel)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .adv-tabela td.adv-pers{text-align:left}
 .adv-pers-in{display:flex;align-items:center;gap:8px;min-height:40px}
 .adv-pers .txt{display:grid;min-width:0}
@@ -56,15 +65,21 @@
 .adv-tabela tr.adv-tempo td{background:none;border-style:dashed;color:var(--mute);font-size:13px}
 @media (prefers-reduced-motion:no-preference){.adv-tabela tbody tr:first-child td{animation:adv-entra .35s ease both}}
 @keyframes adv-entra{from{opacity:0;transform:translateY(-4px)}}
-.adv-legenda{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0;font-size:12px;color:var(--mute)}
-.adv-legenda .adv-c{border:2px solid;border-radius:6px;padding:1px 8px;color:var(--fg)}
+/* legenda: um quadrado de cada cor com o nome embaixo */
+.adv-legenda{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 14px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.adv-legenda .item{display:grid;justify-items:center;gap:4px;width:74px}
+.adv-legenda .quad{display:grid;place-items:center;width:44px;height:44px;border-width:2px;border-style:solid;border-radius:8px}
+.adv-legenda .quad.sem{background:var(--bg);border-color:var(--line)}
+.adv-legenda .quad.sem .adv-v{font:700 20px var(--display);color:var(--mute)}
+.adv-legenda small{font-size:12px;line-height:1.2;text-align:center;color:var(--fg);font-weight:600}
 
 /* imagem com zoom */
 .adv-quadro{--r:1;position:relative;width:min(100%,380px,calc(440px * var(--r)));aspect-ratio:var(--r);justify-self:center;margin:0 auto;overflow:hidden;border-radius:12px;border:2px solid var(--line);display:grid;place-items:center;background:radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--fg) 8%,transparent),transparent 75%),var(--panel)}
-.adv-quadro img{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.adv-quadro img{position:absolute;left:0;top:0;display:block;width:100%;height:100%;max-width:none;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .adv-quadro.fim{border-color:var(--gold)}
 .adv-quadro.vazio{color:var(--mute);font-size:14px;aspect-ratio:1}
-@media (prefers-reduced-motion:no-preference){.adv-quadro img{transition:transform .5s ease,filter .5s ease}}
+.adv-nivel{position:absolute;right:6px;bottom:6px;font:600 11px var(--display);letter-spacing:.5px;color:var(--fg);background:color-mix(in srgb,var(--panel) 80%,transparent);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+@media (prefers-reduced-motion:no-preference){.adv-quadro img{transition:width .5s ease,height .5s ease,left .5s ease,top .5s ease,filter .5s ease}}
 
 /* emojis */
 .adv-emoji{display:flex;justify-content:center;flex-wrap:wrap;gap:10px}
@@ -119,3 +134,29 @@
 }
 @media (prefers-reduced-motion:reduce){.adv-barra span{transition:none}}
 .chip .tag.vez{color:var(--ok);font-weight:700}
+
+/* percurso do dia e ciclo do Todos */
+.adv-etapas{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.adv-etapas>.mute{font-size:13px;margin-right:2px}
+.adv-etapa-tg{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;padding:3px 12px 3px 6px;font-size:13px;background:var(--panel);color:var(--mute);cursor:pointer}
+.adv-etapa-tg .ck{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:2px solid var(--line);font-size:11px;font-weight:700}
+.adv-etapa-tg.on{border-color:var(--fg);color:var(--fg);font-weight:600}
+.adv-etapa-tg.on .ck{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.adv-etapa-tg:disabled{cursor:not-allowed}
+.adv-etapa-tg:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.adv-trilha{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.adv-trilha li button{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:10px;padding:5px 12px 5px 6px;background:var(--panel);color:var(--fg);font:600 14px var(--display);text-transform:uppercase;letter-spacing:.4px;cursor:pointer}
+.adv-trilha li button:disabled{cursor:default}
+.adv-trilha .n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--line);font-size:12px;text-transform:none}
+.adv-trilha small{font:500 11px var(--body);color:var(--mute);text-transform:none;letter-spacing:0}
+.adv-trilha li.feita button{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--panel))}
+.adv-trilha li.feita .n{background:var(--ok);color:var(--bg)}
+.adv-trilha li.atual button{border-color:var(--gold)}
+.adv-trilha li.atual .n{background:var(--gold);color:#000}
+.adv-trilha li.trancada button{color:var(--mute);border-style:dashed;opacity:.8}
+.adv-trilha li.trancada .n{background:none;font-size:11px}
+.adv-trilha li.vista button{box-shadow:0 0 0 2px var(--fg)}
+.adv-trilha li button:not(:disabled):hover{border-color:var(--fg)}
+.adv-etapa-txt{margin:0;text-align:center;font-size:14px}
+.adv-resumo{display:grid;gap:6px;justify-items:center}
+.adv-resumo ul{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:14px}

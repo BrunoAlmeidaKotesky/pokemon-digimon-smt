@@ -1,7 +1,7 @@
 {
  "chave": "lol",
  "fonte": "Data Dragon, Universe e CommunityDragon (Riot)",
- "geradoEm": "2026-10-26",
+ "geradoEm": "2026-11-21",
  "campos": [
   {
    "id": "classe",
@@ -30,6 +30,10 @@
   {
    "id": "dificuldade",
    "rotulo": "Dificuldade (0 a 10)"
+  },
+  {
+   "id": "genero",
+   "rotulo": "Gênero"
   }
  ],
  "itens": {
@@ -43,7 +47,8 @@
     "Autocura"
    ],
    "recurso": "Poço de Sangue",
-   "dificuldade": 4
+   "dificuldade": 4,
+   "genero": "Masculino"
   },
   "Ahri": {
    "classe": [
@@ -58,7 +63,8 @@
     "Dano explosivo"
    ],
    "recurso": "Mana",
-   "dificuldade": 5
+   "dificuldade": 5,
+   "genero": "Feminino"
   },
   "Akali": {
    "classe": "Assassino",
@@ -70,7 +76,8 @@
     "Dano explosivo"
    ],
    "recurso": "Energia",
-   "dificuldade": 7
+   "dificuldade": 7,
+   "genero": "Feminino"
   },
   "Akshan": {
    "classe": [
@@ -85,7 +92,8 @@
     "Furtividade"
    ],
    "recurso": "Mana",
-   "dificuldade": 0
+   "dificuldade": 0,
+   "genero": "Masculino"
   },
   "Alistar": {
    "classe": [
@@ -100,7 +108,8 @@
     "Iniciadora"
    ],
    "recurso": "Mana",
-   "dificuldade": 7
+   "dificuldade": 7,
+   "genero": "Masculino"
   },
   "Ambessa": {
    "classe": [
@@ -115,7 +124,8 @@
     "Investida"
    ],
    "recurso": "Energia",
-   "dificuldade": 10
+   "dificuldade": 10,
+   "genero": "Feminino"
   },
   "Amumu": {
    "classe": [
@@ -130,7 +140,8 @@
     "Iniciadora"
    ],
    "recurso": "Mana",
-   "dificuldade": 3
+   "dificuldade": 3,
+   "genero": "Masculino"
   },
   "Anivia": {
    "classe": "Mago",
@@ -142,7 +153,8 @@
     "Controle de Grupo"
    ],
    "recurso": "Mana",
-   "dificuldade": 10
+   "dificuldade": 10,
+   "genero": "Feminino"
   },
   "Annie": {
    "classe": [
@@ -157,7 +169,8 @@
     "Dano explosivo"
    ],
    "recurso": "Mana",
-   "dificuldade": 6
+   "dificuldade": 6,
+   "genero": "Feminino"
   },
   "Aphelios": {
    "classe": "Atirador",
@@ -169,7 +182,8 @@
     "Ataque automático"
    ],
    "recurso": "Mana",
-   "dificuldade": 10
+   "dificuldade": 10,
+   "genero": "Masculino"
   },
   "Ashe": {
    "classe": [
@@ -184,7 +198,8 @@
     "Controle de Grupo"
    ],
    "recurso": "Mana",
-   "dificuldade": 4
+   "dificuldade": 4,
+   "genero": "Feminino"
   },
   "Aurelion Sol": {
    "classe": "Mago",
@@ -196,7 +211,8 @@
     "Área de ação"
    ],
    "recurso": "Mana",
-   "dificuldade": 7
+   "dificuldade": 7,
+   "genero": "Masculino"
   },
   "Aurora": {
    "classe": [
@@ -211,7 +227,8 @@
     "Furtividade"
    ],
    "recurso": "Mana",
-   "dificuldade": 5
+   "dificuldade": 5,
+   "genero": "Feminino"
   },
   "Azir": {
    "classe": [
@@ -226,7 +243,8 @@
     "Ataque automático"
    ],
    "recurso": "Mana",
-   "dificuldade": 9
+   "dificuldade": 9,
+   "genero": "Masculino"
   },
   "Bard": {
    "classe": [
@@ -241,7 +259,8 @@
     "Mobilidade"
    ],
    "recurso": "Mana",
-   "dificuldade": 9
+   "dificuldade": 9,
+   "genero": "Masculino"
   },
   "Bel'Veth": {
    "classe": "Lutador",
@@ -253,7 +272,8 @@
     "Mobilidade"
    ],
    "recurso": "Nenhum",
-   "dificuldade": 10
+   "dificuldade": 10,
+   "genero": "Feminino"
   },
   "Blitzcrank": {
    "classe": [
@@ -268,7 +288,8 @@
     "Controle de Grupo"
    ],
    "recurso": "Mana",
-   "dificuldade": 4
+   "dificuldade": 4,
+   "genero": "Masculino"
   },
   "Brand": {
    "classe": [
@@ -283,7 +304,8 @@
     "Área de ação"
    ],
    "recurso": "Mana",
-   "dificuldade": 4
+   "dificuldade": 4,
+   "genero": "Masculino"
   },
   "Braum": {
    "classe": [
@@ -298,7 +320,8 @@
     "Controle de Grupo"
    ],
    "recurso": "Mana",
-   "dificuldade": 3
+   "dificuldade": 3,
+   "genero": "Masculino"
   },
   "Briar": {
    "classe": [
@@ -313,7 +336,8 @@
     "Investida"
    ],
    "recurso": "Fúria",
-   "dificuldade": 3
+   "dificuldade": 3,
+   "genero": "Feminino"
   },
   "Caitlyn": {
    "classe": "Atirador",
@@ -325,7 +349,8 @@
     "Dano explosivo"
    ],
    "recurso": "Mana",
-   "dificuldade": 6
+   "dificuldade": 6,
+   "genero": "Feminino"
   },
   "Camille": {
    "classe": [
@@ -340,7 +365,8 @@
     "Duelista"
    ],
    "recurso": "Mana",
-   "dificuldade": 4
+   "dificuldade": 4,
+   "genero": "Feminino"
   },
   "Cassiopeia": {
    "classe": "Mago",
@@ -352,7 +378,8 @@
     "Dano de sustentação"
    ],
    "recurso": "Mana",
-   "dificuldade": 10
+   "dificuldade": 10,
+   "genero": "Feminino"
   },
   "Cho'Gath": {
    "classe": [
@@ -367,7 +394,8 @@
     "Controle de Grupo"
    ],
    "recurso": "Mana",
-   "dificuldade": 5
+   "dificuldade": 5,
+   "genero": "Masculino"
   },
   "Corki": {
    "classe": [
@@ -382,7 +410,8 @@
     "Área de ação"
    ],
    "recurso": "Mana",
-   "dificuldade": 6
+   "dificuldade": 6,
+   "genero": "Masculino"
   },
   "Darius": {
    "classe": [
@@ -397,7 +426,8 @@
     "Autocura"
    ],
    "recurso": "Mana",
-   "dificuldade": 2
+   "dificuldade": 2,
+   "genero": "Masculino"
   },
   "Diana": {
    "classe": [
@@ -412,7 +442,8 @@
     "Investida"
    ],
    "recurso": "Mana",
-   "dificuldade": 4
+   "dificuldade": 4,
+   "genero": "Feminino"
   },
   "Dr. Mundo": {
    "classe": [
@@ -427,7 +458,8 @@
     "Autocura"
    ],
    "recurso": "Nenhum",
-   "dificuldade": 5
+   "dificuldade": 5,
+   "genero": "Masculino"
   },
   "Draven": {
    "classe": "Atirador",
@@ -439,7 +471,8 @@
     "Dano explosivo"
    ],
    "recurso": "Mana",
-   "dificuldade": 8
+   "dificuldade": 8,
+   "genero": "Masculino"
   },
   "Ekko": {
    "classe": [
@@ -454,7 +487,8 @@
     "Mobilidade"
    ],
    "recurso": "Mana",
-   "dificuldade": 8
+   "dificuldade": 8,
+   "genero": "Masculino"
   },
   "Elise": {
    "classe": [
@@ -469,7 +503,8 @@
     "Dano explosivo"
    ],
    "recurso": "Mana",
-   "dificuldade": 9
+   "dificuldade": 9,
+   "genero": "Feminino"
   },
   "Evelynn": {
    "classe": [
@@ -484,7 +519,8 @@
     "Dano explosivo"
    ],
    "recurso": "Mana",
-   "dificuldade": 10
+   "dificuldade": 10,
+   "genero": "Feminino"
   },
   "Ezreal": {
    "classe": [
@@ -499,7 +535,8 @@
     "Mobilidade"
    ],
    "recurso": "Mana",
-   "dificuldade": 7
+   "dificuldade": 7,
+   "genero": "Masculino"
   },
   "Fiddlesticks": {
    "classe": [
@@ -514,7 +551,8 @@
     "Área de ação"
    ],
    "recurso": "Mana",
-   "dificuldade": 9
+   "dificuldade": 9,
+   "genero": "Masculino"
   },
   "Fiora": {
    "classe": [
@@ -529,7 +567,8 @@
     "Mobilidade"
    ],
    "recurso": "Mana",
-   "dificuldade": 3
+   "dificuldade": 3,
+   "genero": "Feminino"
   },
   "Fizz": {
    "classe": [
@@ -544,7 +583,8 @@
     "Mobilidade"
    ],
    "recurso": "Mana",
-   "dificuldade": 6
+   "dificuldade": 6,
+   "genero": "Masculino"
   },
   "Jinx": {
    "classe": "Atirador",
@@ -556,7 +596,8 @@
     "Hypercarry"
    ],
    "recurso": "Mana",
-   "dificuldade": 6
+   "dificuldade": 6,
+   "genero": "Feminino"
   },
   "K'Sante": {
    "classe": [
@@ -571,7 +612,8 @@
     "Duelista"
    ],
    "recurso": "Mana",
-   "dificuldade": 9
+   "dificuldade": 9,
+   "genero": "Masculino"
   },
   "Wukong": {
    "classe": [
@@ -586,7 +628,8 @@
     "Área de ação"
    ],
    "recurso": "Mana",
-   "dificuldade": 3
+   "dificuldade": 3,
+   "genero": "Masculino"
   },
   "Nunu & Willump": {
    "classe": [
@@ -601,7 +644,8 @@
     "Máquinas de Combate"
    ],
    "recurso": "Mana",
-   "dificuldade": 4
+   "dificuldade": 4,
+   "genero": "Masculino"
   }
  }
 }

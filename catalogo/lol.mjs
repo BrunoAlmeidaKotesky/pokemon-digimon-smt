@@ -1,7 +1,8 @@
 // League of Legends: campeões do Data Dragon na versão mais nova (os nomes em inglês são os do site, src/sources/lol.ts).
 // Classe, alcance e dificuldade vêm do champion.json em inglês; o recurso, do champion.json em português; a região,
 // do índice do Universe da Riot (em português); o tipo de dano e o estilo (as etiquetas da tela de seleção), do JSON
-// de cada campeão no CommunityDragon (em português, ~170 pedidos).
+// de cada campeão no CommunityDragon (em português, ~170 pedidos). O gênero não existe em nenhuma dessas fontes: sai
+// dos pronomes da história em inglês (championFull.json), com GENERO_FIXO pros casos em que a contagem não decide.
 
 import { getJson, pool } from './util.mjs';
 
@@ -10,6 +11,18 @@ const UNIVERSE = 'https://universe-meeps.leagueoflegends.com/v1/pt_br/search/ind
 const CDRAGON = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/pt_br/v1/champions';
 
 const CLASSES = { Assassin: 'Assassino', Fighter: 'Lutador', Mage: 'Mago', Marksman: 'Atirador', Support: 'Suporte', Tank: 'Tanque' };
+/** Gênero quando os pronomes da história não decidem (texto curto, "it", dois personagens) ou decidem errado. */
+const GENERO_FIXO = {
+  "Cho'Gath": 'Masculino', Kalista: 'Feminino', Karthus: 'Masculino', "Kha'Zix": 'Masculino', "Kog'Maw": 'Masculino', Naafiri: 'Feminino',
+  Nocturne: 'Masculino', 'Nunu & Willump': 'Masculino', Rakan: 'Masculino', Shen: 'Masculino', Taric: 'Masculino', Zac: 'Masculino', Locke: 'Masculino',
+  Fiddlesticks: 'Masculino', Blitzcrank: 'Masculino', Kindred: 'Outro',
+};
+/** 'Masculino' ou 'Feminino' se um pronome aparece pelo menos 2 vezes e o dobro do outro; senão undefined. */
+export function generoPelaHistoria(lore) {
+  const n = re => (String(lore ?? '').match(re) ?? []).length;
+  const m = n(/\b(he|him|his|himself)\b/gi), f = n(/\b(she|her|hers|herself)\b/gi);
+  return m >= 2 && m > f * 2 ? 'Masculino' : f >= 2 && f > m * 2 ? 'Feminino' : undefined;
+}
 const DANO = { kMagic: 'Mágico', kPhysical: 'Físico', kMixed: 'Misto' };
 // o champion.json em português tem algumas traduções estranhas ou vazias
 const RECURSO = { '': 'Nenhum', 'de Aquecimento': 'Calor' };
@@ -27,11 +40,13 @@ export default {
     { id: 'estilo', rotulo: 'Estilo' },
     { id: 'recurso', rotulo: 'Recurso' },
     { id: 'dificuldade', rotulo: 'Dificuldade (0 a 10)' },
+    { id: 'genero', rotulo: 'Gênero' },
   ],
   async gerar() {
     const [v] = await getJson(`${DD}/api/versions.json`);
-    const [en, pt, uni] = await Promise.all([
+    const [en, completo, pt, uni] = await Promise.all([
       getJson(`${DD}/cdn/${v}/data/en_US/champion.json`),
+      getJson(`${DD}/cdn/${v}/data/en_US/championFull.json`),
       getJson(`${DD}/cdn/${v}/data/pt_BR/champion.json`),
       getJson(UNIVERSE),
     ]);
@@ -62,6 +77,9 @@ export default {
       const recurso = pt.data[c.id]?.partype ?? c.partype;
       info.recurso = RECURSO[recurso] ?? recurso;
       info.dificuldade = c.info.difficulty;
+      const genero = GENERO_FIXO[c.name] ?? generoPelaHistoria(completo.data[c.id]?.lore);
+      if (genero) info.genero = genero;
+      else console.warn(`  lol: sem gênero pra ${c.name} (ponha em GENERO_FIXO)`);
       itens[c.name] = info;
     });
     return { itens };

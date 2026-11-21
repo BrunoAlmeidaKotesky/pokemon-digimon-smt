@@ -132,7 +132,7 @@ function isGame(g: unknown): boolean {
       return isNat(g.size) && isBool(g.mix) && isNat(g.cur) &&
         isArr(g.tops, t => isRec(t) && (t.fr === null || isText(t.fr)) && isArr(t.slots, isEntryOrNull) && isNat(t.left));
     case 'adivinha':
-      return isText(g.grupo) && ['classico', 'imagem', 'emoji'].includes(g.submodo as string) && isNat(g.rodadas) &&
+      return isText(g.grupo) && ['classico', 'imagem', 'blur', 'emoji'].includes(g.submodo as string) && isNat(g.rodadas) &&
         isNat(g.tempo) && isNat(g.rodada) && ['chute', 'resultado', 'fim'].includes(g.passo as string) &&
         isArr(g.ordem, isText) && (g.vez === null || isText(g.vez)) && isNum(g.restante) && isArr(g.chutes, isChute) &&
         isNat(g.erros) && isArr(g.emoji, isText) && isNat(g.totalEmoji) && isText(g.imagem) && isNum(g.foco) &&

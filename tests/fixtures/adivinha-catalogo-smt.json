@@ -1,7 +1,7 @@
 {
  "chave": "smt",
  "fonte": "Pacote megaten 2.3.1 (dados de SMT V, Persona 3, 4 e 5)",
- "geradoEm": "2026-10-26",
+ "geradoEm": "2026-11-21",
  "campos": [
   {
    "id": "jogo",
@@ -38,6 +38,14 @@
   {
    "id": "fraco",
    "rotulo": "Fraqueza"
+  },
+  {
+   "id": "resiste",
+   "rotulo": "Resiste"
+  },
+  {
+   "id": "atributo",
+   "rotulo": "Atributo mais forte"
   }
  ],
  "itens": {
@@ -52,7 +60,12 @@
    "nivel": 72,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Vitalidade"
   },
   "Abdiel": {
    "jogo": "SMT V",
@@ -63,7 +76,13 @@
    "nivel": 80,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Force",
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Abdiel -Fallen-": {
    "jogo": "SMT V",
@@ -74,7 +93,14 @@
    "nivel": 89,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Elec",
+    "Force",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Adramelech": {
    "jogo": "SMT V",
@@ -86,7 +112,12 @@
    "nivel": 71,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Aeros": {
    "jogo": "SMT V",
@@ -97,7 +128,11 @@
    "nivel": 12,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "Agathion": {
    "jogo": "SMT V",
@@ -111,7 +146,11 @@
    "fraco": [
     "Ice",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Aitvaras": {
    "jogo": "SMT V",
@@ -122,7 +161,11 @@
    "nivel": 17,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Sorte"
   },
   "Alice": {
    "jogo": "SMT V",
@@ -133,7 +176,11 @@
    "nivel": 40,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Alilat": {
    "jogo": "SMT V",
@@ -143,7 +190,12 @@
    "moral": "Light",
    "arcana": "Empress",
    "afinidade": "Ice",
-   "nivel": 81
+   "nivel": 81,
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Vitalidade"
   },
   "Alraune": {
    "jogo": "Persona 4",
@@ -156,7 +208,13 @@
    "nivel": 41,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Amanozako": {
    "jogo": "SMT V",
@@ -168,7 +226,14 @@
    "fraco": [
     "Fire",
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Force",
+    "Dark",
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Ame-no-Uzume": {
    "jogo": "SMT V",
@@ -181,7 +246,11 @@
    "nivel": 22,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Amon": {
    "jogo": "SMT V",
@@ -192,7 +261,14 @@
    "nivel": 82,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Light",
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Vitalidade"
   },
   "Anahita": {
    "jogo": "SMT V",
@@ -204,7 +280,12 @@
    "fraco": [
     "Fire",
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Ananta": {
    "jogo": "SMT V",
@@ -218,7 +299,13 @@
    "fraco": [
     "Force",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Elec",
+    "Light"
+   ],
+   "atributo": "Vitalidade"
   },
   "Andras": {
    "jogo": "SMT V",
@@ -232,7 +319,11 @@
    "fraco": [
     "Elec",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Agilidade"
   },
   "Angel": {
    "jogo": "SMT V",
@@ -246,7 +337,11 @@
    "fraco": [
     "Force",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Anubis": {
    "jogo": "SMT V",
@@ -259,7 +354,12 @@
    "nivel": 41,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Anzu": {
    "jogo": "SMT V",
@@ -272,7 +372,11 @@
    "nivel": 48,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Agilidade"
   },
   "Apsaras": {
    "jogo": "SMT V",
@@ -285,7 +389,11 @@
    "nivel": 16,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Aquans": {
    "jogo": "SMT V",
@@ -296,7 +404,11 @@
    "nivel": 15,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Arahabaki": {
    "jogo": "SMT V",
@@ -312,7 +424,13 @@
     "Ice",
     "Elec",
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Phys"
+   ],
+   "atributo": "Magia"
   },
   "Ara Mitama": {
    "jogo": "Persona 5",
@@ -325,6 +443,14 @@
    "nivel": 30,
    "fraco": [
     "Ice"
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Agilidade"
    ]
   },
   "Archangel": {
@@ -339,7 +465,11 @@
    "fraco": [
     "Elec",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Ardha": {
    "jogo": "Persona 5",
@@ -349,7 +479,13 @@
    "moral": "Light",
    "arcana": "Temperance",
    "afinidade": "Almighty",
-   "nivel": 84
+   "nivel": 84,
+   "resiste": [
+    "Phys",
+    "Ice",
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Ares": {
    "jogo": "Persona 4",
@@ -362,7 +498,12 @@
    "nivel": 25,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Light"
+   ],
+   "atributo": "Vitalidade"
   },
   "Arioch": {
    "jogo": "SMT V",
@@ -373,7 +514,13 @@
    "nivel": 75,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force",
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Força"
   },
   "Artemis": {
    "jogo": "SMT V",
@@ -384,7 +531,14 @@
    "nivel": 37,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Ice",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Asura": {
    "jogo": "SMT V",
@@ -397,7 +551,13 @@
    "nivel": 84,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Light",
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Atavaka": {
    "jogo": "SMT V",
@@ -410,7 +570,12 @@
    "nivel": 54,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Atropos": {
    "jogo": "SMT V",
@@ -423,7 +588,12 @@
    "nivel": 64,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Attis": {
    "jogo": "SMT V",
@@ -436,7 +606,11 @@
    "nivel": 27,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Azumi": {
    "jogo": "SMT V",
@@ -448,7 +622,11 @@
    "nivel": 11,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Agilidade"
   },
   "Baal": {
    "jogo": "SMT V",
@@ -461,7 +639,14 @@
    "nivel": 93,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Force",
+    "Light",
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Baal Zebul": {
    "jogo": "Persona 4",
@@ -474,7 +659,12 @@
    "nivel": 77,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Baphomet": {
    "jogo": "SMT V",
@@ -487,7 +677,11 @@
    "nivel": 33,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Barong": {
    "jogo": "SMT V",
@@ -501,6 +695,14 @@
    "fraco": [
     "Force",
     "Dark"
+   ],
+   "resiste": [
+    "Elec",
+    "Light"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade"
    ]
   },
   "Basilisk": {
@@ -513,7 +715,12 @@
    "nivel": 31,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice"
+   ],
+   "atributo": "Vitalidade"
   },
   "Beelzebub": {
    "jogo": "SMT V",
@@ -526,6 +733,16 @@
    "nivel": 95,
    "fraco": [
     "Force"
+   ],
+   "resiste": [
+    "Ice",
+    "Light",
+    "Dark",
+    "Elec"
+   ],
+   "atributo": [
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Belial": {
@@ -539,7 +756,13 @@
    "nivel": 92,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Force",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Belphegor": {
    "jogo": "SMT V",
@@ -553,7 +776,14 @@
    "fraco": [
     "Fire",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Elec",
+    "Ice",
+    "Dark"
+   ],
+   "atributo": "Vitalidade"
   },
   "Berith": {
    "jogo": "SMT V",
@@ -566,7 +796,12 @@
    "nivel": 24,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Bicorn": {
    "jogo": "SMT V",
@@ -580,7 +815,11 @@
    "fraco": [
     "Elec",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Bishamonten": {
    "jogo": "SMT V",
@@ -593,7 +832,12 @@
    "nivel": 58,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Black Frost": {
    "jogo": "SMT V",
@@ -606,7 +850,13 @@
    "nivel": 44,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Black Ooze": {
    "jogo": "SMT V",
@@ -620,7 +870,11 @@
    "fraco": [
     "Fire",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": "Vitalidade"
   },
   "Black Rider": {
    "jogo": "SMT V",
@@ -631,7 +885,13 @@
    "nivel": 52,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Agilidade"
   },
   "Bugs": {
    "jogo": "SMT V",
@@ -644,7 +904,11 @@
    "nivel": 24,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Byakhee": {
    "jogo": "Persona 5",
@@ -655,7 +919,13 @@
    "fraco": [
     "Ice",
     "Nuke"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Wind",
+    "Dark"
+   ],
+   "atributo": "Sorte"
   },
   "Byakko": {
    "jogo": "SMT V",
@@ -668,7 +938,11 @@
    "nivel": 43,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Agilidade"
   },
   "Cait Sith": {
    "jogo": "SMT V",
@@ -681,6 +955,13 @@
    "nivel": 7,
    "fraco": [
     "Force"
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": [
+    "Força",
+    "Magia"
    ]
   },
   "Camael": {
@@ -692,7 +973,12 @@
    "nivel": 69,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Vitalidade"
   },
   "Cerberus": {
    "jogo": "SMT V",
@@ -705,7 +991,11 @@
    "nivel": 64,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Vitalidade"
   },
   "Chernobog": {
    "jogo": "SMT V",
@@ -718,7 +1008,11 @@
    "nivel": 52,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Chimera": {
    "jogo": "SMT V",
@@ -731,7 +1025,12 @@
    "nivel": 55,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Chi You": {
    "jogo": "SMT V",
@@ -745,7 +1044,12 @@
    "fraco": [
     "Fire",
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Force"
+   ],
+   "atributo": "Força"
   },
   "Choronzon": {
    "jogo": "Persona 5",
@@ -757,6 +1061,15 @@
    "nivel": 28,
    "fraco": [
     "Light"
+   ],
+   "resiste": [
+    "Phys",
+    "Fire"
+   ],
+   "atributo": [
+    "Vitalidade",
+    "Magia",
+    "Sorte"
    ]
   },
   "Cironnup": {
@@ -768,6 +1081,15 @@
    "nivel": 27,
    "fraco": [
     "Dark"
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Light"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Cleopatra": {
@@ -779,7 +1101,15 @@
    "nivel": 61,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Force",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Clotho": {
    "jogo": "SMT V",
@@ -792,7 +1122,11 @@
    "nivel": 52,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Agilidade"
   },
   "Crystal Skull": {
    "jogo": "Persona 5",
@@ -803,6 +1137,17 @@
    "nivel": 50,
    "fraco": [
     "Wind"
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Cu Chulainn": {
@@ -816,7 +1161,12 @@
    "nivel": 52,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Force"
+   ],
+   "atributo": "Força"
   },
   "Cu Sith": {
    "jogo": "Persona 4",
@@ -829,7 +1179,11 @@
    "nivel": 10,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Wind"
+   ],
+   "atributo": "Força"
   },
   "Cybele": {
    "jogo": "SMT V",
@@ -842,7 +1196,12 @@
    "nivel": 56,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Daemon": {
    "jogo": "SMT V",
@@ -854,7 +1213,12 @@
    "fraco": [
     "Elec",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Daisoujou": {
    "jogo": "SMT V",
@@ -865,7 +1229,12 @@
    "nivel": 30,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Dakini": {
    "jogo": "SMT V",
@@ -879,7 +1248,12 @@
    "fraco": [
     "Ice",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Danu": {
    "jogo": "SMT V",
@@ -890,7 +1264,15 @@
    "nivel": 93,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Force",
+    "Light"
+   ],
+   "atributo": "Sorte"
   },
   "Decarabia": {
    "jogo": "SMT V",
@@ -903,7 +1285,11 @@
    "nivel": 55,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Demeter": {
    "jogo": "SMT V",
@@ -914,7 +1300,12 @@
    "nivel": 76,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Dionysus": {
    "jogo": "SMT V",
@@ -927,7 +1318,12 @@
    "nivel": 44,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Dis": {
    "jogo": "Persona 4",
@@ -937,7 +1333,11 @@
    "moral": "Neutral",
    "arcana": "Magician",
    "afinidade": "Fire",
-   "nivel": 39
+   "nivel": 39,
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Dominion": {
    "jogo": "SMT V",
@@ -951,7 +1351,12 @@
    "fraco": [
     "Force",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Eligor": {
    "jogo": "SMT V",
@@ -964,7 +1369,12 @@
    "nivel": 37,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Emperor's Amulet": {
    "jogo": "Persona 5",
@@ -975,6 +1385,17 @@
    "nivel": 35,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Erthys": {
@@ -986,7 +1407,11 @@
    "nivel": 9,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Vitalidade"
   },
   "Fafnir": {
    "jogo": "SMT V",
@@ -1000,7 +1425,11 @@
    "fraco": [
     "Ice",
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": "Força"
   },
   "Feng Huang": {
    "jogo": "SMT V",
@@ -1013,6 +1442,14 @@
    "nivel": 22,
    "fraco": [
     "Dark"
+   ],
+   "resiste": [
+    "Force",
+    "Fire"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Fionn mac Cumhaill": {
@@ -1024,7 +1461,12 @@
    "nivel": 71,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Flaemis": {
    "jogo": "SMT V",
@@ -1035,7 +1477,11 @@
    "nivel": 18,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Flauros": {
    "jogo": "SMT V",
@@ -1048,7 +1494,12 @@
    "nivel": 50,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Forneus": {
    "jogo": "SMT V",
@@ -1062,7 +1513,12 @@
    "fraco": [
     "Elec",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Fortuna": {
    "jogo": "SMT V",
@@ -1076,7 +1532,11 @@
    "fraco": [
     "Elec",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "Futsunushi": {
    "jogo": "SMT V",
@@ -1089,7 +1549,11 @@
    "nivel": 69,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Fuu-Ki": {
    "jogo": "SMT V",
@@ -1102,7 +1566,11 @@
    "nivel": 63,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Gabriel": {
    "jogo": "SMT V",
@@ -1115,7 +1583,13 @@
    "nivel": 86,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Ganesha": {
    "jogo": "SMT V",
@@ -1129,7 +1603,12 @@
    "fraco": [
     "Elec",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Force"
+   ],
+   "atributo": "Vitalidade"
   },
   "Ganga": {
    "jogo": "Persona 4",
@@ -1143,7 +1622,11 @@
    "fraco": [
     "Fire",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Garuda": {
    "jogo": "SMT V",
@@ -1156,7 +1639,12 @@
    "nivel": 64,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Gdon": {
    "jogo": "Persona 4",
@@ -1169,7 +1657,11 @@
    "nivel": 31,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Genbu": {
    "jogo": "SMT V",
@@ -1182,7 +1674,11 @@
    "nivel": 23,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Vitalidade"
   },
   "Ghoul": {
    "jogo": "Persona 4",
@@ -1196,7 +1692,11 @@
    "fraco": [
     "Fire",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Vitalidade"
   },
   "Girimehkala": {
    "jogo": "SMT V",
@@ -1211,7 +1711,12 @@
     "Elec",
     "Force",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Phys"
+   ],
+   "atributo": "Força"
   },
   "Gorgon": {
    "jogo": "Persona 4",
@@ -1224,7 +1729,11 @@
    "nivel": 34,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Vitalidade"
   },
   "Gurr": {
    "jogo": "Persona 4",
@@ -1237,7 +1746,12 @@
    "nivel": 20,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Wind",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Hachiman": {
    "jogo": "Persona 4",
@@ -1250,7 +1764,12 @@
    "nivel": 70,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Hanuman": {
    "jogo": "SMT V",
@@ -1263,7 +1782,11 @@
    "nivel": 46,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Força"
   },
   "Hariti": {
    "jogo": "SMT V",
@@ -1276,14 +1799,25 @@
    "nivel": 35,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Hastur": {
    "jogo": "Persona 5",
    "mitologia": "Lovecraftian",
    "arcana": "Star",
    "afinidade": "Wind",
-   "nivel": 84
+   "nivel": 84,
+   "resiste": [
+    "Fire",
+    "Psy",
+    "Dark",
+    "Wind"
+   ],
+   "atributo": "Magia"
   },
   "Hayataro": {
    "jogo": "SMT V",
@@ -1295,7 +1829,13 @@
    "fraco": [
     "Force",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Light",
+    "Elec"
+   ],
+   "atributo": "Agilidade"
   },
   "Hecatoncheires": {
    "jogo": "SMT V",
@@ -1308,6 +1848,13 @@
    "nivel": 55,
    "fraco": [
     "Force"
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade"
    ]
   },
   "Helel": {
@@ -1321,7 +1868,14 @@
    "nivel": 87,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Fire",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Hell Biker": {
    "jogo": "SMT V",
@@ -1332,7 +1886,14 @@
    "nivel": 36,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Fire",
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "High Pixie": {
    "jogo": "SMT V",
@@ -1345,7 +1906,11 @@
    "nivel": 18,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "Hitokotonusi": {
    "jogo": "Persona 4",
@@ -1358,7 +1923,12 @@
    "nivel": 41,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Wind"
+   ],
+   "atributo": "Magia"
   },
   "Hokuto Seikun": {
    "jogo": "Persona 4",
@@ -1371,7 +1941,11 @@
    "nivel": 45,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Hope Diamond": {
    "jogo": "Persona 5",
@@ -1382,6 +1956,17 @@
    "nivel": 40,
    "fraco": [
     "Ice"
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Horus": {
@@ -1396,7 +1981,13 @@
    "fraco": [
     "Force",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Elec",
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Hua Po": {
    "jogo": "SMT V",
@@ -1409,7 +2000,11 @@
    "nivel": 31,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Hydra": {
    "jogo": "SMT V",
@@ -1420,7 +2015,11 @@
    "nivel": 53,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Idun": {
    "jogo": "SMT V",
@@ -1431,7 +2030,12 @@
    "nivel": 42,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Ikusa": {
    "jogo": "Persona 4",
@@ -1444,7 +2048,12 @@
    "nivel": 22,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Dark"
+   ],
+   "atributo": "Vitalidade"
   },
   "Inanna": {
    "jogo": "SMT V",
@@ -1456,7 +2065,14 @@
    "fraco": [
     "Phys",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "Incubus": {
    "jogo": "SMT V",
@@ -1469,7 +2085,11 @@
    "nivel": 22,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Inugami": {
    "jogo": "SMT V",
@@ -1483,7 +2103,12 @@
    "fraco": [
     "Ice",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Agilidade"
   },
   "Ippon-Datara": {
    "jogo": "SMT V",
@@ -1496,7 +2121,11 @@
    "nivel": 17,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Vitalidade"
   },
   "Ishtar": {
    "jogo": "SMT V",
@@ -1510,7 +2139,12 @@
    "fraco": [
     "Force",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Isis": {
    "jogo": "SMT V",
@@ -1523,7 +2157,12 @@
    "nivel": 46,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Jack Frost": {
    "jogo": "SMT V",
@@ -1536,7 +2175,11 @@
    "nivel": 25,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Jack-o'-Lantern": {
    "jogo": "SMT V",
@@ -1549,7 +2192,11 @@
    "nivel": 20,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Jatayu": {
    "jogo": "SMT V",
@@ -1563,7 +2210,11 @@
    "fraco": [
     "Elec",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Jikokuten": {
    "jogo": "SMT V",
@@ -1576,7 +2227,12 @@
    "nivel": 51,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Ice"
+   ],
+   "atributo": "Vitalidade"
   },
   "Jinn": {
    "jogo": "Persona 4",
@@ -1589,7 +2245,11 @@
    "nivel": 62,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Kaiwan": {
    "jogo": "SMT V",
@@ -1602,7 +2262,11 @@
    "nivel": 45,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Kali": {
    "jogo": "SMT V",
@@ -1616,7 +2280,13 @@
    "fraco": [
     "Ice",
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Fire",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Kartikeya": {
    "jogo": "Persona 4",
@@ -1626,7 +2296,11 @@
    "moral": "Light",
    "arcana": "Star",
    "afinidade": "Elec",
-   "nivel": 67
+   "nivel": 67,
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Kaya-no-Hime": {
    "jogo": "SMT V",
@@ -1637,7 +2311,11 @@
    "nivel": 21,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Kelpie": {
    "jogo": "SMT V",
@@ -1650,7 +2328,11 @@
    "nivel": 30,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Agilidade"
   },
   "Khonsu": {
    "jogo": "SMT V",
@@ -1661,7 +2343,12 @@
    "nivel": 62,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Khonsu Ra": {
    "jogo": "SMT V",
@@ -1672,7 +2359,14 @@
    "nivel": 78,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Force",
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Kikuri-Hime": {
    "jogo": "SMT V",
@@ -1685,7 +2379,12 @@
    "nivel": 24,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "King Frost": {
    "jogo": "SMT V",
@@ -1699,7 +2398,12 @@
    "fraco": [
     "Fire",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Kingu": {
    "jogo": "Persona 4",
@@ -1712,7 +2416,12 @@
    "nivel": 58,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Kin-Ki": {
    "jogo": "SMT V",
@@ -1725,7 +2434,11 @@
    "nivel": 49,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Vitalidade"
   },
   "Kodama": {
    "jogo": "SMT V",
@@ -1739,6 +2452,13 @@
    "fraco": [
     "Fire",
     "Ice"
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": [
+    "Magia",
+    "Sorte"
    ]
   },
   "Koh-i-Noor": {
@@ -1750,6 +2470,16 @@
    "nivel": 25,
    "fraco": [
     "Gun"
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Kohryu": {
@@ -1763,6 +2493,17 @@
    "nivel": 78,
    "fraco": [
     "Dark"
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Force",
+    "Light"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Koppa Tengu": {
@@ -1776,7 +2517,11 @@
    "nivel": 24,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Koropokguru": {
    "jogo": "SMT V",
@@ -1790,7 +2535,12 @@
    "fraco": [
     "Force",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Koumokuten": {
    "jogo": "SMT V",
@@ -1803,6 +2553,14 @@
    "nivel": 44,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Light",
+    "Force"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade"
    ]
   },
   "Kumbhanda": {
@@ -1816,7 +2574,12 @@
    "nivel": 41,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Force"
+   ],
+   "atributo": "Força"
   },
   "Kurama Tengu": {
    "jogo": "SMT V",
@@ -1829,7 +2592,11 @@
    "nivel": 39,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Kushi Mitama": {
    "jogo": "Persona 5",
@@ -1842,7 +2609,11 @@
    "nivel": 12,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Wind"
+   ],
+   "atributo": "Magia"
   },
   "Kushinada": {
    "jogo": "SMT V",
@@ -1855,7 +2626,11 @@
    "nivel": 49,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Lachesis": {
    "jogo": "SMT V",
@@ -1868,7 +2643,8 @@
    "nivel": 58,
    "fraco": [
     "Force"
-   ]
+   ],
+   "atributo": "Sorte"
   },
   "Lahmu": {
    "jogo": "SMT V",
@@ -1879,7 +2655,13 @@
    "nivel": 48,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Force",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Lakshmi": {
    "jogo": "SMT V",
@@ -1892,7 +2674,12 @@
    "nivel": 70,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Lamia": {
    "jogo": "SMT V",
@@ -1905,7 +2692,11 @@
    "nivel": 36,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Sorte"
   },
   "Leanan Sidhe": {
    "jogo": "SMT V",
@@ -1919,7 +2710,11 @@
    "fraco": [
     "Force",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Legion": {
    "jogo": "SMT V",
@@ -1933,7 +2728,11 @@
    "fraco": [
     "Elec",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Vitalidade"
   },
   "Lilim": {
    "jogo": "SMT V",
@@ -1946,7 +2745,11 @@
    "nivel": 32,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Lilith": {
    "jogo": "SMT V",
@@ -1959,7 +2762,14 @@
    "nivel": 68,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Loa": {
    "jogo": "SMT V",
@@ -1972,7 +2782,11 @@
    "nivel": 30,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Loki": {
    "jogo": "SMT V",
@@ -1984,7 +2798,13 @@
    "nivel": 56,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Force",
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Loup-garou": {
    "jogo": "SMT V",
@@ -1996,7 +2816,12 @@
    "fraco": [
     "Ice",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Lucifer": {
    "jogo": "Persona 5",
@@ -2009,7 +2834,17 @@
    "nivel": 90,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Fire",
+    "Ice",
+    "Elec",
+    "Wind",
+    "Gun",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Macabre": {
    "jogo": "SMT V",
@@ -2022,7 +2857,11 @@
    "nivel": 43,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Mada": {
    "jogo": "SMT V",
@@ -2035,7 +2874,12 @@
    "nivel": 83,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Mahakala": {
    "jogo": "Persona 4",
@@ -2044,7 +2888,13 @@
    "etico": "Chaos",
    "arcana": "Death",
    "afinidade": "Phys",
-   "nivel": 78
+   "nivel": 78,
+   "resiste": [
+    "Dark",
+    "Fire",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Makami": {
    "jogo": "SMT V",
@@ -2057,7 +2907,11 @@
    "nivel": 21,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Sorte"
   },
   "Manananggal": {
    "jogo": "SMT V",
@@ -2068,7 +2922,11 @@
    "nivel": 25,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Mandrake": {
    "jogo": "SMT V",
@@ -2081,7 +2939,11 @@
    "nivel": 6,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Agilidade"
   },
   "Mara": {
    "jogo": "SMT V",
@@ -2094,7 +2956,13 @@
    "nivel": 67,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Elec"
+   ],
+   "atributo": "Vitalidade"
   },
   "Maria": {
    "jogo": "SMT V",
@@ -2107,7 +2975,13 @@
    "nivel": 83,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Light",
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "Masakado": {
    "jogo": "Persona 4",
@@ -2121,7 +2995,12 @@
    "fraco": [
     "Elec",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Matador": {
    "jogo": "SMT V",
@@ -2132,7 +3011,13 @@
    "nivel": 24,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Melchizedek": {
    "jogo": "SMT V",
@@ -2145,7 +3030,12 @@
    "nivel": 60,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Mephisto": {
    "jogo": "SMT V",
@@ -2156,7 +3046,12 @@
    "nivel": 79,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Mermaid": {
    "jogo": "SMT V",
@@ -2168,7 +3063,11 @@
    "fraco": [
     "Fire",
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Metatron": {
    "jogo": "SMT V",
@@ -2178,7 +3077,15 @@
    "moral": "Light",
    "arcana": "Justice",
    "afinidade": "Light",
-   "nivel": 95
+   "nivel": 95,
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Force",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Michael": {
    "jogo": "SMT V",
@@ -2191,7 +3098,13 @@
    "nivel": 90,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Mishaguji": {
    "jogo": "SMT V",
@@ -2205,7 +3118,12 @@
    "fraco": [
     "Force",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Mithras": {
    "jogo": "SMT V",
@@ -2218,7 +3136,12 @@
    "nivel": 77,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Mitra": {
    "jogo": "SMT V",
@@ -2231,7 +3154,12 @@
    "nivel": 65,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Mokoi": {
    "jogo": "SMT V",
@@ -2244,7 +3172,11 @@
    "nivel": 16,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Sorte"
   },
   "Moloch": {
    "jogo": "SMT V",
@@ -2257,6 +3189,15 @@
    "nivel": 51,
    "fraco": [
     "Ice"
+   ],
+   "resiste": [
+    "Elec",
+    "Dark",
+    "Fire"
+   ],
+   "atributo": [
+    "Força",
+    "Magia"
    ]
   },
   "Mot": {
@@ -2270,7 +3211,12 @@
    "nivel": 63,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Mother Harlot": {
    "jogo": "SMT V",
@@ -2281,7 +3227,15 @@
    "nivel": 64,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light",
+    "Dark",
+    "Elec",
+    "Phys"
+   ],
+   "atributo": "Magia"
   },
   "Mothman": {
    "jogo": "SMT V",
@@ -2294,7 +3248,11 @@
    "nivel": 29,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Agilidade"
   },
   "Muu Shuwuu": {
    "jogo": "SMT V",
@@ -2306,7 +3264,11 @@
    "nivel": 38,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Naga": {
    "jogo": "SMT V",
@@ -2320,7 +3282,11 @@
    "fraco": [
     "Fire",
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Narasimha": {
    "jogo": "Persona 4",
@@ -2333,7 +3299,12 @@
    "nivel": 47,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Narcissus": {
    "jogo": "SMT V",
@@ -2346,7 +3317,11 @@
    "nivel": 38,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Nata Taishi": {
    "jogo": "Persona 4",
@@ -2359,7 +3334,11 @@
    "nivel": 6,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Agilidade"
   },
   "Nebiros": {
    "jogo": "SMT V",
@@ -2373,7 +3352,11 @@
    "fraco": [
     "Force",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Nekomata": {
    "jogo": "SMT V",
@@ -2387,7 +3370,12 @@
    "fraco": [
     "Ice",
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Neko Shogun": {
    "jogo": "SMT V",
@@ -2401,7 +3389,12 @@
    "fraco": [
     "Fire",
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Elec"
+   ],
+   "atributo": "Vitalidade"
   },
   "Niddhoggr": {
    "jogo": "Persona 4",
@@ -2414,7 +3407,12 @@
    "nivel": 55,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Dark"
+   ],
+   "atributo": "Sorte"
   },
   "Nigi Mitama": {
    "jogo": "Persona 5",
@@ -2427,7 +3425,12 @@
    "nivel": 22,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Norn": {
    "jogo": "SMT V",
@@ -2440,7 +3443,12 @@
    "nivel": 67,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Nozuchi": {
    "jogo": "Persona 4",
@@ -2453,7 +3461,11 @@
    "nivel": 27,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Nue": {
    "jogo": "SMT V",
@@ -2466,7 +3478,11 @@
    "nivel": 49,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Nuwa": {
    "jogo": "SMT V",
@@ -2477,7 +3493,13 @@
    "nivel": 80,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Dark",
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "Nuwa -Snake-": {
    "jogo": "SMT V",
@@ -2488,7 +3510,13 @@
    "nivel": 89,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Dark",
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "Obariyon": {
    "jogo": "SMT V",
@@ -2502,7 +3530,12 @@
    "fraco": [
     "Ice",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Oberon": {
    "jogo": "SMT V",
@@ -2515,7 +3548,11 @@
    "nivel": 47,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Odin": {
    "jogo": "SMT V",
@@ -2528,7 +3565,13 @@
    "nivel": 77,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Okuninushi": {
    "jogo": "SMT V",
@@ -2541,6 +3584,14 @@
    "nivel": 55,
    "fraco": [
     "Ice"
+   ],
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade"
    ]
   },
   "Omoikane": {
@@ -2554,7 +3605,11 @@
    "nivel": 7,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Ongyo-Ki": {
    "jogo": "SMT V",
@@ -2567,7 +3622,13 @@
    "nivel": 78,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Ice",
+    "Force"
+   ],
+   "atributo": "Força"
   },
   "Oni": {
    "jogo": "SMT V",
@@ -2581,7 +3642,11 @@
    "fraco": [
     "Elec",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": "Vitalidade"
   },
   "Onmoraki": {
    "jogo": "SMT V",
@@ -2595,6 +3660,13 @@
    "fraco": [
     "Ice",
     "Force"
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": [
+    "Vitalidade",
+    "Magia"
    ]
   },
   "Orichalcum": {
@@ -2606,6 +3678,17 @@
    "nivel": 60,
    "fraco": [
     "Light"
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Orlov": {
@@ -2617,6 +3700,17 @@
    "nivel": 30,
    "fraco": [
     "Dark"
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Orobas": {
@@ -2630,7 +3724,12 @@
    "nivel": 49,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Orthrus": {
    "jogo": "SMT V",
@@ -2643,7 +3742,12 @@
    "nivel": 42,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Ose": {
    "jogo": "SMT V",
@@ -2656,7 +3760,12 @@
    "nivel": 44,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Oyamatsumi": {
    "jogo": "SMT V",
@@ -2668,7 +3777,13 @@
    "nivel": 40,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Elec",
+    "Dark"
+   ],
+   "atributo": "Vitalidade"
   },
   "Pabilsag": {
    "jogo": "Persona 4",
@@ -2682,7 +3797,12 @@
    "fraco": [
     "Ice",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Pale Rider": {
    "jogo": "SMT V",
@@ -2693,7 +3813,13 @@
    "nivel": 57,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Sorte"
   },
   "Parvati": {
    "jogo": "SMT V",
@@ -2706,7 +3832,12 @@
    "nivel": 35,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Pazuzu": {
    "jogo": "SMT V",
@@ -2719,7 +3850,12 @@
    "nivel": 52,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Force",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Pisaca": {
    "jogo": "SMT V",
@@ -2733,7 +3869,11 @@
    "fraco": [
     "Fire",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Pixie": {
    "jogo": "SMT V",
@@ -2746,7 +3886,11 @@
    "nivel": 2,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Poltergeist": {
    "jogo": "SMT V",
@@ -2759,7 +3903,11 @@
    "fraco": [
     "Force",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Sorte"
   },
   "Power": {
    "jogo": "SMT V",
@@ -2773,7 +3921,12 @@
    "fraco": [
     "Force",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Light"
+   ],
+   "atributo": "Vitalidade"
   },
   "Preta": {
    "jogo": "SMT V",
@@ -2786,7 +3939,11 @@
     "Fire",
     "Force",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Principality": {
    "jogo": "SMT V",
@@ -2799,7 +3956,11 @@
    "nivel": 28,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Queen Mab": {
    "jogo": "SMT V",
@@ -2812,7 +3973,11 @@
    "nivel": 56,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Magia"
   },
   "Queen's Necklace": {
    "jogo": "Persona 5",
@@ -2823,6 +3988,17 @@
    "nivel": 15,
    "fraco": [
     "Psy"
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Quetzalcoatl": {
@@ -2836,7 +4012,11 @@
    "nivel": 34,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Raja Naga": {
    "jogo": "SMT V",
@@ -2850,7 +4030,12 @@
    "fraco": [
     "Fire",
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Elec"
+   ],
+   "atributo": "Vitalidade"
   },
   "Rakshasa": {
    "jogo": "SMT V",
@@ -2863,7 +4048,12 @@
    "nivel": 20,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Rangda": {
    "jogo": "SMT V",
@@ -2878,7 +4068,11 @@
     "Fire",
     "Elec",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": "Magia"
   },
   "Raphael": {
    "jogo": "SMT V",
@@ -2891,7 +4085,13 @@
    "nivel": 84,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Force",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Red Rider": {
    "jogo": "SMT V",
@@ -2902,7 +4102,14 @@
    "nivel": 47,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Force",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Regent": {
    "jogo": "Persona 5",
@@ -2913,6 +4120,17 @@
    "nivel": 10,
    "fraco": [
     "Nuke"
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Saki Mitama": {
@@ -2926,6 +4144,13 @@
    "nivel": 6,
    "fraco": [
     "Wind"
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Samael": {
@@ -2939,7 +4164,13 @@
    "nivel": 36,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Elec",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Sandalphon": {
    "jogo": "SMT V",
@@ -2952,7 +4183,14 @@
    "nivel": 88,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Phys",
+    "Elec",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Sandman": {
    "jogo": "SMT V",
@@ -2965,7 +4203,11 @@
    "nivel": 8,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Sorte"
   },
   "Sarasvati": {
    "jogo": "SMT V",
@@ -2979,7 +4221,11 @@
    "fraco": [
     "Fire",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Satan": {
    "jogo": "Persona 5",
@@ -2989,7 +4235,13 @@
    "moral": "Light",
    "arcana": "Judgement",
    "afinidade": "Ice",
-   "nivel": 92
+   "nivel": 92,
+   "resiste": [
+    "Gun",
+    "Ice",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Sati": {
    "jogo": "Persona 4",
@@ -3001,7 +4253,11 @@
    "nivel": 31,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Saturnus": {
    "jogo": "Persona 4",
@@ -3014,7 +4270,12 @@
    "nivel": 75,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Wind",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Scathach": {
    "jogo": "SMT V",
@@ -3027,7 +4288,12 @@
    "nivel": 55,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Force"
+   ],
+   "atributo": "Força"
   },
   "Seiryu": {
    "jogo": "SMT V",
@@ -3040,7 +4306,12 @@
    "nivel": 45,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Seiten Taisei": {
    "jogo": "Persona 4",
@@ -3053,7 +4324,12 @@
    "nivel": 68,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Wind"
+   ],
+   "atributo": "Agilidade"
   },
   "Senri": {
    "jogo": "Persona 4",
@@ -3066,7 +4342,11 @@
    "nivel": 9,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Agilidade"
   },
   "Setanta": {
    "jogo": "SMT V",
@@ -3080,7 +4360,11 @@
    "fraco": [
     "Elec",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Força"
   },
   "Seth": {
    "jogo": "SMT V",
@@ -3093,7 +4377,13 @@
    "nivel": 67,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Shiisaa": {
    "jogo": "SMT V",
@@ -3106,7 +4396,12 @@
    "nivel": 19,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Force"
+   ],
+   "atributo": "Agilidade"
   },
   "Shiki-Ouji": {
    "jogo": "SMT V",
@@ -3120,7 +4415,13 @@
    "fraco": [
     "Fire",
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Shiva": {
    "jogo": "SMT V",
@@ -3133,7 +4434,15 @@
    "nivel": 96,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Light",
+    "Dark",
+    "Fire",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Siegfried": {
    "jogo": "SMT V",
@@ -3148,7 +4457,11 @@
     "Force",
     "Light",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": "Força"
   },
   "Silky": {
    "jogo": "SMT V",
@@ -3161,7 +4474,11 @@
    "nivel": 41,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Skadi": {
    "jogo": "SMT V",
@@ -3174,7 +4491,12 @@
    "nivel": 67,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Slime": {
    "jogo": "SMT V",
@@ -3191,7 +4513,8 @@
     "Elec",
     "Force",
     "Light"
-   ]
+   ],
+   "atributo": "Vitalidade"
   },
   "Sraosha": {
    "jogo": "SMT V",
@@ -3204,7 +4527,13 @@
    "nivel": 77,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Elec",
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Stone of Scone": {
    "jogo": "Persona 5",
@@ -3215,6 +4544,17 @@
    "nivel": 20,
    "fraco": [
     "Fire"
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Succubus": {
@@ -3228,7 +4568,12 @@
    "nivel": 38,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Sudama": {
    "jogo": "SMT V",
@@ -3242,6 +4587,13 @@
    "fraco": [
     "Fire",
     "Ice"
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Sui-Ki": {
@@ -3255,7 +4607,11 @@
    "nivel": 56,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Força"
   },
   "Sukuna-Hikona": {
    "jogo": "SMT V",
@@ -3266,7 +4622,13 @@
    "nivel": 37,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Suparna": {
    "jogo": "Persona 4",
@@ -3279,7 +4641,11 @@
    "nivel": 77,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Wind"
+   ],
+   "atributo": "Agilidade"
   },
   "Surt": {
    "jogo": "SMT V",
@@ -3292,7 +4658,11 @@
    "nivel": 62,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Suzaku": {
    "jogo": "SMT V",
@@ -3305,7 +4675,11 @@
    "nivel": 43,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Sylph": {
    "jogo": "Persona 4",
@@ -3318,6 +4692,13 @@
    "nivel": 11,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Wind"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Take-Minakata": {
@@ -3331,6 +4712,13 @@
    "nivel": 19,
    "fraco": [
     "Fire"
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade"
    ]
   },
   "Tam Lin": {
@@ -3344,7 +4732,14 @@
    "nivel": 27,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Wind",
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Tao": {
    "jogo": "SMT V",
@@ -3355,7 +4750,11 @@
    "nivel": 60,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Taotie": {
    "jogo": "Persona 4",
@@ -3365,7 +4764,11 @@
    "moral": "Dark",
    "arcana": "Tower",
    "afinidade": "Almighty",
-   "nivel": 35
+   "nivel": 35,
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Vitalidade"
   },
   "Taowu": {
    "jogo": "Persona 4",
@@ -3377,7 +4780,12 @@
    "fraco": [
     "Fire",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Wind",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Thor": {
    "jogo": "SMT V",
@@ -3390,7 +4798,13 @@
    "nivel": 66,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Thoth": {
    "jogo": "SMT V",
@@ -3403,7 +4817,11 @@
    "nivel": 33,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Throne": {
    "jogo": "SMT V",
@@ -3417,7 +4835,12 @@
    "fraco": [
     "Ice",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Thunderbird": {
    "jogo": "SMT V",
@@ -3430,7 +4853,11 @@
    "nivel": 38,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Agilidade"
   },
   "Titan": {
    "jogo": "Persona 4",
@@ -3443,7 +4870,11 @@
    "nivel": 14,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Titania": {
    "jogo": "SMT V",
@@ -3456,7 +4887,12 @@
    "nivel": 57,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Triglav": {
    "jogo": "Persona 4",
@@ -3467,7 +4903,11 @@
    "nivel": 43,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": "Força"
   },
   "Trumpeter": {
    "jogo": "SMT V",
@@ -3475,7 +4915,16 @@
    "mitologia": "Abrahamic",
    "arcana": "Judgement",
    "afinidade": "Nuke",
-   "nivel": 73
+   "nivel": 73,
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Force",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Tsuchigumo": {
    "jogo": "SMT V",
@@ -3487,7 +4936,11 @@
    "nivel": 13,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Vitalidade"
   },
   "Turdak": {
    "jogo": "SMT V",
@@ -3499,7 +4952,11 @@
    "nivel": 11,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Tzitzimitl": {
    "jogo": "Persona 4",
@@ -3512,7 +4969,12 @@
    "nivel": 70,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Ukobach": {
    "jogo": "Persona 4",
@@ -3525,6 +4987,13 @@
    "nivel": 3,
    "fraco": [
     "Ice"
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Undine": {
@@ -3538,7 +5007,11 @@
    "nivel": 33,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Unicorn": {
    "jogo": "Persona 5",
@@ -3551,7 +5024,13 @@
    "nivel": 39,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Psy",
+    "Ice",
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Uriel": {
    "jogo": "SMT V",
@@ -3564,7 +5043,13 @@
    "nivel": 82,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Fire",
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Valkyrie": {
    "jogo": "SMT V",
@@ -3577,7 +5062,11 @@
    "nivel": 40,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Vasuki": {
    "jogo": "SMT V",
@@ -3590,7 +5079,12 @@
    "nivel": 74,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Sorte"
   },
   "Vetala": {
    "jogo": "Persona 4",
@@ -3603,7 +5097,12 @@
    "nivel": 19,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Wind",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Virtue": {
    "jogo": "Persona 4",
@@ -3617,7 +5116,12 @@
    "fraco": [
     "Ice",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Vishnu": {
    "jogo": "SMT V",
@@ -3630,7 +5134,13 @@
    "nivel": 87,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Dark",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Vohu Manah": {
    "jogo": "Persona 5",
@@ -3641,7 +5151,13 @@
    "nivel": 80,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Dark",
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "White Rider": {
    "jogo": "SMT V",
@@ -3652,7 +5168,13 @@
    "nivel": 43,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Xiezhai": {
    "jogo": "Persona 4",
@@ -3663,7 +5185,11 @@
    "nivel": 16,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Yaksini": {
    "jogo": "SMT V",
@@ -3676,7 +5202,11 @@
    "nivel": 30,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Force"
+   ],
+   "atributo": "Força"
   },
   "Yamata-no-Orochi": {
    "jogo": "SMT V",
@@ -3689,7 +5219,12 @@
    "nivel": 72,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Ice"
+   ],
+   "atributo": "Vitalidade"
   },
   "Yatagarasu": {
    "jogo": "SMT V",
@@ -3702,7 +5237,12 @@
    "nivel": 54,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Force",
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Yatsufusa": {
    "jogo": "Persona 4",
@@ -3710,7 +5250,13 @@
    "mitologia": "Japanese",
    "arcana": "Hanged",
    "afinidade": "Fire",
-   "nivel": 49
+   "nivel": 49,
+   "resiste": [
+    "Light",
+    "Fire",
+    "Wind"
+   ],
+   "atributo": "Agilidade"
   },
   "Yomotsu-Shikome": {
    "jogo": "Persona 4",
@@ -3723,7 +5269,11 @@
    "nivel": 2,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Agilidade"
   },
   "Yoshitsune": {
    "jogo": "SMT V",
@@ -3736,7 +5286,11 @@
    "nivel": 45,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Phys"
+   ],
+   "atributo": "Força"
   },
   "Yurlungur": {
    "jogo": "SMT V",
@@ -3749,7 +5303,11 @@
    "nivel": 50,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Zaou-Gongen": {
    "jogo": "SMT V",
@@ -3762,7 +5320,13 @@
    "nivel": 72,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Zeus": {
    "jogo": "SMT V",
@@ -3773,7 +5337,13 @@
    "nivel": 86,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Zhen": {
    "jogo": "SMT V",
@@ -3784,7 +5354,11 @@
    "nivel": 14,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Sorte"
   },
   "Zouchouten": {
    "jogo": "SMT V",
@@ -3797,7 +5371,11 @@
    "nivel": 36,
    "fraco": [
     "Force"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Força"
   }
  }
 }

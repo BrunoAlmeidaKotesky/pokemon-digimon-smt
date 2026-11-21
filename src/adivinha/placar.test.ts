@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chaveDe, desafioDeHoje, lerSalvo, media, registrarChute, sequenciaAtual, vazio } from './placar';
+import { chaveDe, chavePercurso, desafioDeHoje, lerSalvo, media, registrarChute, registrarPercurso, sequenciaAtual, vazio } from './placar';
 
 const K = chaveDe('lol', 'classico');
 
@@ -59,5 +59,51 @@ describe('desafio do dia', () => {
     expect(s.stats[K]).toEqual({ jogos: 4, chutes: 7, seq: 1, melhor: 3, ultimo: '2026-11-23' });
     expect(media(undefined)).toBeNull();
     expect(sequenciaAtual(undefined, '2026-11-23')).toBe(0);
+  });
+});
+
+describe('formato 2 (Imagem virou Blur, percurso do dia)', () => {
+  it('salvo antigo: "imagem" vira "blur" (desafio, estatística e escolha da tela); a sequência continua no percurso', () => {
+    const antigo = {
+      dia: { 'lol:imagem': { data: '2026-11-20', alvo: 'Ahri', chutes: ['Zed', 'Ahri'], acertou: true }, 'lol:classico': { data: '2026-11-19', alvo: 'Jinx', chutes: ['Jinx'], acertou: true } },
+      stats: {
+        'lol:imagem': { jogos: 5, chutes: 20, seq: 4, melhor: 4, ultimo: '2026-11-20' },
+        'lol:classico': { jogos: 9, chutes: 30, seq: 2, melhor: 6, ultimo: '2026-11-19' },
+        'pokemon:emoji': { jogos: 1, chutes: 3, seq: 1, melhor: 1, ultimo: '2026-11-18' },
+      },
+      cfg: { grupo: 'lol', submodo: 'imagem', rodada: 'livre' },
+    };
+    const s = lerSalvo(antigo);
+    expect(s.v).toBe(2);
+    expect(Object.keys(s.dia).sort()).toEqual(['lol:blur', 'lol:classico']);
+    expect(s.stats['lol:blur']).toEqual({ jogos: 5, chutes: 20, seq: 4, melhor: 4, ultimo: '2026-11-20' });
+    expect(s.stats['lol:imagem']).toBeUndefined();
+    expect(s.cfg).toEqual({ grupo: 'lol', submodo: 'blur', rodada: 'livre' });
+    // o percurso começa com a etapa jogada por último: quem vinha em 4 dias segue a sequência
+    expect(s.stats[chavePercurso('lol')]).toEqual({ jogos: 5, chutes: 20, seq: 4, melhor: 4, ultimo: '2026-11-20' });
+    expect(s.stats[chavePercurso('pokemon')]).toEqual({ jogos: 1, chutes: 3, seq: 1, melhor: 1, ultimo: '2026-11-18' });
+    expect(s.stats[chavePercurso('jojo')]).toBeUndefined();
+    expect(sequenciaAtual(s.stats[chavePercurso('lol')], '2026-11-21')).toBe(4);
+    const r = registrarPercurso(s, 'lol', '2026-11-21', 9);
+    expect(r.stats[chavePercurso('lol')]).toEqual({ jogos: 6, chutes: 29, seq: 5, melhor: 5, ultimo: '2026-11-21' });
+    expect(s.etapas).toEqual(['classico', 'imagem', 'blur', 'emoji']);
+  });
+
+  it('salvo novo: "imagem" é o recorte e não migra; etapas ligadas', () => {
+    const s = lerSalvo({ v: 2, dia: { 'lol:imagem': { data: '2026-11-21', alvo: 'Ahri', chutes: [], acertou: false } }, stats: {}, cfg: { grupo: 'lol', submodo: 'todos', rodada: 'livre' }, etapas: ['emoji', 'classico', 'xyz'] });
+    expect(Object.keys(s.dia)).toEqual(['lol:imagem']);
+    expect(s.cfg?.submodo).toBe('todos');
+    expect(s.etapas).toEqual(['classico', 'emoji']);
+    expect(lerSalvo({ v: 2, etapas: [] }).etapas).toEqual(['classico', 'imagem', 'blur', 'emoji']);
+    expect(lerSalvo({ v: 2, etapas: 'blur' }).etapas).toEqual(['classico', 'imagem', 'blur', 'emoji']);
+  });
+
+  it('percurso conta uma vez por dia; dia pulado recomeça a sequência', () => {
+    let s = registrarPercurso(vazio(), 'jojo', '2026-11-20', 7);
+    s = registrarPercurso(s, 'jojo', '2026-11-21', 5);
+    expect(registrarPercurso(s, 'jojo', '2026-11-21', 99)).toBe(s);
+    expect(s.stats[chavePercurso('jojo')]).toEqual({ jogos: 2, chutes: 12, seq: 2, melhor: 2, ultimo: '2026-11-21' });
+    s = registrarPercurso(s, 'jojo', '2026-11-23', 4);
+    expect(s.stats[chavePercurso('jojo')]).toMatchObject({ seq: 1, melhor: 2, jogos: 3 });
   });
 });

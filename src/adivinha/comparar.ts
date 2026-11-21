@@ -2,7 +2,7 @@
 //   certo   = igual (lista: os mesmos itens, em qualquer ordem)
 //   parcial = lista com parte em comum
 //   errado  = nada em comum; em número (e geração em romano) vem com seta pra onde está o secreto
-// Campo sem informação aparece como "?": dois "?" contam como iguais.
+// Campo sem informação aparece como "?": dois "?" contam como iguais. Número com unidade: "0,2 m".
 import { valores, type Valor } from '../catalog/model';
 import type { Coluna, Grupo } from './grupos';
 import type { AdvItem } from './pool';
@@ -29,9 +29,20 @@ export function romano(s: string): number | null {
   return n;
 }
 
-/** Valor da coluna pro personagem: o do catálogo ou, sem ele, o fixo da franquia (Persona: raça "Persona"). */
+/**
+ * Valor da coluna pro personagem: o do catálogo (do campo `campo`, ou do `id`) ou, sem ele, o fixo da franquia
+ * (Persona: raça "Persona"). Coluna de um item da lista (Tipo 2): sem o item, `vazio` ("Nenhum"); sem o campo, "?".
+ */
 export function valorDe(col: Coluna, it: Pick<AdvItem, 'fr' | 'info'>): Valor | undefined {
-  return it.info[col.id] ?? col.fixo?.[it.fr];
+  const v = it.info[col.campo ?? col.id];
+  if (col.indice !== undefined) return v === undefined ? undefined : (valores(v)[col.indice] ?? col.vazio);
+  return v ?? col.fixo?.[it.fr];
+}
+
+/** Texto da célula: lista separada por vírgula; número com vírgula decimal e, se houver, a unidade. */
+export function textoDe(col: Coluna, v: Valor): string {
+  if (typeof v === 'number') return `${String(v).replace('.', ',')}${col.unidade ? ' ' + col.unidade : ''}`;
+  return valores(v).join(', ');
 }
 
 function numero(col: Coluna, v: Valor): number | null {
@@ -44,7 +55,7 @@ function numero(col: Coluna, v: Valor): number | null {
 
 /** Compara o valor do chute com o do secreto numa coluna. */
 export function comparar(col: Coluna, chute: Valor | undefined, alvo: Valor | undefined): Pista {
-  const t = chute === undefined ? SEM_INFO : valores(chute).join(', ');
+  const t = chute === undefined ? SEM_INFO : textoDe(col, chute);
   if (chute === undefined || alvo === undefined) return { t, c: chute === alvo ? 'certo' : 'errado' };
   if (col.tipo !== 'texto') {
     const a = numero(col, chute), b = numero(col, alvo);
