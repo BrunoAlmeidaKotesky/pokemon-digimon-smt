@@ -8,8 +8,8 @@ testes e publicação: [README.md](README.md).
 - Tudo que o usuário vê, comentários, commits e mensagens de merge: em português.
 - Trabalhe na branch `react`. A `main` só recebe `merge --no-ff` da `react` com CI verde, e só quando o usuário pedir
   pra publicar. Nada de `push --force`.
-- Não mude o nome nem o formato das chaves do localStorage (`pdx-stats`, `pdx-bags`, `pdx-ygo-v1`) nem a chave de uma
-  franquia existente: é o placar de quem já usa o site.
+- Não mude o nome nem o formato das chaves do localStorage (`pdx-stats`, `pdx-bags`, `pdx-ygo-v1`, `pdx-adivinha-v1`)
+  nem a chave de uma franquia existente: é o placar de quem já usa o site.
 - `PROMPT-claude-code.md` na raiz é do usuário: não comite nem apague.
 - Não acesse gamerguides.com (bloqueia agentes de IA).
 - Nunca mande o e-mail ou outro dado pessoal do usuário pra serviço de terceiros (User-Agent, URL, corpo).

@@ -2,9 +2,13 @@
 import type { Cup, Entry, FranchiseKey, Item } from '../types';
 import type { Rank, RankTop } from '../core/rank';
 import type { CustomFranchise, CustomOp } from '../customs/types';
+import type { Catalogo } from '../catalog/model';
+import type { Pista } from '../adivinha/comparar';
+import type { Submodo } from '../adivinha/grupos';
+import type { AdvItem, EmojiMapa } from '../adivinha/pool';
 
 // ---------- configuração ----------
-export type OnlineMode = 'duel' | 'trio' | 'quartet' | 'cup' | 'draft' | 'rank';
+export type OnlineMode = 'duel' | 'trio' | 'quartet' | 'cup' | 'draft' | 'rank' | 'adivinha';
 
 export interface OnlineConfig {
   mode: OnlineMode;
@@ -22,6 +26,8 @@ export interface OnlineConfig {
   draft: { frs: FranchiseKey[]; x: number; rounds: number };
   /** Ranking às cegas: tamanho do top, franquias (na ordem dos tops separados) e se mistura tudo num top só */
   rank: { size: number; frs: FranchiseKey[]; mix: boolean };
+  /** Adivinha, vez de cada um: franquia (grupo da aba Adivinha), submodo, nº de rodadas e segundos por vez */
+  adivinha: { grupo: string; submodo: Submodo; rodadas: number; tempo: number };
 }
 
 // ---------- estado da sala (só no host) ----------
@@ -143,7 +149,63 @@ export interface RankGame {
   rank: Rank;
 }
 
-export type Game = KingGame | CupGame | DraftGame | RankGame;
+/** Um chute do Adivinha online, já com as pistas (Clássico). */
+export interface AdivinhaChute {
+  /** id de quem chutou */
+  por: string;
+  /** apelido de quem chutou (fica mesmo se a pessoa sair) */
+  porNome: string;
+  /** personagem chutado; null = o tempo acabou e a vez passou */
+  alvo: Entry | null;
+  /** pistas do Clássico (null nos outros submodos e no tempo esgotado) */
+  pistas: Pista[] | null;
+  certo: boolean;
+}
+
+/** Rodada já decidida: quem era, quem acertou (null = ninguém, o host revelou) e quantos chutes teve. */
+export interface AdivinhaFeita {
+  rodada: number;
+  secreto: Entry;
+  vencedor: string | null;
+  chutes: number;
+}
+
+/**
+ * Adivinha online, vez de cada um: o host sorteia o secreto (que nunca sai do host até a rodada acabar); os jogadores
+ * chutam em ordem, um por vez, com tempo; quem acerta ganha a rodada.
+ */
+export interface AdivinhaGame {
+  mode: 'adivinha';
+  grupo: string;
+  submodo: Submodo;
+  rodadas: number;
+  /** segundos por vez */
+  tempo: number;
+  /** rodada atual (1..rodadas) */
+  rodada: number;
+  /** chute = rodada aberta; resultado = alguém acertou (ou o host revelou); fim = placar final */
+  passo: 'chute' | 'resultado' | 'fim';
+  /** ordem dos jogadores (quem entra no meio vai pro fim) */
+  ordem: string[];
+  /** id de quem chuta agora (null fora do passo 'chute') */
+  vez: string | null;
+  /** quando a vez acaba (ms, relógio do host) */
+  prazo: number;
+  secreto: AdvItem;
+  /** de 0 a 1: ponto do zoom da Imagem (o mesmo pra todos) */
+  foco: number;
+  chutes: AdivinhaChute[];
+  /** secretos já sorteados (não repetem até acabar a lista) */
+  usados: string[];
+  /** pontos por id de jogador */
+  placar: Record<string, number>;
+  /** apelido de cada id (pro placar de quem saiu) */
+  nomes: Record<string, string>;
+  vencedor: string | null;
+  historico: AdivinhaFeita[];
+}
+
+export type Game = KingGame | CupGame | DraftGame | RankGame | AdivinhaGame;
 
 export interface RoomState {
   code: string;
@@ -184,8 +246,12 @@ export type Action =
   | { type: 'next' }
   /** Draft: escolha secreta (idx nas opções da franquia da vez) */
   | { type: 'pick'; id: string; round: number; att: number; idx: number }
-  /** Draft: o host segue sem quem ainda não terminou de escolher */
-  | { type: 'skip' };
+  /** Draft: o host segue sem quem ainda não terminou de escolher; Adivinha: o host revela o secreto e fecha a rodada */
+  | { type: 'skip' }
+  /** Adivinha: chute de quem está na vez (nome exato do personagem) */
+  | { type: 'chute'; id: string; rodada: number; nome: string }
+  /** Adivinha: o relógio do host avisa que o tempo da vez pode ter acabado */
+  | { type: 'tempo' };
 
 /** O que o redutor precisa de fora: gerador aleatório, relógio e as listas de personagens do host. */
 export interface Ctx {
@@ -194,6 +260,8 @@ export interface Ctx {
   lists: Record<string, Item[] | null>;
   /** rótulos das franquias customizadas do host (pros avisos) */
   labels?: Record<string, string>;
+  /** Adivinha: catálogos e emojis que o host já carregou, por franquia */
+  adivinha?: { catalogos: Record<string, Catalogo | null | undefined>; emojis: Record<string, EmojiMapa | null | undefined> };
 }
 
 export type JoinCheck = { ok: true; id: string } | { ok: false; reason: string };
@@ -270,11 +338,42 @@ export interface RankView {
   cur: number;
 }
 
+/** O Adivinha visto por um jogador: as pistas, nunca o secreto (até a rodada acabar). */
+export interface AdivinhaView {
+  mode: 'adivinha';
+  grupo: string;
+  submodo: Submodo;
+  rodadas: number;
+  tempo: number;
+  rodada: number;
+  passo: AdivinhaGame['passo'];
+  ordem: string[];
+  vez: string | null;
+  /** ms que faltavam pra vez acabar quando o host mandou esta visão */
+  restante: number;
+  chutes: AdivinhaChute[];
+  /** chutes errados da rodada (o tempo esgotado não conta) */
+  erros: number;
+  /** Emoji: só os já revelados */
+  emoji: string[];
+  /** Emoji: quantos o secreto tem */
+  totalEmoji: number;
+  /** Imagem: a imagem do secreto ('' nos outros submodos) */
+  imagem: string;
+  foco: number;
+  /** quem era: só depois que a rodada acaba */
+  secreto: Entry | null;
+  vencedor: string | null;
+  placar: { id: string; nome: string; pontos: number }[];
+  historico: (AdivinhaFeita & { vencedorNome: string })[];
+}
+
 export type GameView =
   | { mode: KingGame['mode']; frs: FranchiseKey[]; streak: number[] }
   | { mode: 'cup'; cup: Cup; title: string; count: string }
   | DraftView
-  | RankView;
+  | RankView
+  | AdivinhaView;
 
 export interface RoomView {
   code: string;
@@ -295,6 +394,8 @@ export type ClientMsg =
   | { t: 'hello'; id: string; name: string }
   | { t: 'vote'; seq: number; idx: number }
   | { t: 'pick'; round: number; att: number; idx: number }
+  /** Adivinha: chute na minha vez */
+  | { t: 'chute'; rodada: number; nome: string }
   /** pedido de mudança nas franquias customizadas do host (só vale com cfg.customEdit) */
   | { t: 'custom'; op: CustomOp }
   | { t: 'leave' }

@@ -9,8 +9,9 @@ import { Online } from './modes/online/Online';
 import { Customs } from './modes/customs/Customs';
 import { Catalog } from './modes/catalog/Catalog';
 import { Autobatalha } from './modes/autobatalha/Autobatalha';
+import { Adivinha } from './modes/adivinha/Adivinha';
 
-const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['rank', 'Ranking'], ['stats', 'Placar'], ['customs', 'Personalizar'], ['catalog', 'Catálogo'], ['autobatalha', 'Autobatalha'], ['online', 'Online']];
+const TABS: [Mode, string][] = [['duel', 'Duelo'], ['trio', 'Trio'], ['quartet', 'Quarteto'], ['cup', 'Campeonato'], ['rank', 'Ranking'], ['stats', 'Placar'], ['customs', 'Personalizar'], ['catalog', 'Catálogo'], ['autobatalha', 'Autobatalha'], ['adivinha', 'Adivinha'], ['online', 'Online']];
 
 export function App() {
   const app = useApp();
@@ -35,6 +36,7 @@ export function App() {
       <Customs />
       <Catalog />
       <Autobatalha />
+      <Adivinha />
       <Online />
     </div>
   );

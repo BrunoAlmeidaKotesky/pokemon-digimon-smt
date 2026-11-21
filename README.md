@@ -6,9 +6,32 @@ https://brunoalmeidakotesky.github.io/pokemon-digimon-smt/
 **Modos:** Duelo (rei do morro), Trio, Quarteto, Campeonato com chaveamento, Ranking (top às cegas: um personagem por vez
 vai pra uma posição do top e fica travado lá), Placar, franquias personalizadas (grupos
 de imagens próprias), Autobatalha (jogo de montar time com sinergias e luta automática, contra 7 bots ou online com
-amigos; design em [docs/tft/autobatalha.md](docs/tft/autobatalha.md)) e Online (salas com votação em cada celular:
-Duelo, Trio, Quarteto, Campeonato, Draft e Ranking, via PeerJS). O passo a passo pra jogar as salas da aba Online com
-amigos está em [RELATORIO.md](RELATORIO.md#como-testar-com-amigos); o da Autobatalha, logo abaixo.
+amigos; design em [docs/tft/autobatalha.md](docs/tft/autobatalha.md)), Adivinha (descobrir o personagem pelas pistas,
+sozinho ou online; detalhes logo abaixo) e Online (salas com votação em cada celular: Duelo, Trio, Quarteto,
+Campeonato, Draft, Ranking e Adivinha, via PeerJS). O passo a passo pra jogar as salas da aba Online com amigos está em
+[RELATORIO.md](RELATORIO.md#como-testar-com-amigos); o da Autobatalha, logo abaixo.
+
+### Adivinha
+
+Aba **Adivinha** (link direto `?aba=adivinha`): adivinhar um personagem de LoL, Overwatch, Deadlock, Pokémon, JoJo ou
+SMT + Persona (as duas juntas). Cada chute usa o autocompletar (nome e miniatura, sem diferenciar acento e maiúscula,
+sem repetir) e Enter escolhe.
+
+- **Clássico**: tabela com as informações do catálogo (`public/catalogo/<chave>.json`) de cada chute comparadas com as
+  do secreto: verde = igual, amarelo = parte em comum, vermelho = nada em comum; número (dificuldade, complexidade,
+  nível, estágio, geração) com seta pra cima ou pra baixo; `?` = sem informação.
+- **Imagem**: começa com zoom num ponto desenhado da imagem, desfocada; cada erro afasta e clareia.
+- **Emoji**: `public/adivinha/emoji/<chave>.json` (`{ "Nome": "🦊💋🌙✨" }`); começa com 1 emoji e revela mais 1 por
+  erro. Só entra quem tem emoji; franquia sem arquivo fica com o Emoji desligado.
+- **Desafio do dia**: o mesmo personagem pra todo mundo, pela data de Brasília + franquia + submodo (índice na lista
+  ordenada por nome); sequência de dias e média de chutes em `pdx-adivinha-v1`. **Livre**: um atrás do outro, com
+  "Desistir".
+- Entra quem está na lista do site e no catálogo. Só no Adivinha: Pokémon só com as espécies (sem Mega, Gigantamax nem
+  formas, que têm `variante` no catálogo) e JoJo só com Stands do anime e do mangá (Part 3 a 9, Kishibe Rohan).
+- **Online** (aba Online, modo Adivinha, "vez de cada um"): o host escolhe franquia, submodo, rodadas e segundos por
+  vez. O secreto fica só no navegador do host (os outros recebem as pistas; no modo Imagem a imagem precisa ir, e o
+  endereço dela pode entregar o nome pra quem fuçar a rede). Um chute por vez, na ordem da sala; tempo esgotado passa a
+  vez, quem cai é pulado; quem acerta ganha a rodada. Placar no fim.
 
 ### Autobatalha com amigos
 
@@ -85,6 +108,8 @@ node node_modules/@playwright/test/cli.js test
 - `src/online/`: modo online (redutor puro da sala, protocolo, transporte PeerJS).
 - `src/autobatalha/`: a Autobatalha (set, motor de combate, conteúdo, partida, controle) e `online/`, a sala com amigos
   (anfitrião, convidado, protocolo, visão de cada um); a tela fica em `src/modes/autobatalha/`.
+- `src/adivinha/`: o Adivinha (franquias e colunas, pistas, desafio do dia, pool, emojis, zoom da imagem, estatísticas,
+  carga do catálogo e dos emojis); a tela fica em `src/modes/adivinha/` e a sala online em `src/online/adivinha.ts`.
 - `src/customs/`: franquias personalizadas.
 - `public/`: imagens e listas locais (`smt/`, `sujimon/`, `ff/`, `zelda/`, `brainrot/`, `minecraft/`, `monsterhunter/`, `kamenrider/`).
 
@@ -150,7 +175,7 @@ Ficam no localStorage com as chaves `pdx-stats` (placar e histórico), `pdx-bags
 `pdx-ygo-v1` (cache da lista de Yu-Gi-Oh!). O nome e o formato dessas chaves não mudam, pra ninguém perder o placar.
 A Autobatalha usa chaves próprias: `pdx-autobatalha-v1` (partida em andamento), `pdx-autobatalha-config`,
 `pdx-autobatalha-planos` (planejador de time) e `pdx-autobatalha-aparelho` (senha aleatória deste navegador pra
-voltar pro mesmo lugar numa sala online).
+voltar pro mesmo lugar numa sala online). O Adivinha guarda o desafio do dia e as estatísticas em `pdx-adivinha-v1`.
 
 ## Histórico
 

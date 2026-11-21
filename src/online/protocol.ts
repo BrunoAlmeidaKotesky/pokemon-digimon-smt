@@ -10,6 +10,8 @@ export const MAX_NAME = 16;
 export const MAX_ID = 64;
 export const MAX_WIRE_NAME = 40;
 export const MAX_REASON = 200;
+/** nome de personagem chutado no Adivinha */
+export const MAX_CHUTE = 120;
 
 type Rec = Record<string, unknown>;
 
@@ -39,6 +41,8 @@ export function parseClientMsg(x: unknown): ClientMsg | null {
         return isNat(x.seq) && isNat(x.idx) ? { t: 'vote', seq: x.seq, idx: x.idx } : null;
       case 'pick':
         return isNat(x.round) && isNat(x.att) && isNat(x.idx) ? { t: 'pick', round: x.round, att: x.att, idx: x.idx } : null;
+      case 'chute':
+        return isNat(x.rodada) && isStr(x.nome, MAX_CHUTE) && x.nome.trim() ? { t: 'chute', rodada: x.rodada, nome: x.nome } : null;
       case 'custom': {
         const op = parseCustomOp(x.op);
         return op ? { t: 'custom', op } : null;
@@ -80,8 +84,10 @@ function isCfg(c: unknown): boolean {
     isRec(c.cup) && isArr(c.cup.frs, isText) && isNat(c.cup.size) &&
     isRec(c.draft) && isArr(c.draft.frs, isText) && isNat(c.draft.x) && isNat(c.draft.rounds) &&
     (c.customEdit === undefined || isBool(c.customEdit)) &&
-    // host de versão anterior ao Ranking não manda `rank`
-    (c.rank === undefined || (isRec(c.rank) && isArr(c.rank.frs, isText) && isNat(c.rank.size) && isBool(c.rank.mix)));
+    // host de versão anterior ao Ranking não manda `rank` (nem, antes do Adivinha, `adivinha`)
+    (c.rank === undefined || (isRec(c.rank) && isArr(c.rank.frs, isText) && isNat(c.rank.size) && isBool(c.rank.mix))) &&
+    (c.adivinha === undefined || (isRec(c.adivinha) && isText(c.adivinha.grupo) && isText(c.adivinha.submodo) &&
+      isNat(c.adivinha.rodadas) && isNat(c.adivinha.tempo)));
 }
 
 /** Pedido de mudança nas franquias customizadas (o host ainda confere tudo de novo ao aplicar). */
@@ -94,6 +100,13 @@ function parseCustomOp(o: unknown): CustomOp | null {
     return { op: 'add', key: o.key, items: (o.items as { name: string; data: string }[]).map(i => ({ name: i.name, data: i.data })) };
   return null;
 }
+
+const isNum = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x);
+const isPista = (p: unknown): boolean => isRec(p) && isText(p.t) && ['certo', 'parcial', 'errado'].includes(p.c as string) &&
+  (p.s === undefined || p.s === 'cima' || p.s === 'baixo');
+/** chute do Adivinha: quem, o personagem (null = tempo esgotado) e as pistas do Clássico */
+const isChute = (c: unknown): boolean => isRec(c) && isText(c.por) && isText(c.porNome) && (c.alvo === null || isEntry(c.alvo)) &&
+  (c.pistas === null || isArr(c.pistas, isPista)) && isBool(c.certo);
 
 /** O jogo, conferido pelo modo (o que a tela de cada modo usa direto). */
 function isGame(g: unknown): boolean {
@@ -118,6 +131,15 @@ function isGame(g: unknown): boolean {
     case 'rank':
       return isNat(g.size) && isBool(g.mix) && isNat(g.cur) &&
         isArr(g.tops, t => isRec(t) && (t.fr === null || isText(t.fr)) && isArr(t.slots, isEntryOrNull) && isNat(t.left));
+    case 'adivinha':
+      return isText(g.grupo) && ['classico', 'imagem', 'emoji'].includes(g.submodo as string) && isNat(g.rodadas) &&
+        isNat(g.tempo) && isNat(g.rodada) && ['chute', 'resultado', 'fim'].includes(g.passo as string) &&
+        isArr(g.ordem, isText) && (g.vez === null || isText(g.vez)) && isNum(g.restante) && isArr(g.chutes, isChute) &&
+        isNat(g.erros) && isArr(g.emoji, isText) && isNat(g.totalEmoji) && isText(g.imagem) && isNum(g.foco) &&
+        isEntryOrNull(g.secreto) && (g.vencedor === null || isText(g.vencedor)) &&
+        isArr(g.placar, p => isRec(p) && isText(p.id) && isText(p.nome) && isNat(p.pontos)) &&
+        isArr(g.historico, h => isRec(h) && isNat(h.rodada) && isEntry(h.secreto) && (h.vencedor === null || isText(h.vencedor)) &&
+          isNat(h.chutes) && isText(h.vencedorNome));
     default:
       return false;
   }

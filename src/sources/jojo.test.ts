@@ -16,22 +16,24 @@ describe('jojo', () => {
     expect(jojo.optional).toBeUndefined();
   });
 
-  it('pede as 11 categorias (em paralelo) e segue o gcmcontinue', async () => {
+  it('pede as 8 categorias do anime/mangá (em paralelo) e segue o gcmcontinue', async () => {
     const f = stubFetch();
     await jojo.load();
     expect(JOJO_CATEGORIES).toEqual(['Part 3 Stands', 'Part 4 Stands', 'Part 5 Stands', 'Part 6 Stands', 'Part 7 Stands', 'Part 8 Stands', 'Part 9 Stands',
-      'Light Novel Stands', 'Other Stands', 'Thus Spoke Kishibe Rohan Stands', 'Evolved Stands']);
+      'Thus Spoke Kishibe Rohan Stands']);
+    // jogos, eventos e romances ficam de fora
+    for (const c of ['Light Novel Stands', 'Other Stands', 'Evolved Stands']) expect(JOJO_CATEGORIES).not.toContain(c);
     expect(urls(f)).toEqual([
       ...JOJO_CATEGORIES.map(c => 'https://jojowiki.com/api.php?' + params(c)),
       'https://jojowiki.com/api.php?' + params('Part 3 Stands', { gcmcontinue: 'page|4845524d4954|2078', continue: 'gcmcontinue||' }),
     ]);
   });
 
-  it('41 Stands: junta por pageid e tira lista, subpágina e sem imagem', async () => {
+  it('38 Stands (sem os de jogo e evento): junta por pageid e tira lista, subpágina e sem imagem', async () => {
     stubFetch();
     const list = await jojo.load();
     const names = list.map(x => x.name);
-    expect(list).toHaveLength(41);
+    expect(list).toHaveLength(38);
     expect(names).not.toContain('List of Stands');
     expect(names).not.toContain('Star Platinum/Gallery');
     expect(names).not.toContain('Stand sem imagem');

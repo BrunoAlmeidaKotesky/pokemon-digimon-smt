@@ -13,7 +13,7 @@ import { buildEntrants, startCup, cupSync, cupPair, cupChoose } from '../core/cu
 import { planSpin, spinDelay, spinIndex, PICK_MS, PICK_MS_CALM } from '../core/spin';
 import { RANK_SIZE, rankSize, startRank, rankTop, rankPlace as placeInRank, rankDone, type Rank } from '../core/rank';
 
-export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'rank' | 'stats' | 'customs' | 'catalog' | 'autobatalha' | 'online';
+export type Mode = 'duel' | 'trio' | 'quartet' | 'cup' | 'rank' | 'stats' | 'customs' | 'catalog' | 'autobatalha' | 'adivinha' | 'online';
 export type Row = 'duel' | 'trio' | 'quartet' | 'cup';
 /** Trio e Quarteto: rei do morro com 3 ou 4 lados. */
 export type Multi = 'trio' | 'quartet';
@@ -323,8 +323,8 @@ export function onKey(e: KeyboardEvent) {
   if (t && ['SELECT', 'INPUT'].includes(t.tagName)) return;
   if (app.mode === 'online') { onlineKey?.(e); return; }
   if (app.mode === 'rank') { rankKey(e); return; }
-  // a Autobatalha tem os próprios atalhos (src/modes/autobatalha)
-  if (app.mode === 'autobatalha') return;
+  // a Autobatalha tem os próprios atalhos (src/modes/autobatalha); no Adivinha o teclado é do campo de chute
+  if (app.mode === 'autobatalha' || app.mode === 'adivinha') return;
   const n = +e.key;
   if (app.spinning) return;
   if (n >= 1 && n <= app.current.length && app.onChoose) app.onChoose(app.current[n - 1]!);
@@ -393,6 +393,8 @@ export function init() {
   const busca = new URLSearchParams(location.search);
   // link direto pra Autobatalha: ?aba=autobatalha; link da sala online dela: ?autobatalha=ABCD (a aba entra sozinha)
   if (busca.get('aba') === 'autobatalha' || busca.has('autobatalha')) app.mode = 'autobatalha';
+  // link direto pro Adivinha: ?aba=adivinha
+  if (busca.get('aba') === 'adivinha') app.mode = 'adivinha';
   if (busca.has('sala')) app.mode = 'online';
   renderDuel();
   document.addEventListener('keydown', e => { onKey(e); emit(); });

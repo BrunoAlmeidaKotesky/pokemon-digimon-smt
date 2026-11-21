@@ -93,6 +93,7 @@ describe('createRoom e DEFAULT_CONFIG', () => {
       customEdit: false,
       draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
       rank: { size: 10, frs: ['pokemon', 'digimon'], mix: false },
+      adivinha: { grupo: 'lol', submodo: 'classico', rodadas: 5, tempo: 40 },
     });
   });
 

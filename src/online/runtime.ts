@@ -12,6 +12,8 @@ import { app, setOnlineKey } from '../state/app';
 import * as customs from '../customs/store';
 import { applyOp } from '../customs/model';
 import type { CustomOp } from '../customs/types';
+import { fontesCarregadas, pedirGrupo } from '../adivinha/dados';
+import { grupoDe } from '../adivinha/grupos';
 
 // ---------- parâmetros da página ----------
 const params = new URLSearchParams(location.search);
@@ -45,6 +47,8 @@ export const online = {
   /** motivo de a sala ter acabado pra este jogador (host saiu, removido...) */
   ended: '',
   view: null as RoomView | null,
+  /** quando a última visão chegou (Date.now deste aparelho): o relógio da vez do Adivinha conta a partir daqui */
+  recebido: 0,
   code: params.get('sala')?.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4) ?? '',
   name: ls.get(NAME_KEY) ?? '',
   transport: (LOCAL ? 'local' : 'peerjs') as Transport['name'],
@@ -92,8 +96,13 @@ const lastSeen = new Map<string, number>();  // id do jogador -> última mensage
 const tokens = new Map<string, string>();    // senha do aparelho -> id público do jogador
 const publicId = () => crypto.randomUUID().slice(0, 12);
 let hostTimer: ReturnType<typeof setInterval> | null = null;
+/** Adivinha: confere várias vezes por segundo se o tempo da vez acabou */
+let advTimer: ReturnType<typeof setInterval> | null = null;
 
-const ctx = () => ({ rand: Math.random, now: Date.now(), lists: app.lists, labels: Object.fromEntries(customs.getMine().map(f => [f.key, f.label])) });
+const ctx = () => ({
+  rand: Math.random, now: Date.now(), lists: app.lists, labels: Object.fromEntries(customs.getMine().map(f => [f.key, f.label])),
+  adivinha: fontesCarregadas(),
+});
 /** Última configuração do host, mas o voto secreto e a roleta sempre começam desligados. */
 function loadCfg(): OnlineConfig {
   let saved: Partial<OnlineConfig> = {};
@@ -106,6 +115,7 @@ function broadcast() {
   const now = Date.now();
   for (const [pid, link] of links) send(link, { t: 'state', view: viewFor(room, pid, now) });
   online.view = viewFor(room, room.hostId, now);
+  online.recebido = now;
   emit();
 }
 function dispatch(a: Parameters<typeof reduce>[1]) {
@@ -142,6 +152,7 @@ function acceptLink(link: Link) {
     if (!pid) return;
     if (msg.t === 'vote') dispatch({ type: 'vote', id: pid, seq: msg.seq, idx: msg.idx });
     else if (msg.t === 'pick') dispatch({ type: 'pick', id: pid, round: msg.round, att: msg.att, idx: msg.idx });
+    else if (msg.t === 'chute') dispatch({ type: 'chute', id: pid, rodada: msg.rodada, nome: msg.nome });
     else if (msg.t === 'custom') { if (room.cfg.customEdit) customs.setMine(applyOp(customs.getMine(), msg.op)); }
     else if (msg.t === 'leave') { links.delete(pid); dispatch({ type: 'leave', id: pid }); link.close(); }
   });
@@ -191,6 +202,10 @@ export async function hostRoom(name: string) {
       if (now - (lastSeen.get(pid) ?? now) > T.timeout) link.close();
     }
   }, T.ping);
+  advTimer = setInterval(() => {
+    const g = room?.game;
+    if (g?.mode === 'adivinha' && g.passo === 'chute' && g.vez && Date.now() >= g.prazo) dispatch({ type: 'tempo' });
+  }, 250);
   broadcast();
 }
 
@@ -200,12 +215,17 @@ export const host = {
     dispatch({ type: 'config', patch });
     if (room) ls.set(CFG_KEY, JSON.stringify(room.cfg));
   },
-  start: () => dispatch({ type: 'start' }),
+  /** Adivinha: antes, garante o catálogo (e os emojis) da franquia escolhida */
+  start: async () => {
+    const g = room?.cfg.mode === 'adivinha' ? grupoDe(room.cfg.adivinha?.grupo ?? '') : undefined;
+    if (g) await pedirGrupo(g);
+    dispatch({ type: 'start' });
+  },
   lobby: () => dispatch({ type: 'lobby' }),
   close: () => dispatch({ type: 'close' }),
   spin: () => dispatch({ type: 'spin' }),
   next: () => dispatch({ type: 'next' }),
-  /** Draft: segue sem quem ainda não terminou de escolher */
+  /** Draft: segue sem quem ainda não terminou de escolher; Adivinha: revela o secreto e fecha a rodada */
   skip: () => dispatch({ type: 'skip' }),
   kick: (pid: string) => {
     const link = links.get(pid);
@@ -220,7 +240,8 @@ function endHost() {
   setTimeout(() => { ep?.close(); }, 150);
   links.clear(); lastSeen.clear(); tokens.clear();
   if (hostTimer) clearInterval(hostTimer);
-  hostTimer = null; endpoint = null; room = null;
+  if (advTimer) clearInterval(advTimer);
+  hostTimer = null; advTimer = null; endpoint = null; room = null;
 }
 
 // ---------- jogador ----------
@@ -243,7 +264,7 @@ async function connect(code: string): Promise<void> {
     switch (msg.t) {
       case 'welcome': break;
       case 'customs': customs.setRoom(msg.list); break;
-      case 'state': online.view = msg.view; online.stage = 'jogador'; online.banner = ''; emit(); break;
+      case 'state': online.view = msg.view; online.recebido = Date.now(); online.stage = 'jogador'; online.banner = ''; emit(); break;
       case 'reject': finish('', msg.reason); break;
       case 'kicked': finish('O host removeu você da sala.'); break;
       case 'closed': finish('A sala acabou: o host encerrou a sala ou fechou a página.'); break;
@@ -323,6 +344,11 @@ export const player = {
     if (online.stage === 'host' && room) dispatch({ type: 'pick', id: room.hostId, round, att, idx });
     else clientSend({ t: 'pick', round, att, idx });
   },
+  /** Adivinha: chute na minha vez */
+  chute: (rodada: number, nome: string) => {
+    if (online.stage === 'host' && room) dispatch({ type: 'chute', id: room.hostId, rodada, nome });
+    else clientSend({ t: 'chute', rodada, nome });
+  },
 };
 
 /** Sair (jogador) ou encerrar a sala (host). */
@@ -354,6 +380,8 @@ export const IS_LOCAL = LOCAL;
 setOnlineKey(e => {
   const v = online.view;
   const g = v?.game;
+  // Adivinha: o teclado é do campo de chute
+  if (g?.mode === 'adivinha') return;
   if (g?.mode === 'draft' && g.step === 'pick') {
     const n = +e.key;
     if (g.me && !g.me.skipped && g.me.fi != null && n >= 1 && n <= g.me.opts.length) player.pick(g.round, g.me.att, n - 1);
