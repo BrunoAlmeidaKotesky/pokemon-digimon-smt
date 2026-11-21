@@ -6,7 +6,7 @@ import { chunks, sleep, wiki } from './util.mjs';
 
 const API = 'https://jojowiki.com/api.php';
 const CATEGORIAS = ['Part 3 Stands', 'Part 4 Stands', 'Part 5 Stands', 'Part 6 Stands', 'Part 7 Stands', 'Part 8 Stands', 'Part 9 Stands',
-  'Light Novel Stands', 'Other Stands', 'Thus Spoke Kishibe Rohan Stands', 'Evolved Stands'];
+  'Thus Spoke Kishibe Rohan Stands'];
 
 /**
  * Páginas da lista do site: segue o gerador como collectPages (src/sources/mediawiki.ts) e filtra como wikiItems (com
