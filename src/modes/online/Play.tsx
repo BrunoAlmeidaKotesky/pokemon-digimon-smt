@@ -9,8 +9,9 @@ import { Bracket } from '../../components/Bracket';
 import { useSpinAnim } from './useSpinAnim';
 import { DraftPlay } from './Draft';
 import { RankPlay } from './Rank';
+import { AdivinhaPlay } from './Adivinha';
 
-const MODE_TITLE = { duel: 'Duelo', trio: 'Trio', quartet: 'Quarteto', cup: 'Campeonato', draft: 'Draft', rank: 'Ranking' } as const;
+const MODE_TITLE = { duel: 'Duelo', trio: 'Trio', quartet: 'Quarteto', cup: 'Campeonato', draft: 'Draft', rank: 'Ranking', adivinha: 'Adivinha' } as const;
 export const votos = (n: number) => `${n} ${n === 1 ? 'voto' : 'votos'}`;
 export const nomeLista = (ns: string[]) => ns.length <= 1 ? ns.join('') : ns.slice(0, -1).join(', ') + ' e ' + ns.at(-1);
 
@@ -27,7 +28,7 @@ export function Play({ v }: { v: RoomView }) {
         <span className="grow" />
         {isHost && <button className="btn" id="onLobbyBtn" onClick={host.lobby}>Voltar ao lobby</button>}
       </div>
-      {g?.mode === 'draft' ? <DraftPlay v={v} /> : g?.mode === 'rank' ? <RankPlay v={v} /> : v.vote && <VoteBox v={v} vote={v.vote} />}
+      {g?.mode === 'draft' ? <DraftPlay v={v} /> : g?.mode === 'rank' ? <RankPlay v={v} /> : g?.mode === 'adivinha' ? <AdivinhaPlay v={v} /> : v.vote && <VoteBox v={v} vote={v.vote} />}
       {champ && g?.mode === 'cup' && <CupEnd v={v} />}
       {g?.mode === 'cup' && (
         <details className="panel" open id="onBracket">

@@ -1,0 +1,680 @@
+{
+ "chave": "jojo",
+ "fonte": "JoJo Wiki (jojowiki.com)",
+ "geradoEm": "2026-11-21",
+ "campos": [
+  {
+   "id": "parte",
+   "rotulo": "Parte / obra"
+  },
+  {
+   "id": "alcance",
+   "rotulo": "Alcance"
+  },
+  {
+   "id": "forma",
+   "rotulo": "Forma"
+  },
+  {
+   "id": "mecanica",
+   "rotulo": "Mecânica"
+  },
+  {
+   "id": "usuario",
+   "rotulo": "Usuário"
+  },
+  {
+   "id": "stats",
+   "rotulo": "Stats (Poder-Velocidade-Alcance-Persistência-Precisão-Potencial)"
+  }
+ ],
+ "itens": {
+  "Star Platinum": {
+   "parte": [
+    "Part 3",
+    "Part 4",
+    "Part 6"
+   ],
+   "alcance": [
+    "Close-Range",
+    "Range Irrelevant"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Jotaro Kujo"
+   ],
+   "stats": "A-A-C-A-A-A"
+  },
+  "Magician's Red": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Muhammad Avdol"
+   ],
+   "stats": "B-B-C-B-C-D"
+  },
+  "Hermit Purple": {
+   "parte": [
+    "Part 3",
+    "Part 4"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Non-Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Joseph Joestar"
+   ],
+   "stats": "D-C-D-A-D-E"
+  },
+  "Hierophant Green": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Long-Range"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Noriaki Kakyoin"
+   ],
+   "stats": "C-B-A-B-C-D"
+  },
+  "Silver Chariot": {
+   "parte": [
+    "Part 3",
+    "Part 5"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "usuario": [
+    "Jean Pierre Polnareff"
+   ],
+   "stats": "C-A-C-B-B-C"
+  },
+  "The World": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Close-Range",
+    "Range Irrelevant"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "usuario": [
+    "DIO"
+   ],
+   "stats": "A-A-C-A-B-B"
+  },
+  "Crazy Diamond": {
+   "parte": [
+    "Part 4",
+    "Synchronicity in Morioh",
+    "The Book"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "usuario": [
+    "Josuke Higashikata"
+   ],
+   "stats": "A-A-D-B-B-C"
+  },
+  "The Hand": {
+   "parte": [
+    "Part 4",
+    "Synchronicity in Morioh",
+    "The Book"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "usuario": [
+    "Okuyasu Nijimura"
+   ],
+   "stats": "B-B-D-C-C-C"
+  },
+  "Echoes": {
+   "parte": [
+    "Part 4",
+    "Part 5",
+    "The Book"
+   ],
+   "alcance": [
+    "Long-Range",
+    "Close-Range"
+   ],
+   "forma": [
+    "Artificial Non-Humanoid",
+    "Artificial Humanoid"
+   ],
+   "mecanica": [
+    "Psychological Assault",
+    "Sentient",
+    "Evolved"
+   ],
+   "usuario": [
+    "Koichi Hirose"
+   ],
+   "stats": "E-E-B-B-C-A"
+  },
+  "Killer Queen": {
+   "parte": [
+    "Part 4"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "usuario": [
+    "Yoshikage Kira"
+   ],
+   "stats": "A-B-D-B-B-A"
+  },
+  "Heaven's Door": {
+   "parte": [
+    "Part 4",
+    "Synchronicity in Morioh",
+    "The Book",
+    "Thus Spoke Kishibe Rohan"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Psychological Assault",
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Rohan Kishibe",
+    "Ken Oyanagi"
+   ],
+   "stats": "D-B-B-B-C-A"
+  },
+  "Pearl Jam": {
+   "parte": [
+    "Part 4",
+    "Synchronicity in Morioh",
+    "The Book",
+    "Thus Spoke Kishibe Rohan"
+   ],
+   "alcance": [
+    "Range Irrelevant"
+   ],
+   "forma": [
+    "Natural Non-Humanoid"
+   ],
+   "mecanica": [
+    "Multi-Unit"
+   ],
+   "usuario": [
+    "Tonio Trussardi"
+   ],
+   "stats": "E-C-B-A-E-C"
+  },
+  "Harvest": {
+   "parte": [
+    "Part 4"
+   ],
+   "alcance": [
+    "Long-Range"
+   ],
+   "forma": [
+    "Artificial Non-Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance",
+    "Multi-Unit"
+   ],
+   "usuario": [
+    "Shigekiyo Yangu"
+   ],
+   "stats": "E-B-A-A-E-C"
+  },
+  "Gold Experience": {
+   "parte": [
+    "Part 5"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Giorno Giovanna"
+   ],
+   "stats": "C-A-C-D-C-A"
+  },
+  "Sticky Fingers": {
+   "parte": [
+    "Part 5"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "usuario": [
+    "Bruno Bucciarati"
+   ],
+   "stats": "A-A-C-D-C-D"
+  },
+  "Sex Pistols": {
+   "parte": [
+    "Part 5"
+   ],
+   "alcance": [
+    "Long-Range"
+   ],
+   "forma": [
+    "Natural Non-Humanoid"
+   ],
+   "mecanica": [
+    "Multi-Unit",
+    "Sentient"
+   ],
+   "usuario": [
+    "Guido Mista"
+   ],
+   "stats": "E-C-B-A-A-B"
+  },
+  "Aerosmith": {
+   "parte": [
+    "Part 5"
+   ],
+   "alcance": [
+    "Long-Range"
+   ],
+   "forma": [
+    "Artificial Non-Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Narancia Ghirga"
+   ],
+   "stats": "B-B-B-C-E-C"
+  },
+  "Purple Haze": {
+   "parte": [
+    "Part 5"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Sentient"
+   ],
+   "usuario": [
+    "Pannacotta Fugo"
+   ],
+   "stats": "A-B-C-E-E-B"
+  },
+  "King Crimson": {
+   "parte": [
+    "Part 5"
+   ],
+   "alcance": [
+    "Close-Range",
+    "Range Irrelevant"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Foresight"
+   ],
+   "usuario": [
+    "Diavolo",
+    "Vinegar Doppio"
+   ],
+   "stats": "A-A-E-E-?-?"
+  },
+  "Moody Blues": {
+   "parte": [
+    "Part 5"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Leone Abbacchio"
+   ],
+   "stats": "C-C-A-A-C-C"
+  },
+  "Stone Free": {
+   "parte": [
+    "Part 6"
+   ],
+   "alcance": [
+    "Close-Range",
+    "Range Irrelevant"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Reconnaissance"
+   ],
+   "usuario": [
+    "Jolyne Cujoh"
+   ],
+   "stats": "A-B-C-A-C-A"
+  },
+  "Whitesnake": {
+   "parte": [
+    "Part 6"
+   ],
+   "alcance": [
+    "Long-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Psychological Assault",
+    "Sentient"
+   ],
+   "usuario": [
+    "Enrico Pucci"
+   ],
+   "stats": "?-D-?-A-?-?"
+  },
+  "Made in Heaven": {
+   "parte": [
+    "Part 6"
+   ],
+   "alcance": [
+    "Close-Range",
+    "Range Irrelevant"
+   ],
+   "forma": [
+    "Natural Non-Humanoid"
+   ],
+   "mecanica": [
+    "Evolved"
+   ],
+   "usuario": [
+    "Enrico Pucci"
+   ],
+   "stats": "B-∞-C-A-C-A"
+  },
+  "Tusk": {
+   "parte": [
+    "Part 7",
+    "Part 8"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Non-Humanoid",
+    "Artificial Non-Humanoid",
+    "Artificial Humanoid"
+   ],
+   "mecanica": [
+    "Evolved",
+    "Sentient"
+   ],
+   "usuario": [
+    "Johnny Joestar"
+   ],
+   "stats": "E-E-E-B-E-A"
+  },
+  "Ball Breaker": {
+   "parte": [
+    "Part 7"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "usuario": [
+    "Gyro Zeppeli"
+   ],
+   "stats": "A-A-D-B-C-B"
+  },
+  "Dirty Deeds Done Dirt Cheap": {
+   "parte": [
+    "Part 7"
+   ],
+   "alcance": [
+    "Close-Range",
+    "Range Irrelevant"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "mecanica": [
+    "Multi-User"
+   ],
+   "usuario": [
+    "Funny Valentine",
+    "The Funniest Valentine"
+   ],
+   "stats": "A-A-C-A-A-A"
+  },
+  "Scary Monsters": {
+   "parte": [
+    "Part 7"
+   ],
+   "alcance": [
+    "Range Irrelevant"
+   ],
+   "forma": [
+    "Phenomenon"
+   ],
+   "usuario": [
+    "Dr. Ferdinand",
+    "Diego Brando"
+   ],
+   "stats": "B-B-D-A-C-B"
+  },
+  "Soft & Wet": {
+   "parte": [
+    "Part 8"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "mecanica": [
+    "Evolved"
+   ],
+   "usuario": [
+    "Josuke Higashikata (JoJolion)",
+    "Josefumi Kujo"
+   ],
+   "stats": "C-B-D-B-C-A"
+  },
+  "Wonder of U": {
+   "parte": [
+    "Part 8"
+   ],
+   "alcance": [
+    "Long-Range",
+    "Automatic"
+   ],
+   "forma": [
+    "Natural Humanoid",
+    "Artificial Humanoid"
+   ],
+   "mecanica": [
+    "Sentient"
+   ],
+   "usuario": [
+    "Toru"
+   ]
+  },
+  "Anubis": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Automatic"
+   ],
+   "forma": [
+    "Artificial Non-Humanoid"
+   ],
+   "mecanica": [
+    "Materialized",
+    "Psychological Assault",
+    "Multi-User",
+    "Sentient"
+   ],
+   "usuario": [
+    "Minor Characters/Part 3",
+    "Chaka",
+    "Four Mice",
+    "Khan",
+    "Jean Pierre Polnareff",
+    "Boy",
+    "Nile Cow"
+   ],
+   "stats": "B-B-E-A-E-C"
+  },
+  "Atum": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Close-Range",
+    "Automatic"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "mecanica": [
+    "Psychological Assault"
+   ],
+   "usuario": [
+    "Telence T. D'Arby"
+   ],
+   "stats": "D-C-D-B-D-D"
+  },
+  "Bastet": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Long-Range"
+   ],
+   "forma": [
+    "Artificial Non-Humanoid"
+   ],
+   "usuario": [
+    "Mariah"
+   ],
+   "stats": "E-E-B-A-E-E"
+  },
+  "Cream": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "usuario": [
+    "Vanilla Ice"
+   ],
+   "stats": "B-B-D-C-C-D"
+  },
+  "Dark Blue Moon": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Natural Humanoid"
+   ],
+   "usuario": [
+    "Imposter Captain Tennille"
+   ],
+   "stats": "C-C-C-B-C-D"
+  },
+  "Death Thirteen": {
+   "parte": [
+    "Part 3"
+   ],
+   "alcance": [
+    "Close-Range"
+   ],
+   "forma": [
+    "Artificial Humanoid"
+   ],
+   "mecanica": [
+    "Psychological Assault"
+   ],
+   "usuario": [
+    "Mannish Boy"
+   ],
+   "stats": "C-C-E-B-D-B"
+  }
+ }
+}

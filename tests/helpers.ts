@@ -30,7 +30,7 @@ export const LABEL: Record<Franquia, string> = {
 };
 // SMT e Persona são listas fixas do próprio site (src/sources/smt.json e persona.json): não passam pelo mock
 export const CONTAGEM: Record<Franquia, number> = {
-  pokemon: 40, digimon: 40, smt: 297, persona: 95, jojo: 41, ygo: 45, bakugan: 49, lol: 40, overwatch: 54, deadlock: 44, ff: 40, zelda: 40, brainrot: 40, minecraft: 40, monsterhunter: 40, kamenrider: 40, sujimon: 40,
+  pokemon: 40, digimon: 40, smt: 297, persona: 95, jojo: 38, ygo: 45, bakugan: 49, lol: 40, overwatch: 54, deadlock: 44, ff: 40, zelda: 40, brainrot: 40, minecraft: 40, monsterhunter: 40, kamenrider: 40, sujimon: 40,
 };
 
 export interface MockOpts {
@@ -50,6 +50,11 @@ export interface MockOpts {
   semBase?: boolean;
   /** chaves trocadas na fixture da base (ex.: classes com ult, habilidades) */
   baseExtra?: Record<string, unknown>;
+  /**
+   * Adivinha: o catálogo de cada franquia vem de adivinha-catalogo-<chave>.json quando existe (recorte com todos os
+   * campos do Clássico; os testes do Catálogo contam com os catálogo-<chave>.json menores e com o SMT sem catálogo)
+   */
+  adivinha?: boolean;
 }
 export interface Chamadas { [k: string]: number }
 
@@ -112,7 +117,15 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
       const cat = u.pathname.match(/\/catalogo\/([\w-]+)\.json$/);
       if (cat) {
         count('catalogo');
-        const nome = `catalogo-${cat[1]}.json`;
+        const proprio = `adivinha-catalogo-${cat[1]}.json`;
+        const nome = opts.adivinha && fs.existsSync(new URL(proprio, FIX)) ? proprio : `catalogo-${cat[1]}.json`;
+        return fs.existsSync(new URL(nome, FIX)) ? json(route, fixture(nome)) : route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' });
+      }
+      // Emojis do Adivinha: public/adivinha/emoji/<chave>.json vira a fixture adivinha-emoji-<chave>.json; sem fixture, 404
+      const emo = u.pathname.match(/\/adivinha\/emoji\/([\w-]+)\.json$/);
+      if (emo) {
+        count('emoji');
+        const nome = `adivinha-emoji-${emo[1]}.json`;
         return fs.existsSync(new URL(nome, FIX)) ? json(route, fixture(nome)) : route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' });
       }
       return route.continue();
@@ -230,7 +243,7 @@ export async function abrir(page: Page, path = './') {
   await expect(page.locator('#status')).not.toContainText('carregando', { timeout: 15000 });
 }
 
-export async function aba(page: Page, nome: 'Duelo' | 'Trio' | 'Quarteto' | 'Campeonato' | 'Ranking' | 'Placar' | 'Personalizar' | 'Catálogo' | 'Autobatalha' | 'Online') {
+export async function aba(page: Page, nome: 'Duelo' | 'Trio' | 'Quarteto' | 'Campeonato' | 'Ranking' | 'Placar' | 'Personalizar' | 'Catálogo' | 'Autobatalha' | 'Adivinha' | 'Online') {
   await page.locator('nav button', { hasText: nome }).click();
 }
 

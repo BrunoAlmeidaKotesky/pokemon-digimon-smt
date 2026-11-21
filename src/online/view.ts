@@ -1,9 +1,11 @@
 // O que cada jogador recebe da sala: sem o saco de sorteio, com o próprio voto e, com voto secreto, sem os nomes de quem votou.
 // No Draft: só as próprias opções e escolhas; dos outros, só se já terminaram (até a revelação).
 // No Ranking: só o personagem da vez (na votação) e as posições já preenchidas, nunca a fila.
+// No Adivinha: os chutes com as pistas e o que já foi revelado (emojis, imagem); o secreto só depois da rodada.
 import { roundName } from '../core/cup';
+import { emojisVisiveis } from '../adivinha/emoji';
 import { isBye } from './draft';
-import type { DraftGame, DraftView, GameView, RankGame, RankView, RoomState, RoomView, Vote, VoteView } from './types';
+import type { AdivinhaGame, AdivinhaView, DraftGame, DraftView, GameView, RankGame, RankView, RoomState, RoomView, Vote, VoteView } from './types';
 
 export function viewFor(s: RoomState, pid: string, now: number): RoomView {
   const v = s.vote;
@@ -22,12 +24,12 @@ export function viewFor(s: RoomState, pid: string, now: number): RoomView {
       online: p.online,
       voted: open && Object.hasOwn((v as Vote).ballots, p.id),
     })),
-    game: gameView(s, pid),
+    game: gameView(s, pid, now),
     vote: v ? voteView(s, v, pid, now) : null,
   };
 }
 
-function gameView(s: RoomState, pid: string): GameView | null {
+function gameView(s: RoomState, pid: string, now: number): GameView | null {
   const g = s.game;
   if (!g) return null;
   if (g.mode === 'cup') {
@@ -41,6 +43,7 @@ function gameView(s: RoomState, pid: string): GameView | null {
   }
   if (g.mode === 'draft') return draftView(s, g, pid);
   if (g.mode === 'rank') return rankView(g);
+  if (g.mode === 'adivinha') return adivinhaView(s, g, now);
   return { mode: g.mode, frs: [...g.frs], streak: [...g.streak] };
 }
 
@@ -53,6 +56,41 @@ function rankView(g: RankGame): RankView {
     mix: r.mix,
     cur: r.cur,
     tops: r.tops.map(t => ({ fr: t.fr, slots: t.slots.map(e => (e ? { ...e } : null)), left: t.queue.length })),
+  };
+}
+
+/** Adivinha: o secreto (nome, imagem, emojis, informações) não vai pra ninguém enquanto a rodada está aberta. */
+function adivinhaView(s: RoomState, g: AdivinhaGame, now: number): AdivinhaView {
+  const aberta = g.passo === 'chute';
+  const erros = g.chutes.filter(c => c.alvo && !c.certo).length;
+  const emoji = g.submodo === 'emoji' ? (g.secreto.emoji ?? []) : [];
+  const nome = (id: string) => s.players.find(p => p.id === id)?.name ?? g.nomes[id] ?? '?';
+  const naSala = new Set(s.players.map(p => p.id));
+  return {
+    mode: 'adivinha',
+    grupo: g.grupo,
+    submodo: g.submodo,
+    rodadas: g.rodadas,
+    tempo: g.tempo,
+    rodada: g.rodada,
+    passo: g.passo,
+    ordem: [...g.ordem],
+    vez: g.vez,
+    restante: aberta && g.vez ? Math.max(0, g.prazo - now) : 0,
+    chutes: structuredClone(g.chutes),
+    erros,
+    emoji: emoji.slice(0, emojisVisiveis(emoji.length, erros, !aberta)),
+    totalEmoji: emoji.length,
+    imagem: g.submodo === 'imagem' ? g.secreto.img : '',
+    foco: g.foco,
+    secreto: aberta ? null : { name: g.secreto.name, img: g.secreto.img, fr: g.secreto.fr },
+    vencedor: g.vencedor,
+    // quem está na sala, mais quem saiu com ponto; mais pontos primeiro (empate: ordem da sala)
+    placar: Object.keys(g.placar)
+      .filter(id => naSala.has(id) || (g.placar[id] ?? 0) > 0)
+      .map(id => ({ id, nome: nome(id), pontos: g.placar[id] ?? 0 }))
+      .sort((a, b) => b.pontos - a.pontos),
+    historico: g.historico.map(h => ({ ...h, secreto: { ...h.secreto }, vencedorNome: h.vencedor ? nome(h.vencedor) : '' })),
   };
 }
 

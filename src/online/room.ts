@@ -8,6 +8,7 @@ import { rankDone, rankEntry, rankFree, rankPlace, rankTop, startRank } from '..
 import { planSpin } from '../core/spin';
 import type { Entry, FranchiseKey, Item } from '../types';
 import { draftDrop, type DraftIO, draftNext, draftPick, draftSkip, startDraft } from './draft';
+import { ADV_PADRAO, advCaiu, advChute, advEntrou, advNext, advRevelar, advTempo, startAdivinha } from './adivinha';
 import type { Action, Ctx, JoinCheck, KingGame, OnlineConfig, Player, RankGame, RoomState, SpinPlan, Vote } from './types';
 
 /** Máximo de jogadores na sala (host incluído). */
@@ -26,6 +27,7 @@ export const DEFAULT_CONFIG: OnlineConfig = {
   customEdit: false,
   draft: { frs: ['jojo', 'pokemon', 'digimon', 'smt'], x: 3, rounds: 1 },
   rank: { size: 10, frs: ['pokemon', 'digimon'], mix: false },
+  adivinha: { ...ADV_PADRAO },
 };
 
 const LABELS: Record<string, string> = {
@@ -110,12 +112,18 @@ export function reduce(s: RoomState, a: Action, ctx: Ctx): RoomState {
 /** Muda `s` (já clonado); false = ação ignorada. */
 function apply(s: RoomState, a: Action, ctx: Ctx): boolean {
   switch (a.type) {
-    case 'join':
-      return join(s, a.id, a.name);
+    case 'join': {
+      const id = join(s, a.id, a.name);
+      if (id !== null) advEntrou(s, id, ctx);
+      return id !== null;
+    }
     case 'online': {
       const p = s.players.find(x => x.id === a.id);
       if (!p || p.online === !!a.online) return false;
       p.online = !!a.online;
+      // Adivinha: quem caiu na própria vez é pulado; quem volta pode assumir a vez se ninguém estava nela
+      if (p.online) advEntrou(s, p.id, ctx);
+      else advCaiu(s, p.id, ctx, false);
       return true;
     }
     case 'leave':
@@ -145,7 +153,11 @@ function apply(s: RoomState, a: Action, ctx: Ctx): boolean {
     case 'pick':
       return draftPick(s, a, ctx, DRAFT_IO);
     case 'skip':
-      return draftSkip(s, ctx, DRAFT_IO);
+      return s.game?.mode === 'adivinha' ? advRevelar(s) : draftSkip(s, ctx, DRAFT_IO);
+    case 'chute':
+      return advChute(s, a, ctx);
+    case 'tempo':
+      return advTempo(s, ctx);
     default:
       return false;
   }
@@ -153,17 +165,18 @@ function apply(s: RoomState, a: Action, ctx: Ctx): boolean {
 
 // ---------- jogadores ----------
 
-function join(s: RoomState, id: string, name: string): boolean {
+/** Põe o jogador na sala (ou de volta nela); devolve o id dele, ou null se não entrou. */
+function join(s: RoomState, id: string, name: string): string | null {
   const chk = canJoin(s, id, name);
-  if (!chk.ok) return false;
+  if (!chk.ok) return null;
   const p = s.players.find(x => x.id === chk.id);
   if (p) {
-    if (p.online) return false;
+    if (p.online) return null;
     p.online = true;
-    return true;
+    return p.id;
   }
   s.players.push({ id: chk.id, name: name.trim(), host: false, online: true });
-  return true;
+  return chk.id;
 }
 
 function remove(s: RoomState, id: string, ctx: Ctx): boolean {
@@ -176,6 +189,8 @@ function remove(s: RoomState, id: string, ctx: Ctx): boolean {
   }
   // Draft: o time dele some e, se só faltava ele escolher, a rodada anda
   draftDrop(s, id, ctx, DRAFT_IO);
+  // Adivinha: sai da ordem (se era a vez dele, passa pro próximo)
+  advCaiu(s, id, ctx, true);
   return true;
 }
 
@@ -229,6 +244,7 @@ function notice(s: RoomState, msg: string): boolean {
 function start(s: RoomState, ctx: Ctx): boolean {
   if (s.phase !== 'lobby') return false;
   const cfg = s.cfg;
+  if (cfg.mode === 'adivinha') return startAdivinha(s, ctx, frLabel);
   if (cfg.mode === 'draft') {
     const frs: unknown[] = Array.isArray(cfg.draft?.frs) ? cfg.draft.frs : [];
     if (!frs.length) return notice(s, 'Escolha pelo menos uma franquia.');
@@ -293,6 +309,7 @@ function start(s: RoomState, ctx: Ctx): boolean {
 
 function next(s: RoomState, ctx: Ctx): boolean {
   const g = s.game;
+  if (g?.mode === 'adivinha') return advNext(s, ctx);
   const v = s.vote;
   if (s.phase !== 'play' || !g || !v || !v.result) return false;
   if (g.mode === 'draft') return draftNext(s, ctx, DRAFT_IO);

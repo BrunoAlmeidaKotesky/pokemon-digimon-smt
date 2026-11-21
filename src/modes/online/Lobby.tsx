@@ -4,6 +4,7 @@ import { host, player } from '../../online/runtime';
 import { app, label } from '../../state/app';
 import { isCustomKey } from '../../customs/model';
 import { DraftConfig } from './Draft';
+import { AdivinhaConfig, resumoAdivinha } from './Adivinha';
 import { useCustoms, mineActions } from '../customs/Customs';
 import { CustomEditor, type CustomActions } from '../customs/CustomEditor';
 import { Segmented, Switch, FranchiseToggle, SideSelect, Stepper } from '../../components/Controls';
@@ -20,6 +21,8 @@ function ModeIcon({ m }: { m: OnlineMode }) {
     draft: [card(4, 9, 8, 11), card(11, 5, 8, 11), card(18, 2, 8, 11), <path key="c" d="M28 15l2.5 2.5L35 12" fill="none" strokeWidth="2" />],
     // pódio: 2º, 1º e 3º lugar
     rank: [card(4, 11, 9, 11), card(14.5, 4, 9, 18), card(25, 15, 9, 7)],
+    // carta virada com um "?"
+    adivinha: [card(13, 2, 13, 20), <path key="q" d="M16.5 8.5a3 3 0 1 1 4.2 2.7c-.9.5-1.2 1-1.2 2v.8M19.5 17v.5" fill="none" stroke="var(--panel)" strokeWidth="1.8" strokeLinecap="round" />],
   };
   return <svg className="mode-icon" viewBox="0 0 38 24" aria-hidden="true">{body[m]}</svg>;
 }
@@ -31,10 +34,11 @@ const MODES: { m: OnlineMode; t: string; d: string }[] = [
   { m: 'cup', t: 'Campeonato', d: 'mata-mata de 8 a 128' },
   { m: 'draft', t: 'Draft', d: 'cada um monta um time em segredo' },
   { m: 'rank', t: 'Ranking', d: 'monte um top às cegas, um por vez' },
+  { m: 'adivinha', t: 'Adivinha', d: 'descubra o personagem, um chute por vez' },
 ];
 const SIZES = [8, 16, 32, 64, 128];
 /** Modos que já funcionam online. */
-export const READY_MODES: OnlineMode[] = ['duel', 'trio', 'quartet', 'cup', 'draft', 'rank'];
+export const READY_MODES: OnlineMode[] = ['duel', 'trio', 'quartet', 'cup', 'draft', 'rank', 'adivinha'];
 const SIDE_IDS = { duel: ['onDuelA', 'onDuelB'], trio: ['onTrio0', 'onTrio1', 'onTrio2'], quartet: ['onQuartet0', 'onQuartet1', 'onQuartet2', 'onQuartet3'] } as const;
 
 /** Resumo de uma linha da configuração (barra do "Começar"). */
@@ -51,6 +55,7 @@ function resumo(c: OnlineConfig): string {
       if (!n) return 'Ranking · marque uma franquia';
       return `Ranking · ${r.mix || n === 1 ? 'top' : n + ' tops'} de ${r.size}${r.mix && n > 1 ? ' misturado' : ''} · ${r.frs.map(label).join(', ')}`;
     }
+    case 'adivinha': return resumoAdivinha(c);
   }
 }
 
@@ -114,6 +119,7 @@ export function Lobby({ v }: { v: RoomView }) {
           </div>
         )}
         {c.mode === 'draft' && <DraftConfig c={c} isHost={isHost} set={set} frs={frs} />}
+        {c.mode === 'adivinha' && <AdivinhaConfig c={c} isHost={isHost} set={set} parte="franquia" />}
         {c.mode === 'rank' && (
           <div className="stack" id="onRankCfg">
             <div className="row-label"><span>Tamanho do top</span>
@@ -136,12 +142,14 @@ export function Lobby({ v }: { v: RoomView }) {
 
       <section className="panel stack lobby-step">
         <h3 className="step"><span>3</span>Regras</h3>
-        <Switch id="onSecret" title="Voto secreto" checked={c.secret} disabled={!isHost} onChange={on => set({ secret: on })}>
-          O resultado mostra só a contagem, sem quem votou em quem. Vale pra todas as votações, inclusive as do Draft.
-        </Switch>
-        <Switch id="onRoulette" title="Roleta nas rodadas" checked={c.roulette} disabled={!isHost} onChange={on => set({ roulette: on })}>
-          O host pode girar a roleta em vez de esperar a votação. Empate sempre vai pra roleta, ligado ou não.
-        </Switch>
+        {c.mode === 'adivinha' ? <AdivinhaConfig c={c} isHost={isHost} set={set} parte="regras" /> : <>
+          <Switch id="onSecret" title="Voto secreto" checked={c.secret} disabled={!isHost} onChange={on => set({ secret: on })}>
+            O resultado mostra só a contagem, sem quem votou em quem. Vale pra todas as votações, inclusive as do Draft.
+          </Switch>
+          <Switch id="onRoulette" title="Roleta nas rodadas" checked={c.roulette} disabled={!isHost} onChange={on => set({ roulette: on })}>
+            O host pode girar a roleta em vez de esperar a votação. Empate sempre vai pra roleta, ligado ou não.
+          </Switch>
+        </>}
       </section>
 
       <CustomsPanel v={v} />

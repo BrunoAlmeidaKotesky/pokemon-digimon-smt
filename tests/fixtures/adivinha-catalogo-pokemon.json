@@ -1,0 +1,755 @@
+{
+ "chave": "pokemon",
+ "fonte": "PokéAPI (GraphQL)",
+ "geradoEm": "2026-10-28",
+ "campos": [
+  {
+   "id": "tipo",
+   "rotulo": "Tipo"
+  },
+  {
+   "id": "geracao",
+   "rotulo": "Geração"
+  },
+  {
+   "id": "estagio",
+   "rotulo": "Estágio da evolução"
+  },
+  {
+   "id": "evolucao",
+   "rotulo": "Papel na evolução"
+  },
+  {
+   "id": "especial",
+   "rotulo": "Categoria especial"
+  },
+  {
+   "id": "cor",
+   "rotulo": "Cor"
+  },
+  {
+   "id": "forma",
+   "rotulo": "Forma"
+  },
+  {
+   "id": "ovo",
+   "rotulo": "Grupo de ovo"
+  },
+  {
+   "id": "habitat",
+   "rotulo": "Habitat"
+  },
+  {
+   "id": "variante",
+   "rotulo": "Variante"
+  }
+ ],
+ "itens": {
+  "Bulbasaur": {
+   "tipo": [
+    "Grass",
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Green",
+   "forma": "Quadruped",
+   "ovo": [
+    "Monster",
+    "Grass"
+   ],
+   "habitat": "Grassland"
+  },
+  "Ivysaur": {
+   "tipo": [
+    "Grass",
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Green",
+   "forma": "Quadruped",
+   "ovo": [
+    "Monster",
+    "Grass"
+   ],
+   "habitat": "Grassland"
+  },
+  "Venusaur": {
+   "tipo": [
+    "Grass",
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Green",
+   "forma": "Quadruped",
+   "ovo": [
+    "Monster",
+    "Grass"
+   ],
+   "habitat": "Grassland"
+  },
+  "Charmander": {
+   "tipo": [
+    "Fire"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Red",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Dragon"
+   ],
+   "habitat": "Mountain"
+  },
+  "Charmeleon": {
+   "tipo": [
+    "Fire"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Red",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Dragon"
+   ],
+   "habitat": "Mountain"
+  },
+  "Charizard": {
+   "tipo": [
+    "Fire",
+    "Flying"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Red",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Dragon"
+   ],
+   "habitat": "Mountain"
+  },
+  "Squirtle": {
+   "tipo": [
+    "Water"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Blue",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Water 1"
+   ],
+   "habitat": "Water's Edge"
+  },
+  "Wartortle": {
+   "tipo": [
+    "Water"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Blue",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Water 1"
+   ],
+   "habitat": "Water's Edge"
+  },
+  "Blastoise": {
+   "tipo": [
+    "Water"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Blue",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Water 1"
+   ],
+   "habitat": "Water's Edge"
+  },
+  "Caterpie": {
+   "tipo": [
+    "Bug"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Green",
+   "forma": "Armor",
+   "ovo": [
+    "Bug"
+   ],
+   "habitat": "Forest"
+  },
+  "Metapod": {
+   "tipo": [
+    "Bug"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Green",
+   "forma": "Squiggle",
+   "ovo": [
+    "Bug"
+   ],
+   "habitat": "Forest"
+  },
+  "Butterfree": {
+   "tipo": [
+    "Bug",
+    "Flying"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "White",
+   "forma": "Bug Wings",
+   "ovo": [
+    "Bug"
+   ],
+   "habitat": "Forest"
+  },
+  "Weedle": {
+   "tipo": [
+    "Bug",
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Brown",
+   "forma": "Armor",
+   "ovo": [
+    "Bug"
+   ],
+   "habitat": "Forest"
+  },
+  "Kakuna": {
+   "tipo": [
+    "Bug",
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Yellow",
+   "forma": "Squiggle",
+   "ovo": [
+    "Bug"
+   ],
+   "habitat": "Forest"
+  },
+  "Beedrill": {
+   "tipo": [
+    "Bug",
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Yellow",
+   "forma": "Bug Wings",
+   "ovo": [
+    "Bug"
+   ],
+   "habitat": "Forest"
+  },
+  "Pidgey": {
+   "tipo": [
+    "Normal",
+    "Flying"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Brown",
+   "forma": "Wings",
+   "ovo": [
+    "Flying"
+   ],
+   "habitat": "Forest"
+  },
+  "Pidgeotto": {
+   "tipo": [
+    "Normal",
+    "Flying"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Brown",
+   "forma": "Wings",
+   "ovo": [
+    "Flying"
+   ],
+   "habitat": "Forest"
+  },
+  "Pidgeot": {
+   "tipo": [
+    "Normal",
+    "Flying"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Brown",
+   "forma": "Wings",
+   "ovo": [
+    "Flying"
+   ],
+   "habitat": "Forest"
+  },
+  "Rattata": {
+   "tipo": [
+    "Normal"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Purple",
+   "forma": "Quadruped",
+   "ovo": [
+    "Field"
+   ],
+   "habitat": "Grassland"
+  },
+  "Raticate": {
+   "tipo": [
+    "Normal"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Final",
+   "cor": "Brown",
+   "forma": "Quadruped",
+   "ovo": [
+    "Field"
+   ],
+   "habitat": "Grassland"
+  },
+  "Spearow": {
+   "tipo": [
+    "Normal",
+    "Flying"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Brown",
+   "forma": "Wings",
+   "ovo": [
+    "Flying"
+   ],
+   "habitat": "Rough Terrain"
+  },
+  "Fearow": {
+   "tipo": [
+    "Normal",
+    "Flying"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Final",
+   "cor": "Brown",
+   "forma": "Wings",
+   "ovo": [
+    "Flying"
+   ],
+   "habitat": "Rough Terrain"
+  },
+  "Ekans": {
+   "tipo": [
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Purple",
+   "forma": "Squiggle",
+   "ovo": [
+    "Field",
+    "Dragon"
+   ],
+   "habitat": "Grassland"
+  },
+  "Arbok": {
+   "tipo": [
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Final",
+   "cor": "Purple",
+   "forma": "Squiggle",
+   "ovo": [
+    "Field",
+    "Dragon"
+   ],
+   "habitat": "Grassland"
+  },
+  "Pikachu": {
+   "tipo": [
+    "Electric"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Yellow",
+   "forma": "Quadruped",
+   "ovo": [
+    "Field",
+    "Fairy"
+   ],
+   "habitat": "Forest"
+  },
+  "Raichu": {
+   "tipo": [
+    "Electric"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Yellow",
+   "forma": "Upright",
+   "ovo": [
+    "Field",
+    "Fairy"
+   ],
+   "habitat": "Forest"
+  },
+  "Sandshrew": {
+   "tipo": [
+    "Ground"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Yellow",
+   "forma": "Upright",
+   "ovo": [
+    "Field"
+   ],
+   "habitat": "Rough Terrain"
+  },
+  "Sandslash": {
+   "tipo": [
+    "Ground"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Final",
+   "cor": "Yellow",
+   "forma": "Upright",
+   "ovo": [
+    "Field"
+   ],
+   "habitat": "Rough Terrain"
+  },
+  "Nidoran F": {
+   "tipo": [
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Blue",
+   "forma": "Quadruped",
+   "ovo": [
+    "Monster",
+    "Field"
+   ],
+   "habitat": "Grassland"
+  },
+  "Nidorina": {
+   "tipo": [
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Blue",
+   "forma": "Quadruped",
+   "ovo": [
+    "Undiscovered"
+   ],
+   "habitat": "Grassland"
+  },
+  "Nidoqueen": {
+   "tipo": [
+    "Poison",
+    "Ground"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Blue",
+   "forma": "Upright",
+   "ovo": [
+    "Undiscovered"
+   ],
+   "habitat": "Grassland"
+  },
+  "Nidoran M": {
+   "tipo": [
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Purple",
+   "forma": "Quadruped",
+   "ovo": [
+    "Monster",
+    "Field"
+   ],
+   "habitat": "Grassland"
+  },
+  "Nidorino": {
+   "tipo": [
+    "Poison"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Purple",
+   "forma": "Quadruped",
+   "ovo": [
+    "Monster",
+    "Field"
+   ],
+   "habitat": "Grassland"
+  },
+  "Nidoking": {
+   "tipo": [
+    "Poison",
+    "Ground"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Purple",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Field"
+   ],
+   "habitat": "Grassland"
+  },
+  "Clefairy": {
+   "tipo": [
+    "Fairy"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Pink",
+   "forma": "Upright",
+   "ovo": [
+    "Fairy"
+   ],
+   "habitat": "Mountain"
+  },
+  "Clefable": {
+   "tipo": [
+    "Fairy"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Pink",
+   "forma": "Upright",
+   "ovo": [
+    "Fairy"
+   ],
+   "habitat": "Mountain"
+  },
+  "Vulpix": {
+   "tipo": [
+    "Fire"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Básico",
+   "cor": "Brown",
+   "forma": "Quadruped",
+   "ovo": [
+    "Field"
+   ],
+   "habitat": "Grassland"
+  },
+  "Ninetales": {
+   "tipo": [
+    "Fire"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Final",
+   "cor": "Yellow",
+   "forma": "Quadruped",
+   "ovo": [
+    "Field"
+   ],
+   "habitat": "Grassland"
+  },
+  "Jigglypuff": {
+   "tipo": [
+    "Normal",
+    "Fairy"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Pink",
+   "forma": "Humanoid",
+   "ovo": [
+    "Fairy"
+   ],
+   "habitat": "Grassland"
+  },
+  "Wigglytuff": {
+   "tipo": [
+    "Normal",
+    "Fairy"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Pink",
+   "forma": "Humanoid",
+   "ovo": [
+    "Fairy"
+   ],
+   "habitat": "Grassland"
+  },
+  "Alolan Raichu": {
+   "tipo": [
+    "Electric",
+    "Psychic"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Yellow",
+   "forma": "Upright",
+   "ovo": [
+    "Field",
+    "Fairy"
+   ],
+   "habitat": "Forest",
+   "variante": "Alola"
+  },
+  "Mega Charizard X": {
+   "tipo": [
+    "Fire",
+    "Dragon"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Red",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Dragon"
+   ],
+   "habitat": "Mountain",
+   "variante": "Mega"
+  },
+  "Primal Kyogre": {
+   "tipo": [
+    "Water"
+   ],
+   "geracao": "III",
+   "estagio": 1,
+   "evolucao": "Sem evolução",
+   "especial": "Lendário",
+   "cor": "Blue",
+   "forma": "Fish",
+   "ovo": [
+    "Undiscovered"
+   ],
+   "habitat": "Sea",
+   "variante": "Primal"
+  },
+  "Paldean Tauros (Combat Breed)": {
+   "tipo": [
+    "Fighting"
+   ],
+   "geracao": "I",
+   "estagio": 1,
+   "evolucao": "Sem evolução",
+   "cor": "Brown",
+   "forma": "Quadruped",
+   "ovo": [
+    "Field"
+   ],
+   "habitat": "Grassland",
+   "variante": "Paldea"
+  },
+  "Galarian Darmanitan": {
+   "tipo": [
+    "Ice"
+   ],
+   "geracao": "V",
+   "estagio": 2,
+   "evolucao": "Final",
+   "cor": "Red",
+   "forma": "Quadruped",
+   "ovo": [
+    "Field"
+   ],
+   "variante": "Galar"
+  },
+  "Galarian Mr Mime": {
+   "tipo": [
+    "Ice",
+    "Psychic"
+   ],
+   "geracao": "I",
+   "estagio": 2,
+   "evolucao": "Intermediário",
+   "cor": "Pink",
+   "forma": "Humanoid",
+   "ovo": [
+    "Human-Like"
+   ],
+   "habitat": "Urban",
+   "variante": "Galar"
+  },
+  "Gigantamax Charizard": {
+   "tipo": [
+    "Fire",
+    "Flying"
+   ],
+   "geracao": "I",
+   "estagio": 3,
+   "evolucao": "Final",
+   "cor": "Red",
+   "forma": "Upright",
+   "ovo": [
+    "Monster",
+    "Dragon"
+   ],
+   "habitat": "Mountain",
+   "variante": "Gigantamax"
+  }
+ }
+}
