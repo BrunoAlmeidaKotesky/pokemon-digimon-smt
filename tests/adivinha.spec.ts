@@ -77,9 +77,9 @@ test.describe('Adivinha sozinho', () => {
     await chutar(page, e1!);
     await expect(linhas(page)).toHaveCount(1);
     await expect(linhas(page).first().locator('td.adv-c')).toHaveCount(7);
-    await expect(page.locator('#advTabela thead th')).toHaveText(['Personagem', 'Classe', 'Região', 'Alcance', 'Dano', 'Recurso', 'Dificuldade', 'Gênero']);
+    await expect(page.locator('#advTabela thead th')).toHaveText(['Personagem', 'Classe', 'Região', 'Alcance', 'Dano', 'Recurso', 'Lançamento', 'Gênero']);
     // número diferente: seta grande (atrás do valor) pra onde está o secreto
-    const dif = (n: string) => LOL[n]!.dificuldade as number;
+    const dif = (n: string) => LOL[n]!.ano as number;
     const celDif = linhas(page).first().locator('td').nth(6);
     if (dif(e1!) === dif(alvo)) await expect(celDif).toHaveAttribute('data-cor', 'certo');
     else {

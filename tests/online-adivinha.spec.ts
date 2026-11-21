@@ -145,8 +145,12 @@ test('Adivinha online no Imagem (recorte): o mesmo recorte pra todos, que abre a
   await expect(ana.locator('#onPlayers .chip')).toHaveCount(2);
   await ana.locator('#onLobby [data-modo="adivinha"]').click();
   await expect(ana.locator('#onAdvSubmodo button')).toHaveText(['Clássico', 'Imagem', 'Blur', 'Emoji']);
+  // os modos são de marcar vários: liga a Imagem e desliga o Clássico (o último ligado não sai)
   await ana.locator('#onAdvSubmodo button[data-n="imagem"]').click();
+  await ana.locator('#onAdvSubmodo button[data-n="classico"]').click();
   await expect(beto.locator('#onAdvSubmodo button[data-n="imagem"]')).toHaveAttribute('aria-checked', 'true');
+  await expect(beto.locator('#onAdvSubmodo button[data-n="classico"]')).toHaveAttribute('aria-checked', 'false');
+  await expect(ana.locator('#onAdvSubmodo button[data-n="imagem"]')).toBeDisabled();
   await expect(ana.locator('#onStartBar .resumo b')).toContainText('Adivinha · LoL · Imagem');
   await ana.locator('#onStart').click();
 
@@ -194,7 +198,9 @@ test('Adivinha online com recorte: só a geração II do Pokémon no sorteio, no
   await ana.locator('#onLobby [data-modo="adivinha"]').click();
   // franquia sem recorte: nada de chips
   await expect(ana.locator('#onAdvRecorte')).toHaveCount(0);
+  // as franquias também: liga o Pokémon e desliga o LoL
   await ana.locator('#onAdvGrupos [data-grupo="pokemon"]').click();
+  await ana.locator('#onAdvGrupos [data-grupo="lol"]').click();
   await expect(ana.locator('#onAdvRecorteN')).toHaveText('10 personagens entram');
   for (const g of ['I', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']) await ana.locator(`#onAdvRecorte [data-valor="${g}"]`).click();
   await expect(ana.locator('#onAdvRecorteN')).toHaveText('4 personagens entram');
@@ -226,4 +232,49 @@ test('Adivinha online com recorte: só a geração II do Pokémon no sorteio, no
     await ana.locator('#onAdvRevelar').click();
   }
   await expect(beto.locator('#onAdvFim .card .name')).toHaveText(/^(Chikorita|Cyndaquil|Totodile|Togepi)$/);
+});
+
+test('Adivinha online com duas franquias, dois modos e sem limite de tempo: cada rodada diz a franquia e o modo', async ({ context }) => {
+  test.setTimeout(90_000);
+  await mockApis(context, { adivinha: true });
+  await pokemonDeVariasGeracoes(context);
+  await seedRandom(context, 11);
+  const ana = await abrir(context, 1);
+  await ana.locator('nav button', { hasText: 'Online' }).click();
+  await ana.locator('#onName').fill('Ana');
+  await ana.locator('#onCreate').click();
+  await expect(ana.locator('#onRoomCode')).toHaveText(/^[A-Z]{4}$/);
+  const code = (await ana.locator('#onRoomCode').textContent())!;
+  const beto = await abrir(context, 2, code);
+  await beto.locator('#onName').fill('Beto');
+  await beto.locator('#onJoin').click();
+  await expect(ana.locator('#onPlayers .chip')).toHaveCount(2);
+  await ana.locator('#onLobby [data-modo="adivinha"]').click();
+  await ana.locator('#onAdvGrupos [data-grupo="pokemon"]').click();
+  await ana.locator('#onAdvSubmodo button[data-n="blur"]').click();
+  await expect(ana.locator('#onAdvTempo button')).toHaveText(['15 s', '20 s', '30 s', '40 s', '60 s', '90 s', 'Sem limite']);
+  await ana.locator('#onAdvTempo button[data-n="0"]').click();
+  for (const p of [ana, beto]) {
+    await expect(p.locator('#onStartBar .resumo b')).toContainText('Adivinha · LoL + Pokémon · Clássico + Blur · ');
+    await expect(p.locator('#onStartBar .resumo b')).toContainText('sem limite de tempo');
+  }
+  await expect(beto.locator('#onAdvGrupos [data-grupo="pokemon"]')).toHaveAttribute('aria-checked', 'true');
+  await ana.locator('#onStart').click();
+
+  // rodada 1 = Clássico (o primeiro modo), numa das duas franquias; sem relógio
+  for (const p of [ana, beto]) {
+    await expect(p.locator('#onAdvFranquia')).toHaveText(/^(LoL|Pokémon) · Clássico$/);
+    await expect(p.locator('#onAdvTempoResta')).toHaveText('sem limite');
+    await expect(p.locator('#onAdvVez .adv-barra')).toHaveCount(0);
+  }
+  await expect(ana.locator('#onAdvVezNome')).toHaveText('Sua vez!');
+  // a vez não passa sozinha
+  await ana.waitForTimeout(2500);
+  await expect(ana.locator('#onAdvVezNome')).toHaveText('Sua vez!');
+  // o host revela e segue: a rodada 2 é Blur
+  await ana.locator('#onAdvRevelar').click();
+  await ana.locator('#onAdvRevelar').click();
+  await ana.locator('#onAdvProxima').click();
+  for (const p of [ana, beto]) await expect(p.locator('#onAdvFranquia')).toHaveText(/^(LoL|Pokémon) · Blur$/);
+  await expect(beto.locator('#onAdv .adv-quadro, #onAdv [data-modo="blur"]').first()).toBeVisible();
 });

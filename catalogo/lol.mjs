@@ -8,6 +8,10 @@ import { getJson, pool } from './util.mjs';
 
 const DD = 'https://ddragon.leagueoflegends.com';
 const UNIVERSE = 'https://universe-meeps.leagueoflegends.com/v1/pt_br/search/index.json';
+// data de lançamento de cada campeão (a Riot não publica em JSON): projeto Meraki Analytics, um arquivo só (~13 MB)
+const MERAKI = 'https://cdn.merakianalytics.com/riot/lol/resources/latest/en-US/champions.json';
+/** Ano de lançamento de quem o Meraki ainda não tem (os campeões mais novos). */
+const ANO_FIXO = { Zaahen: 2025, Locke: 2026 };
 const CDRAGON = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/pt_br/v1/champions';
 
 const CLASSES = { Assassin: 'Assassino', Fighter: 'Lutador', Mage: 'Mago', Marksman: 'Atirador', Support: 'Suporte', Tank: 'Tanque' };
@@ -41,6 +45,7 @@ export default {
     { id: 'recurso', rotulo: 'Recurso' },
     { id: 'dificuldade', rotulo: 'Dificuldade (0 a 10)' },
     { id: 'genero', rotulo: 'Gênero' },
+    { id: 'ano', rotulo: 'Ano de lançamento' },
   ],
   async gerar() {
     const [v] = await getJson(`${DD}/api/versions.json`);
@@ -50,6 +55,11 @@ export default {
       getJson(`${DD}/cdn/${v}/data/pt_BR/champion.json`),
       getJson(UNIVERSE),
     ]);
+    const meraki = await getJson(MERAKI).catch(e => {
+      console.warn('  lol: sem as datas de lançamento do Meraki (' + e.message + ')');
+      return {};
+    });
+    const lancamento = new Map(Object.values(meraki).map(m => [m.name, Number(String(m.releaseDate ?? '').slice(0, 4)) || undefined]));
     const faccoes = new Map(uni.factions.map(f => [f.slug, f.name]));
     const porSlug = new Map(uni.champions.map(c => [norm(c.slug), c]));
     const porNome = new Map(uni.champions.map(c => [norm(c.name), c]));
@@ -80,6 +90,9 @@ export default {
       const genero = GENERO_FIXO[c.name] ?? generoPelaHistoria(completo.data[c.id]?.lore);
       if (genero) info.genero = genero;
       else console.warn(`  lol: sem gênero pra ${c.name} (ponha em GENERO_FIXO)`);
+      const ano = lancamento.get(c.name) ?? ANO_FIXO[c.name];
+      if (ano) info.ano = ano;
+      else console.warn(`  lol: sem ano de lançamento pra ${c.name} (ponha em ANO_FIXO)`);
       itens[c.name] = info;
     });
     return { itens };

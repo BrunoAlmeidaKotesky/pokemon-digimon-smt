@@ -26,11 +26,21 @@ export interface OnlineConfig {
   draft: { frs: FranchiseKey[]; x: number; rounds: number };
   /** Ranking às cegas: tamanho do top, franquias (na ordem dos tops separados) e se mistura tudo num top só */
   rank: { size: number; frs: FranchiseKey[]; mix: boolean };
-  /** Adivinha, vez de cada um: franquia (grupo da aba Adivinha), submodo, nº de rodadas e segundos por vez */
+  /**
+   * Adivinha, vez de cada um: franquias (grupos da aba Adivinha), submodos, nº de rodadas e segundos por vez
+   * (0 = sem limite). `grupo`, `submodo` e `recorte` são os primeiros de `grupos`, `submodos` e `recortes`: ficam
+   * pra quem está numa versão anterior, que só conhecia um de cada.
+   */
   adivinha: {
     grupo: string; submodo: Submodo; rodadas: number; tempo: number;
     /** recorte da franquia (gerações do Pokémon, partes do JoJo): valores ligados; sem o campo = todos */
     recorte?: string[];
+    /** franquias que entram (cada rodada sorteia uma); sem o campo = só `grupo` */
+    grupos?: string[];
+    /** modos que entram (as rodadas alternam entre eles); sem o campo = só `submodo` */
+    submodos?: Submodo[];
+    /** recorte de cada franquia que tem um (id do grupo -> valores ligados) */
+    recortes?: Record<string, string[]>;
   };
 }
 
@@ -180,10 +190,15 @@ export interface AdivinhaFeita {
  */
 export interface AdivinhaGame {
   mode: 'adivinha';
+  /** franquia e modo DA RODADA (com várias franquias ou modos na sala, mudam a cada rodada) */
   grupo: string;
   submodo: Submodo;
+  /** tudo o que a sala escolheu */
+  grupos: string[];
+  submodos: Submodo[];
+  recortes: Record<string, string[]>;
   rodadas: number;
-  /** segundos por vez */
+  /** segundos por vez (0 = sem limite) */
   tempo: number;
   /** rodada atual (1..rodadas) */
   rodada: number;
@@ -198,7 +213,7 @@ export interface AdivinhaGame {
   secreto: AdvItem;
   /** de 0 a 1: ponto do zoom da Imagem (o mesmo pra todos) */
   foco: number;
-  /** recorte da franquia (valores ligados; null = todos): vale pro sorteio, pro chute e pro autocompletar */
+  /** recorte da franquia da rodada (valores ligados; null = todos): vale pro sorteio, pro chute e pro autocompletar */
   recorte: string[] | null;
   chutes: AdivinhaChute[];
   /** secretos já sorteados (não repetem até acabar a lista) */
@@ -347,9 +362,14 @@ export interface RankView {
 /** O Adivinha visto por um jogador: as pistas, nunca o secreto (até a rodada acabar). */
 export interface AdivinhaView {
   mode: 'adivinha';
+  /** franquia e modo da rodada */
   grupo: string;
   submodo: Submodo;
+  /** tudo o que a sala escolheu (host antigo não manda: só `grupo` e `submodo`) */
+  grupos?: string[];
+  submodos?: Submodo[];
   rodadas: number;
+  /** segundos por vez (0 = sem limite) */
   tempo: number;
   rodada: number;
   passo: AdivinhaGame['passo'];
