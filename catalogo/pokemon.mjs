@@ -16,7 +16,7 @@ const QUERY = `query catalogo {
     pokemonshape { name }
     pokemonhabitat { name }
     pokemonegggroups { egggroup { name } }
-    pokemons(order_by: {id: asc}) { id name is_default pokemontypes(order_by: {slot: asc}) { type { name } } }
+    pokemons(order_by: {id: asc}) { id name is_default height weight pokemontypes(order_by: {slot: asc}) { type { name } } }
   }
 }`;
 
@@ -63,6 +63,8 @@ export default {
     { id: 'forma', rotulo: 'Forma' },
     { id: 'ovo', rotulo: 'Grupo de ovo' },
     { id: 'habitat', rotulo: 'Habitat' },
+    { id: 'altura', rotulo: 'Altura (m)' },
+    { id: 'peso', rotulo: 'Peso (kg)' },
     { id: 'variante', rotulo: 'Variante' },
   ],
   async gerar() {
@@ -92,6 +94,9 @@ export default {
         forma: s.pokemonshape && nice(s.pokemonshape.name),
         ovo: s.pokemonegggroups.length ? s.pokemonegggroups.map(g => nome(g.egggroup.name)) : undefined,
         habitat: s.pokemonhabitat && nome(s.pokemonhabitat.name),
+        // a API dá decímetros e hectogramas
+        altura: padrao?.height ? padrao.height / 10 : undefined,
+        peso: padrao?.weight ? padrao.weight / 10 : undefined,
       };
       const limpo = o => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined && v !== null));
       itens[nice(s.name)] = limpo(info);
@@ -100,7 +105,10 @@ export default {
         const f = !p.is_default && forma(p.name);
         if (!f || itens[f.nome]) continue;
         const t = p.pokemontypes.map(x => nice(x.type.name));
-        itens[f.nome] = limpo({ ...info, tipo: t.length ? t : info.tipo, variante: f.variante });
+        itens[f.nome] = limpo({
+          ...info, tipo: t.length ? t : info.tipo, variante: f.variante,
+          altura: p.height ? p.height / 10 : info.altura, peso: p.weight ? p.weight / 10 : info.peso,
+        });
       }
     }
     return { itens };

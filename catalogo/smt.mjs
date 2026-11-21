@@ -107,6 +107,18 @@ export async function porNome(arquivo) {
 }
 
 /** Tira os campos vazios (undefined, null, '', lista vazia). */
+/** Elementos que não fazem dano normal: resiste, anula, drena ou reflete. */
+export const resiste = d => [...new Set(['resist', 'null', 'drain', 'repel'].flatMap(k => d.resistances?.[k] ?? []))];
+const ATRIBUTO = { st: 'Força', ma: 'Magia', vi: 'Vitalidade', en: 'Vitalidade', ag: 'Agilidade', lu: 'Sorte' };
+/** O atributo mais alto do demônio (empate: os empatados). */
+export function atributoForte(d) {
+  const e = Object.entries(d.stats ?? {}).filter(([k, v]) => ATRIBUTO[k] && typeof v === 'number');
+  if (!e.length) return undefined;
+  const max = Math.max(...e.map(([, v]) => v));
+  const a = [...new Set(e.filter(([, v]) => v === max).map(([k]) => ATRIBUTO[k]))];
+  return a.length > 1 ? a : a[0];
+}
+
 export const enxuto = o => Object.fromEntries(Object.entries(o).filter(([, v]) => v != null && v !== '' && !(Array.isArray(v) && !v.length)));
 
 const conhecido = v => (v && v !== 'Unknown' ? v : undefined);
@@ -124,6 +136,8 @@ export default {
     { id: 'afinidade', rotulo: 'Afinidade herdada' },
     { id: 'nivel', rotulo: 'Nível' },
     { id: 'fraco', rotulo: 'Fraqueza' },
+    { id: 'resiste', rotulo: 'Resiste' },
+    { id: 'atributo', rotulo: 'Atributo mais forte' },
   ],
   async gerar() {
     const itens = {};
@@ -138,6 +152,8 @@ export default {
         afinidade: d.affinities?.inherit,
         nivel: d.level,
         fraco: d.resistances?.weak,
+        resiste: resiste(d),
+        atributo: atributoForte(d),
       });
     }
     return { itens };
