@@ -26,7 +26,7 @@ export const porNome = (a: { name: string }, b: { name: string }) => (a.name < b
 
 /**
  * Personagens do grupo no submodo, ordenados por nome: quem está na lista do site, tem entrada no catálogo e passa
- * no filtro do grupo (Pokémon: só espécies; JoJo: só Stands do anime e do mangá); no Emoji, só quem tem emoji.
+ * no filtro do grupo (Pokémon: só espécies, sem Paradoxos nem Unown; JoJo: só Stands do anime e do mangá; Persona: sem Picaro); no Emoji, só quem tem emoji.
  * Franquia sem lista ou sem catálogo fica de fora.
  */
 export function montarPool(g: Grupo, sub: Submodo, f: Fontes): AdvItem[] {
@@ -39,7 +39,7 @@ export function montarPool(g: Grupo, sub: Submodo, f: Fontes): AdvItem[] {
     for (const it of lista) {
       const info = cat.itens.get(it.name);
       if (!info || out.has(it.name)) continue;
-      if (g.aceita && !g.aceita(info)) continue;
+      if (g.aceita && !g.aceita(info, it.name)) continue;
       const emoji = emo?.get(it.name) ?? null;
       if (sub === 'emoji' && !emoji?.length) continue;
       out.set(it.name, { name: it.name, img: it.img, fr, info, emoji });

@@ -44,13 +44,14 @@ describe('montarPool', () => {
 });
 
 describe('filtros do Adivinha (valem em todos os submodos e no autocompletar)', () => {
-  it('Pokémon: só as 1025 espécies, sem Mega, Gigantamax nem formas alternativas', () => {
+  it('Pokémon: só espécies (sem Mega, Gigantamax nem formas alternativas), menos os 20 Paradoxos e o Unown: 1004', () => {
     const c = real('pokemon');
     expect(c.itens.size).toBe(1270);
     const lista = listaDe(c);
     for (const { id } of SUBMODOS.filter(s => s.id !== 'emoji')) {
       const pool = montarPool(G('pokemon'), id, { listas: { pokemon: lista }, catalogos: { pokemon: c }, emojis: {} });
-      expect(pool).toHaveLength(1025);
+      expect(pool).toHaveLength(1004);
+      for (const fora of ['Unown', 'Great Tusk', 'Iron Valiant', 'Roaring Moon', 'Iron Crown']) expect(pool.some(x => x.name === fora), fora).toBe(false);
       const nomes = new Set(pool.map(x => x.name));
       for (const fora of ['Mega Charizard X', 'Gigantamax Charizard', 'Alolan Raichu', 'Giratina (Origin)', 'Rotom (Wash)']) expect(nomes.has(fora), fora).toBe(false);
       for (const fica of ['Charizard', 'Raichu', 'Giratina', 'Rotom', 'Pikachu']) expect(nomes.has(fica), fica).toBe(true);
@@ -61,6 +62,22 @@ describe('filtros do Adivinha (valem em todos os submodos e no autocompletar)', 
     // no Emoji, o mesmo filtro: uma Mega com emoji continua de fora
     const emojis: EmojiMapa = new Map([['Charizard', ['🔥']], ['Mega Charizard X', ['🔥', '🐉']]]);
     expect(montarPool(G('pokemon'), 'emoji', { listas: { pokemon: lista }, catalogos: { pokemon: c }, emojis: { pokemon: emojis } }).map(x => x.name)).toEqual(['Charizard']);
+  });
+
+  it('SMT + Persona: sem as variantes Picaro, em todos os submodos', () => {
+    const smt = real('smt'), persona = real('persona');
+    const emojis: EmojiMapa = new Map([['Arsene', ['🎩']], ['Orpheus Picaro', ['🎸']]]);
+    for (const { id } of SUBMODOS) {
+      const pool = montarPool(G('megaten'), id, {
+        listas: { smt: listaDe(smt), persona: listaDe(persona) }, catalogos: { smt, persona }, emojis: { smt: new Map(), persona: emojis },
+      });
+      expect(pool.some(x => / Picaro$/.test(x.name)), id).toBe(false);
+      if (id !== 'emoji') {
+        expect(pool).toHaveLength(297 + 95 - 12);
+        expect(pool.some(x => x.name === 'Orpheus')).toBe(true);
+        expect(acharNoPool(pool, 'Orpheus Picaro')).toBeUndefined();
+      }
+    }
   });
 
   it('JoJo: só Stands do anime e do mangá (Part 3 a 9 ou Kishibe Rohan); sai quem é só de romance, jogo ou evento', () => {

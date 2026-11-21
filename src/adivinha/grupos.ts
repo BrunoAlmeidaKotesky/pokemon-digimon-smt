@@ -28,17 +28,25 @@ export interface Grupo {
   frs: FranchiseKey[];
   colunas: Coluna[];
   /**
-   * Quem entra no jogo, pelas informações do catálogo (vale em todos os submodos, no do dia, no livre, no online e no
+   * Quem entra no jogo, pelas informações do catálogo e pelo nome (vale em todos os submodos, no do dia, no livre, no online e no
    * autocompletar; o resto do site continua com a lista inteira). Sem isso, entra todo mundo que tem catálogo.
    */
-  aceita?: (info: Info) => boolean;
+  aceita?: (info: Info, nome: string) => boolean;
 }
 
 /** JoJo: só Stands do anime e do mangá (pelo menos uma parte de 3 a 9 ou o Kishibe Rohan). */
 export const PARTES_JOJO = ['Part 3', 'Part 4', 'Part 5', 'Part 6', 'Part 7', 'Part 8', 'Part 9', 'Thus Spoke Kishibe Rohan'];
 const jojoDoAnime = (info: Info) => [info.parte ?? []].flat().some(p => PARTES_JOJO.includes(String(p)));
-/** Pokémon: só as espécies (sem Mega, Gigantamax nem formas alternativas, que têm `variante` no catálogo). */
-const soEspecie = (info: Info) => info.variante === undefined;
+/** Pokémon que o usuário tirou do Adivinha (21/11/2026): os Paradoxos e o Unown (28 formas de letra). */
+export const POKEMON_FORA: ReadonlySet<string> = new Set([
+  'Unown', 'Great Tusk', 'Scream Tail', 'Brute Bonnet', 'Flutter Mane', 'Slither Wing', 'Sandy Shocks', 'Roaring Moon', 'Walking Wake', 'Gouging Fire',
+  'Raging Bolt', 'Iron Treads', 'Iron Bundle', 'Iron Hands', 'Iron Jugulis', 'Iron Moth', 'Iron Thorns', 'Iron Valiant', 'Iron Leaves', 'Iron Boulder',
+  'Iron Crown',
+]);
+/** Pokémon: só as espécies (sem Mega, Gigantamax nem formas alternativas, que têm `variante` no catálogo), menos POKEMON_FORA. */
+const soEspecie = (info: Info, nome: string) => info.variante === undefined && !POKEMON_FORA.has(nome);
+/** SMT + Persona: sem as variantes Picaro do Persona 5 Royal (a mesma Persona com outra roupa). */
+const semPicaro = (_info: Info, nome: string) => !/ Picaro$/.test(nome);
 
 const t = (id: string, rotulo: string, tipo: TipoColuna = 'texto'): Coluna => ({ id, rotulo, tipo });
 
@@ -52,7 +60,7 @@ export const GRUPOS: Grupo[] = [
   },
   { id: 'jojo', rotulo: 'JoJo', frs: ['jojo'], aceita: jojoDoAnime, colunas: [t('parte', 'Parte'), t('alcance', 'Alcance'), t('forma', 'Forma'), t('mecanica', 'Mecânica')] },
   {
-    id: 'megaten', rotulo: 'SMT + Persona', frs: ['smt', 'persona'],
+    id: 'megaten', rotulo: 'SMT + Persona', frs: ['smt', 'persona'], aceita: semPicaro,
     colunas: [t('jogo', 'Jogo'), { ...t('raca', 'Raça'), fixo: { persona: 'Persona' } }, t('arcana', 'Arcana'), t('mitologia', 'Mitologia'), t('nivel', 'Nível', 'numero'), t('fraco', 'Fraqueza')],
   },
 ];
