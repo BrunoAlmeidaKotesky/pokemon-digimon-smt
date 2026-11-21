@@ -1,7 +1,8 @@
 // Adivinha online, "vez de cada um": o host sorteia o personagem secreto (que só sai do host quando a rodada acaba)
 // e os jogadores chutam em ordem, um chute por vez, com tempo (ou sem limite). Todo mundo vê todos os chutes com as
 // pistas; quem acerta ganha a rodada (+1 ponto). Tempo esgotado passa a vez; quem caiu da sala é pulado.
-// A sala pode ter várias franquias e vários modos: as rodadas alternam os modos na ordem e sorteiam a franquia.
+// A sala pode ter várias franquias e vários modos. Com vários modos, uma rodada é uma volta por todos eles, na ordem
+// (4 modos e 1 rodada = 4 partidas); a franquia de cada partida é sorteada. `g.rodada` conta as partidas.
 // Tudo puro como em room.ts: sorteio só com ctx.rand, relógio só com ctx.now; estas funções recebem o estado JÁ
 // CLONADO e mudam ele (false = ação ignorada).
 import { pistas } from '../adivinha/comparar';
@@ -14,6 +15,8 @@ import type { Action, AdivinhaGame, Ctx, OnlineConfig, RoomState } from './types
 
 /** Segundos por vez que o host pode escolher (0 = sem limite). */
 export const ADV_TEMPOS = [15, 20, 30, 40, 60, 90, 0] as const;
+/** Partidas do jogo: cada rodada passa por todos os modos da sala. */
+export const advPartidas = (g: { rodadas: number; submodos?: readonly unknown[] }): number => g.rodadas * Math.max(1, g.submodos?.length ?? 1);
 /** Rótulo do tempo: "40 s" ou "Sem limite". */
 export const tempoTxt = (n: number): string => (n > 0 ? `${n} s` : 'Sem limite');
 /** Rodadas: mínimo, máximo e padrão. */
@@ -137,7 +140,7 @@ function passarVez(s: RoomState, g: AdivinhaGame, de: string, ctx: Ctx) {
 }
 
 /**
- * Franquia e modo da rodada: os modos alternam na ordem (rodada 1 = o primeiro) e a franquia é sorteada entre as que
+ * Franquia e modo da partida: os modos alternam na ordem (partida 1 = o primeiro) e a franquia é sorteada entre as que
  * têm personagem naquele modo; modo sem nenhuma franquia é pulado. Com uma franquia só, não gasta sorteio.
  * Devolve o pool da rodada (vazio = não há o que sortear).
  */
@@ -252,7 +255,7 @@ export function advRevelar(s: RoomState): boolean {
 export function advNext(s: RoomState, ctx: Ctx): boolean {
   const g = advOf(s);
   if (!g || g.passo !== 'resultado') return false;
-  if (g.rodada >= g.rodadas) {
+  if (g.rodada >= advPartidas(g)) {
     g.passo = 'fim';
     return true;
   }

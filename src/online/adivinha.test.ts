@@ -402,7 +402,8 @@ describe('várias franquias, vários modos e tempo sem limite', () => {
   });
 
   it('vários modos: as rodadas alternam na ordem; várias franquias: cada rodada sorteia uma, e o chute vale na franquia da rodada', () => {
-    const rodadas = jogar(sala({ grupos: ['lol', 'pokemon'], submodos: ['classico', 'imagem'], rodadas: 8 }));
+    // 4 rodadas com 2 modos = 8 partidas
+    const rodadas = jogar(sala({ grupos: ['lol', 'pokemon'], submodos: ['classico', 'imagem'], rodadas: 4 }));
     expect(rodadas.map(r => r[1])).toEqual(['classico', 'imagem', 'classico', 'imagem', 'classico', 'imagem', 'classico', 'imagem']);
     expect(new Set(rodadas.map(r => r[0]))).toEqual(new Set(['lol', 'pokemon']));
     for (const [grupo, , secreto] of rodadas) expect(grupo === 'pokemon' ? secreto in POKES : NOMES.includes(secreto), secreto).toBe(true);
@@ -439,7 +440,7 @@ describe('várias franquias, vários modos e tempo sem limite', () => {
     expect(so.phase).toBe('lobby');
     expect(so.notice).toBe('Nenhum personagem de Pokémon pra adivinhar: ligue mais opções.');
     // com o Clássico junto, o Pokémon entra nas rodadas do Clássico e o Emoji fica só com o LoL
-    const rodadas = jogar(sala({ grupos: ['lol', 'pokemon'], submodos: ['classico', 'emoji'], rodadas: 6 }));
+    const rodadas = jogar(sala({ grupos: ['lol', 'pokemon'], submodos: ['classico', 'emoji'], rodadas: 3 }));
     for (const [grupo, modo] of rodadas) if (modo === 'emoji') expect(grupo).toBe('lol');
     expect(rodadas.map(r => r[1])).toEqual(['classico', 'emoji', 'classico', 'emoji', 'classico', 'emoji']);
   });
@@ -488,5 +489,30 @@ describe('skins no Imagem (franquia que tem a lista)', () => {
     expect(V(blur, 'ana').imagem).toBe('https://img.test/Ahri.png');
     const semArquivo = started(['Ana'], { submodo: 'imagem' });
     expect(G(semArquivo).skin).toBeNull();
+  });
+});
+
+describe('com vários modos, uma rodada passa por todos eles', () => {
+  it('1 rodada e os 4 modos: 4 partidas, uma de cada modo, e só então o placar final', () => {
+    // só LoL (que tem emojis pra Ahri e Jinx); o Emoji sorteia entre esses dois
+    let s = started(['Ana'], { submodos: ['classico', 'imagem', 'blur', 'emoji'], rodadas: 1 });
+    const modos: string[] = [];
+    for (let k = 1; k <= 4; k++) {
+      const g = G(s);
+      expect(g).toMatchObject({ rodada: k, passo: 'chute' });
+      expect(V(s, 'ana')).toMatchObject({ rodadas: 1, partidas: 4 });
+      modos.push(g.submodo);
+      s = chute(s, g.vez as string, g.secreto.name);
+      expect(G(s).passo).toBe('resultado');
+      s = R(s, { type: 'next' });
+    }
+    expect(modos).toEqual(['classico', 'imagem', 'blur', 'emoji']);
+    expect(G(s).passo).toBe('fim');
+    expect(G(s).historico).toHaveLength(4);
+  });
+
+  it('um modo só: rodadas = partidas, como antes', () => {
+    const s = started(['Ana'], { rodadas: 3 });
+    expect(V(s, 'ana')).toMatchObject({ rodadas: 3, partidas: 3 });
   });
 });
