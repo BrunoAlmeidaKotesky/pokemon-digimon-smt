@@ -8,7 +8,7 @@ import { emojisVisiveis } from '../../adivinha/emoji';
 import { dataBR, msAteAmanha, relogio } from '../../adivinha/dia';
 import { chaveDe, chavePercurso, media, sequenciaAtual, type Escolha, type Rodada } from '../../adivinha/placar';
 import { etapaSeguinte } from '../../adivinha/percurso';
-import { estadoGrupo, pedirEmojis, pedirGrupo, poolAtual, useDadosAdivinha } from '../../adivinha/dados';
+import { estadoGrupo, pedirEmojis, pedirGrupo, poolAtual, skinDoAlvo, useDadosAdivinha } from '../../adivinha/dados';
 import {
   alternarEtapa, chutar, comDados, desistir, escolher, franquiaSeguinte, irParaFranquia, percursoDe, proximaEtapa, proximo,
   mudarRecorte, recomecarCiclo, recorteDe, salvoAtual, sessaoLivre, tela, useSolo, verEtapa, type Pools, type Tela,
@@ -120,6 +120,8 @@ function Jogo({ g, pools, t, hoje }: { g: Grupo; pools: Pools; t: Tela; hoje: st
   const erros = j.chutes.filter(n => n !== j.alvo.name).length;
   const total = j.alvo.emoji?.length ?? 0;
   const pos = t.etapas.indexOf(t.sub);
+  // Imagem: nas franquias com skins (LoL), a splash de uma skin sorteada pela semente do jogo
+  const skin = t.sub === 'imagem' ? skinDoAlvo(j.alvo, j.semente) : null;
   return (
     <div className="stack" id="advJogo" data-grupo={g.id} data-submodo={t.sub} data-modo={t.modo}>
       <div className="adv-cab">
@@ -132,7 +134,8 @@ function Jogo({ g, pools, t, hoje }: { g: Grupo; pools: Pools; t: Tela; hoje: st
       </div>
       {t.modo !== 'livre' && <Trilha t={t} pools={pools} hoje={hoje} />}
       {t.modo !== 'livre' && <p className="adv-etapa-txt" id="advEtapa">Etapa {pos + 1} de {t.etapas.length}: <b>{rotuloSubmodo(t.sub)}</b></p>}
-      {(t.sub === 'imagem' || t.sub === 'blur') && <QuadroImagem modo={t.sub} img={j.alvo.img} semente={j.semente} erros={erros} fim={fim} />}
+      {(t.sub === 'imagem' || t.sub === 'blur') && <QuadroImagem modo={t.sub} img={skin?.img ?? j.alvo.img} semente={j.semente} erros={erros} fim={fim} />}
+      {skin && fim && <p className="mute" id="advSkin" style={{ margin: 0, textAlign: 'center' }}>Skin: <b>{skin.nome}</b></p>}
       {t.sub === 'emoji' && <LinhaEmoji emojis={(j.alvo.emoji ?? []).slice(0, emojisVisiveis(total, erros, fim))} total={total} />}
       {fim
         ? <Resultado g={g} t={t} pools={pools} hoje={hoje} />

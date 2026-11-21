@@ -398,6 +398,28 @@ test.describe('Adivinha sozinho', () => {
     }
     await expect(page.locator('#advCicloFeito')).toBeVisible();
   });
+
+  test('skins no Imagem do LoL: a arte é a splash de uma skin do campeão, e o nome dela aparece no fim', async ({ page }) => {
+    await inicio(page, { skins: true });
+    await rodada(page, 'livre').click();
+    await sub(page, 'imagem').click();
+    const img = page.locator('#advImagem img');
+    await expect(img).toHaveAttribute('src', /ddragon\.leagueoflegends\.com\/cdn\/img\/champion\/splash\/[\w.]+_\d+\.jpg$/);
+    await expect(page.locator('#advSkin')).toHaveCount(0);
+    // no Blur e no Clássico nada muda: a arte padrão do site
+    await sub(page, 'blur').click();
+    await expect(img).not.toHaveAttribute('src', /champion\/splash/);
+    await sub(page, 'imagem').click();
+    await page.getByRole('button', { name: 'Desistir e ver quem era' }).click();
+    await expect(page.locator('#advSkin')).toHaveText(/^Skin: .+/);
+  });
+
+  test('sem arquivo de skins, o Imagem do LoL usa a arte padrão', async ({ page }) => {
+    await inicio(page);
+    await rodada(page, 'livre').click();
+    await sub(page, 'imagem').click();
+    await expect(page.locator('#advImagem img')).not.toHaveAttribute('src', /champion\/splash/);
+  });
 });
 
 const GERACAO_II = ['Chikorita', 'Cyndaquil', 'Totodile', 'Togepi'];

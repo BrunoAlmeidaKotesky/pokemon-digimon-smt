@@ -1,5 +1,6 @@
 // Carga sob demanda do que a aba Adivinha (sozinho e online) precisa além das listas do site: o catálogo de cada
-// franquia (o mesmo da aba Catálogo, baixado uma vez por sessão) e os emojis (public/adivinha/emoji/<chave>.json).
+// franquia (o mesmo da aba Catálogo, baixado uma vez por sessão), os emojis (public/adivinha/emoji/<chave>.json) e,
+// onde houver, as skins do modo Imagem (public/adivinha/skins/<chave>.json).
 // Toda mudança avisa quem assinou (useSyncExternalStore).
 import { useSyncExternalStore } from 'react';
 import { assinar as assinarCatalogo, catalogo, pedirCatalogo, versao as versaoCatalogo } from '../catalog/store';
@@ -7,6 +8,7 @@ import type { Catalogo } from '../catalog/model';
 import { lerEmojis } from './emoji';
 import type { Grupo, Submodo } from './grupos';
 import { montarPool, type AdvItem, type EmojiMapa, type Fontes } from './pool';
+import { COM_SKINS, lerSkins, skinDe, skinsUrl, type Skin, type SkinsMapa } from './skins';
 
 export const emojiUrl = (fr: string) => `adivinha/emoji/${encodeURIComponent(fr)}.json`;
 
@@ -45,10 +47,41 @@ export function pedirEmojis(fr: string): Promise<EmojiMapa | null> {
   return p;
 }
 
-/** Pede catálogo e emojis de todas as franquias do grupo; resolve quando tudo chegou (ou falhou). */
+/** null = a franquia não tem skins (arquivo ausente ou torto): o Imagem usa a arte padrão */
+const skins = new Map<string, SkinsMapa | null | 'carregando'>();
+const pedidosSkins = new Map<string, Promise<SkinsMapa | null>>();
+/** Baixa as skins da franquia uma vez por sessão (só as de COM_SKINS têm arquivo). */
+export function pedirSkins(fr: string): Promise<SkinsMapa | null> {
+  if (!COM_SKINS.includes(fr)) return Promise.resolve(null);
+  let p = pedidosSkins.get(fr);
+  if (!p) {
+    skins.set(fr, 'carregando');
+    p = fetch(skinsUrl(fr), { cache: 'no-cache' })
+      .then(r => (r.ok ? r.json() : null))
+      .then(lerSkins)
+      .catch(() => null)
+      .then(m => {
+        skins.set(fr, m);
+        mudou();
+        return m;
+      });
+    pedidosSkins.set(fr, p);
+  }
+  return p;
+}
+/** As skins já carregadas da franquia (undefined = ainda carregando ou nem pedida; null = não tem). */
+export function skinsDa(fr: string): SkinsMapa | null | undefined {
+  if (!COM_SKINS.includes(fr)) return null;
+  const m = skins.get(fr);
+  return m === 'carregando' ? undefined : m;
+}
+/** A skin do personagem no Imagem, pela semente do jogo (null = arte padrão). */
+export const skinDoAlvo = (it: { name: string; fr: string }, semente: number): Skin | null => skinDe(skinsDa(it.fr), it.name, semente);
+
+/** Pede catálogo, emojis e skins de todas as franquias do grupo; resolve quando tudo chegou (ou falhou). */
 export async function pedirGrupo(g: Grupo): Promise<void> {
   g.frs.forEach(fr => pedidas.add(fr));
-  await Promise.all(g.frs.flatMap(fr => [pedirCatalogo(fr), pedirEmojis(fr)]));
+  await Promise.all(g.frs.flatMap(fr => [pedirCatalogo(fr), pedirEmojis(fr), pedirSkins(fr)]));
 }
 
 export interface EstadoGrupo {
@@ -67,7 +100,7 @@ export function estadoGrupo(g: Grupo): EstadoGrupo {
   const e: EstadoGrupo = { carregando: false, catalogos: {}, emojis: {}, semCatalogo: [], semEmoji: [] };
   for (const fr of g.frs) {
     const c = catalogo(fr), m = emojis.get(fr);
-    if (c === undefined || c === 'carregando' || m === undefined || m === 'carregando') e.carregando = true;
+    if (c === undefined || c === 'carregando' || m === undefined || m === 'carregando' || skinsDa(fr) === undefined) e.carregando = true;
     e.catalogos[fr] = c === 'carregando' ? undefined : c;
     e.emojis[fr] = m === 'carregando' ? undefined : m;
     if (c === null) e.semCatalogo.push(fr);
@@ -76,13 +109,14 @@ export function estadoGrupo(g: Grupo): EstadoGrupo {
   return e;
 }
 
-/** Catálogos e emojis de todas as franquias já carregadas (o que o host passa pra sala online). */
-export function fontesCarregadas(): Pick<Fontes, 'catalogos' | 'emojis'> {
-  const out: Pick<Fontes, 'catalogos' | 'emojis'> = { catalogos: {}, emojis: {} };
+/** Catálogos, emojis e skins de todas as franquias já carregadas (o que o host passa pra sala online). */
+export function fontesCarregadas(): Pick<Fontes, 'catalogos' | 'emojis'> & { skins: Record<string, SkinsMapa | null | undefined> } {
+  const out: ReturnType<typeof fontesCarregadas> = { catalogos: {}, emojis: {}, skins: {} };
   for (const fr of pedidas) {
     const c = catalogo(fr), m = emojis.get(fr);
     out.catalogos[fr] = c === 'carregando' ? undefined : c;
     out.emojis[fr] = m === 'carregando' ? undefined : m;
+    if (COM_SKINS.includes(fr)) out.skins[fr] = skinsDa(fr);
   }
   return out;
 }

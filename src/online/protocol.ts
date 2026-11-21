@@ -142,6 +142,7 @@ function isGame(g: unknown): boolean {
         isNat(g.erros) && isArr(g.emoji, isText) && isNat(g.totalEmoji) && isText(g.imagem) && isNum(g.foco) &&
         (g.recorte === undefined || g.recorte === null || isArr(g.recorte, isText)) &&
         (g.grupos === undefined || isArr(g.grupos, isText)) && (g.submodos === undefined || isArr(g.submodos, isText)) &&
+        (g.skin === undefined || isText(g.skin)) &&
         isEntryOrNull(g.secreto) && (g.vencedor === null || isText(g.vencedor)) &&
         isArr(g.placar, p => isRec(p) && isText(p.id) && isText(p.nome) && isNat(p.pontos)) &&
         isArr(g.historico, h => isRec(h) && isNat(h.rodada) && isEntry(h.secreto) && (h.vencedor === null || isText(h.vencedor)) &&

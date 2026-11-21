@@ -167,6 +167,9 @@ Algumas fontes não podem ser lidas pelo navegador (sem CORS) ou dão trabalho d
 - `node kamenrider.mjs`: lê a tabela "Confirmed List" da Kamen Rider Wiki e grava `public/kamenrider/list.json`, com o
   render do traje de cada Rider. A tabela para no Gotchard: `RECENTES` acrescenta os novos à mão. `IMAGEM` corrige os
   casos em que o texto da página não aponta pro render certo; confira os avisos.
+- `node skins-lol.mjs`: lista as skins de cada campeão do LoL (Data Dragon) em `public/adivinha/skins/lol.json`, pro modo
+  Imagem da aba Adivinha, que mostra o recorte da splash de uma skin sorteada. Confere cada splash com HEAD (as cromas
+  não têm). Rode de novo quando saírem skins ou campeões novos.
 - `node sujimon.mjs recortar`: recorta os screenshots do Sujidex de `sujimon/_orig/` pra `public/sujimon/`. Instruções
   no começo do arquivo.
 - `node catalogo.mjs [chaves]`: gera `public/catalogo/<chave>.json` com o que a fonte informa de cada personagem (um
