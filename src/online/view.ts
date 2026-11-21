@@ -4,6 +4,7 @@
 // No Adivinha: os chutes com as pistas e o que já foi revelado (emojis, imagem); o secreto só depois da rodada.
 import { roundName } from '../core/cup';
 import { emojisVisiveis } from '../adivinha/emoji';
+import { advPartidas } from './adivinha';
 import { isBye } from './draft';
 import type { AdivinhaGame, AdivinhaView, DraftGame, DraftView, GameView, RankGame, RankView, RoomState, RoomView, Vote, VoteView } from './types';
 
@@ -73,6 +74,7 @@ function adivinhaView(s: RoomState, g: AdivinhaGame, now: number): AdivinhaView 
     grupos: [...g.grupos],
     submodos: [...g.submodos],
     rodadas: g.rodadas,
+    partidas: advPartidas(g),
     tempo: g.tempo,
     rodada: g.rodada,
     passo: g.passo,

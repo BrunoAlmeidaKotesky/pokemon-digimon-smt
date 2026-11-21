@@ -32,7 +32,6 @@ export function AdivinhaConfig({ c, isHost, set, parte }: { c: OnlineConfig; isH
   useEffect(() => { for (const id of chave.split(',')) { const g = grupoDe(id); if (g) void pedirGrupo(g); } }, [chave]);
   const estados = grupos.map(g => ({ g, est: estadoGrupo(g) }));
   const semEmoji = a.submodos.includes('emoji') && estados.every(({ g, est }) => !est.carregando && est.semEmoji.length === g.frs.length);
-  const varios = a.grupos.length > 1 || a.submodos.length > 1;
   if (parte === 'franquia') {
     const comRecorte = grupos.filter(g => g.recorte);
     return (
@@ -88,7 +87,7 @@ export function AdivinhaConfig({ c, isHost, set, parte }: { c: OnlineConfig; isH
       <p className="mute" style={{ margin: 0, fontSize: 13 }}>
         Um chute por vez, na ordem da sala. {a.tempo > 0 ? 'Tempo esgotado passa a vez; quem' : 'Sem limite de tempo: a vez só passa com um chute. Quem'} cair da sala é pulado.
         {' '}Na Imagem, no Blur e no Emoji, cada chute errado (de qualquer um) revela mais.
-        {varios && a.submodos.length > 1 && ' Com vários modos, as rodadas alternam entre eles, na ordem.'}
+        {a.submodos.length > 1 && ` Com vários modos, cada rodada passa por todos eles, na ordem: ${rodadasTxt(a.rodadas)} = ${a.rodadas * a.submodos.length} partidas.`}
       </p>
     </div>
   );
@@ -97,7 +96,8 @@ export function AdivinhaConfig({ c, isHost, set, parte }: { c: OnlineConfig; isH
 /** Resumo do lobby: "Adivinha · LoL + Pokémon · Clássico + Emoji · 5 rodadas · 40 s por vez". */
 export function resumoAdivinha(c: OnlineConfig): string {
   const a = advSettings(c.adivinha);
-  return `Adivinha · ${franquiasTxt(a)} · ${modosTxt(a.submodos)} · ${rodadasTxt(a.rodadas)} · ${a.tempo > 0 ? `${a.tempo} s por vez` : 'sem limite de tempo'}`;
+  const partidas = a.submodos.length > 1 ? ` (${a.rodadas * a.submodos.length} partidas)` : '';
+  return `Adivinha · ${franquiasTxt(a)} · ${modosTxt(a.submodos)} · ${rodadasTxt(a.rodadas)}${partidas} · ${a.tempo > 0 ? `${a.tempo} s por vez` : 'sem limite de tempo'}`;
 }
 
 /** Partida: vez e tempo, pistas (tabela, imagem ou emojis), campo de chute, resultado e placar. */
@@ -112,6 +112,8 @@ export function AdivinhaPlay({ v }: { v: RoomView }) {
   // o recorte da sala (host antigo não manda: todos)
   const pool = grupo ? poolAtual(grupo, g.submodo, app.lists, g.recorte ?? null) : [];
   const isHost = v.me === v.hostId;
+  // com vários modos, uma rodada é uma volta por todos eles (g.rodada conta as partidas)
+  const nModos = Math.max(1, g.submodos?.length ?? 1);
   const aberta = g.passo === 'chute';
   const minha = aberta && g.vez === v.me;
   const nome = (id: string | null) => (id && (v.players.find(p => p.id === id)?.name ?? g.placar.find(p => p.id === id)?.nome)) || '?';
@@ -120,7 +122,9 @@ export function AdivinhaPlay({ v }: { v: RoomView }) {
   return (
     <div className="stack" id="onAdv" data-passo={g.passo} data-rodada={g.rodada}>
       <p className="draft-round" id="onAdvRodada">
-        {g.passo === 'fim' ? 'Placar final' : <>Rodada {g.rodada} de {g.rodadas}</>}
+        {g.passo === 'fim' ? 'Placar final' : nModos > 1
+          ? <>Rodada {Math.ceil(g.rodada / nModos)} de {g.rodadas} · modo {((g.rodada - 1) % nModos) + 1} de {nModos}</>
+          : <>Rodada {g.rodada} de {g.rodadas}</>}
         {' · '}<span className="mute" id="onAdvFranquia">{franquiaComRecorte({ grupo: g.grupo, recorte: g.recorte })} · {rotuloSubmodo(g.submodo)}</span>
       </p>
       {g.passo === 'fim' ? <Final v={v} g={g} /> : (
@@ -137,7 +141,7 @@ export function AdivinhaPlay({ v }: { v: RoomView }) {
             <Revelado id="onAdvFim" titulo={g.vencedor ? (g.vencedor === v.me ? 'Você acertou! +1 ponto' : `${nome(g.vencedor)} acertou! +1 ponto`) : 'Ninguém acertou. Era este:'}>
               <Card it={g.secreto} index={0} isStatic hideKey />
               {isHost
-                ? <div className="adv-acoes"><button className="btn main big" id="onAdvProxima" onClick={host.next}>{g.rodada >= g.rodadas ? 'Ver o placar final' : 'Próxima rodada'}</button></div>
+                ? <div className="adv-acoes"><button className="btn main big" id="onAdvProxima" onClick={host.next}>{g.rodada >= (g.partidas ?? g.rodadas) ? 'Ver o placar final' : nModos > 1 && g.rodada % nModos !== 0 ? 'Próximo modo' : 'Próxima rodada'}</button></div>
                 : <p className="mute">Esperando {nome(v.hostId)} (host) continuar…</p>}
             </Revelado>
           )}

@@ -376,7 +376,10 @@ export interface AdivinhaView {
   /** tudo o que a sala escolheu (host antigo não manda: só `grupo` e `submodo`) */
   grupos?: string[];
   submodos?: Submodo[];
+  /** rodadas da sala: cada uma passa por todos os modos (`rodada` conta as partidas, de 1 a `partidas`) */
   rodadas: number;
+  /** total de partidas = rodadas x modos (host antigo não manda: igual a `rodadas`) */
+  partidas?: number;
   /** segundos por vez (0 = sem limite) */
   tempo: number;
   rodada: number;

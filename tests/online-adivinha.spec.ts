@@ -255,7 +255,7 @@ test('Adivinha online com duas franquias, dois modos e sem limite de tempo: cada
   await expect(ana.locator('#onAdvTempo button')).toHaveText(['15 s', '20 s', '30 s', '40 s', '60 s', '90 s', 'Sem limite']);
   await ana.locator('#onAdvTempo button[data-n="0"]').click();
   for (const p of [ana, beto]) {
-    await expect(p.locator('#onStartBar .resumo b')).toContainText('Adivinha · LoL + Pokémon · Clássico + Blur · ');
+    await expect(p.locator('#onStartBar .resumo b')).toContainText('Adivinha · LoL + Pokémon · Clássico + Blur · 5 rodadas (10 partidas) · ');
     await expect(p.locator('#onStartBar .resumo b')).toContainText('sem limite de tempo');
   }
   await expect(beto.locator('#onAdvGrupos [data-grupo="pokemon"]')).toHaveAttribute('aria-checked', 'true');
@@ -274,7 +274,10 @@ test('Adivinha online com duas franquias, dois modos e sem limite de tempo: cada
   // o host revela e segue: a rodada 2 é Blur
   await ana.locator('#onAdvRevelar').click();
   await ana.locator('#onAdvRevelar').click();
+  await expect(ana.locator('#onAdvProxima')).toHaveText('Próximo modo');
   await ana.locator('#onAdvProxima').click();
   for (const p of [ana, beto]) await expect(p.locator('#onAdvFranquia')).toHaveText(/^(LoL|Pokémon) · Blur$/);
+  // com dois modos, uma rodada passa pelos dois: ainda é a rodada 1, no segundo modo
+  for (const p of [ana, beto]) await expect(p.locator('#onAdvRodada')).toContainText('Rodada 1 de 5 · modo 2 de 2');
   await expect(beto.locator('#onAdv .adv-quadro, #onAdv [data-modo="blur"]').first()).toBeVisible();
 });

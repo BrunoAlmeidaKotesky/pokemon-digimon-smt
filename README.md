@@ -47,7 +47,8 @@ sem repetir) e Enter escolhe.
   formas, que têm `variante` no catálogo, nem Paradoxos e Unown) e SMT + Persona sem as Picaro.
 - **Online** (aba Online, modo Adivinha, "vez de cada um"): o host marca uma ou mais franquias (cada uma com o
   recorte, se tiver), um ou mais modos (Clássico, Imagem, Blur, Emoji), as rodadas e o tempo por vez, que pode ser sem
-  limite. Com várias franquias, cada rodada sorteia uma; com vários modos, as rodadas alternam entre eles. O secreto fica só no navegador do host (os outros recebem as pistas; no Imagem
+  limite. Com várias franquias, cada partida sorteia uma; com vários modos, cada rodada passa por todos eles, na ordem (4 modos e 1
+  rodada = 4 partidas). O secreto fica só no navegador do host (os outros recebem as pistas; no Imagem
   e no Blur a imagem precisa ir, e o endereço dela pode entregar o nome pra quem fuçar a rede). Um chute por vez, na
   ordem da sala; tempo esgotado passa a vez, quem cai é pulado; quem acerta ganha a rodada. Placar no fim.
 - O formato de `pdx-adivinha-v1` ganhou `v: 2`: o salvo antigo é migrado na leitura (o "imagem" de antes, que era o
