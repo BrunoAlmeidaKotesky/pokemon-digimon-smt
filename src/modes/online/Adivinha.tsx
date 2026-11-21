@@ -36,14 +36,14 @@ export function AdivinhaConfig({ c, isHost, set, parte }: { c: OnlineConfig; isH
       <div className="row-label"><span>Modo</span>
         <Segmented id="onAdvSubmodo" ariaLabel="Modo" value={a.submodo} disabled={!isHost} options={SUBMODOS.map(x => ({ value: x.id, label: x.rotulo }))} onChange={submodo => mudar({ submodo })} />
       </div>
-      {semEmoji && <p className="note" id="onAdvSemEmoji" style={{ margin: 0 }}>{g.rotulo} ainda não tem emojis: escolha o Clássico ou a Imagem.</p>}
+      {semEmoji && <p className="note" id="onAdvSemEmoji" style={{ margin: 0 }}>{g.rotulo} ainda não tem emojis: escolha o Clássico, a Imagem ou o Blur.</p>}
       <div className="row-label"><span>Rodadas</span>
         <Stepper id="onAdvRodadas" ariaLabel="Rodadas" value={a.rodadas} min={ADV_RODADAS.min} max={ADV_RODADAS.max} disabled={!isHost} onChange={rodadas => mudar({ rodadas })} />
       </div>
       <div className="row-label"><span>Tempo por vez</span>
         <Segmented id="onAdvTempo" ariaLabel="Tempo por vez" value={a.tempo} disabled={!isHost} options={ADV_TEMPOS.map(n => ({ value: n, label: `${n} s` }))} onChange={tempo => mudar({ tempo })} />
       </div>
-      <p className="mute" style={{ margin: 0, fontSize: 13 }}>Um chute por vez, na ordem da sala. Tempo esgotado passa a vez; quem cair da sala é pulado. Na Imagem e no Emoji, cada chute errado (de qualquer um) revela mais.</p>
+      <p className="mute" style={{ margin: 0, fontSize: 13 }}>Um chute por vez, na ordem da sala. Tempo esgotado passa a vez; quem cair da sala é pulado. Na Imagem, no Blur e no Emoji, cada chute errado (de qualquer um) revela mais.</p>
     </div>
   );
 }
@@ -77,7 +77,7 @@ export function AdivinhaPlay({ v }: { v: RoomView }) {
       {g.passo === 'fim' ? <Final v={v} g={g} /> : (
         <>
           {aberta && <Vez v={v} g={g} nome={nome} />}
-          {g.submodo === 'imagem' && g.imagem && <QuadroImagem img={g.imagem} semente={g.foco} erros={g.erros} fim={!aberta} />}
+          {(g.submodo === 'imagem' || g.submodo === 'blur') && g.imagem && <QuadroImagem modo={g.submodo} img={g.imagem} semente={g.foco} erros={g.erros} fim={!aberta} />}
           {g.submodo === 'emoji' && <LinhaEmoji emojis={g.emoji} total={g.totalEmoji} />}
           {aberta && (
             <CampoChute key={`${g.rodada}`} id="onAdvChute" pool={pool} usados={usados} disabled={!minha} foco={minha} varias={(grupo?.frs.length ?? 1) > 1}

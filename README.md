@@ -18,20 +18,34 @@ SMT + Persona (as duas juntas). Cada chute usa o autocompletar (nome e miniatura
 sem repetir) e Enter escolhe.
 
 - **Clássico**: tabela com as informações do catálogo (`public/catalogo/<chave>.json`) de cada chute comparadas com as
-  do secreto: verde = igual, amarelo = parte em comum, vermelho = nada em comum; número (dificuldade, complexidade,
-  nível, estágio, geração) com seta pra cima ou pra baixo; `?` = sem informação.
-- **Imagem**: começa com zoom num ponto desenhado da imagem, desfocada; cada erro afasta e clareia.
+  do secreto: verde = igual, amarelo = parte em comum, vermelho = nada em comum; em número (dificuldade, nível,
+  estágio, geração, altura, peso) uma seta grande atrás do valor aponta pra onde está o secreto; `?` = sem informação.
+  A legenda fica embaixo da tabela. Colunas: LoL (classe, região, alcance, dano, recurso, dificuldade, gênero),
+  Overwatch (função, subfunção, afiliação, país, espécie), Deadlock (tipo, arma, disparo, gênero), Pokémon (tipo 1,
+  tipo 2 com "Nenhum", geração, estágio, cor, forma, habitat, altura em m, peso em kg), JoJo (parte, alcance, forma,
+  mecânica) e SMT + Persona (raça, com "Persona" pras Personas, arcana, mitologia, nível, fraqueza, resiste, atributo
+  mais forte).
+- **Imagem**: um recorte nítido da arte (1/5 da largura) num ponto sorteado, longe de onde o rosto costuma ficar; cada
+  erro abre um pouco, e a imagem inteira aparece no 10º erro. **Blur**: zoom desfocado que afasta e clareia aos poucos,
+  também até o 10º erro.
 - **Emoji**: `public/adivinha/emoji/<chave>.json` (`{ "Nome": "🦊💋🌙✨" }`); começa com 1 emoji e revela mais 1 por
   erro. Só entra quem tem emoji; franquia sem arquivo fica com o Emoji desligado.
-- **Desafio do dia**: o mesmo personagem pra todo mundo, pela data de Brasília + franquia + submodo (índice na lista
-  ordenada por nome); sequência de dias e média de chutes em `pdx-adivinha-v1`. **Livre**: um atrás do outro, com
-  "Desistir".
+- **Desafio do dia**: percurso por franquia, Clássico → Imagem → Blur → Emoji, cada etapa com o personagem do dia dela
+  (o mesmo pra todo mundo: data de Brasília + franquia + etapa, índice na lista ordenada por nome). A etapa seguinte só
+  abre depois de resolver a anterior; dá pra desligar etapas (pelo menos uma fica; a escolha fica no navegador) e etapa
+  sem dados sai sozinha. O dia conta quando as etapas ligadas terminam: sequência de dias e chutes por percurso em
+  `pdx-adivinha-v1` (e a média de cada etapa). No fim, "Próxima franquia" pula as já feitas; com todas feitas, o resumo
+  do dia.
+- **Livre**: um submodo solto (um personagem atrás do outro, com "Desistir") ou **Todos**, o ciclo das etapas ligadas
+  com um personagem por etapa; no fim do ciclo, "Recomeçar o ciclo" ou "Próxima franquia".
 - Entra quem está na lista do site e no catálogo. Só no Adivinha: Pokémon só com as espécies (sem Mega, Gigantamax nem
-  formas, que têm `variante` no catálogo) e JoJo só com Stands do anime e do mangá (Part 3 a 9, Kishibe Rohan).
-- **Online** (aba Online, modo Adivinha, "vez de cada um"): o host escolhe franquia, submodo, rodadas e segundos por
-  vez. O secreto fica só no navegador do host (os outros recebem as pistas; no modo Imagem a imagem precisa ir, e o
-  endereço dela pode entregar o nome pra quem fuçar a rede). Um chute por vez, na ordem da sala; tempo esgotado passa a
-  vez, quem cai é pulado; quem acerta ganha a rodada. Placar no fim.
+  formas, que têm `variante` no catálogo, nem Paradoxos e Unown) e SMT + Persona sem as Picaro.
+- **Online** (aba Online, modo Adivinha, "vez de cada um"): o host escolhe franquia, submodo (Clássico, Imagem, Blur
+  ou Emoji), rodadas e segundos por vez. O secreto fica só no navegador do host (os outros recebem as pistas; no Imagem
+  e no Blur a imagem precisa ir, e o endereço dela pode entregar o nome pra quem fuçar a rede). Um chute por vez, na
+  ordem da sala; tempo esgotado passa a vez, quem cai é pulado; quem acerta ganha a rodada. Placar no fim.
+- O formato de `pdx-adivinha-v1` ganhou `v: 2`: o salvo antigo é migrado na leitura (o "imagem" de antes, que era o
+  desfoque, vira "blur", e a sequência do percurso começa com a da etapa jogada por último).
 
 ### Autobatalha com amigos
 

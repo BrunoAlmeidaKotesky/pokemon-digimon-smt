@@ -1,7 +1,7 @@
 {
  "chave": "pokemon",
  "fonte": "PokéAPI (GraphQL)",
- "geradoEm": "2026-10-28",
+ "geradoEm": "2026-11-21",
  "campos": [
   {
    "id": "tipo",
@@ -40,6 +40,14 @@
    "rotulo": "Habitat"
   },
   {
+   "id": "altura",
+   "rotulo": "Altura (m)"
+  },
+  {
+   "id": "peso",
+   "rotulo": "Peso (kg)"
+  },
+  {
    "id": "variante",
    "rotulo": "Variante"
   }
@@ -59,7 +67,9 @@
     "Monster",
     "Grass"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.7,
+   "peso": 6.9
   },
   "Ivysaur": {
    "tipo": [
@@ -75,7 +85,9 @@
     "Monster",
     "Grass"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 1,
+   "peso": 13
   },
   "Venusaur": {
    "tipo": [
@@ -91,7 +103,9 @@
     "Monster",
     "Grass"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 2,
+   "peso": 100
   },
   "Charmander": {
    "tipo": [
@@ -106,7 +120,9 @@
     "Monster",
     "Dragon"
    ],
-   "habitat": "Mountain"
+   "habitat": "Mountain",
+   "altura": 0.6,
+   "peso": 8.5
   },
   "Charmeleon": {
    "tipo": [
@@ -121,7 +137,9 @@
     "Monster",
     "Dragon"
    ],
-   "habitat": "Mountain"
+   "habitat": "Mountain",
+   "altura": 1.1,
+   "peso": 19
   },
   "Charizard": {
    "tipo": [
@@ -137,7 +155,9 @@
     "Monster",
     "Dragon"
    ],
-   "habitat": "Mountain"
+   "habitat": "Mountain",
+   "altura": 1.7,
+   "peso": 90.5
   },
   "Squirtle": {
    "tipo": [
@@ -152,7 +172,9 @@
     "Monster",
     "Water 1"
    ],
-   "habitat": "Water's Edge"
+   "habitat": "Water's Edge",
+   "altura": 0.5,
+   "peso": 9
   },
   "Wartortle": {
    "tipo": [
@@ -167,7 +189,9 @@
     "Monster",
     "Water 1"
    ],
-   "habitat": "Water's Edge"
+   "habitat": "Water's Edge",
+   "altura": 1,
+   "peso": 22.5
   },
   "Blastoise": {
    "tipo": [
@@ -182,7 +206,9 @@
     "Monster",
     "Water 1"
    ],
-   "habitat": "Water's Edge"
+   "habitat": "Water's Edge",
+   "altura": 1.6,
+   "peso": 85.5
   },
   "Caterpie": {
    "tipo": [
@@ -196,7 +222,9 @@
    "ovo": [
     "Bug"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 0.3,
+   "peso": 2.9
   },
   "Metapod": {
    "tipo": [
@@ -210,7 +238,9 @@
    "ovo": [
     "Bug"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 0.7,
+   "peso": 9.9
   },
   "Butterfree": {
    "tipo": [
@@ -225,7 +255,9 @@
    "ovo": [
     "Bug"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 1.1,
+   "peso": 32
   },
   "Weedle": {
    "tipo": [
@@ -240,7 +272,9 @@
    "ovo": [
     "Bug"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 0.3,
+   "peso": 3.2
   },
   "Kakuna": {
    "tipo": [
@@ -255,7 +289,9 @@
    "ovo": [
     "Bug"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 0.6,
+   "peso": 10
   },
   "Beedrill": {
    "tipo": [
@@ -270,7 +306,9 @@
    "ovo": [
     "Bug"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 1,
+   "peso": 29.5
   },
   "Pidgey": {
    "tipo": [
@@ -285,7 +323,9 @@
    "ovo": [
     "Flying"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 0.3,
+   "peso": 1.8
   },
   "Pidgeotto": {
    "tipo": [
@@ -300,7 +340,9 @@
    "ovo": [
     "Flying"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 1.1,
+   "peso": 30
   },
   "Pidgeot": {
    "tipo": [
@@ -315,7 +357,9 @@
    "ovo": [
     "Flying"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 1.5,
+   "peso": 39.5
   },
   "Rattata": {
    "tipo": [
@@ -329,7 +373,9 @@
    "ovo": [
     "Field"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.3,
+   "peso": 3.5
   },
   "Raticate": {
    "tipo": [
@@ -343,7 +389,9 @@
    "ovo": [
     "Field"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.7,
+   "peso": 18.5
   },
   "Spearow": {
    "tipo": [
@@ -358,7 +406,9 @@
    "ovo": [
     "Flying"
    ],
-   "habitat": "Rough Terrain"
+   "habitat": "Rough Terrain",
+   "altura": 0.3,
+   "peso": 2
   },
   "Fearow": {
    "tipo": [
@@ -373,7 +423,9 @@
    "ovo": [
     "Flying"
    ],
-   "habitat": "Rough Terrain"
+   "habitat": "Rough Terrain",
+   "altura": 1.2,
+   "peso": 38
   },
   "Ekans": {
    "tipo": [
@@ -388,7 +440,9 @@
     "Field",
     "Dragon"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 2,
+   "peso": 6.9
   },
   "Arbok": {
    "tipo": [
@@ -403,7 +457,9 @@
     "Field",
     "Dragon"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 3.5,
+   "peso": 65
   },
   "Pikachu": {
    "tipo": [
@@ -418,7 +474,9 @@
     "Field",
     "Fairy"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 0.4,
+   "peso": 6
   },
   "Raichu": {
    "tipo": [
@@ -433,7 +491,9 @@
     "Field",
     "Fairy"
    ],
-   "habitat": "Forest"
+   "habitat": "Forest",
+   "altura": 0.8,
+   "peso": 30
   },
   "Sandshrew": {
    "tipo": [
@@ -447,7 +507,9 @@
    "ovo": [
     "Field"
    ],
-   "habitat": "Rough Terrain"
+   "habitat": "Rough Terrain",
+   "altura": 0.6,
+   "peso": 12
   },
   "Sandslash": {
    "tipo": [
@@ -461,7 +523,9 @@
    "ovo": [
     "Field"
    ],
-   "habitat": "Rough Terrain"
+   "habitat": "Rough Terrain",
+   "altura": 1,
+   "peso": 29.5
   },
   "Nidoran F": {
    "tipo": [
@@ -476,7 +540,9 @@
     "Monster",
     "Field"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.4,
+   "peso": 7
   },
   "Nidorina": {
    "tipo": [
@@ -490,7 +556,9 @@
    "ovo": [
     "Undiscovered"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.8,
+   "peso": 20
   },
   "Nidoqueen": {
    "tipo": [
@@ -505,7 +573,9 @@
    "ovo": [
     "Undiscovered"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 1.3,
+   "peso": 60
   },
   "Nidoran M": {
    "tipo": [
@@ -520,7 +590,9 @@
     "Monster",
     "Field"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.5,
+   "peso": 9
   },
   "Nidorino": {
    "tipo": [
@@ -535,7 +607,9 @@
     "Monster",
     "Field"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.9,
+   "peso": 19.5
   },
   "Nidoking": {
    "tipo": [
@@ -551,7 +625,9 @@
     "Monster",
     "Field"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 1.4,
+   "peso": 62
   },
   "Clefairy": {
    "tipo": [
@@ -565,7 +641,9 @@
    "ovo": [
     "Fairy"
    ],
-   "habitat": "Mountain"
+   "habitat": "Mountain",
+   "altura": 0.6,
+   "peso": 7.5
   },
   "Clefable": {
    "tipo": [
@@ -579,7 +657,9 @@
    "ovo": [
     "Fairy"
    ],
-   "habitat": "Mountain"
+   "habitat": "Mountain",
+   "altura": 1.3,
+   "peso": 40
   },
   "Vulpix": {
    "tipo": [
@@ -593,7 +673,9 @@
    "ovo": [
     "Field"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.6,
+   "peso": 9.9
   },
   "Ninetales": {
    "tipo": [
@@ -607,7 +689,9 @@
    "ovo": [
     "Field"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 1.1,
+   "peso": 19.9
   },
   "Jigglypuff": {
    "tipo": [
@@ -622,7 +706,9 @@
    "ovo": [
     "Fairy"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 0.5,
+   "peso": 5.5
   },
   "Wigglytuff": {
    "tipo": [
@@ -637,7 +723,9 @@
    "ovo": [
     "Fairy"
    ],
-   "habitat": "Grassland"
+   "habitat": "Grassland",
+   "altura": 1,
+   "peso": 12
   },
   "Alolan Raichu": {
    "tipo": [
@@ -654,6 +742,8 @@
     "Fairy"
    ],
    "habitat": "Forest",
+   "altura": 0.7,
+   "peso": 21,
    "variante": "Alola"
   },
   "Mega Charizard X": {
@@ -671,6 +761,8 @@
     "Dragon"
    ],
    "habitat": "Mountain",
+   "altura": 1.7,
+   "peso": 110.5,
    "variante": "Mega"
   },
   "Primal Kyogre": {
@@ -687,6 +779,8 @@
     "Undiscovered"
    ],
    "habitat": "Sea",
+   "altura": 9.8,
+   "peso": 430,
    "variante": "Primal"
   },
   "Paldean Tauros (Combat Breed)": {
@@ -702,6 +796,8 @@
     "Field"
    ],
    "habitat": "Grassland",
+   "altura": 1.4,
+   "peso": 115,
    "variante": "Paldea"
   },
   "Galarian Darmanitan": {
@@ -716,6 +812,8 @@
    "ovo": [
     "Field"
    ],
+   "altura": 1.7,
+   "peso": 120,
    "variante": "Galar"
   },
   "Galarian Mr Mime": {
@@ -732,6 +830,8 @@
     "Human-Like"
    ],
    "habitat": "Urban",
+   "altura": 1.4,
+   "peso": 56.8,
    "variante": "Galar"
   },
   "Gigantamax Charizard": {
@@ -749,6 +849,8 @@
     "Dragon"
    ],
    "habitat": "Mountain",
+   "altura": 28,
+   "peso": 1000,
    "variante": "Gigantamax"
   }
  }

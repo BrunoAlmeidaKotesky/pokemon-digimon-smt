@@ -12,14 +12,14 @@ import { viewFor } from './view';
 // ---------- fixtures ----------
 
 const CAMPEOES: Record<string, Record<string, unknown>> = {
-  Ahri: { classe: ['Mago', 'Assassino'], regiao: 'Ionia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', dificuldade: 5 },
-  Akali: { classe: 'Assassino', regiao: 'Ionia', alcance: 'Corpo a corpo', dano: 'Mágico', recurso: 'Energia', dificuldade: 7 },
+  Ahri: { classe: ['Mago', 'Assassino'], regiao: 'Ionia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', dificuldade: 5, genero: 'Feminino' },
+  Akali: { classe: 'Assassino', regiao: 'Ionia', alcance: 'Corpo a corpo', dano: 'Mágico', recurso: 'Energia', dificuldade: 7, genero: 'Feminino' },
   Jinx: { classe: 'Atirador', regiao: 'Zaun', alcance: 'À distância', dano: 'Físico', recurso: 'Mana', dificuldade: 6 },
   Garen: { classe: ['Lutador', 'Tanque'], regiao: 'Demacia', alcance: 'Corpo a corpo', dano: 'Físico', recurso: 'Nenhum', dificuldade: 5 },
   Lux: { classe: ['Mago', 'Suporte'], regiao: 'Demacia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', dificuldade: 5 },
 };
 const CAT: Catalogo = parseCatalogo({
-  campos: ['classe', 'regiao', 'alcance', 'dano', 'recurso', 'dificuldade'].map(id => ({ id })),
+  campos: ['classe', 'regiao', 'alcance', 'dano', 'recurso', 'dificuldade', 'genero'].map(id => ({ id })),
   itens: CAMPEOES,
 }) as Catalogo;
 const NOMES = Object.keys(CAMPEOES);
@@ -57,6 +57,7 @@ describe('configuração', () => {
     expect(DEFAULT_CONFIG.adivinha).toEqual({ grupo: 'lol', submodo: 'classico', rodadas: 5, tempo: 40 });
     expect(advSettings({ grupo: 'digimon', submodo: 'falas' as never, rodadas: 99, tempo: 7 })).toEqual({ grupo: 'lol', submodo: 'classico', rodadas: ADV_RODADAS.max, tempo: 40 });
     expect(advSettings({ grupo: 'megaten', submodo: 'emoji', rodadas: 0.4, tempo: 15 })).toEqual({ grupo: 'megaten', submodo: 'emoji', rodadas: 1, tempo: 15 });
+    expect(advSettings({ submodo: 'blur' }).submodo).toBe('blur');
     expect(advSettings(null)).toEqual(ADV_PADRAO);
   });
 });
@@ -119,15 +120,20 @@ describe('o secreto nunca vai pra ninguém enquanto a rodada está aberta', () =
     expect(V(s, 'ana').emoji).toEqual(todos);
   });
 
-  it('Imagem: manda a imagem (precisa aparecer) e o ponto do zoom, iguais pra todos; nada de nome', () => {
-    const s = started(['Ana'], { submodo: 'imagem' });
-    const sec = G(s).secreto;
-    const va = V(s, 'ana'), vh = V(s, 'h');
-    expect(va.imagem).toBe(sec.img);
-    expect(va.foco).toBe(vh.foco);
-    expect(va.foco).toBeGreaterThanOrEqual(0);
-    expect(va.foco).toBeLessThan(1);
-    expect(va.secreto).toBeNull();
+  it('Imagem (recorte) e Blur: mandam a imagem (precisa aparecer) e o ponto, iguais pra todos; nada de nome', () => {
+    for (const submodo of ['imagem', 'blur'] as const) {
+      const s = started(['Ana'], { submodo });
+      const sec = G(s).secreto;
+      const va = V(s, 'ana'), vh = V(s, 'h');
+      expect(va.submodo).toBe(submodo);
+      expect(va.imagem).toBe(sec.img);
+      expect(va.foco).toBe(vh.foco);
+      expect(va.foco).toBeGreaterThanOrEqual(0);
+      expect(va.foco).toBeLessThan(1);
+      expect(va.secreto).toBeNull();
+      expect(parseHostMsg({ t: 'state', view: viewFor(s, 'ana', now) })).not.toBeNull();
+    }
+    expect(V(started(['Ana'], { submodo: 'emoji' }), 'ana').imagem).toBe('');
   });
 });
 
@@ -143,7 +149,7 @@ describe('vez de cada um', () => {
     const g = G(s);
     expect(g.chutes).toHaveLength(1);
     expect(g.chutes[0]).toMatchObject({ por: 'h', porNome: 'Host', alvo: { name: n, fr: 'lol' }, certo: false });
-    expect(g.chutes[0]!.pistas).toHaveLength(6);
+    expect(g.chutes[0]!.pistas).toHaveLength(7);
     expect(g).toMatchObject({ vez: 'ana', prazo: now + 40_000 });
     // ninguém repete um chute da rodada
     expect(chute(s, 'ana', n)).toBe(s);
@@ -156,7 +162,7 @@ describe('vez de cada um', () => {
     s = chute(s, 'h', 'Akali');
     expect(G(s).chutes[0]!.pistas).toEqual([
       { t: 'Assassino', c: 'parcial' }, { t: 'Ionia', c: 'certo' }, { t: 'Corpo a corpo', c: 'errado' },
-      { t: 'Mágico', c: 'certo' }, { t: 'Energia', c: 'errado' }, { t: '7', c: 'errado', s: 'baixo' },
+      { t: 'Mágico', c: 'certo' }, { t: 'Energia', c: 'errado' }, { t: '7', c: 'errado', s: 'baixo' }, { t: 'Feminino', c: 'certo' },
     ]);
     expect(V(s, 'ana').chutes[0]!.pistas).toEqual(G(s).chutes[0]!.pistas);
   });

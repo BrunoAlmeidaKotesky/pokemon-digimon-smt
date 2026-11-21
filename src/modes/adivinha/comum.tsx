@@ -8,7 +8,7 @@ import { resolveImg } from '../../customs/store';
 import { GRUPOS, corDoGrupo, type Grupo } from '../../adivinha/grupos';
 import { explicar, type Pista } from '../../adivinha/comparar';
 import { sugerir, type AdvItem } from '../../adivinha/pool';
-import { escolherFoco, focoNoMiolo, zoom, type Amostra, type Ponto } from '../../adivinha/imagem';
+import { escolherPonto, focoForaDoRosto, focoNoMiolo, zoom, type Amostra, type ModoImagem, type Ponto } from '../../adivinha/imagem';
 
 /** Chips das franquias do Adivinha (SMT e Persona juntas). */
 export function EscolhaGrupo({ id, valor, onChange, disabled }: { id: string; valor: string; onChange: (g: string) => void; disabled?: boolean }) {
@@ -105,7 +105,7 @@ export function TabelaClassico({ grupo, linhas }: { grupo: Grupo; linhas: LinhaC
   const n = grupo.colunas.length + 1;
   return (
     <div className="adv-tabela-wrap">
-      <table className="adv-tabela" id="advTabela" style={{ ['--n' as string]: n } as CSSProperties}>
+      <table className={'adv-tabela' + (n > 8 ? ' muitas' : '')} id="advTabela" style={{ ['--n' as string]: n } as CSSProperties}>
         <thead><tr><th>Personagem</th>{grupo.colunas.map(c => <th key={c.id} data-col={c.id}>{c.rotulo}</th>)}</tr></thead>
         <tbody>
           {linhas.map(l => l.it && l.pistas ? (
@@ -117,9 +117,10 @@ export function TabelaClassico({ grupo, linhas }: { grupo: Grupo; linhas: LinhaC
                 </div>
               </td>
               {l.pistas.map((p, i) => (
-                <td key={i} className={'adv-c ' + p.c} data-cor={p.c} title={explicar(p)}>
-                  <span>{p.t}</span>
-                  {p.s && <span className="adv-seta" aria-label={p.s === 'cima' ? 'mais' : 'menos'}>{p.s === 'cima' ? '▲' : '▼'}</span>}
+                <td key={i} className={'adv-c ' + p.c + (p.s ? ' seta ' + p.s : '')} data-cor={p.c} data-seta={p.s} title={explicar(p)}>
+                  {p.s && <Seta dir={p.s} />}
+                  <span className="adv-v">{p.t}</span>
+                  {p.s && <span className="sr">{p.s === 'cima' ? ' (mais alto)' : ' (mais baixo)'}</span>}
                 </td>
               ))}
             </tr>
@@ -132,20 +133,38 @@ export function TabelaClassico({ grupo, linhas }: { grupo: Grupo; linhas: LinhaC
   );
 }
 
-/** Legenda das cores do Clássico. */
-export function Legenda() {
+/** Seta grande atrás do número: o personagem tem mais (cima) ou menos (baixo). */
+function Seta({ dir }: { dir: 'cima' | 'baixo' }) {
   return (
-    <p className="adv-legenda" id="advLegenda">
-      <span className="adv-c certo">igual</span>
-      <span className="adv-c parcial">em parte</span>
-      <span className="adv-c errado">diferente</span>
-      <span>▲▼ o personagem tem mais ou menos</span>
-      <span>? sem informação</span>
-    </p>
+    <svg className="adv-seta" viewBox="0 0 40 40" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+      <path d={dir === 'cima' ? 'M20 3 37 21H27v16H13V21H3z' : 'M20 37 3 19h10V3h14v16h10z'} />
+    </svg>
   );
 }
 
-/** Chutes errados (Imagem e Emoji), o mais novo primeiro; sem personagem = tempo esgotado. */
+const LEGENDA: { cls: string; rotulo: string; seta?: 'cima' | 'baixo'; txt?: string }[] = [
+  { cls: 'certo', rotulo: 'Correto' },
+  { cls: 'parcial', rotulo: 'Parcial' },
+  { cls: 'errado', rotulo: 'Incorreto' },
+  { cls: 'errado seta cima', rotulo: 'Mais alto', seta: 'cima' },
+  { cls: 'errado seta baixo', rotulo: 'Mais baixo', seta: 'baixo' },
+  { cls: 'sem', rotulo: 'Sem informação', txt: '?' },
+];
+/** Legenda das cores do Clássico: um quadrado de cada, com o nome embaixo. */
+export function Legenda() {
+  return (
+    <div className="adv-legenda" id="advLegenda" aria-label="Legenda">
+      {LEGENDA.map(l => (
+        <div key={l.rotulo} className="item" data-leg={l.rotulo}>
+          <span className={'quad adv-c ' + l.cls}>{l.seta && <Seta dir={l.seta} />}{l.txt && <span className="adv-v">{l.txt}</span>}</span>
+          <small>{l.rotulo}</small>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Chutes errados (Imagem, Blur e Emoji), o mais novo primeiro; sem personagem = tempo esgotado. */
 export function Errados({ itens }: { itens: { chave: string; it: Entry | null; por?: string }[] }) {
   if (!itens.length) return null;
   return (
@@ -172,7 +191,7 @@ export function LinhaEmoji({ emojis, total }: { emojis: readonly string[]; total
   );
 }
 
-// ---------- imagem com zoom ----------
+// ---------- imagem: recorte (Imagem) e zoom desfocado (Blur) ----------
 
 type Foco = (Ponto & { r: number }) | 'erro';
 /** foco já calculado de cada imagem e semente (não recalcula ao voltar pra mesma imagem) */
@@ -180,11 +199,12 @@ const focos = new Map<string, Foco>();
 const razao = (im: HTMLImageElement) => (im.naturalWidth && im.naturalHeight ? Math.min(2, Math.max(0.5, im.naturalWidth / im.naturalHeight)) : 1);
 
 /**
- * Ponto do zoom e proporção da imagem. Lê os pixels quando o servidor deixa (CORS) pra cair numa parte desenhada;
- * sem isso, o miolo da imagem. Até saber, a imagem não aparece (pra não mostrar a imagem inteira de relance).
+ * Ponto do zoom e proporção da imagem. Lê os pixels quando o servidor deixa (CORS) pra cair numa parte desenhada
+ * (no Imagem, longe do rosto); sem isso, o miolo (Blur) ou embaixo dele (Imagem). Até saber, a imagem não aparece
+ * (pra não mostrar a imagem inteira de relance).
  */
-function useFoco(img: string, semente: number): Foco | undefined {
-  const chave = `${img}|${semente}`;
+function useFoco(img: string, semente: number, modo: ModoImagem): Foco | undefined {
+  const chave = `${modo}|${img}|${semente}`;
   const [, redesenhar] = useState(0);
   useEffect(() => {
     if (focos.has(chave)) return;
@@ -197,40 +217,49 @@ function useFoco(img: string, semente: number): Foco | undefined {
       let amostra: Amostra | null = null;
       try {
         const c = document.createElement('canvas');
-        c.width = 48; c.height = 48;
-        const g = c.getContext('2d');
-        if (g) { g.drawImage(cors, 0, 0, 48, 48); amostra = { data: g.getImageData(0, 0, 48, 48).data, w: 48, h: 48 }; }
+        // 256×256: com resolução pra notar o que é borda nítida e o que é fundo desfocado
+        c.width = 256; c.height = 256;
+        const g = c.getContext('2d', { willReadFrequently: true });
+        if (g) { g.drawImage(cors, 0, 0, 256, 256); amostra = { data: g.getImageData(0, 0, 256, 256).data, w: 256, h: 256 }; }
       } catch { /* canvas sujo: sem pixels */ }
-      pronto({ ...escolherFoco(amostra, semente), r: razao(cors) });
+      pronto({ ...escolherPonto(modo, amostra, semente), r: razao(cors) });
     };
     cors.onerror = () => {
       // sem CORS: carrega do jeito normal só pra saber a proporção
       const simples = new Image();
-      simples.onload = () => pronto({ ...focoNoMiolo(semente), r: razao(simples) });
+      simples.onload = () => pronto({ ...(modo === 'blur' ? focoNoMiolo(semente) : focoForaDoRosto(semente)), r: razao(simples) });
       simples.onerror = () => pronto('erro');
       simples.src = src;
     };
     cors.src = src;
     return () => { vivo = false; };
-  }, [chave, img, semente]);
+  }, [chave, img, semente, modo]);
   return focos.get(chave);
 }
 
-/** Imagem do secreto: zoom e desfoque diminuem a cada chute errado; no fim, inteira. */
-export function QuadroImagem({ img, semente, erros, fim }: { img: string; semente: number; erros: number; fim: boolean }) {
-  const f = useFoco(img, semente);
-  const z = zoom(erros, fim);
+/**
+ * Imagem do secreto. Imagem: recorte nítido que abre a cada chute errado. Blur: zoom e desfoque que diminuem a cada
+ * chute errado. No fim, inteira.
+ */
+export function QuadroImagem({ modo, img, semente, erros, fim }: { modo: ModoImagem; img: string; semente: number; erros: number; fim: boolean }) {
+  const f = useFoco(img, semente, modo);
+  const z = zoom(modo, erros, fim);
   if (f === 'erro') return <div className="adv-quadro vazio" id="advImagem">imagem não carregou</div>;
   const estilo = { ['--r' as string]: f ? f.r : 1 } as CSSProperties;
   return (
-    <div className={'adv-quadro' + (fim ? ' fim' : '')} id="advImagem" data-nivel={z.nivel} style={estilo}>
+    <div className={'adv-quadro ' + modo + (fim ? ' fim' : '')} id="advImagem" data-modo={modo} data-nivel={z.nivel} data-total={z.total} data-escala={z.escala} style={estilo}>
       {f
         ? <img src={resolveImg(img)} alt="" draggable={false} style={{
-          transformOrigin: `${(f.x * 100).toFixed(1)}% ${(f.y * 100).toFixed(1)}%`,
-          transform: `scale(${z.escala})`,
-          filter: z.desfoque ? `blur(${(z.desfoque / z.escala).toFixed(2)}px)` : 'none',
+          // a imagem é desenhada maior (não com transform: scale), pra o navegador usar a resolução dela e o recorte
+          // sair nítido; a posição é a mesma de um zoom com origem no ponto (janela() em imagem.ts)
+          width: `${(z.escala * 100).toFixed(2)}%`,
+          height: `${(z.escala * 100).toFixed(2)}%`,
+          left: `${(-f.x * (z.escala - 1) * 100).toFixed(2)}%`,
+          top: `${(-f.y * (z.escala - 1) * 100).toFixed(2)}%`,
+          filter: z.desfoque ? `blur(${z.desfoque}px)` : 'none',
         }} />
         : <span className="mute">carregando…</span>}
+      {!fim && <span className="adv-nivel" aria-label={`${z.nivel} de ${z.total}`}>{z.nivel}/{z.total}</span>}
     </div>
   );
 }

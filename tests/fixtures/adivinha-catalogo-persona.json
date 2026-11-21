@@ -1,7 +1,7 @@
 {
  "chave": "persona",
  "fonte": "Pacote megaten 2.3.1 (dados de Persona 3, 4 e 5)",
- "geradoEm": "2026-10-26",
+ "geradoEm": "2026-11-21",
  "campos": [
   {
    "id": "jogo",
@@ -30,6 +30,14 @@
   {
    "id": "fraco",
    "rotulo": "Fraqueza"
+  },
+  {
+   "id": "resiste",
+   "rotulo": "Resiste"
+  },
+  {
+   "id": "atributo",
+   "rotulo": "Atributo mais forte"
   }
  ],
  "itens": {
@@ -42,6 +50,15 @@
    "nivel": 21,
    "fraco": [
     "Psy"
+   ],
+   "resiste": [
+    "Dark",
+    "Nuke"
+   ],
+   "atributo": [
+    "Força",
+    "Magia",
+    "Agilidade"
    ]
   },
   "Al Azif": {
@@ -50,7 +67,8 @@
    "dono": "Futaba Sakura",
    "mitologia": "Lovecraftian",
    "estagio": 3,
-   "nivel": 31
+   "nivel": 31,
+   "atributo": "Sorte"
   },
   "Amaterasu": {
    "jogo": "Persona 4",
@@ -61,7 +79,12 @@
    "nivel": 15,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Anat": {
    "jogo": "Persona 5",
@@ -72,6 +95,15 @@
    "nivel": 21,
    "fraco": [
     "Psy"
+   ],
+   "resiste": [
+    "Dark",
+    "Nuke"
+   ],
+   "atributo": [
+    "Força",
+    "Magia",
+    "Agilidade"
    ]
   },
   "Ariadne": {
@@ -83,7 +115,13 @@
    "nivel": 30,
    "fraco": [
     "Psy"
-   ]
+   ],
+   "resiste": [
+    "Gun",
+    "Light",
+    "Nuke"
+   ],
+   "atributo": "Força"
   },
   "Ariadne Picaro": {
    "jogo": "Persona 5",
@@ -93,7 +131,13 @@
    "nivel": 42,
    "fraco": [
     "Psy"
-   ]
+   ],
+   "resiste": [
+    "Gun",
+    "Light",
+    "Nuke"
+   ],
+   "atributo": "Força"
   },
   "Arsène": {
    "jogo": "Persona 5",
@@ -105,7 +149,11 @@
    "fraco": [
     "Ice",
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Artemisia": {
    "jogo": "Persona 3",
@@ -116,7 +164,11 @@
    "nivel": 18,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Astarte": {
    "jogo": "Persona 5",
@@ -127,7 +179,12 @@
    "nivel": 36,
    "fraco": [
     "Nuke"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Psy"
+   ],
+   "atributo": "Força"
   },
   "Asterius": {
    "jogo": "Persona 5",
@@ -138,6 +195,15 @@
    "nivel": 56,
    "fraco": [
     "Ice"
+   ],
+   "resiste": [
+    "Fire",
+    "Psy",
+    "Dark"
+   ],
+   "atributo": [
+    "Força",
+    "Magia"
    ]
   },
   "Asterius Picaro": {
@@ -148,6 +214,15 @@
    "nivel": 62,
    "fraco": [
     "Ice"
+   ],
+   "resiste": [
+    "Fire",
+    "Psy",
+    "Dark"
+   ],
+   "atributo": [
+    "Força",
+    "Magia"
    ]
   },
   "Athena": {
@@ -159,7 +234,12 @@
    "nivel": 46,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": "Força"
   },
   "Athena Picaro": {
    "jogo": "Persona 5",
@@ -169,7 +249,12 @@
    "nivel": 50,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Gun"
+   ],
+   "atributo": "Força"
   },
   "Caesar": {
    "jogo": "Persona 3",
@@ -180,7 +265,11 @@
    "nivel": 12,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Captain Kidd": {
    "jogo": "Persona 5",
@@ -191,6 +280,13 @@
    "nivel": 4,
    "fraco": [
     "Wind"
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade"
    ]
   },
   "Carmen": {
@@ -202,7 +298,11 @@
    "nivel": 5,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Castor": {
    "jogo": "Persona 3",
@@ -210,7 +310,8 @@
    "dono": "Shinjiro Aragaki",
    "mitologia": "Greco-Roman",
    "estagio": 1,
-   "nivel": 37
+   "nivel": 37,
+   "atributo": "Força"
   },
   "Célestine": {
    "jogo": "Persona 5",
@@ -221,7 +322,12 @@
    "nivel": 5,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Cendrillon": {
    "jogo": "Persona 5",
@@ -232,7 +338,11 @@
    "nivel": 75,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Cerberus - P3": {
    "jogo": "Persona 3",
@@ -243,7 +353,12 @@
    "nivel": 34,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Fire",
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Diego": {
    "jogo": "Persona 5",
@@ -254,6 +369,14 @@
    "nivel": 1,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Light",
+    "Wind"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Ella": {
@@ -265,7 +388,12 @@
    "nivel": 75,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Nuke",
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Goemon": {
    "jogo": "Persona 5",
@@ -276,7 +404,11 @@
    "nivel": 15,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Força"
   },
   "Gorokichi": {
    "jogo": "Persona 5",
@@ -287,7 +419,12 @@
    "nivel": 15,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Wind",
+    "Ice"
+   ],
+   "atributo": "Força"
   },
   "Haraedo-no-Okami": {
    "jogo": "Persona 4",
@@ -298,6 +435,15 @@
    "nivel": 4,
    "fraco": [
     "Fire"
+   ],
+   "resiste": [
+    "Light",
+    "Ice"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia"
    ]
   },
   "Hecate": {
@@ -309,7 +455,12 @@
    "nivel": 5,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Hereward": {
    "jogo": "Persona 5",
@@ -320,7 +471,12 @@
    "nivel": 75,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Psy",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Hermes": {
    "jogo": "Persona 3",
@@ -331,7 +487,11 @@
    "nivel": 1,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Himiko": {
    "jogo": "Persona 4",
@@ -339,7 +499,8 @@
    "dono": "Rise Kujikawa",
    "mitologia": "Japanese",
    "estagio": 1,
-   "nivel": 34
+   "nivel": 34,
+   "atributo": "Magia"
   },
   "Io": {
    "jogo": "Persona 3",
@@ -350,6 +511,13 @@
    "nivel": 1,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Wind"
+   ],
+   "atributo": [
+    "Magia",
+    "Sorte"
    ]
   },
   "Isis - P3": {
@@ -361,6 +529,13 @@
    "nivel": 1,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Wind"
+   ],
+   "atributo": [
+    "Vitalidade",
+    "Sorte"
    ]
   },
   "Izanagi": {
@@ -372,6 +547,14 @@
    "nivel": 1,
    "fraco": [
     "Wind"
+   ],
+   "resiste": [
+    "Elec",
+    "Dark"
+   ],
+   "atributo": [
+    "Força",
+    "Agilidade"
    ]
   },
   "Izanagi-no-Okami": {
@@ -380,14 +563,36 @@
    "dono": "P4 Protagonist",
    "mitologia": "Japanese",
    "estagio": 2,
-   "nivel": 80
+   "nivel": 80,
+   "resiste": [
+    "Phys",
+    "Gun",
+    "Fire",
+    "Ice",
+    "Wind",
+    "Elec",
+    "Psy",
+    "Nuke"
+   ],
+   "atributo": "Magia"
   },
   "Izanagi-no-Okami Picaro": {
    "jogo": "Persona 5",
    "arcana": "World",
    "dono": "P4 Protagonist",
    "mitologia": "Japanese",
-   "nivel": 89
+   "nivel": 89,
+   "resiste": [
+    "Phys",
+    "Gun",
+    "Fire",
+    "Ice",
+    "Wind",
+    "Elec",
+    "Psy",
+    "Nuke"
+   ],
+   "atributo": "Magia"
   },
   "Izanagi Picaro": {
    "jogo": "Persona 5",
@@ -397,6 +602,14 @@
    "nivel": 23,
    "fraco": [
     "Wind"
+   ],
+   "resiste": [
+    "Elec",
+    "Dark"
+   ],
+   "atributo": [
+    "Força",
+    "Agilidade"
    ]
   },
   "Jiraiya": {
@@ -408,6 +621,13 @@
    "nivel": 4,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Wind"
+   ],
+   "atributo": [
+    "Força",
+    "Agilidade"
    ]
   },
   "Johanna": {
@@ -419,6 +639,14 @@
    "nivel": 21,
    "fraco": [
     "Psy"
+   ],
+   "resiste": [
+    "Nuke"
+   ],
+   "atributo": [
+    "Força",
+    "Magia",
+    "Agilidade"
    ]
   },
   "Juno": {
@@ -427,7 +655,8 @@
    "dono": "Fuuka Yamagishi",
    "mitologia": "Greco-Roman",
    "estagio": 2,
-   "nivel": 17
+   "nivel": 17,
+   "atributo": "Magia"
   },
   "Kaguya": {
    "jogo": "Persona 5",
@@ -438,7 +667,13 @@
    "nivel": 16,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Wind",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Kaguya Picaro": {
    "jogo": "Persona 5",
@@ -448,7 +683,12 @@
    "nivel": 25,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Kala-Nemi": {
    "jogo": "Persona 3",
@@ -459,7 +699,11 @@
    "nivel": 36,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Kamui": {
    "jogo": "Persona 4",
@@ -470,7 +714,13 @@
    "nivel": 35,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Wind",
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Kamui-Moshiri": {
    "jogo": "Persona 4",
@@ -478,7 +728,13 @@
    "dono": "Teddie",
    "mitologia": "Japanese",
    "estagio": 3,
-   "nivel": 35
+   "nivel": 35,
+   "resiste": [
+    "Wind",
+    "Dark",
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Kamu Susano-o": {
    "jogo": "Persona 5",
@@ -489,7 +745,12 @@
    "nivel": 15,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Wind",
+    "Ice"
+   ],
+   "atributo": "Força"
   },
   "Kanzeon": {
    "jogo": "Persona 4",
@@ -497,7 +758,8 @@
    "dono": "Rise Kujikawa",
    "mitologia": "Buddhist",
    "estagio": 2,
-   "nivel": 34
+   "nivel": 34,
+   "atributo": "Magia"
   },
   "Kintoki-Douji": {
    "jogo": "Persona 4",
@@ -508,7 +770,11 @@
    "nivel": 35,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Konohana Sakuya": {
    "jogo": "Persona 4",
@@ -519,7 +785,11 @@
    "nivel": 15,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Kouzeon": {
    "jogo": "Persona 4",
@@ -527,7 +797,8 @@
    "dono": "Rise Kujikawa",
    "mitologia": "Buddhist",
    "estagio": 3,
-   "nivel": 34
+   "nivel": 34,
+   "atributo": "Magia"
   },
   "Loki - P5": {
    "jogo": "Persona 5",
@@ -538,7 +809,11 @@
    "nivel": 75,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Lucia": {
    "jogo": "Persona 3",
@@ -546,7 +821,8 @@
    "dono": "Fuuka Yamagishi",
    "mitologia": "Historical",
    "estagio": 1,
-   "nivel": 17
+   "nivel": 17,
+   "atributo": "Magia"
   },
   "Lucy": {
    "jogo": "Persona 5",
@@ -557,7 +833,12 @@
    "nivel": 36,
    "fraco": [
     "Nuke"
-   ]
+   ],
+   "resiste": [
+    "Ice",
+    "Psy"
+   ],
+   "atributo": "Força"
   },
   "Magatsu-Izanagi": {
    "jogo": "Persona 5",
@@ -568,7 +849,13 @@
    "nivel": 44,
    "fraco": [
     "Nuke"
-   ]
+   ],
+   "resiste": [
+    "Gun",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Magatsu-Izanagi Picaro": {
    "jogo": "Persona 5",
@@ -578,7 +865,13 @@
    "nivel": 48,
    "fraco": [
     "Nuke"
-   ]
+   ],
+   "resiste": [
+    "Gun",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Mercurius": {
    "jogo": "Persona 5",
@@ -589,6 +882,14 @@
    "nivel": 1,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Light",
+    "Wind"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   },
   "Messiah": {
@@ -600,6 +901,22 @@
    "nivel": 81,
    "fraco": [
     "Dark"
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Wind",
+    "Psy",
+    "Nuke",
+    "Light"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Messiah Picaro": {
@@ -610,6 +927,22 @@
    "nivel": 90,
    "fraco": [
     "Dark"
+   ],
+   "resiste": [
+    "Fire",
+    "Ice",
+    "Elec",
+    "Wind",
+    "Psy",
+    "Nuke",
+    "Light"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Milady": {
@@ -621,7 +954,11 @@
    "nivel": 36,
    "fraco": [
     "Nuke"
-   ]
+   ],
+   "resiste": [
+    "Psy"
+   ],
+   "atributo": "Força"
   },
   "Necronomicon": {
    "jogo": "Persona 5",
@@ -629,7 +966,8 @@
    "dono": "Futaba Sakura",
    "mitologia": "Lovecraftian",
    "estagio": 1,
-   "nivel": 31
+   "nivel": 31,
+   "atributo": "Sorte"
   },
   "Nemesis": {
    "jogo": "Persona 3",
@@ -640,7 +978,11 @@
    "nivel": 36,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Orpheus": {
    "jogo": "Persona 5",
@@ -652,6 +994,16 @@
    "fraco": [
     "Elec",
     "Dark"
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Orpheus F": {
@@ -664,6 +1016,16 @@
    "fraco": [
     "Elec",
     "Dark"
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
    ]
   },
   "Orpheus F Picaro": {
@@ -675,7 +1037,11 @@
    "fraco": [
     "Elec",
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Magia"
   },
   "Orpheus Picaro": {
    "jogo": "Persona 5",
@@ -686,6 +1052,15 @@
    "fraco": [
     "Elec",
     "Dark"
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade"
    ]
   },
   "Orpheus Telos": {
@@ -694,7 +1069,26 @@
    "dono": "P3 Protagonist",
    "mitologia": "Greco-Roman",
    "estagio": 3,
-   "nivel": 90
+   "nivel": 90,
+   "resiste": [
+    "Phys",
+    "Gun",
+    "Fire",
+    "Ice",
+    "Elec",
+    "Wind",
+    "Nuke",
+    "Psy",
+    "Light",
+    "Dark"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia",
+    "Agilidade",
+    "Sorte"
+   ]
   },
   "Palladion": {
    "jogo": "Persona 3",
@@ -705,7 +1099,12 @@
    "nivel": 29,
    "fraco": [
     "Elec"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Dark"
+   ],
+   "atributo": "Vitalidade"
   },
   "Pandora": {
    "jogo": "Persona 5",
@@ -716,7 +1115,11 @@
    "nivel": 1,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Penthesilea": {
    "jogo": "Persona 3",
@@ -727,7 +1130,11 @@
    "nivel": 18,
    "fraco": [
     "Fire"
-   ]
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": "Magia"
   },
   "Pithos": {
    "jogo": "Persona 5",
@@ -738,7 +1145,11 @@
    "nivel": 1,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Agilidade"
   },
   "Polydeuces": {
    "jogo": "Persona 3",
@@ -749,7 +1160,11 @@
    "nivel": 12,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Magia"
   },
   "Prometheus": {
    "jogo": "Persona 5",
@@ -757,7 +1172,8 @@
    "dono": "Futaba Sakura",
    "mitologia": "Greco-Roman",
    "estagio": 2,
-   "nivel": 31
+   "nivel": 31,
+   "atributo": "Sorte"
   },
   "Psyche": {
    "jogo": "Persona 3",
@@ -765,7 +1181,8 @@
    "dono": "Metis",
    "mitologia": "Greco-Roman",
    "estagio": 1,
-   "nivel": 25
+   "nivel": 25,
+   "atributo": "Vitalidade"
   },
   "Raoul": {
    "jogo": "Persona 5",
@@ -776,7 +1193,11 @@
    "nivel": 76,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Robin Hood": {
    "jogo": "Persona 5",
@@ -787,7 +1208,11 @@
    "nivel": 45,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "Rokuten Maoh": {
    "jogo": "Persona 4",
@@ -798,7 +1223,11 @@
    "nivel": 25,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Satanael": {
    "jogo": "Persona 5",
@@ -806,7 +1235,20 @@
    "dono": "P5 Protagonist",
    "mitologia": "Abrahamic",
    "estagio": 2,
-   "nivel": 95
+   "nivel": 95,
+   "resiste": [
+    "Phys",
+    "Gun",
+    "Fire",
+    "Ice",
+    "Elec",
+    "Wind",
+    "Psy",
+    "Nuke",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Seiten Taisei - P5": {
    "jogo": "Persona 5",
@@ -817,6 +1259,14 @@
    "nivel": 4,
    "fraco": [
     "Wind"
+   ],
+   "resiste": [
+    "Fire",
+    "Elec"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade"
    ]
   },
   "Sukuna-Hikona - P4": {
@@ -825,7 +1275,12 @@
    "dono": "Naoto Shirogane",
    "mitologia": "Japanese",
    "estagio": 1,
-   "nivel": 55
+   "nivel": 55,
+   "resiste": [
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Sumeo-Okami": {
    "jogo": "Persona 4",
@@ -836,7 +1291,12 @@
    "nivel": 15,
    "fraco": [
     "Ice"
-   ]
+   ],
+   "resiste": [
+    "Elec",
+    "Fire"
+   ],
+   "atributo": "Magia"
   },
   "Susano-o": {
    "jogo": "Persona 4",
@@ -847,6 +1307,14 @@
    "nivel": 4,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Fire",
+    "Wind"
+   ],
+   "atributo": [
+    "Força",
+    "Agilidade"
    ]
   },
   "Suzuka Gongen": {
@@ -858,6 +1326,15 @@
    "nivel": 4,
    "fraco": [
     "Fire"
+   ],
+   "resiste": [
+    "Light",
+    "Ice"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia"
    ]
   },
   "Takehaya Susano-o": {
@@ -869,6 +1346,14 @@
    "nivel": 4,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Fire",
+    "Wind"
+   ],
+   "atributo": [
+    "Força",
+    "Agilidade"
    ]
   },
   "Takeji Zaiten": {
@@ -880,7 +1365,12 @@
    "nivel": 25,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Take-Mikazuchi": {
    "jogo": "Persona 4",
@@ -891,7 +1381,11 @@
    "nivel": 25,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Elec"
+   ],
+   "atributo": "Força"
   },
   "Thanatos": {
    "jogo": "Persona 5",
@@ -902,7 +1396,12 @@
    "nivel": 65,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Thanatos Picaro": {
    "jogo": "Persona 5",
@@ -912,7 +1411,12 @@
    "nivel": 69,
    "fraco": [
     "Light"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Dark"
+   ],
+   "atributo": "Magia"
   },
   "Tomoe": {
    "jogo": "Persona 4",
@@ -923,6 +1427,14 @@
    "nivel": 4,
    "fraco": [
     "Fire"
+   ],
+   "resiste": [
+    "Ice"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade",
+    "Magia"
    ]
   },
   "Trismegistus": {
@@ -934,7 +1446,11 @@
    "nivel": 1,
    "fraco": [
     "Wind"
-   ]
+   ],
+   "resiste": [
+    "Fire"
+   ],
+   "atributo": "Força"
   },
   "Tsukiyomi": {
    "jogo": "Persona 5",
@@ -945,7 +1461,13 @@
    "nivel": 50,
    "fraco": [
     "Nuke"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Tsukiyomi Picaro": {
    "jogo": "Persona 5",
@@ -955,7 +1477,13 @@
    "nivel": 55,
    "fraco": [
     "Nuke"
-   ]
+   ],
+   "resiste": [
+    "Phys",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Força"
   },
   "Valjean": {
    "jogo": "Persona 5",
@@ -963,7 +1491,8 @@
    "dono": "Zenkichi Hasegawa",
    "mitologia": "Modern Fiction",
    "estagio": 1,
-   "nivel": 40
+   "nivel": 40,
+   "atributo": "Força"
   },
   "Vanadis": {
    "jogo": "Persona 5",
@@ -974,7 +1503,11 @@
    "nivel": 75,
    "fraco": [
     "Dark"
-   ]
+   ],
+   "resiste": [
+    "Light"
+   ],
+   "atributo": "Força"
   },
   "William": {
    "jogo": "Persona 5",
@@ -985,6 +1518,14 @@
    "nivel": 4,
    "fraco": [
     "Wind"
+   ],
+   "resiste": [
+    "Fire",
+    "Elec"
+   ],
+   "atributo": [
+    "Força",
+    "Vitalidade"
    ]
   },
   "Yamato Sumeragi": {
@@ -993,7 +1534,13 @@
    "dono": "Naoto Shirogane",
    "mitologia": "Japanese",
    "estagio": 3,
-   "nivel": 55
+   "nivel": 55,
+   "resiste": [
+    "Fire",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Yamato-Takeru": {
    "jogo": "Persona 4",
@@ -1001,7 +1548,13 @@
    "dono": "Naoto Shirogane",
    "mitologia": "Japanese",
    "estagio": 2,
-   "nivel": 55
+   "nivel": 55,
+   "resiste": [
+    "Fire",
+    "Light",
+    "Dark"
+   ],
+   "atributo": "Agilidade"
   },
   "Zorro": {
    "jogo": "Persona 5",
@@ -1012,6 +1565,13 @@
    "nivel": 1,
    "fraco": [
     "Elec"
+   ],
+   "resiste": [
+    "Wind"
+   ],
+   "atributo": [
+    "Magia",
+    "Agilidade"
    ]
   }
  }

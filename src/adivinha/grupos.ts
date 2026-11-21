@@ -3,12 +3,16 @@
 import type { FranchiseKey } from '../types';
 import type { Info } from '../catalog/model';
 
-export type Submodo = 'classico' | 'imagem' | 'emoji';
+/** Imagem = recorte nítido que abre a cada erro; Blur = zoom desfocado (até 21/11/2026 se chamava Imagem). */
+export type Submodo = 'classico' | 'imagem' | 'blur' | 'emoji';
+/** Os submodos, na ordem do percurso do dia e do "Todos" do livre. */
 export const SUBMODOS: { id: Submodo; rotulo: string }[] = [
   { id: 'classico', rotulo: 'Clássico' },
   { id: 'imagem', rotulo: 'Imagem' },
+  { id: 'blur', rotulo: 'Blur' },
   { id: 'emoji', rotulo: 'Emoji' },
 ];
+export const ETAPAS: readonly Submodo[] = SUBMODOS.map(s => s.id);
 export const rotuloSubmodo = (s: Submodo) => SUBMODOS.find(x => x.id === s)?.rotulo ?? s;
 export const isSubmodo = (x: unknown): x is Submodo => SUBMODOS.some(s => s.id === x);
 
@@ -20,6 +24,13 @@ export interface Coluna {
   tipo: TipoColuna;
   /** valor quando a franquia não tem o campo no catálogo (Persona não tem raça: vira "Persona") */
   fixo?: Record<FranchiseKey, string>;
+  /** campo do catálogo de onde vem o valor, quando não é o `id` (Tipo 1 e Tipo 2 vêm de `tipo`) */
+  campo?: string;
+  /** item da lista do campo (0 = primeiro); sem esse item, `vazio` (o 2º tipo de quem só tem um: "Nenhum") */
+  indice?: number;
+  vazio?: string;
+  /** número com unidade: "0,2 m", "0,8 kg" */
+  unidade?: string;
 }
 export interface Grupo {
   id: string;
@@ -49,19 +60,29 @@ const soEspecie = (info: Info, nome: string) => info.variante === undefined && !
 const semPicaro = (_info: Info, nome: string) => !/ Picaro$/.test(nome);
 
 const t = (id: string, rotulo: string, tipo: TipoColuna = 'texto'): Coluna => ({ id, rotulo, tipo });
+const tipoN = (n: number): Coluna => ({ id: `tipo${n + 1}`, rotulo: `Tipo ${n + 1}`, tipo: 'texto', campo: 'tipo', indice: n, vazio: 'Nenhum' });
 
 export const GRUPOS: Grupo[] = [
-  { id: 'lol', rotulo: 'LoL', frs: ['lol'], colunas: [t('classe', 'Classe'), t('regiao', 'Região'), t('alcance', 'Alcance'), t('dano', 'Dano'), t('recurso', 'Recurso'), t('dificuldade', 'Dificuldade', 'numero')] },
+  {
+    id: 'lol', rotulo: 'LoL', frs: ['lol'],
+    colunas: [t('classe', 'Classe'), t('regiao', 'Região'), t('alcance', 'Alcance'), t('dano', 'Dano'), t('recurso', 'Recurso'), t('dificuldade', 'Dificuldade', 'numero'), t('genero', 'Gênero')],
+  },
   { id: 'overwatch', rotulo: 'Overwatch', frs: ['overwatch'], colunas: [t('funcao', 'Função'), t('subfuncao', 'Subfunção'), t('afiliacao', 'Afiliação'), t('pais', 'País'), t('especie', 'Espécie')] },
-  { id: 'deadlock', rotulo: 'Deadlock', frs: ['deadlock'], colunas: [t('tipo', 'Tipo'), t('arma', 'Arma'), t('disparo', 'Disparo'), t('complexidade', 'Complexidade', 'numero'), t('genero', 'Gênero')] },
+  { id: 'deadlock', rotulo: 'Deadlock', frs: ['deadlock'], colunas: [t('tipo', 'Tipo'), t('arma', 'Arma'), t('disparo', 'Disparo'), t('genero', 'Gênero')] },
   {
     id: 'pokemon', rotulo: 'Pokémon', frs: ['pokemon'], aceita: soEspecie,
-    colunas: [t('tipo', 'Tipo'), t('geracao', 'Geração', 'romano'), t('estagio', 'Estágio', 'numero'), t('cor', 'Cor'), t('forma', 'Forma'), t('ovo', 'Grupo de ovo')],
+    colunas: [
+      tipoN(0), tipoN(1), t('geracao', 'Geração', 'romano'), t('estagio', 'Estágio', 'numero'), t('cor', 'Cor'), t('forma', 'Forma'), t('habitat', 'Habitat'),
+      { ...t('altura', 'Altura', 'numero'), unidade: 'm' }, { ...t('peso', 'Peso', 'numero'), unidade: 'kg' },
+    ],
   },
   { id: 'jojo', rotulo: 'JoJo', frs: ['jojo'], aceita: jojoDoAnime, colunas: [t('parte', 'Parte'), t('alcance', 'Alcance'), t('forma', 'Forma'), t('mecanica', 'Mecânica')] },
   {
     id: 'megaten', rotulo: 'SMT + Persona', frs: ['smt', 'persona'], aceita: semPicaro,
-    colunas: [t('jogo', 'Jogo'), { ...t('raca', 'Raça'), fixo: { persona: 'Persona' } }, t('arcana', 'Arcana'), t('mitologia', 'Mitologia'), t('nivel', 'Nível', 'numero'), t('fraco', 'Fraqueza')],
+    colunas: [
+      { ...t('raca', 'Raça'), fixo: { persona: 'Persona' } }, t('arcana', 'Arcana'), t('mitologia', 'Mitologia'), t('nivel', 'Nível', 'numero'),
+      t('fraco', 'Fraqueza'), t('resiste', 'Resiste'), t('atributo', 'Atributo mais forte'),
+    ],
   },
 ];
 export const GRUPO_PADRAO = 'lol';
