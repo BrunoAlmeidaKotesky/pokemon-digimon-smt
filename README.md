@@ -18,9 +18,9 @@ SMT + Persona (as duas juntas). Cada chute usa o autocompletar (nome e miniatura
 sem repetir) e Enter escolhe.
 
 - **Clássico**: tabela com as informações do catálogo (`public/catalogo/<chave>.json`) de cada chute comparadas com as
-  do secreto: verde = igual, amarelo = parte em comum, vermelho = nada em comum; em número (dificuldade, nível,
+  do secreto: verde = igual, amarelo = parte em comum, vermelho = nada em comum; em número (ano, nível,
   estágio, geração, altura, peso) uma seta grande atrás do valor aponta pra onde está o secreto; `?` = sem informação.
-  A legenda fica embaixo da tabela. Colunas: LoL (classe, região, alcance, dano, recurso, dificuldade, gênero),
+  A legenda fica embaixo da tabela. Colunas: LoL (classe, região, alcance, dano, recurso, ano de lançamento, gênero),
   Overwatch (função, subfunção, afiliação, país, espécie), Deadlock (tipo, arma, disparo, gênero), Pokémon (tipo 1,
   tipo 2 com "Nenhum", geração, estágio, cor, forma, habitat, altura em m, peso em kg), JoJo (parte, alcance, forma,
   mecânica) e SMT + Persona (raça, com "Persona" pras Personas, arcana, mitologia, nível, fraqueza, resiste, atributo
@@ -45,8 +45,9 @@ sem repetir) e Enter escolhe.
   mundo. É genérico: cada franquia pode ter um `recorte` (campo do catálogo e valores) em `src/adivinha/grupos.ts`.
 - Entra quem está na lista do site e no catálogo. Só no Adivinha: Pokémon só com as espécies (sem Mega, Gigantamax nem
   formas, que têm `variante` no catálogo, nem Paradoxos e Unown) e SMT + Persona sem as Picaro.
-- **Online** (aba Online, modo Adivinha, "vez de cada um"): o host escolhe franquia (com o recorte, se ela tiver),
-  submodo (Clássico, Imagem, Blur ou Emoji), rodadas e segundos por vez. O secreto fica só no navegador do host (os outros recebem as pistas; no Imagem
+- **Online** (aba Online, modo Adivinha, "vez de cada um"): o host marca uma ou mais franquias (cada uma com o
+  recorte, se tiver), um ou mais modos (Clássico, Imagem, Blur, Emoji), as rodadas e o tempo por vez, que pode ser sem
+  limite. Com várias franquias, cada rodada sorteia uma; com vários modos, as rodadas alternam entre eles. O secreto fica só no navegador do host (os outros recebem as pistas; no Imagem
   e no Blur a imagem precisa ir, e o endereço dela pode entregar o nome pra quem fuçar a rede). Um chute por vez, na
   ordem da sala; tempo esgotado passa a vez, quem cai é pulado; quem acerta ganha a rodada. Placar no fim.
 - O formato de `pdx-adivinha-v1` ganhou `v: 2`: o salvo antigo é migrado na leitura (o "imagem" de antes, que era o

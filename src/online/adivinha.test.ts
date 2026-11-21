@@ -3,7 +3,7 @@ import { parseCatalogo, type Catalogo } from '../catalog/model';
 import { mulberry32 } from '../core/test-helpers';
 import type { EmojiMapa } from '../adivinha/pool';
 import type { Item } from '../types';
-import { ADV_PADRAO, ADV_RODADAS, advSettings } from './adivinha';
+import { ADV_PADRAO, ADV_RODADAS, ADV_TEMPOS, advSettings, tempoTxt } from './adivinha';
 import { parseClientMsg, parseHostMsg } from './protocol';
 import { createRoom, DEFAULT_CONFIG, reduce } from './room';
 import type { Action, AdivinhaGame, AdivinhaView, Ctx, OnlineConfig, RoomState } from './types';
@@ -12,14 +12,14 @@ import { viewFor } from './view';
 // ---------- fixtures ----------
 
 const CAMPEOES: Record<string, Record<string, unknown>> = {
-  Ahri: { classe: ['Mago', 'Assassino'], regiao: 'Ionia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', dificuldade: 5, genero: 'Feminino' },
-  Akali: { classe: 'Assassino', regiao: 'Ionia', alcance: 'Corpo a corpo', dano: 'Mágico', recurso: 'Energia', dificuldade: 7, genero: 'Feminino' },
-  Jinx: { classe: 'Atirador', regiao: 'Zaun', alcance: 'À distância', dano: 'Físico', recurso: 'Mana', dificuldade: 6 },
-  Garen: { classe: ['Lutador', 'Tanque'], regiao: 'Demacia', alcance: 'Corpo a corpo', dano: 'Físico', recurso: 'Nenhum', dificuldade: 5 },
-  Lux: { classe: ['Mago', 'Suporte'], regiao: 'Demacia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', dificuldade: 5 },
+  Ahri: { classe: ['Mago', 'Assassino'], regiao: 'Ionia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', ano: 2015, genero: 'Feminino' },
+  Akali: { classe: 'Assassino', regiao: 'Ionia', alcance: 'Corpo a corpo', dano: 'Mágico', recurso: 'Energia', ano: 2017, genero: 'Feminino' },
+  Jinx: { classe: 'Atirador', regiao: 'Zaun', alcance: 'À distância', dano: 'Físico', recurso: 'Mana', ano: 2016 },
+  Garen: { classe: ['Lutador', 'Tanque'], regiao: 'Demacia', alcance: 'Corpo a corpo', dano: 'Físico', recurso: 'Nenhum', ano: 2015 },
+  Lux: { classe: ['Mago', 'Suporte'], regiao: 'Demacia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', ano: 2015 },
 };
 const CAT: Catalogo = parseCatalogo({
-  campos: ['classe', 'regiao', 'alcance', 'dano', 'recurso', 'dificuldade', 'genero'].map(id => ({ id })),
+  campos: ['classe', 'regiao', 'alcance', 'dano', 'recurso', 'ano', 'genero'].map(id => ({ id })),
   itens: CAMPEOES,
 }) as Catalogo;
 const NOMES = Object.keys(CAMPEOES);
@@ -55,10 +55,12 @@ beforeEach(() => {
 describe('configuração', () => {
   it('padrão e limites', () => {
     expect(DEFAULT_CONFIG.adivinha).toEqual({ grupo: 'lol', submodo: 'classico', rodadas: 5, tempo: 40 });
-    expect(advSettings({ grupo: 'digimon', submodo: 'falas' as never, rodadas: 99, tempo: 7 })).toEqual({ grupo: 'lol', submodo: 'classico', rodadas: ADV_RODADAS.max, tempo: 40 });
-    expect(advSettings({ grupo: 'megaten', submodo: 'emoji', rodadas: 0.4, tempo: 15 })).toEqual({ grupo: 'megaten', submodo: 'emoji', rodadas: 1, tempo: 15 });
+    expect(advSettings({ grupo: 'digimon', submodo: 'falas' as never, rodadas: 99, tempo: 7 })).toEqual({
+      grupo: 'lol', submodo: 'classico', rodadas: ADV_RODADAS.max, tempo: 40, grupos: ['lol'], submodos: ['classico'], recortes: {},
+    });
+    expect(advSettings({ grupo: 'megaten', submodo: 'emoji', rodadas: 0.4, tempo: 15 })).toMatchObject({ grupo: 'megaten', submodo: 'emoji', rodadas: 1, tempo: 15 });
     expect(advSettings({ submodo: 'blur' }).submodo).toBe('blur');
-    expect(advSettings(null)).toEqual(ADV_PADRAO);
+    expect(advSettings(null)).toMatchObject(ADV_PADRAO);
   });
 });
 
@@ -162,7 +164,7 @@ describe('vez de cada um', () => {
     s = chute(s, 'h', 'Akali');
     expect(G(s).chutes[0]!.pistas).toEqual([
       { t: 'Assassino', c: 'parcial' }, { t: 'Ionia', c: 'certo' }, { t: 'Corpo a corpo', c: 'errado' },
-      { t: 'Mágico', c: 'certo' }, { t: 'Energia', c: 'errado' }, { t: '7', c: 'errado', s: 'baixo' }, { t: 'Feminino', c: 'certo' },
+      { t: 'Mágico', c: 'certo' }, { t: 'Energia', c: 'errado' }, { t: '2017', c: 'errado', s: 'baixo' }, { t: 'Feminino', c: 'certo' },
     ]);
     expect(V(s, 'ana').chutes[0]!.pistas).toEqual(G(s).chutes[0]!.pistas);
   });
@@ -357,5 +359,102 @@ describe('recorte da sala (gerações do Pokémon)', () => {
     expect(parseHostMsg({ t: 'state', view: semCampo })).not.toBeNull();
     expect(parseHostMsg({ t: 'state', view: { ...v, game: { ...(v.game as AdivinhaView), recorte: [1] } } })).toBeNull();
     expect(parseHostMsg({ t: 'state', view: { ...v, cfg: { ...v.cfg, adivinha: { ...v.cfg.adivinha, recorte: 'I' } } } })).toBeNull();
+  });
+});
+
+describe('várias franquias, vários modos e tempo sem limite', () => {
+  const POKES: Record<string, Record<string, unknown>> = {
+    Bulbasaur: { tipo: ['Grass', 'Poison'], geracao: 'I' }, Charmander: { tipo: ['Fire'], geracao: 'I' },
+    Chikorita: { tipo: ['Grass'], geracao: 'II' }, Cyndaquil: { tipo: ['Fire'], geracao: 'II' },
+  };
+  const PCAT = parseCatalogo({ campos: [{ id: 'tipo' }, { id: 'geracao' }], itens: POKES }) as Catalogo;
+  const mctx = (over: Partial<Ctx> = {}) => ctx({
+    lists: { ...LISTS, pokemon: Object.keys(POKES).map(n => ({ name: n, img: `p/${n}.png` })) },
+    adivinha: { catalogos: { lol: CAT, pokemon: PCAT }, emojis: { lol: EMOJIS } }, ...over,
+  });
+  const sala = (adv: Partial<OnlineConfig['adivinha']>) => {
+    let s = createRoom('MULT', { id: 'h', name: 'Host' }, { ...DEFAULT_CONFIG, mode: 'adivinha', adivinha: { ...ADV_PADRAO, ...adv } });
+    s = R(s, { type: 'join', id: 'ana', name: 'Ana' }, mctx());
+    return R(s, { type: 'start' }, mctx());
+  };
+  /** joga até o fim acertando sempre; devolve [franquia, modo, secreto] de cada rodada */
+  const jogar = (s0: RoomState) => {
+    let s = s0;
+    const rodadas: [string, string, string][] = [];
+    for (;;) {
+      const g = G(s);
+      rodadas.push([g.grupo, g.submodo, g.secreto.name]);
+      s = R(s, { type: 'chute', id: g.vez as string, rodada: g.rodada, nome: g.secreto.name }, mctx());
+      s = R(s, { type: 'next' }, mctx());
+      if (G(s).passo === 'fim') return rodadas;
+    }
+  };
+
+  it('configuração: listas na ordem da tela, sem repetir nem inventar; a primeira vira grupo e submodo', () => {
+    const a = advSettings({ grupos: ['pokemon', 'lol', 'xyz', 'lol'], submodos: ['emoji', 'classico', 'falas' as never], recortes: { pokemon: ['II', 'I'], lol: ['I'] } });
+    expect(a.grupos).toEqual(['lol', 'pokemon']);
+    expect(a.submodos).toEqual(['classico', 'emoji']);
+    expect(a).toMatchObject({ grupo: 'lol', submodo: 'classico', recortes: { pokemon: ['I', 'II'] } });
+    expect(a).not.toHaveProperty('recorte');
+    // host antigo: só um de cada, e o recorte solto vale pra franquia dele
+    expect(advSettings({ grupo: 'pokemon', submodo: 'blur', recorte: ['III'] })).toMatchObject({ grupos: ['pokemon'], submodos: ['blur'], recortes: { pokemon: ['III'] }, recorte: ['III'] });
+    expect(advSettings({ grupos: [], submodos: [] })).toMatchObject({ grupos: ['lol'], submodos: ['classico'] });
+  });
+
+  it('vários modos: as rodadas alternam na ordem; várias franquias: cada rodada sorteia uma, e o chute vale na franquia da rodada', () => {
+    const rodadas = jogar(sala({ grupos: ['lol', 'pokemon'], submodos: ['classico', 'imagem'], rodadas: 8 }));
+    expect(rodadas.map(r => r[1])).toEqual(['classico', 'imagem', 'classico', 'imagem', 'classico', 'imagem', 'classico', 'imagem']);
+    expect(new Set(rodadas.map(r => r[0]))).toEqual(new Set(['lol', 'pokemon']));
+    for (const [grupo, , secreto] of rodadas) expect(grupo === 'pokemon' ? secreto in POKES : NOMES.includes(secreto), secreto).toBe(true);
+    expect(new Set(rodadas.map(r => r[2])).size).toBe(8);
+  });
+
+  it('chute de outra franquia é recusado, e a visão diz a franquia e o modo da rodada mais tudo o que a sala escolheu', () => {
+    let s = sala({ grupos: ['lol', 'pokemon'], rodadas: 6 });
+    while (G(s).grupo !== 'pokemon') {
+      s = R(s, { type: 'chute', id: G(s).vez as string, rodada: G(s).rodada, nome: G(s).secreto.name }, mctx());
+      s = R(s, { type: 'next' }, mctx());
+    }
+    const g = G(s);
+    expect(R(s, { type: 'chute', id: g.vez as string, rodada: g.rodada, nome: 'Ahri' }, mctx())).toBe(s);
+    const v = V(s, 'ana');
+    expect(v).toMatchObject({ grupo: 'pokemon', submodo: 'classico', grupos: ['lol', 'pokemon'], submodos: ['classico'] });
+    expect(parseHostMsg({ t: 'state', view: viewFor(s, 'ana', now) })).not.toBeNull();
+  });
+
+  it('recorte por franquia: Pokémon só com a geração II, LoL inteiro', () => {
+    const rodadas = jogar(sala({ grupos: ['lol', 'pokemon'], recortes: { pokemon: ['II'] }, rodadas: 7 }));
+    const pokes = rodadas.filter(r => r[0] === 'pokemon').map(r => r[2]);
+    expect(pokes.length).toBeGreaterThan(0);
+    for (const n of pokes) expect(POKES[n]!.geracao, n).toBe('II');
+  });
+
+  it('modo que nenhuma franquia tem, ou franquia sem personagem em nenhum modo: aviso e continua no lobby', () => {
+    let s = createRoom('MULT', { id: 'h', name: 'Host' }, { ...DEFAULT_CONFIG, mode: 'adivinha', adivinha: { ...ADV_PADRAO, grupos: ['pokemon'], submodos: ['classico', 'emoji'] } });
+    s = R(s, { type: 'start' }, mctx());
+    expect(s.phase).toBe('lobby');
+    expect(s.notice).toBe('Nenhuma franquia escolhida tem personagens pro modo Emoji (faltam os emojis): desligue esse modo.');
+    // só Emoji, e o Pokémon não tem emojis: ele nunca seria sorteado, então avisa em vez de começar
+    const so = sala({ grupos: ['lol', 'pokemon'], submodos: ['emoji'], rodadas: 2 });
+    expect(so.phase).toBe('lobby');
+    expect(so.notice).toBe('Nenhum personagem de Pokémon pra adivinhar: ligue mais opções.');
+    // com o Clássico junto, o Pokémon entra nas rodadas do Clássico e o Emoji fica só com o LoL
+    const rodadas = jogar(sala({ grupos: ['lol', 'pokemon'], submodos: ['classico', 'emoji'], rodadas: 6 }));
+    for (const [grupo, modo] of rodadas) if (modo === 'emoji') expect(grupo).toBe('lol');
+    expect(rodadas.map(r => r[1])).toEqual(['classico', 'emoji', 'classico', 'emoji', 'classico', 'emoji']);
+  });
+
+  it('tempo sem limite: a vez não acaba pelo relógio, só com chute', () => {
+    expect(ADV_TEMPOS).toContain(0);
+    expect([tempoTxt(0), tempoTxt(40)]).toEqual(['Sem limite', '40 s']);
+    expect(advSettings({ tempo: 0 }).tempo).toBe(0);
+    let s = started(['Ana'], { tempo: 0 });
+    expect(G(s)).toMatchObject({ tempo: 0, prazo: 0, vez: 'h' });
+    expect(V(s, 'ana')).toMatchObject({ tempo: 0, restante: 0 });
+    // uma hora depois, o relógio do host não passa a vez
+    expect(R(s, { type: 'tempo' }, ctx({ now: now + 3_600_000 }))).toBe(s);
+    s = chute(s, 'h', errado(s));
+    expect(G(s)).toMatchObject({ vez: 'ana', prazo: 0 });
+    expect(parseHostMsg({ t: 'state', view: viewFor(s, 'ana', now) })).not.toBeNull();
   });
 });

@@ -76,7 +76,7 @@ const tipoN = (n: number): Coluna => ({ id: `tipo${n + 1}`, rotulo: `Tipo ${n + 
 export const GRUPOS: Grupo[] = [
   {
     id: 'lol', rotulo: 'LoL', frs: ['lol'],
-    colunas: [t('classe', 'Classe'), t('regiao', 'Região'), t('alcance', 'Alcance'), t('dano', 'Dano'), t('recurso', 'Recurso'), t('dificuldade', 'Dificuldade', 'numero'), t('genero', 'Gênero')],
+    colunas: [t('classe', 'Classe'), t('regiao', 'Região'), t('alcance', 'Alcance'), t('dano', 'Dano'), t('recurso', 'Recurso'), t('ano', 'Lançamento', 'numero'), t('genero', 'Gênero')],
   },
   { id: 'overwatch', rotulo: 'Overwatch', frs: ['overwatch'], colunas: [t('funcao', 'Função'), t('subfuncao', 'Subfunção'), t('afiliacao', 'Afiliação'), t('pais', 'País'), t('especie', 'Espécie')] },
   { id: 'deadlock', rotulo: 'Deadlock', frs: ['deadlock'], colunas: [t('tipo', 'Tipo'), t('arma', 'Arma'), t('disparo', 'Disparo'), t('genero', 'Gênero')] },

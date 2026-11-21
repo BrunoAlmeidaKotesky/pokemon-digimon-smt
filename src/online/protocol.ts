@@ -87,7 +87,11 @@ function isCfg(c: unknown): boolean {
     // host de versão anterior ao Ranking não manda `rank` (nem, antes do Adivinha, `adivinha`)
     (c.rank === undefined || (isRec(c.rank) && isArr(c.rank.frs, isText) && isNat(c.rank.size) && isBool(c.rank.mix))) &&
     (c.adivinha === undefined || (isRec(c.adivinha) && isText(c.adivinha.grupo) && isText(c.adivinha.submodo) &&
-      isNat(c.adivinha.rodadas) && isNat(c.adivinha.tempo) && (c.adivinha.recorte === undefined || isArr(c.adivinha.recorte, isText))));
+      isNat(c.adivinha.rodadas) && isNat(c.adivinha.tempo) && (c.adivinha.recorte === undefined || isArr(c.adivinha.recorte, isText)) &&
+      // várias franquias e vários modos: host de versão anterior não manda
+      (c.adivinha.grupos === undefined || isArr(c.adivinha.grupos, isText)) &&
+      (c.adivinha.submodos === undefined || isArr(c.adivinha.submodos, isText)) &&
+      (c.adivinha.recortes === undefined || (isRec(c.adivinha.recortes) && Object.values(c.adivinha.recortes).every(r => isArr(r, isText))))));
 }
 
 /** Pedido de mudança nas franquias customizadas (o host ainda confere tudo de novo ao aplicar). */
@@ -137,6 +141,7 @@ function isGame(g: unknown): boolean {
         isArr(g.ordem, isText) && (g.vez === null || isText(g.vez)) && isNum(g.restante) && isArr(g.chutes, isChute) &&
         isNat(g.erros) && isArr(g.emoji, isText) && isNat(g.totalEmoji) && isText(g.imagem) && isNum(g.foco) &&
         (g.recorte === undefined || g.recorte === null || isArr(g.recorte, isText)) &&
+        (g.grupos === undefined || isArr(g.grupos, isText)) && (g.submodos === undefined || isArr(g.submodos, isText)) &&
         isEntryOrNull(g.secreto) && (g.vencedor === null || isText(g.vencedor)) &&
         isArr(g.placar, p => isRec(p) && isText(p.id) && isText(p.nome) && isNat(p.pontos)) &&
         isArr(g.historico, h => isRec(h) && isNat(h.rodada) && isEntry(h.secreto) && (h.vencedor === null || isText(h.vencedor)) &&

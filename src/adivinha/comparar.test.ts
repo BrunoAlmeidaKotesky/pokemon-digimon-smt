@@ -58,16 +58,16 @@ describe('comparar', () => {
 
 describe('pistas por grupo', () => {
   it('LoL: as sete colunas, na ordem (com gênero)', () => {
-    const ahri = { fr: 'lol', info: { classe: ['Mago', 'Assassino'], regiao: 'Ionia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', dificuldade: 5, genero: 'Feminino' } };
-    const akali = { fr: 'lol', info: { classe: 'Assassino', regiao: 'Ionia', alcance: 'Corpo a corpo', dano: 'Mágico', recurso: 'Energia', dificuldade: 7, genero: 'Feminino' } };
-    expect(G('lol').colunas.map(c => c.id)).toEqual(['classe', 'regiao', 'alcance', 'dano', 'recurso', 'dificuldade', 'genero']);
+    const ahri = { fr: 'lol', info: { classe: ['Mago', 'Assassino'], regiao: 'Ionia', alcance: 'À distância', dano: 'Mágico', recurso: 'Mana', ano: 2011, genero: 'Feminino' } };
+    const akali = { fr: 'lol', info: { classe: 'Assassino', regiao: 'Ionia', alcance: 'Corpo a corpo', dano: 'Mágico', recurso: 'Energia', ano: 2010, genero: 'Feminino' } };
+    expect(G('lol').colunas.map(c => c.id)).toEqual(['classe', 'regiao', 'alcance', 'dano', 'recurso', 'ano', 'genero']);
     expect(pistas(G('lol'), ahri, akali)).toEqual([
       { t: 'Mago, Assassino', c: 'parcial' },
       { t: 'Ionia', c: 'certo' },
       { t: 'À distância', c: 'errado' },
       { t: 'Mágico', c: 'certo' },
       { t: 'Mana', c: 'errado' },
-      { t: '5', c: 'errado', s: 'cima' },
+      { t: '2011', c: 'errado', s: 'baixo' },
       { t: 'Feminino', c: 'certo' },
     ]);
   });

@@ -204,7 +204,7 @@ export async function hostRoom(name: string) {
   }, T.ping);
   advTimer = setInterval(() => {
     const g = room?.game;
-    if (g?.mode === 'adivinha' && g.passo === 'chute' && g.vez && Date.now() >= g.prazo) dispatch({ type: 'tempo' });
+    if (g?.mode === 'adivinha' && g.passo === 'chute' && g.vez && g.tempo > 0 && Date.now() >= g.prazo) dispatch({ type: 'tempo' });
   }, 250);
   broadcast();
 }
