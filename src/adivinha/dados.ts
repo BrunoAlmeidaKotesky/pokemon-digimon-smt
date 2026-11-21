@@ -92,12 +92,12 @@ const pools = new Map<string, { deps: unknown[]; pool: AdvItem[] }>();
  * O pool do grupo e submodo com o que já carregou. Fica guardado enquanto listas, catálogos e emojis forem os
  * mesmos objetos: a tela recebe sempre a mesma lista (bom pra useMemo) e não refaz a conta a cada desenho.
  */
-export function poolAtual(g: Grupo, sub: Submodo, listas: Fontes['listas']): AdvItem[] {
+export function poolAtual(g: Grupo, sub: Submodo, listas: Fontes['listas'], recorte: readonly string[] | null = null): AdvItem[] {
   const e = estadoGrupo(g);
   const deps = g.frs.flatMap(fr => [listas[fr], e.catalogos[fr], e.emojis[fr]]);
-  const chave = `${g.id}:${sub}`, c = pools.get(chave);
+  const chave = `${g.id}:${sub}:${recorte?.join('|') ?? '*'}`, c = pools.get(chave);
   if (c && c.deps.length === deps.length && c.deps.every((x, i) => x === deps[i])) return c.pool;
-  const pool = montarPool(g, sub, { listas, catalogos: e.catalogos, emojis: e.emojis });
+  const pool = montarPool(g, sub, { listas, catalogos: e.catalogos, emojis: e.emojis }, recorte);
   pools.set(chave, { deps, pool });
   return pool;
 }

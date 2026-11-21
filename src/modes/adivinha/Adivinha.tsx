@@ -11,10 +11,10 @@ import { etapaSeguinte } from '../../adivinha/percurso';
 import { estadoGrupo, pedirEmojis, pedirGrupo, poolAtual, useDadosAdivinha } from '../../adivinha/dados';
 import {
   alternarEtapa, chutar, comDados, desistir, escolher, franquiaSeguinte, irParaFranquia, percursoDe, proximaEtapa, proximo,
-  recomecarCiclo, salvoAtual, sessaoLivre, tela, useSolo, verEtapa, type Pools, type Tela,
+  mudarRecorte, recomecarCiclo, recorteDe, salvoAtual, sessaoLivre, tela, useSolo, verEtapa, type Pools, type Tela,
 } from '../../adivinha/solo';
 import type { AdvItem } from '../../adivinha/pool';
-import { CampoChute, EscolhaGrupo, Errados, Legenda, LinhaEmoji, QuadroImagem, Revelado, TabelaClassico } from './comum';
+import { CampoChute, EscolhaGrupo, EscolhaRecorte, Errados, Legenda, LinhaEmoji, QuadroImagem, Revelado, TabelaClassico } from './comum';
 import { useAgora, useHoje } from './relogio';
 
 const RODADAS: { value: Rodada; label: string }[] = [{ value: 'dia', label: 'Desafio do dia' }, { value: 'livre', label: 'Livre' }];
@@ -50,7 +50,13 @@ function Conteudo() {
   const g = grupoDe(s.grupo) ?? (GRUPOS[0] as Grupo);
   useEffect(() => { void pedirGrupo(g); }, [g]);
   const est = estadoGrupo(g);
-  const pools: Pools = { classico: poolAtual(g, 'classico', app.lists), imagem: poolAtual(g, 'imagem', app.lists), blur: poolAtual(g, 'blur', app.lists), emoji: poolAtual(g, 'emoji', app.lists) };
+  // o recorte (gerações, partes) vale só no livre: o dia é o mesmo personagem pra todo mundo
+  const livre = s.rodada === 'livre';
+  const recorte = livre ? recorteDe(g.id) : null;
+  const pools: Pools = {
+    classico: poolAtual(g, 'classico', app.lists, recorte), imagem: poolAtual(g, 'imagem', app.lists, recorte),
+    blur: poolAtual(g, 'blur', app.lists, recorte), emoji: poolAtual(g, 'emoji', app.lists, recorte),
+  };
   const temLista = g.frs.some(fr => app.lists[fr]?.length);
   const percurso = s.rodada === 'dia' || s.submodo === 'todos';
   // espera tudo do grupo chegar: com metade da lista, o "do dia" sairia diferente do de todo mundo
@@ -93,6 +99,11 @@ function Conteudo() {
             Fora do {s.rodada === 'dia' ? 'percurso' : 'ciclo'}: {[...desligadas.map(e => `${rotuloSubmodo(e)} (desligado)`), ...semDados.map(e => `${rotuloSubmodo(e)} (sem ${e === 'emoji' ? 'emojis' : 'dados'} de ${g.rotulo})`)].join(', ')}.
             {s.rodada === 'dia' && ' O dia conta quando as etapas ligadas terminam.'}
           </p>
+        )}
+        {g.recorte && (
+          <EscolhaRecorte id="advRecorte" grupo={g} ligados={recorteDe(g.id)} disabled={!livre} onMudar={r => mudarRecorte(g.id, r)}
+            contagem={livre && pronto ? pools[t?.sub ?? 'classico'].length : undefined}
+            nota={livre ? undefined : `No desafio do dia entra ${g.rotulo} inteiro, porque é o mesmo personagem pra todo mundo. A escolha de ${g.recorte.rotulo.toLowerCase()} vale no Livre.`} />
         )}
         {t && <p className="adv-dica mute">{DICA[t.sub]}</p>}
       </div>

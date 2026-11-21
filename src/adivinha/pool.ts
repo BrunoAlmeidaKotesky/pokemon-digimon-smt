@@ -4,6 +4,7 @@ import type { Catalogo, Info } from '../catalog/model';
 import { normalizar } from '../catalog/model';
 import type { Entry, Item } from '../types';
 import type { Grupo, Submodo } from './grupos';
+import { noRecorte } from './recorte';
 
 /** Emojis de cada personagem, do mais vago ao mais revelador. */
 export type EmojiMapa = Map<string, string[]>;
@@ -27,9 +28,9 @@ export const porNome = (a: { name: string }, b: { name: string }) => (a.name < b
 /**
  * Personagens do grupo no submodo, ordenados por nome: quem está na lista do site, tem entrada no catálogo e passa
  * no filtro do grupo (Pokémon: só espécies, sem Paradoxos nem Unown; JoJo: só Stands do anime e do mangá; Persona: sem Picaro); no Emoji, só quem tem emoji.
- * Franquia sem lista ou sem catálogo fica de fora.
+ * Franquia sem lista ou sem catálogo fica de fora. `recorte` (livre e online): só quem tem um dos valores ligados.
  */
-export function montarPool(g: Grupo, sub: Submodo, f: Fontes): AdvItem[] {
+export function montarPool(g: Grupo, sub: Submodo, f: Fontes, recorte: readonly string[] | null = null): AdvItem[] {
   const out = new Map<string, AdvItem>();
   for (const fr of g.frs) {
     const lista = f.listas[fr], cat = f.catalogos[fr];
@@ -40,6 +41,7 @@ export function montarPool(g: Grupo, sub: Submodo, f: Fontes): AdvItem[] {
       const info = cat.itens.get(it.name);
       if (!info || out.has(it.name)) continue;
       if (g.aceita && !g.aceita(info, it.name)) continue;
+      if (!noRecorte(g, info, recorte)) continue;
       const emoji = emo?.get(it.name) ?? null;
       if (sub === 'emoji' && !emoji?.length) continue;
       out.set(it.name, { name: it.name, img: it.img, fr, info, emoji });

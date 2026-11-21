@@ -7,6 +7,7 @@
 // percurso começa com a da etapa jogada por último, pra ninguém perder a sequência de dias.
 import { ETAPAS, GRUPOS, isSubmodo, type Submodo } from './grupos';
 import { diaAnterior } from './dia';
+import { limparRecorte } from './recorte';
 
 export const ADIVINHA_KEY = 'pdx-adivinha-v1';
 export const VERSAO_SALVO = 2;
@@ -41,11 +42,13 @@ export interface Salvo {
   cfg: { grupo: string; submodo: Escolha; rodada: Rodada } | null;
   /** etapas ligadas no percurso do dia e no "Todos" (pelo menos uma; padrão: todas) */
   etapas: Submodo[];
+  /** recorte do livre por franquia (valores ligados; franquia ausente = todos) */
+  recortes: Record<string, string[]>;
 }
 
 export const chaveDe = (grupo: string, sub: Submodo) => `${grupo}:${sub}`;
 export const chavePercurso = (grupo: string) => `${grupo}:percurso`;
-export const vazio = (): Salvo => ({ v: VERSAO_SALVO, dia: {}, stats: {}, cfg: null, etapas: [...ETAPAS] });
+export const vazio = (): Salvo => ({ v: VERSAO_SALVO, dia: {}, stats: {}, cfg: null, etapas: [...ETAPAS], recortes: {} });
 const zero = (): Estat => ({ jogos: 0, chutes: 0, seq: 0, melhor: 0, ultimo: '' });
 
 const isObj = (x: unknown): x is Record<string, unknown> => typeof x === 'object' && x !== null && !Array.isArray(x);
@@ -88,6 +91,13 @@ export function lerSalvo(raw: unknown): Salvo {
   }
   const ligadas = Array.isArray(raw.etapas) ? ETAPAS.filter(e => (raw.etapas as unknown[]).includes(e)) : [];
   if (ligadas.length) s.etapas = ligadas;
+  // recorte do livre (sem o campo, ou inválido = todos)
+  if (isObj(raw.recortes)) {
+    for (const g of GRUPOS) {
+      const r = limparRecorte(g, raw.recortes[g.id]);
+      if (r) s.recortes[g.id] = r;
+    }
+  }
   return s;
 }
 

@@ -107,3 +107,15 @@ describe('formato 2 (Imagem virou Blur, percurso do dia)', () => {
     expect(s.stats[chavePercurso('jojo')]).toMatchObject({ seq: 1, melhor: 2, jogos: 3 });
   });
 });
+
+describe('recorte do livre no salvo', () => {
+  it('salvo sem o campo (de quem já jogou) = todos; inválido é descartado; o resto continua', () => {
+    const antigo = lerSalvo({ v: 2, dia: { 'lol:classico': { data: '2026-11-21', alvo: 'Ahri', chutes: ['Ahri'], acertou: true } }, stats: {}, cfg: null, etapas: ['classico'] });
+    expect(antigo.recortes).toEqual({});
+    expect(antigo.etapas).toEqual(['classico']);
+    expect(Object.keys(antigo.dia)).toEqual(['lol:classico']);
+    const s = lerSalvo({ v: 2, recortes: { pokemon: ['III', 'I', 'X'], jojo: [], lol: ['I'], megaten: 'x', zelda: ['I'] } });
+    expect(s.recortes).toEqual({ pokemon: ['I', 'III'] });
+    expect(lerSalvo({ v: 2, recortes: ['I'] }).recortes).toEqual({});
+  });
+});

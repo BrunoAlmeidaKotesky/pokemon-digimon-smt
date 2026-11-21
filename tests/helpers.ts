@@ -255,3 +255,18 @@ export async function lerStorage<T = unknown>(page: Page, key: string): Promise<
 }
 
 export interface Stats { w: Record<string, number>; n: Record<string, number>; hist: string[]; best: { name: string; fr: string; streak: number } | null }
+
+/**
+ * A lista de Pokémon das fixtures só tem a geração I: aqui ela vem com dez espécies das gerações I a III (e o catálogo
+ * delas, real). Chame depois de mockApis (a rota registrada por último vale primeiro).
+ */
+export async function pokemonDeVariasGeracoes(alvo: Page | BrowserContext) {
+  const ESPECIES: [string, number][] = [['bulbasaur', 1], ['charmander', 4], ['squirtle', 7], ['pikachu', 25], ['chikorita', 152], ['cyndaquil', 155], ['totodile', 158], ['togepi', 175], ['treecko', 252], ['torchic', 255]];
+  const real = JSON.parse(fs.readFileSync(new URL('../public/catalogo/pokemon.json', import.meta.url), 'utf8')) as { campos: unknown; itens: Record<string, unknown> };
+  const nomes = ESPECIES.map(([n]) => n[0]!.toUpperCase() + n.slice(1));
+  const corpo = (b: unknown) => ({ status: 200, contentType: 'application/json', body: JSON.stringify(b), headers: { 'access-control-allow-origin': '*' } });
+  await alvo.route(u => u.hostname === 'pokeapi.co' && u.pathname.startsWith('/api/v2/pokemon-species'), r =>
+    r.fulfill(corpo({ count: ESPECIES.length, next: null, previous: null, results: ESPECIES.map(([name, id]) => ({ name, url: `https://pokeapi.co/api/v2/pokemon-species/${id}/` })) })));
+  await alvo.route(u => u.pathname.endsWith('/catalogo/pokemon.json'), r =>
+    r.fulfill(corpo({ ...real, itens: Object.fromEntries(nomes.map(n => [n, real.itens[n]])) })));
+}

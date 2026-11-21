@@ -6,6 +6,7 @@
 import { pistas } from '../adivinha/comparar';
 import { grupoDe, isSubmodo, type Submodo } from '../adivinha/grupos';
 import { acharNoPool, montarPool, type AdvItem } from '../adivinha/pool';
+import { limparRecorte, textoRecorte } from '../adivinha/recorte';
 import type { Entry } from '../types';
 import type { Action, AdivinhaGame, Ctx, OnlineConfig, RoomState } from './types';
 
@@ -20,8 +21,12 @@ type ChuteAction = Extract<Action, { type: 'chute' }>;
 /** Configuração dentro dos limites (o que não servir vira o padrão). */
 export function advSettings(c: Partial<OnlineConfig['adivinha']> | null | undefined): OnlineConfig['adivinha'] {
   const r = c?.rodadas;
+  const grupo = typeof c?.grupo === 'string' && grupoDe(c.grupo) ? c.grupo : ADV_PADRAO.grupo;
+  // recorte só vale se for da franquia escolhida; sem o campo (ou inválido) = todos
+  const recorte = limparRecorte(grupoDe(grupo), c?.recorte);
   return {
-    grupo: typeof c?.grupo === 'string' && grupoDe(c.grupo) ? c.grupo : ADV_PADRAO.grupo,
+    grupo,
+    ...(recorte ? { recorte } : {}),
     submodo: isSubmodo(c?.submodo) ? c.submodo : ADV_PADRAO.submodo,
     rodadas: typeof r === 'number' && Number.isFinite(r) ? Math.min(ADV_RODADAS.max, Math.max(ADV_RODADAS.min, Math.round(r))) : ADV_RODADAS.def,
     tempo: (ADV_TEMPOS as readonly number[]).includes(c?.tempo as number) ? (c?.tempo as number) : ADV_PADRAO.tempo,
@@ -32,10 +37,18 @@ const advOf = (s: RoomState): AdivinhaGame | null => (s.phase === 'play' && s.ga
 const entry = (it: AdvItem): Entry => ({ name: it.name, img: it.img, fr: it.fr });
 
 /** Personagens possíveis do jogo, com o que o host tem carregado. */
-function poolDe(grupo: string, sub: Submodo, ctx: Ctx): AdvItem[] {
+function poolDe(grupo: string, sub: Submodo, ctx: Ctx, recorte: readonly string[] | null = null): AdvItem[] {
   const g = grupoDe(grupo);
   if (!g || !ctx.adivinha) return [];
-  return montarPool(g, sub, { listas: ctx.lists, catalogos: ctx.adivinha.catalogos, emojis: ctx.adivinha.emojis });
+  return montarPool(g, sub, { listas: ctx.lists, catalogos: ctx.adivinha.catalogos, emojis: ctx.adivinha.emojis }, recorte);
+}
+
+/** Resumo da franquia com o recorte: "Pokémon (gerações I e III)". */
+export function franquiaComRecorte(cfg: OnlineConfig['adivinha']): string {
+  const g = grupoDe(cfg.grupo);
+  if (!g) return cfg.grupo;
+  const r = textoRecorte(g, cfg.recorte ?? null);
+  return r ? `${g.rotulo} (${r})` : g.rotulo;
 }
 
 /** Por que o jogo não pode começar ('' = pode). `label` dá o rótulo de cada franquia. */
@@ -49,6 +62,7 @@ export function advProblema(cfg: OnlineConfig['adivinha'], ctx: Ctx, label: (k: 
   if (g.frs.every(fr => cats[fr] === null)) return `Não consegui carregar as informações de ${g.rotulo}.`;
   if (cfg.submodo === 'emoji' && !poolDe(cfg.grupo, 'emoji', ctx).length) return `${g.rotulo} ainda não tem emojis: escolha outro modo.`;
   if (!poolDe(cfg.grupo, cfg.submodo, ctx).length) return `Nenhum personagem de ${g.rotulo} pra adivinhar.`;
+  if (!poolDe(cfg.grupo, cfg.submodo, ctx, cfg.recorte ?? null).length) return `Nenhum personagem de ${franquiaComRecorte(cfg)} pra adivinhar: ligue mais opções.`;
   return '';
 }
 
@@ -104,9 +118,10 @@ export function startAdivinha(s: RoomState, ctx: Ctx, label: (k: string) => stri
     s.notice = erro;
     return true;
   }
-  const pool = poolDe(cfg.grupo, cfg.submodo, ctx);
+  const recorte = cfg.recorte ?? null;
+  const pool = poolDe(cfg.grupo, cfg.submodo, ctx, recorte);
   const g: AdivinhaGame = {
-    mode: 'adivinha', ...cfg, rodada: 1, passo: 'chute',
+    mode: 'adivinha', ...cfg, recorte, rodada: 1, passo: 'chute',
     ordem: s.players.map(p => p.id), vez: null, prazo: 0,
     secreto: pool[0] as AdvItem, foco: 0, chutes: [], usados: [],
     placar: Object.fromEntries(s.players.map(p => [p.id, 0])),
@@ -132,7 +147,7 @@ function fecharRodada(g: AdivinhaGame, vencedor: string | null) {
 export function advChute(s: RoomState, a: ChuteAction, ctx: Ctx): boolean {
   const g = advOf(s);
   if (!g || g.passo !== 'chute' || a.id !== g.vez || a.rodada !== g.rodada) return false;
-  const it = acharNoPool(poolDe(g.grupo, g.submodo, ctx), a.nome);
+  const it = acharNoPool(poolDe(g.grupo, g.submodo, ctx, g.recorte), a.nome);
   if (!it || g.chutes.some(c => c.alvo?.name === it.name)) return false;
   const certo = it.name === g.secreto.name;
   const grupo = grupoDe(g.grupo);
@@ -172,7 +187,7 @@ export function advNext(s: RoomState, ctx: Ctx): boolean {
     g.passo = 'fim';
     return true;
   }
-  const pool = poolDe(g.grupo, g.submodo, ctx);
+  const pool = poolDe(g.grupo, g.submodo, ctx, g.recorte);
   if (!pool.length) {
     s.notice = `As informações de ${grupoDe(g.grupo)?.rotulo ?? g.grupo} sumiram. Volte ao lobby e comece de novo.`;
     return true;

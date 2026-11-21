@@ -8,6 +8,7 @@ import { resolveImg } from '../../customs/store';
 import { GRUPOS, corDoGrupo, type Grupo } from '../../adivinha/grupos';
 import { explicar, type Pista } from '../../adivinha/comparar';
 import { sugerir, type AdvItem } from '../../adivinha/pool';
+import { alternarRecorte, ligado } from '../../adivinha/recorte';
 import { escolherPonto, focoForaDoRosto, focoNoMiolo, zoom, type Amostra, type ModoImagem, type Ponto } from '../../adivinha/imagem';
 
 /** Chips das franquias do Adivinha (SMT e Persona juntas). */
@@ -20,6 +21,44 @@ export function EscolhaGrupo({ id, valor, onChange, disabled }: { id: string; va
           <span className="dot" aria-hidden="true" />{g.rotulo}
         </button>
       ))}
+    </div>
+  );
+}
+
+/**
+ * Recorte da franquia (gerações do Pokémon, partes do JoJo...): um chip por valor, pelo menos um ligado, e "Todas"
+ * pra voltar ao padrão. Grupo sem recorte: nada. `contagem` = quantos personagens entram com a escolha atual.
+ */
+export function EscolhaRecorte({ id, grupo, ligados, onMudar, disabled, contagem, nota }: {
+  id: string;
+  grupo: Grupo;
+  ligados: readonly string[] | null;
+  onMudar: (novo: string[] | null) => void;
+  disabled?: boolean;
+  contagem?: number;
+  nota?: string;
+}) {
+  const r = grupo.recorte;
+  if (!r) return null;
+  const n = ligados?.length ?? r.valores.length;
+  return (
+    <div className="adv-recorte-bloco">
+      <div className="adv-etapas adv-recorte" id={id} role="group" aria-label={r.rotulo}>
+        <span className="mute">{r.rotulo}:</span>
+        {r.valores.map(v => {
+          const on = ligado(ligados, v.id);
+          return (
+            <button key={v.id} type="button" data-valor={v.id} aria-pressed={on} className={'adv-etapa-tg' + (on ? ' on' : '')}
+              disabled={disabled || (on && n === 1)} title={on && n === 1 ? 'Pelo menos uma fica ligada' : undefined}
+              onClick={() => onMudar(alternarRecorte(grupo, ligados, v.id))}>
+              <span className="ck" aria-hidden="true">{on ? '✓' : ''}</span><span className="rt">{v.rotulo}</span>
+            </button>
+          );
+        })}
+        <button type="button" className="btn mini" id={id + 'Todas'} disabled={disabled || !ligados} onClick={() => onMudar(null)}>Todas</button>
+        {contagem !== undefined && <span className="adv-recorte-n" id={id + 'N'}>{contagem} {contagem === 1 ? 'personagem entra' : 'personagens entram'}</span>}
+      </div>
+      {nota && <p className="adv-dica mute" id={id + 'Nota'}>{nota}</p>}
     </div>
   );
 }

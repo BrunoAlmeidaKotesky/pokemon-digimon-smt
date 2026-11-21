@@ -1,7 +1,7 @@
 // Adivinha online, vez de cada um (transporte local): o host sorteia o secreto, que nunca vai pro convidado enquanto
 // a rodada está aberta; um chute por vez, tempo esgotado passa a vez, quem acerta ganha a rodada; placar no fim.
 import { test, expect, type BrowserContext, type Page } from '@playwright/test';
-import { fixture, mockApis, seedRandom } from './helpers';
+import { fixture, mockApis, pokemonDeVariasGeracoes, seedRandom } from './helpers';
 
 test.use({ reducedMotion: 'reduce' });
 
@@ -174,4 +174,56 @@ test('Adivinha online no Imagem (recorte): o mesmo recorte pra todos, que abre a
     if (erros === 2) break;
   }
   if (erros === 2) await expect(quadro(beto)).toHaveAttribute('data-escala', '3.85');
+});
+
+test('Adivinha online com recorte: só a geração II do Pokémon no sorteio, no chute e no autocompletar de todos', async ({ context }) => {
+  test.setTimeout(90_000);
+  await mockApis(context, { adivinha: true });
+  await pokemonDeVariasGeracoes(context);
+  await seedRandom(context, 8);
+  const ana = await abrir(context, 1);
+  await ana.locator('nav button', { hasText: 'Online' }).click();
+  await ana.locator('#onName').fill('Ana');
+  await ana.locator('#onCreate').click();
+  await expect(ana.locator('#onRoomCode')).toHaveText(/^[A-Z]{4}$/);
+  const code = (await ana.locator('#onRoomCode').textContent())!;
+  const beto = await abrir(context, 2, code);
+  await beto.locator('#onName').fill('Beto');
+  await beto.locator('#onJoin').click();
+  await expect(ana.locator('#onPlayers .chip')).toHaveCount(2);
+  await ana.locator('#onLobby [data-modo="adivinha"]').click();
+  // franquia sem recorte: nada de chips
+  await expect(ana.locator('#onAdvRecorte')).toHaveCount(0);
+  await ana.locator('#onAdvGrupos [data-grupo="pokemon"]').click();
+  await expect(ana.locator('#onAdvRecorteN')).toHaveText('10 personagens entram');
+  for (const g of ['I', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX']) await ana.locator(`#onAdvRecorte [data-valor="${g}"]`).click();
+  await expect(ana.locator('#onAdvRecorteN')).toHaveText('4 personagens entram');
+  await expect(ana.locator('#onStartBar .resumo b')).toHaveText('Adivinha · Pokémon (geração II) · Clássico · 5 rodadas · 40 s por vez');
+  // o convidado vê a escolha, sem mudar
+  await expect(beto.locator('#onAdvRecorte [data-valor="II"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(beto.locator('#onAdvRecorte [data-valor="I"]')).toHaveAttribute('aria-pressed', 'false');
+  await expect(beto.locator('#onAdvRecorte [data-valor="I"]')).toBeDisabled();
+  await ana.locator('#onStart').click();
+  for (const p of [ana, beto]) await expect(p.locator('#onAdvFranquia')).toContainText('Pokémon (geração II)');
+
+  // autocompletar só com a geração II (na vez da Ana; depois, na do Beto)
+  await ana.locator('#onAdvChute').fill('bul');
+  await expect(ana.locator('#onAdvChuteNada')).toBeVisible();
+  await ana.locator('#onAdvChute').fill('to');
+  const sug = async (p: Page) => (await p.locator('#onAdvChuteLista li .nm').allTextContents()).map(s => s.trim());
+  expect(await sug(ana)).toEqual(['Togepi', 'Totodile']);
+  await ana.locator('#onAdvChute').press('Enter');
+  if (!(await ana.locator('#onAdv[data-passo="resultado"]').count())) {
+    await expect(beto.locator('#onAdvVezNome')).toHaveText('Sua vez!');
+    await beto.locator('#onAdvChute').fill('char');
+    await expect(beto.locator('#onAdvChuteNada')).toBeVisible();
+    await beto.locator('#onAdvChute').fill('chi');
+    expect(await sug(beto)).toEqual(['Chikorita']);
+  }
+  // o secreto (revelado pelo host) é da geração II
+  if (!(await ana.locator('#onAdv[data-passo="resultado"]').count())) {
+    await ana.locator('#onAdvRevelar').click();
+    await ana.locator('#onAdvRevelar').click();
+  }
+  await expect(beto.locator('#onAdvFim .card .name')).toHaveText(/^(Chikorita|Cyndaquil|Totodile|Togepi)$/);
 });

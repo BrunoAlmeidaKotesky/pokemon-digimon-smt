@@ -43,6 +43,17 @@ export interface Grupo {
    * autocompletar; o resto do site continua com a lista inteira). Sem isso, entra todo mundo que tem catálogo.
    */
   aceita?: (info: Info, nome: string) => boolean;
+  /**
+   * Recorte que o jogador pode escolher no livre e na sala online (nunca no desafio do dia): quais valores do campo
+   * entram. Campo de lista (parte do JoJo): entra quem tem pelo menos um dos valores ligados.
+   */
+  recorte?: Recorte;
+}
+export interface Recorte {
+  campo: string;
+  /** "Gerações", "Partes" */
+  rotulo: string;
+  valores: { id: string; rotulo: string }[];
 }
 
 /** JoJo: só Stands do anime e do mangá (pelo menos uma parte de 3 a 9 ou o Kishibe Rohan). */
@@ -71,12 +82,17 @@ export const GRUPOS: Grupo[] = [
   { id: 'deadlock', rotulo: 'Deadlock', frs: ['deadlock'], colunas: [t('tipo', 'Tipo'), t('arma', 'Arma'), t('disparo', 'Disparo'), t('genero', 'Gênero')] },
   {
     id: 'pokemon', rotulo: 'Pokémon', frs: ['pokemon'], aceita: soEspecie,
+    recorte: { campo: 'geracao', rotulo: 'Gerações', valores: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'].map(g => ({ id: g, rotulo: g })) },
     colunas: [
       tipoN(0), tipoN(1), t('geracao', 'Geração', 'romano'), t('estagio', 'Estágio', 'numero'), t('cor', 'Cor'), t('forma', 'Forma'), t('habitat', 'Habitat'),
       { ...t('altura', 'Altura', 'numero'), unidade: 'm' }, { ...t('peso', 'Peso', 'numero'), unidade: 'kg' },
     ],
   },
-  { id: 'jojo', rotulo: 'JoJo', frs: ['jojo'], aceita: jojoDoAnime, colunas: [t('parte', 'Parte'), t('alcance', 'Alcance'), t('forma', 'Forma'), t('mecanica', 'Mecânica')] },
+  {
+    id: 'jojo', rotulo: 'JoJo', frs: ['jojo'], aceita: jojoDoAnime,
+    recorte: { campo: 'parte', rotulo: 'Partes', valores: PARTES_JOJO.map(p => ({ id: p, rotulo: p.startsWith('Part ') ? 'Parte ' + p.slice(5) : 'Kishibe Rohan' })) },
+    colunas: [t('parte', 'Parte'), t('alcance', 'Alcance'), t('forma', 'Forma'), t('mecanica', 'Mecânica')],
+  },
   {
     id: 'megaten', rotulo: 'SMT + Persona', frs: ['smt', 'persona'], aceita: semPicaro,
     colunas: [

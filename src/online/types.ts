@@ -27,7 +27,11 @@ export interface OnlineConfig {
   /** Ranking às cegas: tamanho do top, franquias (na ordem dos tops separados) e se mistura tudo num top só */
   rank: { size: number; frs: FranchiseKey[]; mix: boolean };
   /** Adivinha, vez de cada um: franquia (grupo da aba Adivinha), submodo, nº de rodadas e segundos por vez */
-  adivinha: { grupo: string; submodo: Submodo; rodadas: number; tempo: number };
+  adivinha: {
+    grupo: string; submodo: Submodo; rodadas: number; tempo: number;
+    /** recorte da franquia (gerações do Pokémon, partes do JoJo): valores ligados; sem o campo = todos */
+    recorte?: string[];
+  };
 }
 
 // ---------- estado da sala (só no host) ----------
@@ -194,6 +198,8 @@ export interface AdivinhaGame {
   secreto: AdvItem;
   /** de 0 a 1: ponto do zoom da Imagem (o mesmo pra todos) */
   foco: number;
+  /** recorte da franquia (valores ligados; null = todos): vale pro sorteio, pro chute e pro autocompletar */
+  recorte: string[] | null;
   chutes: AdivinhaChute[];
   /** secretos já sorteados (não repetem até acabar a lista) */
   usados: string[];
@@ -361,6 +367,8 @@ export interface AdivinhaView {
   /** Imagem: a imagem do secreto ('' nos outros submodos) */
   imagem: string;
   foco: number;
+  /** recorte da franquia (null = todos; host antigo não manda): o autocompletar de todos usa */
+  recorte?: string[] | null;
   /** quem era: só depois que a rodada acaba */
   secreto: Entry | null;
   vencedor: string | null;

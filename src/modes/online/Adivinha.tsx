@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { AdivinhaView, OnlineConfig, RoomView } from '../../online/types';
 import { host, online, player } from '../../online/runtime';
-import { ADV_RODADAS, ADV_TEMPOS, advSettings } from '../../online/adivinha';
+import { ADV_RODADAS, ADV_TEMPOS, advSettings, franquiaComRecorte } from '../../online/adivinha';
 import { app, useApp } from '../../state/app';
 import { Segmented, Stepper } from '../../components/Controls';
 import { Card } from '../../components/Card';
 import { SUBMODOS, grupoDe, rotuloSubmodo } from '../../adivinha/grupos';
 import { estadoGrupo, pedirGrupo, poolAtual, useDadosAdivinha } from '../../adivinha/dados';
-import { CampoChute, EscolhaGrupo, Errados, Legenda, LinhaEmoji, QuadroImagem, Revelado, TabelaClassico } from '../adivinha/comum';
+import { CampoChute, EscolhaGrupo, EscolhaRecorte, Errados, Legenda, LinhaEmoji, QuadroImagem, Revelado, TabelaClassico } from '../adivinha/comum';
 import { useAgora } from '../adivinha/relogio';
 
 const rodadasTxt = (n: number) => `${n} ${n === 1 ? 'rodada' : 'rodadas'}`;
@@ -15,6 +15,7 @@ const pontosTxt = (n: number) => `${n} ${n === 1 ? 'ponto' : 'pontos'}`;
 
 /** Lobby do Adivinha: franquia, submodo, rodadas e segundos por vez (só o host muda). */
 export function AdivinhaConfig({ c, isHost, set, parte }: { c: OnlineConfig; isHost: boolean; set: (p: Partial<OnlineConfig>) => void; parte: 'franquia' | 'regras' }) {
+  useApp();
   useDadosAdivinha();
   const a = advSettings(c.adivinha);
   const g = grupoDe(a.grupo);
@@ -26,7 +27,12 @@ export function AdivinhaConfig({ c, isHost, set, parte }: { c: OnlineConfig; isH
   if (parte === 'franquia') {
     return (
       <div className="stack" id="onAdvCfg">
-        <EscolhaGrupo id="onAdvGrupos" valor={a.grupo} disabled={!isHost} onChange={grupo => mudar({ grupo })} />
+        {/* trocar de franquia volta o recorte pra "todas" */}
+        <EscolhaGrupo id="onAdvGrupos" valor={a.grupo} disabled={!isHost} onChange={grupo => mudar({ grupo, recorte: undefined })} />
+        {g?.recorte && (
+          <EscolhaRecorte id="onAdvRecorte" grupo={g} ligados={a.recorte ?? null} disabled={!isHost} onMudar={r => mudar({ recorte: r ?? undefined })}
+            contagem={est && !est.carregando ? poolAtual(g, a.submodo, app.lists, a.recorte ?? null).length : undefined} />
+        )}
         <p className="mute" style={{ margin: 0, fontSize: 13 }}>O host sorteia um personagem secreto; cada um chuta na sua vez, todo mundo vê as pistas. Quem acertar ganha a rodada.</p>
       </div>
     );
@@ -51,7 +57,7 @@ export function AdivinhaConfig({ c, isHost, set, parte }: { c: OnlineConfig; isH
 /** Resumo do lobby: "Adivinha · LoL · Clássico · 5 rodadas · 40 s". */
 export function resumoAdivinha(c: OnlineConfig): string {
   const a = advSettings(c.adivinha);
-  return `Adivinha · ${grupoDe(a.grupo)?.rotulo ?? a.grupo} · ${rotuloSubmodo(a.submodo)} · ${rodadasTxt(a.rodadas)} · ${a.tempo} s por vez`;
+  return `Adivinha · ${franquiaComRecorte(a)} · ${rotuloSubmodo(a.submodo)} · ${rodadasTxt(a.rodadas)} · ${a.tempo} s por vez`;
 }
 
 /** Partida: vez e tempo, pistas (tabela, imagem ou emojis), campo de chute, resultado e placar. */
@@ -61,7 +67,8 @@ export function AdivinhaPlay({ v }: { v: RoomView }) {
   const g = v.game as AdivinhaView;
   const grupo = grupoDe(g.grupo);
   useEffect(() => { if (grupo) void pedirGrupo(grupo); }, [grupo]);
-  const pool = grupo ? poolAtual(grupo, g.submodo, app.lists) : [];
+  // o recorte da sala (host antigo não manda: todos)
+  const pool = grupo ? poolAtual(grupo, g.submodo, app.lists, g.recorte ?? null) : [];
   const isHost = v.me === v.hostId;
   const aberta = g.passo === 'chute';
   const minha = aberta && g.vez === v.me;
@@ -72,7 +79,7 @@ export function AdivinhaPlay({ v }: { v: RoomView }) {
     <div className="stack" id="onAdv" data-passo={g.passo} data-rodada={g.rodada}>
       <p className="draft-round" id="onAdvRodada">
         {g.passo === 'fim' ? 'Placar final' : <>Rodada {g.rodada} de {g.rodadas}</>}
-        {' · '}<span className="mute">{grupo?.rotulo ?? g.grupo} · {rotuloSubmodo(g.submodo)}</span>
+        {' · '}<span className="mute" id="onAdvFranquia">{franquiaComRecorte({ grupo: g.grupo, submodo: g.submodo, rodadas: g.rodadas, tempo: g.tempo, recorte: g.recorte ?? undefined })} · {rotuloSubmodo(g.submodo)}</span>
       </p>
       {g.passo === 'fim' ? <Final v={v} g={g} /> : (
         <>

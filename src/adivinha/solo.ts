@@ -13,6 +13,7 @@ import { indiceDoDia, sementeDoDia } from './dia';
 import { alternar, etapaSeguinte, etapasDoPercurso, liberada, percursoDoDia, proximaFranquia, type Percurso } from './percurso';
 import { ADIVINHA_KEY, chaveDe, desafioDeHoje, lerSalvo, registrarChute, registrarPercurso, type Escolha, type Rodada, type Salvo } from './placar';
 import { acharNoPool, type AdvItem } from './pool';
+import { limparRecorte } from './recorte';
 
 export interface JogoSolo {
   /** 'dia:lol:classico', 'livre:lol:imagem' ou 'todos:lol:blur' */
@@ -271,6 +272,22 @@ export function irParaFranquia(grupo: string): void {
 /** Percurso de hoje de outra franquia (pra pular as feitas e pro resumo do dia); `dados` = etapas com dados dela. */
 export function percursoDe(grupo: string, hoje: string, dados: readonly Submodo[]): Percurso {
   return percursoDoDia(tudo(), grupo, hoje, etapasDoPercurso(solo.etapas, dados));
+}
+
+/** Recorte do livre da franquia (gerações, partes...): os valores ligados, ou null = todos. O dia ignora. */
+export const recorteDe = (grupo: string): string[] | null => tudo().recortes[grupo] ?? null;
+
+/**
+ * Troca o recorte do livre da franquia (null = todos) e guarda no navegador. O jogo do livre e do Todos dessa
+ * franquia recomeça com um personagem novo, já dentro do recorte.
+ */
+export function mudarRecorte(grupo: string, novo: readonly string[] | null): void {
+  const s = tudo(), recortes = { ...s.recortes }, r = limparRecorte(grupoDe(grupo), novo);
+  if (r) recortes[grupo] = r;
+  else delete recortes[grupo];
+  gravar({ ...s, recortes });
+  for (const id of [...jogos.keys()]) if (id.startsWith(`livre:${grupo}:`) || id.startsWith(`todos:${grupo}:`)) jogos.delete(id);
+  mudou();
 }
 
 /** Liga ou desliga uma etapa do percurso e do Todos (pelo menos uma fica); guarda no navegador. */
