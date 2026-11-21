@@ -133,3 +133,34 @@ describe('autocompletar', () => {
     expect(acharNoPool(pool, 3 as unknown as string)).toBeUndefined();
   });
 });
+
+describe('recorte do livre e da sala (gerações, partes)', () => {
+  it('Pokémon: só as gerações ligadas, em todos os submodos e no autocompletar', () => {
+    const c = real('pokemon');
+    const f = { listas: { pokemon: listaDe(c) }, catalogos: { pokemon: c }, emojis: {} };
+    for (const sub of ['classico', 'imagem', 'blur'] as const) {
+      const g1 = montarPool(G('pokemon'), sub, f, ['I']);
+      expect(g1).toHaveLength(151);
+      expect(g1.every(x => x.info.geracao === 'I')).toBe(true);
+    }
+    const doisTres = montarPool(G('pokemon'), 'classico', f, ['II', 'III']);
+    expect(doisTres.length).toBe(montarPool(G('pokemon'), 'classico', f, ['II']).length + montarPool(G('pokemon'), 'classico', f, ['III']).length);
+    // sem recorte: o pool de sempre
+    expect(montarPool(G('pokemon'), 'classico', f, null)).toHaveLength(montarPool(G('pokemon'), 'classico', f).length);
+    const g1 = montarPool(G('pokemon'), 'classico', f, ['I']);
+    expect(sugerir(g1, 'chi', new Set()).map(x => x.name)).not.toContain('Chikorita');
+    expect(sugerir(montarPool(G('pokemon'), 'classico', f, ['II']), 'chi', new Set()).map(x => x.name)).toContain('Chikorita');
+  });
+
+  it('JoJo: parte é lista, entra quem tem pelo menos uma das ligadas', () => {
+    const c = real('jojo');
+    const f = { listas: { jojo: listaDe(c) }, catalogos: { jojo: c }, emojis: {} };
+    const p4 = montarPool(G('jojo'), 'classico', f, ['Part 4']);
+    expect(p4.length).toBeGreaterThan(10);
+    expect(p4.every(x => [x.info.parte].flat().includes('Part 4'))).toBe(true);
+    expect(p4.some(x => x.name === 'Echoes')).toBe(true);
+    const p5 = montarPool(G('jojo'), 'classico', f, ['Part 5']);
+    expect(p5.some(x => x.name === 'Echoes')).toBe(true);
+    expect(p5.some(x => x.name === 'Star Platinum')).toBe(false);
+  });
+});

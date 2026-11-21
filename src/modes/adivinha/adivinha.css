@@ -160,3 +160,8 @@
 .adv-etapa-txt{margin:0;text-align:center;font-size:14px}
 .adv-resumo{display:grid;gap:6px;justify-items:center}
 .adv-resumo ul{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:14px}
+/* recorte do livre e da sala (gerações, partes) */
+.adv-recorte-bloco{display:grid;gap:4px}
+.adv-recorte .adv-etapa-tg{padding:3px 10px 3px 5px}
+.adv-recorte .btn.mini{margin-left:2px}
+.adv-recorte-n{font-size:13px;font-weight:600;margin-left:4px}

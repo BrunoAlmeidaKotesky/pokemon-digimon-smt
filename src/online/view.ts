@@ -84,6 +84,7 @@ function adivinhaView(s: RoomState, g: AdivinhaGame, now: number): AdivinhaView 
     // Imagem (recorte) e Blur: a imagem precisa ir pra aparecer
     imagem: g.submodo === 'imagem' || g.submodo === 'blur' ? g.secreto.img : '',
     foco: g.foco,
+    recorte: g.recorte ? [...g.recorte] : null,
     secreto: aberta ? null : { name: g.secreto.name, img: g.secreto.img, fr: g.secreto.fr },
     vencedor: g.vencedor,
     // quem está na sala, mais quem saiu com ponto; mais pontos primeiro (empate: ordem da sala)

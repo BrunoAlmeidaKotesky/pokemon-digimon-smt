@@ -5,7 +5,7 @@ import { ADIVINHA_KEY, chavePercurso, lerSalvo } from './placar';
 import type { AdvItem } from './pool';
 import {
   alternarEtapa, chutar, desistir, escolher, franquiaSeguinte, irParaFranquia, proximaEtapa, proximo, recomecarCiclo, reiniciarSolo,
-  salvoAtual, sessaoLivre, solo, tela, verEtapa, type Pools,
+  mudarRecorte, recorteDe, salvoAtual, sessaoLivre, solo, tela, verEtapa, type Pools,
 } from './solo';
 
 const item = (name: string): AdvItem => ({ name, img: '', fr: 'lol', info: {}, emoji: ['🦊', '🌙'] });
@@ -159,5 +159,27 @@ describe('livre', () => {
     expect(franquiaSeguinte(() => true)).toBe('overwatch'); // no livre não pula
     irParaFranquia('overwatch');
     expect(T()).toMatchObject({ sub: 'classico', jogo: { fim: null } });
+  });
+});
+
+describe('recorte do livre', () => {
+  it('fica guardado; trocar recomeça o livre com personagem novo; o dia não muda', () => {
+    const dia = T();
+    escolher({ rodada: 'livre', submodo: 'classico' });
+    seedRandom(9);
+    const livre = T().jogo;
+    // trocar o recorte (mesmo de outra franquia sem recorte) recomeça o livre dela
+    mudarRecorte('lol', ['I', 'II']);
+    expect(recorteDe('lol')).toBeNull();
+    expect(T().jogo).not.toBe(livre);
+    mudarRecorte('pokemon', ['IV']);
+    expect(lerSalvo(JSON.parse(st.getItem(ADIVINHA_KEY)!)).recortes).toEqual({ pokemon: ['IV'] });
+    reiniciarSolo();
+    expect(recorteDe('pokemon')).toEqual(['IV']);
+    mudarRecorte('pokemon', null);
+    expect(recorteDe('pokemon')).toBeNull();
+    // o dia é o mesmo de antes
+    escolher({ rodada: 'dia' });
+    expect(T().jogo.alvo.name).toBe(dia.jogo.alvo.name);
   });
 });

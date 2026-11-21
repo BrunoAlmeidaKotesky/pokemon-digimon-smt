@@ -2,7 +2,7 @@
 // Brasília), etapas opcionais, próxima franquia, livre (submodo solto e "Todos"), autocompletar, pistas, legenda,
 // estatísticas em pdx-adivinha-v1 (com a migração do formato antigo) e os filtros (Pokémon só espécies).
 import { test, expect, type Page } from '@playwright/test';
-import { abrir, fixture, lerStorage, prepare, type MockOpts } from './helpers';
+import { abrir, fixture, lerStorage, pokemonDeVariasGeracoes, prepare, type MockOpts } from './helpers';
 import { indiceDoDia } from '../src/adivinha/dia';
 
 test.use({ reducedMotion: 'reduce' });
@@ -18,9 +18,11 @@ type Sub = 'classico' | 'imagem' | 'blur' | 'emoji';
 const doDia = (sub: Sub) => NOMES_LOL[indiceDoDia(HOJE, 'lol', sub, NOMES_LOL.length)]!;
 const errados = (sub: Sub) => NOMES_LOL.filter(n => n !== doDia(sub));
 
-async function inicio(page: Page, opts: MockOpts & { seed?: number; storage?: Record<string, unknown> } = {}, path = './?aba=adivinha') {
+async function inicio(page: Page, opts: MockOpts & { seed?: number; storage?: Record<string, unknown>; rotas?: (p: Page) => Promise<void> } = {}, path = './?aba=adivinha') {
   await page.clock.setFixedTime(AGORA);
   await prepare(page, { adivinha: true, ...opts });
+  // rotas próprias do teste: depois das de helpers.ts, pra valerem antes delas
+  await opts.rotas?.(page);
   await abrir(page, path);
   await expect(page.locator('#adivinha')).toBeVisible();
 }
@@ -335,4 +337,69 @@ test.describe('Adivinha sozinho', () => {
     expect(s!.stats['lol:blur']).toEqual({ jogos: 6, chutes: 18, seq: 3, melhor: 5, ultimo: '2026-11-20' });
     expect(s!.stats['lol:imagem']).toBeUndefined();
   });
+
+  test('recorte no livre: Pokémon só com a geração II (secreto e sugestões respeitam); o dia continua com tudo', async ({ page }) => {
+    await inicio(page, { rotas: pokemonDeVariasGeracoes });
+    await chip(page, 'pokemon').click();
+    // no dia: chips desligados, com o motivo; o autocompletar tem a franquia inteira
+    await expect(page.locator('#advRecorte [data-valor]')).toHaveCount(9);
+    await expect(page.locator('#advRecorte [data-valor="I"]')).toBeDisabled();
+    await expect(page.locator('#advRecorteNota')).toContainText('No desafio do dia entra Pokémon inteiro');
+    await page.locator('#advChute').fill('bul');
+    expect(await sugestoes(page)).toEqual(['Bulbasaur']);
+    await page.locator('#advChute').fill('');
+
+    await rodada(page, 'livre').click();
+    await expect(page.locator('#advRecorteNota')).toHaveCount(0);
+    await expect(page.locator('#advRecorteN')).toHaveText('10 personagens entram');
+    for (const g of ['I', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']) await page.locator(`#advRecorte [data-valor="${g}"]`).click();
+    await expect(page.locator('#advRecorteN')).toHaveText('4 personagens entram');
+    // a última ligada não desliga
+    await page.locator('#advRecorte [data-valor="IX"]').click();
+    await expect(page.locator('#advRecorte [data-valor="II"]')).toBeDisabled();
+    await expect(page.locator('#advRecorte [data-valor="II"]')).toHaveAttribute('aria-pressed', 'true');
+    expect((await lerStorage<{ recortes: Record<string, string[]> }>(page, 'pdx-adivinha-v1'))!.recortes).toEqual({ pokemon: ['II'] });
+    // sugestões só da geração II
+    await page.locator('#advChute').fill('bul');
+    await expect(page.locator('#advChuteNada')).toBeVisible();
+    await page.locator('#advChute').fill('to');
+    expect(await sugestoes(page)).toEqual(['Togepi', 'Totodile']);
+    await page.locator('#advChute').fill('');
+    // o secreto é sempre da geração II
+    for (let i = 0; i < 4; i++) {
+      await page.locator('#advDesistir').click();
+      const nome = (await page.locator('#advFim .card .name').textContent())!.trim();
+      expect(GERACAO_II).toContain(nome);
+      await page.locator('#advProximo').click();
+    }
+    // "Todas" volta ao padrão e recomeça com personagem novo
+    await page.locator('#advRecorteTodas').click();
+    await expect(page.locator('#advRecorteN')).toHaveText('10 personagens entram');
+    await expect(page.locator('#advChute')).toBeVisible();
+  });
+
+  test('recorte no livre: JoJo só com a Parte 4 (vale no "Todos" também)', async ({ page }) => {
+    await inicio(page, { storage: { 'pdx-adivinha-v1': { v: 2, dia: {}, stats: {}, cfg: { grupo: 'jojo', submodo: 'todos', rodada: 'livre' }, recortes: { jojo: ['Part 4'] } } } });
+    await expect(page.locator('#advRecorte [data-valor] .rt')).toHaveText(['Parte 3', 'Parte 4', 'Parte 5', 'Parte 6', 'Parte 7', 'Parte 8', 'Parte 9', 'Kishibe Rohan']);
+    await expect(page.locator('#advRecorte [data-valor="Part 4"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#advRecorte [data-valor="Part 3"]')).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('#advRecorteN')).toHaveText(`${PARTE_4.length} personagens entram`);
+    await page.locator('#advChute').fill('gold');
+    await expect(page.locator('#advChuteNada')).toBeVisible();
+    await page.locator('#advChute').fill('echo');
+    expect(await sugestoes(page)).toEqual(['Echoes']);
+    await page.locator('#advChute').fill('');
+    // sem emojis de JoJo nos testes: o ciclo é Clássico, Imagem e Blur
+    for (const s of ['classico', 'imagem', 'blur'] as const) {
+      await expect(page.locator('#advJogo')).toHaveAttribute('data-submodo', s);
+      await page.locator('#advDesistir').click();
+      expect(PARTE_4).toContain((await page.locator('#advFim .card .name').textContent())!.trim());
+      if (s !== 'blur') await page.locator('#advProximaEtapa').click();
+    }
+    await expect(page.locator('#advCicloFeito')).toBeVisible();
+  });
 });
+
+const GERACAO_II = ['Chikorita', 'Cyndaquil', 'Totodile', 'Togepi'];
+const JOJO_FIX = fixture<{ itens: Record<string, Info> }>('catalogo-jojo.json').itens;
+const PARTE_4 = Object.keys(JOJO_FIX).filter(n => [JOJO_FIX[n]!.parte ?? []].flat().includes('Part 4'));

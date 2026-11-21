@@ -291,3 +291,71 @@ describe('protocolo', () => {
     expect(parseClientMsg({ t: 'chute', rodada: 1, nome: 'x'.repeat(500) })).toBeNull();
   });
 });
+
+describe('recorte da sala (gerações do Pokémon)', () => {
+  const POKES: Record<string, Record<string, unknown>> = {
+    Bulbasaur: { tipo: ['Grass', 'Poison'], geracao: 'I' }, Charmander: { tipo: ['Fire'], geracao: 'I' }, Squirtle: { tipo: ['Water'], geracao: 'I' },
+    Chikorita: { tipo: ['Grass'], geracao: 'II' }, Cyndaquil: { tipo: ['Fire'], geracao: 'II' }, Totodile: { tipo: ['Water'], geracao: 'II' },
+    Treecko: { tipo: ['Grass'], geracao: 'III' },
+  };
+  const PCAT = parseCatalogo({ campos: [{ id: 'tipo' }, { id: 'geracao' }], itens: POKES }) as Catalogo;
+  const pctx = (over: Partial<Ctx> = {}) => ctx({
+    lists: { ...LISTS, pokemon: Object.keys(POKES).map(n => ({ name: n, img: `p/${n}.png` })) },
+    adivinha: { catalogos: { lol: CAT, pokemon: PCAT }, emojis: { lol: EMOJIS } }, ...over,
+  });
+  const sala = (recorte?: string[]) => {
+    let s = createRoom('PKMN', { id: 'h', name: 'Host' }, { ...DEFAULT_CONFIG, mode: 'adivinha', adivinha: { ...ADV_PADRAO, grupo: 'pokemon', rodadas: 6, ...(recorte ? { recorte } : {}) } });
+    s = R(s, { type: 'join', id: 'ana', name: 'Ana' }, pctx());
+    return R(s, { type: 'start' }, pctx());
+  };
+
+  it('configuração: recorte só da franquia escolhida; sem o campo, ou inválido = todas', () => {
+    expect(advSettings({ grupo: 'pokemon', recorte: ['III', 'I'] }).recorte).toEqual(['I', 'III']);
+    expect(advSettings({ grupo: 'pokemon', recorte: [] })).not.toHaveProperty('recorte');
+    expect(advSettings({ grupo: 'lol', recorte: ['I'] })).not.toHaveProperty('recorte');
+    expect(advSettings({ grupo: 'pokemon' })).not.toHaveProperty('recorte');
+    expect(advSettings({ grupo: 'jojo', recorte: ['Part 4', 'Part 99'] }).recorte).toEqual(['Part 4']);
+  });
+
+  it('com recorte: o secreto sai das gerações ligadas (em todas as rodadas) e chute de fora é recusado', () => {
+    let s = sala(['II']);
+    expect(G(s).recorte).toEqual(['II']);
+    const vistos = new Set<string>();
+    for (let r = 0; r < 6; r++) {
+      expect(POKES[G(s).secreto.name]!.geracao).toBe('II');
+      vistos.add(G(s).secreto.name);
+      if (r === 0) {
+        // Bulbasaur é da geração I: fora do recorte
+        expect(R(s, { type: 'chute', id: 'h', rodada: 1, nome: 'Bulbasaur' }, pctx())).toBe(s);
+        const dentro = ['Chikorita', 'Cyndaquil', 'Totodile'].find(n => n !== G(s).secreto.name)!;
+        s = R(s, { type: 'chute', id: 'h', rodada: 1, nome: dentro }, pctx());
+        expect(G(s).chutes).toHaveLength(1);
+      }
+      s = R(R(s, { type: 'skip' }, pctx()), { type: 'next' }, pctx());
+    }
+    expect([...vistos].every(n => POKES[n]!.geracao === 'II')).toBe(true);
+    // todos recebem o recorte (pro autocompletar), e a visão passa na conferência
+    const v = viewFor(s, 'ana', now);
+    expect((v.game as AdivinhaView).recorte).toEqual(['II']);
+    expect(parseHostMsg({ t: 'state', view: v })).not.toBeNull();
+  });
+
+  it('sem recorte: todas as gerações; recorte sem ninguém vira aviso', () => {
+    const s = sala();
+    expect(G(s).recorte).toBeNull();
+    expect(V(s, 'ana').recorte).toBeNull();
+    const vazio = sala(['IX']);
+    expect(vazio.phase).toBe('lobby');
+    expect(vazio.notice).toBe('Nenhum personagem de Pokémon (geração IX) pra adivinhar: ligue mais opções.');
+  });
+
+  it('protocolo: host antigo (sem o campo na visão e na configuração) continua valendo', () => {
+    const s = sala(['I', 'II']);
+    const v = viewFor(s, 'ana', now);
+    const semCampo = { ...v, cfg: { ...v.cfg, adivinha: { grupo: 'pokemon', submodo: 'classico', rodadas: 6, tempo: 40 } }, game: { ...(v.game as AdivinhaView) } };
+    delete (semCampo.game as Partial<AdivinhaView>).recorte;
+    expect(parseHostMsg({ t: 'state', view: semCampo })).not.toBeNull();
+    expect(parseHostMsg({ t: 'state', view: { ...v, game: { ...(v.game as AdivinhaView), recorte: [1] } } })).toBeNull();
+    expect(parseHostMsg({ t: 'state', view: { ...v, cfg: { ...v.cfg, adivinha: { ...v.cfg.adivinha, recorte: 'I' } } } })).toBeNull();
+  });
+});
