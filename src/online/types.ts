@@ -6,6 +6,7 @@ import type { Catalogo } from '../catalog/model';
 import type { Pista } from '../adivinha/comparar';
 import type { Submodo } from '../adivinha/grupos';
 import type { AdvItem, EmojiMapa } from '../adivinha/pool';
+import type { Skin, SkinsMapa } from '../adivinha/skins';
 
 // ---------- configuração ----------
 export type OnlineMode = 'duel' | 'trio' | 'quartet' | 'cup' | 'draft' | 'rank' | 'adivinha';
@@ -211,6 +212,8 @@ export interface AdivinhaGame {
   /** quando a vez acaba (ms, relógio do host) */
   prazo: number;
   secreto: AdvItem;
+  /** Imagem: a skin sorteada do secreto, nas franquias que têm (null = arte padrão) */
+  skin: Skin | null;
   /** de 0 a 1: ponto do zoom da Imagem (o mesmo pra todos) */
   foco: number;
   /** recorte da franquia da rodada (valores ligados; null = todos): vale pro sorteio, pro chute e pro autocompletar */
@@ -282,7 +285,12 @@ export interface Ctx {
   /** rótulos das franquias customizadas do host (pros avisos) */
   labels?: Record<string, string>;
   /** Adivinha: catálogos e emojis que o host já carregou, por franquia */
-  adivinha?: { catalogos: Record<string, Catalogo | null | undefined>; emojis: Record<string, EmojiMapa | null | undefined> };
+  adivinha?: {
+    catalogos: Record<string, Catalogo | null | undefined>;
+    emojis: Record<string, EmojiMapa | null | undefined>;
+    /** skins do modo Imagem, nas franquias que têm */
+    skins?: Record<string, SkinsMapa | null | undefined>;
+  };
 }
 
 export type JoinCheck = { ok: true; id: string } | { ok: false; reason: string };
@@ -384,8 +392,10 @@ export interface AdivinhaView {
   emoji: string[];
   /** Emoji: quantos o secreto tem */
   totalEmoji: number;
-  /** Imagem: a imagem do secreto ('' nos outros submodos) */
+  /** Imagem e Blur: a imagem do secreto, ou da skin sorteada ('' nos outros submodos) */
   imagem: string;
+  /** Imagem: nome da skin, só depois que a rodada acaba (host antigo não manda) */
+  skin?: string;
   foco: number;
   /** recorte da franquia (null = todos; host antigo não manda): o autocompletar de todos usa */
   recorte?: string[] | null;

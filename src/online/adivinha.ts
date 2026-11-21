@@ -8,6 +8,7 @@ import { pistas } from '../adivinha/comparar';
 import { GRUPOS, SUBMODOS, grupoDe, rotuloSubmodo, type Submodo } from '../adivinha/grupos';
 import { acharNoPool, montarPool, type AdvItem } from '../adivinha/pool';
 import { limparRecorte, textoRecorte } from '../adivinha/recorte';
+import { skinDe } from '../adivinha/skins';
 import type { Entry } from '../types';
 import type { Action, AdivinhaGame, Ctx, OnlineConfig, RoomState } from './types';
 
@@ -166,6 +167,9 @@ function abrirRodada(s: RoomState, g: AdivinhaGame, pool: AdvItem[], ctx: Ctx) {
   const alvo = livres[Math.floor(ctx.rand() * livres.length)] as AdvItem;
   g.usados.push(alvo.name);
   g.secreto = structuredClone(alvo);
+  // Imagem: nas franquias com skins, a splash de uma skin sorteada (sem lista, não gasta sorteio)
+  const skins = g.submodo === 'imagem' ? ctx.adivinha?.skins?.[alvo.fr]?.get(alvo.name) : undefined;
+  g.skin = skins?.length ? skinDe(new Map([[alvo.name, skins]]), alvo.name, ctx.rand()) : null;
   g.foco = ctx.rand();
   g.chutes = [];
   g.vencedor = null;
@@ -186,7 +190,7 @@ export function startAdivinha(s: RoomState, ctx: Ctx, label: (k: string) => stri
     mode: 'adivinha', grupo: cfg.grupo, submodo: cfg.submodo, grupos: cfg.grupos, submodos: cfg.submodos, recortes: cfg.recortes,
     rodadas: cfg.rodadas, tempo: cfg.tempo, recorte: cfg.recorte ?? null, rodada: 1, passo: 'chute',
     ordem: s.players.map(p => p.id), vez: null, prazo: 0,
-    secreto: null as unknown as AdvItem, foco: 0, chutes: [], usados: [],
+    secreto: null as unknown as AdvItem, skin: null, foco: 0, chutes: [], usados: [],
     placar: Object.fromEntries(s.players.map(p => [p.id, 0])),
     nomes: Object.fromEntries(s.players.map(p => [p.id, p.name])),
     vencedor: null, historico: [],

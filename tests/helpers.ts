@@ -55,6 +55,8 @@ export interface MockOpts {
    * campos do Clássico; os testes do Catálogo contam com os catálogo-<chave>.json menores e com o SMT sem catálogo)
    */
   adivinha?: boolean;
+  /** Adivinha: serve a fixture adivinha-skins-<chave>.json (sem isto, a franquia fica sem skins: 404) */
+  skins?: boolean;
 }
 export interface Chamadas { [k: string]: number }
 
@@ -127,6 +129,13 @@ export async function mockApis(ctx: BrowserContext | Page, opts: MockOpts = {}):
         count('emoji');
         const nome = `adivinha-emoji-${emo[1]}.json`;
         return fs.existsSync(new URL(nome, FIX)) ? json(route, fixture(nome)) : route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' });
+      }
+      // Skins do Imagem: só com `skins`, pra os outros testes seguirem com a arte padrão
+      const sk = u.pathname.match(/\/adivinha\/skins\/([\w-]+)\.json$/);
+      if (sk) {
+        count('skins');
+        const nome = `adivinha-skins-${sk[1]}.json`;
+        return opts.skins && fs.existsSync(new URL(nome, FIX)) ? json(route, fixture(nome)) : route.fulfill({ status: 404, contentType: 'text/plain', body: 'not found' });
       }
       return route.continue();
     }

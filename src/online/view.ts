@@ -84,7 +84,8 @@ function adivinhaView(s: RoomState, g: AdivinhaGame, now: number): AdivinhaView 
     emoji: emoji.slice(0, emojisVisiveis(emoji.length, erros, !aberta)),
     totalEmoji: emoji.length,
     // Imagem (recorte) e Blur: a imagem precisa ir pra aparecer
-    imagem: g.submodo === 'imagem' || g.submodo === 'blur' ? g.secreto.img : '',
+    imagem: g.submodo === 'imagem' ? (g.skin?.img ?? g.secreto.img) : g.submodo === 'blur' ? g.secreto.img : '',
+    ...(g.skin && !aberta ? { skin: g.skin.nome } : {}),
     foco: g.foco,
     recorte: g.recorte ? [...g.recorte] : null,
     secreto: aberta ? null : { name: g.secreto.name, img: g.secreto.img, fr: g.secreto.fr },

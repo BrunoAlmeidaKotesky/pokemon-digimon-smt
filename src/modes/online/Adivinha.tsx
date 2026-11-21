@@ -127,6 +127,7 @@ export function AdivinhaPlay({ v }: { v: RoomView }) {
         <>
           {aberta && <Vez v={v} g={g} nome={nome} />}
           {(g.submodo === 'imagem' || g.submodo === 'blur') && g.imagem && <QuadroImagem modo={g.submodo} img={g.imagem} semente={g.foco} erros={g.erros} fim={!aberta} />}
+          {g.skin && !aberta && <p className="mute" id="onAdvSkin" style={{ margin: 0, textAlign: 'center' }}>Skin: <b>{g.skin}</b></p>}
           {g.submodo === 'emoji' && <LinhaEmoji emojis={g.emoji} total={g.totalEmoji} />}
           {aberta && (
             <CampoChute key={`${g.rodada}`} id="onAdvChute" pool={pool} usados={usados} disabled={!minha} foco={minha} varias={(grupo?.frs.length ?? 1) > 1}

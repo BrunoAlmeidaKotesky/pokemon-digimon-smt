@@ -458,3 +458,35 @@ describe('várias franquias, vários modos e tempo sem limite', () => {
     expect(parseHostMsg({ t: 'state', view: viewFor(s, 'ana', now) })).not.toBeNull();
   });
 });
+
+describe('skins no Imagem (franquia que tem a lista)', () => {
+  const SKINS = new Map([['Ahri', [{ img: 'https://s/Ahri_0.jpg', nome: 'Ahri' }, { img: 'https://s/Ahri_7.jpg', nome: 'Popstar Ahri' }]]]);
+  const sctx = () => ctx({ adivinha: { catalogos: { lol: CAT }, emojis: { lol: EMOJIS }, skins: { lol: SKINS } } });
+
+  it('o host sorteia uma skin do secreto: todos recebem a mesma imagem, e o nome dela só depois da rodada', () => {
+    rand = () => 0; // secreto = Ahri, skin = a primeira
+    let s = R(room(['Ana'], { submodo: 'imagem' }), { type: 'start' }, sctx());
+    expect(G(s).secreto.name).toBe('Ahri');
+    expect(G(s).skin).toEqual({ img: 'https://s/Ahri_0.jpg', nome: 'Ahri' });
+    for (const id of ['h', 'ana']) {
+      expect(V(s, id).imagem).toBe('https://s/Ahri_0.jpg');
+      expect(V(s, id)).not.toHaveProperty('skin');
+    }
+    s = R(s, { type: 'chute', id: 'h', rodada: 1, nome: 'Ahri' }, sctx());
+    expect(V(s, 'ana').skin).toBe('Ahri');
+    expect(parseHostMsg({ t: 'state', view: viewFor(s, 'ana', now) })).not.toBeNull();
+  });
+
+  it('personagem sem skins na lista, outro modo ou franquia sem lista: arte padrão, sem gastar sorteio', () => {
+    rand = () => 0.3; // secreto = Akali (sem skins na lista)
+    const semLista = R(room(['Ana'], { submodo: 'imagem' }), { type: 'start' }, sctx());
+    expect(G(semLista).skin).toBeNull();
+    expect(V(semLista, 'ana').imagem).toBe(G(semLista).secreto.img);
+    rand = () => 0;
+    const blur = R(room(['Ana'], { submodo: 'blur' }), { type: 'start' }, sctx());
+    expect(G(blur).skin).toBeNull();
+    expect(V(blur, 'ana').imagem).toBe('https://img.test/Ahri.png');
+    const semArquivo = started(['Ana'], { submodo: 'imagem' });
+    expect(G(semArquivo).skin).toBeNull();
+  });
+});
